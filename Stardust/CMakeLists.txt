@@ -7,6 +7,8 @@ add_library(Stardust ${STARDUST_SOURCE_FILES} ${STARDUST_HEADER_FILES})
 
 target_include_directories(Stardust PUBLIC
 	"${CMAKE_CURRENT_LIST_DIR}/include"
+	${EA_BASE_INCLUDE_DIRS}
+	${EASTL_INCLUDE_DIRS}
 	${GLM_INCLUDE_DIRS}
 	${SDL2_INCLUDE_DIRS}
 	${TINY_UTF8_INCLUDE_DIRS}
@@ -18,7 +20,8 @@ target_link_directories(Stardust PUBLIC
 )
 
 target_link_libraries(Stardust PUBLIC
-	${SDL2_LIBS}	
+	${SDL2_LIBS}
+	EASTL
 )
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${STARDUST_SOURCE_FILES})
