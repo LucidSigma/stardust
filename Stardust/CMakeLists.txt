@@ -9,6 +9,7 @@ target_include_directories(Stardust PUBLIC
 	"${CMAKE_CURRENT_LIST_DIR}/include"
 	${SDL2_INCLUDE_DIRS}
 	${GLM_INCLUDE_DIRS}
+	${TYPE_SAFE_INCLUDE_DIRS}
 )
 
 target_link_directories(Stardust PUBLIC
