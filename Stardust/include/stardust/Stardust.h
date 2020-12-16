@@ -2,11 +2,10 @@
 #ifndef STARDUST_H
 #define STARDUST_H
 
-#include <iostream>
+#include "stardust/data/Types.h"
 
-namespace stardust
-{
-	extern void SayHello();
-}
+#include "stardust/application/Application.h"
+
+namespace sd = stardust;
 
 #endif
