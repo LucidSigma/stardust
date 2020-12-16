@@ -2,9 +2,9 @@
 
 #include "stardust/Stardust.h"
 
-int main([[maybe_unused]] const int argc, [[maybe_unused]] char* argv[])
+int main([[maybe_unused]] const int argc, char* argv[])
 {
-	sd::Application application;
+	const sd::Application application;
 
 	return EXIT_SUCCESS;
 }
