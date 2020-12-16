@@ -11,5 +11,5 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_subdirectory("src/Stardust")
-add_subdirectory("src/Sandbox")
+add_subdirectory("Stardust")
+add_subdirectory("Sandbox")
