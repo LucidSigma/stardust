@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 
-file(GLOB_RECURSE STARDUST_HEADER_FILES "include/*.h")
+file(GLOB_RECURSE STARDUST_HEADER_FILES "include/stardust/*.h")
 file(GLOB_RECURSE STARDUST_SOURCE_FILES "src/*.cpp")
 
 add_library(Stardust ${STARDUST_SOURCE_FILES} ${STARDUST_HEADER_FILES})
 
 target_include_directories(Stardust PUBLIC
 	"${CMAKE_CURRENT_LIST_DIR}/include"
+	${DEBUG_ASSERT_INCLUDE_DIRS}
 	${EA_BASE_INCLUDE_DIRS}
 	${EASTL_INCLUDE_DIRS}
 	${GLM_INCLUDE_DIRS}
@@ -25,7 +26,7 @@ target_link_libraries(Stardust PUBLIC
 )
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${STARDUST_SOURCE_FILES})
-source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/include" FILES ${STARDUST_HEADER_FILES})
+source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/include/stardust" FILES ${STARDUST_HEADER_FILES})
 
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})

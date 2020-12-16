@@ -21,6 +21,7 @@ set(GLM_DIR "${PROJECT_SOURCE_DIR}/dep/glm-0.9.9.8/cmake/glm")
 find_package(GLM REQUIRED)
 
 # Header-only dependencies.
+add_subdirectory("dep/debug_assert-1.3.3")
 add_subdirectory("dep/EABase-2.09.05")
 add_subdirectory("dep/tiny-utf8-4.3")
 add_subdirectory("dep/type_safe-0.2.1")
