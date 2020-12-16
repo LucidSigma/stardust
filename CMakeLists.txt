@@ -23,12 +23,8 @@ find_package(GLM REQUIRED)
 
 find_package(OpenGL REQUIRED)
 
-if(WIN32)
-	set(OPENGL_LIBS opengl32)
-elseif(UNIX)
-	set(OPENGL_LIBS lGL)
-else()
-	message(WARNING "OpenGL libraries not set up.")
+if(NOT OPENGL_FOUND)
+	message(FATAL_ERROR "Could not find OpenGL libraries.")
 endif()
 
 # Header-only dependencies.

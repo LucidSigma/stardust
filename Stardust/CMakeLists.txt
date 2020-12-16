@@ -23,7 +23,7 @@ target_link_directories(Stardust PUBLIC
 
 target_link_libraries(Stardust PUBLIC
 	${SDL2_LIBS}
-	${OPENGL_LIBS}
+	OpenGL::GL
 	EASTL
 	glad
 )
