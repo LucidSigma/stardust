@@ -14,3 +14,10 @@ target_link_libraries(Sandbox PUBLIC Stardust)
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${SANDBOX_SOURCE_FILES})
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/include" FILES ${SANDBOX_HEADER_FILES})
+
+if(WIN32)
+    foreach(DLL ${SDL2_DLLS})
+        add_custom_command(TARGET Sandbox POST_BUILD COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Sandbox>)
+    endforeach()
+endif()
