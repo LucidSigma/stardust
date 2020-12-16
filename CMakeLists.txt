@@ -21,6 +21,16 @@ find_package(SDL2 REQUIRED)
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/dep/glm-0.9.9.8/cmake/glm")
 find_package(GLM REQUIRED)
 
+find_package(OpenGL REQUIRED)
+
+if(WIN32)
+	set(OPENGL_LIBS opengl32)
+elseif(UNIX)
+	set(OPENGL_LIBS lGL)
+else()
+	message(WARNING "OpenGL libraries not set up.")
+endif()
+
 # Header-only dependencies.
 add_subdirectory("dep/debug_assert-1.3.3")
 add_subdirectory("dep/EABase-2.09.05")
@@ -29,6 +39,7 @@ add_subdirectory("dep/type_safe-0.2.1")
 
 # Other dependencies.
 add_subdirectory("dep/EASTL-3.17.03")
+add_subdirectory("dep/Glad-0.1.34")
 
 # Projects in workspace.
 add_subdirectory("Stardust")

@@ -1,13 +1,13 @@
 # Stardust
 A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 
-## Depencendies
+## Dependencies
 ### Window/Input
 * [SDL2](https://www.libsdl.org/)
 
 ### Graphics
-* OpenGL
-* Glad
+* [OpenGL](https://www.opengl.org/)
+* [Glad](https://glad.dav1d.de/)
 
 ### Data
 * [type_safe](https://github.com/foonathan/type_safe)
