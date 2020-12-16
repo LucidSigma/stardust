@@ -2,6 +2,9 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include "stardust/utility/interfaces/INoncopyable.h"
+#include "stardust/utility/interfaces/INonmovable.h"
+
 #include <atomic>
 
 #include <SDL2/SDL.h>
@@ -11,6 +14,7 @@
 namespace stardust
 {
 	class Application final
+		: private INoncopyable, private INonmovable
 	{
 	private:
 		bool m_didInitialiseSuccessfully = false;
