@@ -17,5 +17,10 @@ endif()
 
 find_package(SDL2 REQUIRED)
 
+set(GLM_DIR "${PROJECT_SOURCE_DIR}/dep/glm-0.9.9.8/cmake/glm")
+find_package(GLM REQUIRED)
+
+message(STATUS ${GLM_INCLUDE_DIRS})
+
 add_subdirectory("Stardust")
 add_subdirectory("Sandbox")
