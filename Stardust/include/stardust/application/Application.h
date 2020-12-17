@@ -9,6 +9,7 @@
 
 #include <SDL2/SDL.h>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust

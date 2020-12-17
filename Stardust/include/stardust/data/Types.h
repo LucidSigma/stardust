@@ -2,8 +2,10 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <EASTL/any.h>
+#include <EASTL/optional.h>
+#include <EASTL/variant.h>
 #include <glad/glad.h>
-#include <tinyutf8/tinyutf8.h>
 #include <type_safe/types.hpp>
 
 namespace stardust
@@ -56,7 +58,13 @@ namespace stardust
 	static_assert(sizeof(GLdouble) == sizeof(f64));
 	static_assert(sizeof(GLclampd) == sizeof(f64));
 
-	using String = tiny_utf8::utf8_string;
+	template <typename T>
+	using Optional = eastl::optional<T>;
+
+	template <typename... Types>
+	using Variant = eastl::variant<Types...>;
+
+	using Any = eastl::any;
 }
 
 #endif

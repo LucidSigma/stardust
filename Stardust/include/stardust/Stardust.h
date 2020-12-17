@@ -4,6 +4,7 @@
 
 #include "application/Application.h"
 
+#include "data/Containers.h"
 #include "data/Types.h"
 
 #include "utility/interfaces/INoncopyable.h"
