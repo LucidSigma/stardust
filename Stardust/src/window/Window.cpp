@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "stardust/window/display/Display.h"
+
 namespace stardust
 {
 	void Window::WindowDestroyer::operator ()(SDL_Window* const window) const noexcept
@@ -140,15 +142,15 @@ namespace stardust
 		}
 		else
 		{
-			// const display::DisplayData displayData = display::GetDisplayData(GetDisplayIndex());
-			// 
-			// m_sizeBeforeFullscreen = m_size;
-			// m_size = displayData.size;
-			// 
-			// SDL_SetWindowSize(GetRawHandle(), m_size.x, m_size.y);
-			// SDL_SetWindowFullscreen(GetRawHandle(), static_cast<u32>(m_fullscreenType));
-			// 
-			// m_hasUpdatedFullscreen = true;
+			const display::DisplayData displayData = display::GetDisplayData(GetDisplayIndex());
+			
+			m_sizeBeforeFullscreen = m_size;
+			m_size = displayData.size;
+			
+			SDL_SetWindowSize(GetRawHandle(), m_size.x, m_size.y);
+			SDL_SetWindowFullscreen(GetRawHandle(), static_cast<u32>(m_fullscreenType));
+			
+			m_hasUpdatedFullscreen = true;
 		}
 
 		m_isFullscreen = !m_isFullscreen;
