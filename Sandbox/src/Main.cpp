@@ -7,6 +7,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
 	sd::Application application(sd::Application::CreateInfo{
 		.title = "Stardust Sandbox",
 		.logFilepath = "log.txt",
+		.fixedTimestep = 0.01f,
 	});
 
 	if (!application.DidInitialiseSuccessfully())

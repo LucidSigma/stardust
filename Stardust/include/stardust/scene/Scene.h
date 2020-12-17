@@ -37,7 +37,7 @@ namespace stardust
 
 		// virtual void Render(const Renderer& renderer) const = 0;
 
-		inline virtual void PollEvents(SDL_Event& event) { }
+		inline virtual void PollEvent(const SDL_Event& event) { }
 
 		// inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 		inline const String& GetName() const noexcept { return m_name; }

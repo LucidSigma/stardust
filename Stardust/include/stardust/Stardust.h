@@ -10,8 +10,12 @@
 #include "data/Types.h"
 
 #include "debug/message_box/MessageBox.h"
+#include "debug/logging/Log.h"
 
 #include "rect/Rect.h"
+
+#include "scene/Scene.h"
+#include "scene/SceneManager.h"
 
 #include "text/clipboard/Clipboard.h"
 

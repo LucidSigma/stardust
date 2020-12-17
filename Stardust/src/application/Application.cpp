@@ -21,14 +21,39 @@ namespace stardust
 
 	void Application::Run()
 	{
+		InitialiseScenes();
+
 		SDL_Event event{ };
+		f32 timeAccumulator = 0.0f;
 
 		while (m_isRunning)
 		{
+			CalculateDeltaTime();
+			m_elapsedTime += m_deltaTime;
+			timeAccumulator += m_deltaTime;
 
+			// m_soundSystem.Update();
+
+			while (timeAccumulator >= m_fixedTimestep)
+			{
+				FixedUpdate();
+				timeAccumulator -= m_fixedTimestep;
+			}
+
+			ProcessInput();
+			Update();
+			LateUpdate();
+
+			Render();
 
 			PollEvents(event);
+			UpdateSceneQueue();
 		}
+	}
+
+	void Application::FinishCurrentScene() noexcept
+	{
+		m_isCurrentSceneFinished = true;
 	}
 
 	void Application::ForceQuit() noexcept
@@ -68,6 +93,8 @@ namespace stardust
 				return;
 			}
 		}
+
+		m_fixedTimestep = createInfo.fixedTimestep;
 
 		m_didInitialiseSuccessfully = true;
 	}
@@ -112,6 +139,71 @@ namespace stardust
 		return Status::Success;
 	}
 
+	void Application::InitialiseScenes()
+	{
+		if (m_didInitialiseSuccessfully)
+		{
+			m_isRunning = !m_sceneManager.IsEmpty();
+
+			if (m_isRunning)
+			{
+				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
+				{
+					// message_box::Show(m_locale["errors"]["titles"]["scene"], m_locale["errors"]["bodies"]["initial-scene"], message_box::Type::Error);
+					Log::EngineError("Failed to load initial scene {}.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+					m_isRunning = false;
+				}
+				else
+				{
+					Log::EngineTrace("Initial scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+				}
+			}
+			else [[unlikely]]
+			{
+				// message_box::Show(m_locale["warnings"]["titles"]["scene"], m_locale["warnings"]["bodies"]["initial-scene"], message_box::Type::Warning);
+				Log::EngineWarn("No initial scene loaded.");
+			}
+		}
+		else
+		{
+			m_isRunning = false;
+		}
+	}
+
+	void Application::FixedUpdate()
+	{
+		m_sceneManager.CurrentScene()->FixedUpdate(m_fixedTimestep);
+	}
+
+	void Application::ProcessInput()
+	{
+		if (m_hasWindowFocus)
+		{
+			// Input::UpdateKeyboardState();
+			// Input::UpdateMouseState();
+			// Input::UpdateGameControllers();
+		}
+
+		m_sceneManager.CurrentScene()->ProcessInput();
+	}
+
+	void Application::Update()
+	{
+		m_sceneManager.CurrentScene()->Update(m_deltaTime);
+	}
+
+	void Application::LateUpdate()
+	{
+		m_sceneManager.CurrentScene()->LateUpdate(m_deltaTime);
+	}
+
+	void Application::Render() const
+	{
+		// m_renderer.Clear(colours::Black);
+		// m_sceneManager.CurrentScene()->Render(m_renderer);
+		// m_renderer.Present();
+	}
+
 	void Application::PollEvents(SDL_Event& event)
 	{
 		while (SDL_PollEvent(&event) != 0)
@@ -126,6 +218,8 @@ namespace stardust
 			default:
 				break;
 			}
+
+			m_sceneManager.CurrentScene()->PollEvent(event);
 		}
 	}
 
@@ -156,6 +250,65 @@ namespace stardust
 
 		default:
 			break;
+		}
+	}
+
+	void Application::CalculateDeltaTime()
+	{
+		// static const bool capFramerate = m_config["frame-rate"]["cap-fps"];
+		// static const f32 fpsLimit = m_config["frame-rate"]["fps-limit"];
+
+		const u64 newTicks = SDL_GetPerformanceCounter();
+		const u64 frameTicks = newTicks - m_ticksCount;
+		m_deltaTime = static_cast<float>(frameTicks) / static_cast<float>(SDL_GetPerformanceFrequency());
+
+		//if (capFramerate)
+		//{
+		//	static const f32 timeToWait = 1.0f / fpsLimit;
+		//
+		//	if (m_deltaTime < timeToWait)
+		//	{
+		//		constexpr f32 MillisecondsPerSecond = 1'000.0f;
+		//
+		//		SDL_Delay(static_cast<u32>((timeToWait - m_deltaTime) * MillisecondsPerSecond));
+		//	}
+		//
+		//	m_deltaTime = timeToWait;
+		//}
+
+		m_ticksCount = newTicks;
+	}
+
+	void Application::UpdateSceneQueue()
+	{
+		if (m_isCurrentSceneFinished)
+		{
+			Log::EngineTrace("Scene \"{}\" finished.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+			m_sceneManager.CurrentScene()->OnUnload();
+			m_sceneManager.PopScene();
+			// m_entityRegistry.clear();
+			// m_soundSystem.GetListener().Reset();
+
+			if (!m_sceneManager.IsEmpty())
+			{
+				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
+				{
+					// message_box::Show(m_locale["errors"]["titles"]["scene"], m_locale["errors"]["bodies"]["next-scene"], message_box::Type::Error);
+					Log::EngineError("Failed to load scene {}.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+					m_isRunning = false;
+				}
+				else
+				{
+					Log::EngineTrace("Scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+				}
+			}
+
+			m_isCurrentSceneFinished = false;
+		}
+
+		if (m_sceneManager.IsEmpty())
+		{
+			m_isRunning = false;
 		}
 	}
 }
