@@ -9,6 +9,8 @@
 #include "data/Pointers.h"
 #include "data/Types.h"
 
+#include "debug/message_box/MessageBox.h"
+
 #include "rect/Rect.h"
 
 #include "text/clipboard/Clipboard.h"

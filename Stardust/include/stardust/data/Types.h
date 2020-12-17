@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <EASTL/any.h>
+//#include <EASTL/any.h>
 #include <EASTL/optional.h>
 #include <EASTL/variant.h>
 #include <glad/glad.h>
@@ -72,7 +72,7 @@ namespace stardust
 	template <typename... Types>
 	using Variant = eastl::variant<Types...>;
 
-	using Any = eastl::any;
+	//using Any = eastl::any;
 }
 
 #endif
