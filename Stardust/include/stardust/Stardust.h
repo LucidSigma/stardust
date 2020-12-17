@@ -27,6 +27,8 @@
 #include "window/display/Display.h"
 #include "window/Window.h"
 
+#include "vfs/VFS.h"
+
 namespace sd = stardust;
 
 #endif
