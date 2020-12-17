@@ -5,6 +5,7 @@
 #include "application/Application.h"
 
 #include "data/Containers.h"
+#include "data/Pointers.h"
 #include "data/Types.h"
 
 #include "utility/interfaces/INoncopyable.h"

@@ -17,14 +17,18 @@
 #include <EASTL/vector.h>
 #include <tinyutf8/tinyutf8.h>
 
-#include <EASTL/string.h>
-
 namespace stardust
 {
 	using String = tiny_utf8::basic_string<char32_t, char>;
 
+	template <typename T, std::size_t N = 1u>
+	using Array = eastl::array<T, N>;
+
 	template <typename T>
 	using Vector = eastl::vector<T>;
+
+	template <typename T>
+	using Deque = eastl::deque<T>;
 
 	template <typename T>
 	using LinkedList = eastl::list<T>;
@@ -35,26 +39,20 @@ namespace stardust
 	template <typename T>
 	using HashSet = eastl::hash_set<T>;
 
-	template <typename T, std::size_t N = 1u>
-	using Array = eastl::array<T, N>;
-
-	template <typename T>
-	using Deque = eastl::deque<T>;
-
-	template <typename T>
-	using PriorityQueue = eastl::priority_queue<T>;
-
-	template <typename T>
-	using Queue = eastl::queue<T>;
-
-	template <typename T>
-	using Stack = eastl::stack<T>;
-
 	template <typename K, typename V>
 	using Map = eastl::map<K, V>;
 
 	template <typename T>
 	using Set = eastl::set<T>;
+
+	template <typename T>
+	using Queue = eastl::queue<T>;
+
+	template <typename T>
+	using PriorityQueue = eastl::priority_queue<T>;
+
+	template <typename T>
+	using Stack = eastl::stack<T>;
 }
 
 #endif
