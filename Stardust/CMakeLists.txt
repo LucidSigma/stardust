@@ -12,6 +12,7 @@ target_include_directories(Stardust PUBLIC
 	${EASTL_INCLUDE_DIRS}
 	${GLAD_INCLUDE_DIRS}
 	${GLM_INCLUDE_DIRS}
+	${PHYSFS_INCLUDE_DIRS}
 	${SDL2_INCLUDE_DIRS}
 	${SPDLOG_INCLUDE_DIRS}
 	${TINY_UTF8_INCLUDE_DIRS}
@@ -27,6 +28,7 @@ target_link_libraries(Stardust PUBLIC
 	OpenGL::GL
 	EASTL
 	glad
+	physfs
 )
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${STARDUST_SOURCE_FILES})

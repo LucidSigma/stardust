@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
+# Workspace setup.
 project(Stardust LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -36,6 +37,7 @@ add_subdirectory("dep/tiny-utf8-4.3")
 # Other dependencies.
 add_subdirectory("dep/EASTL-3.17.03")
 add_subdirectory("dep/Glad-0.1.34")
+add_subdirectory("dep/physfs-3.0.2")
 
 # Projects in workspace.
 add_subdirectory("Stardust")
