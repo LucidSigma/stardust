@@ -11,6 +11,8 @@
 
 #include "rect/Rect.h"
 
+#include "text/clipboard/Clipboard.h"
+
 #include "utility/cpu/CPU.h"
 #include "utility/enums/Status.h"
 #include "utility/interfaces/INoncopyable.h"
