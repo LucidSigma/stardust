@@ -30,6 +30,7 @@ endif()
 # Header-only dependencies.
 add_subdirectory("dep/debug_assert-1.3.3")
 add_subdirectory("dep/EABase-2.09.05")
+add_subdirectory("dep/spdlog-1.8.2")
 add_subdirectory("dep/tiny-utf8-4.3")
 
 # Other dependencies.

@@ -5,7 +5,8 @@
 int main([[maybe_unused]] const int argc, char* argv[])
 {
 	sd::Application application(sd::Application::CreateInfo{
-		.title = "Stardust Sandbox"
+		.title = "Stardust Sandbox",
+		.logFilepath = "log.txt",
 	});
 
 	if (!application.DidInitialiseSuccessfully())

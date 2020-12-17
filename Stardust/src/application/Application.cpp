@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "stardust/data/MathTypes.h"
+#include "stardust/debug/logging/Log.h"
 
 namespace stardust
 {
@@ -42,6 +43,13 @@ namespace stardust
 
 	void Application::Initialise(const CreateInfo& createInfo)
 	{
+	#ifndef NDEBUG
+		Log::Initialise(createInfo.logFilepath);
+	#endif
+
+		Log::EngineInfo("Logger initialised.");
+		Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName().cpp_str());
+
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
 			//&Application::InitialiseVFS,
 			//&Application::InitialiseConfig,
@@ -69,9 +77,12 @@ namespace stardust
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
 			// message box
+			Log::EngineCritical("Failed to initialise SDL: {}.", SDL_GetError());
 
 			return Status::Fail;
 		}
+
+		Log::EngineInfo("SDL initialised.");
 
 		return Status::Success;
 	}
@@ -90,8 +101,13 @@ namespace stardust
 
 		if (!m_window.IsValid())
 		{
+			Log::EngineCritical("Failed to create window: {}.", SDL_GetError());
+
 			return Status::Fail;
 		}
+
+		// Set window icon.
+		Log::EngineInfo("Window created.");
 
 		return Status::Success;
 	}

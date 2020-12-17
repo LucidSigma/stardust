@@ -23,6 +23,7 @@ namespace stardust
 		struct CreateInfo
 		{
 			String title;
+			String logFilepath;
 		};
 
 	private:

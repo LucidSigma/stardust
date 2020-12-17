@@ -8,6 +8,7 @@
 #include <EASTL/deque.h>
 #include <EASTL/hash_map.h>
 #include <EASTL/hash_set.h>
+#include <EASTL/iterator.h>
 #include <EASTL/list.h>
 #include <EASTL/map.h>
 #include <EASTL/priority_queue.h>
