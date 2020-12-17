@@ -20,10 +20,20 @@ namespace stardust
 		: private INoncopyable, private INonmovable
 	{
 	public:
+		struct FilesystemInfo
+		{
+			const char* argv0;
+
+			String assetsArchive;
+			String localesArchive;
+
+			String logFilepath;
+		};
+
 		struct CreateInfo
 		{
 			String title;
-			String logFilepath;
+			FilesystemInfo filesystem;
 
 			f32 fixedTimestep;
 		};
@@ -67,6 +77,7 @@ namespace stardust
 
 	private:
 		void Initialise(const CreateInfo& createInfo);
+		Status InitialiseVFS(const CreateInfo& createInfo);
 		Status InitialiseSDL(const CreateInfo&);
 		Status InitialiseWindow(const CreateInfo& createInfo);
 		void InitialiseScenes();

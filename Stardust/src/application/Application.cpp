@@ -4,6 +4,7 @@
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/debug/logging/Log.h"
+#include "stardust/vfs/VFS.h"
 
 namespace stardust
 {
@@ -69,14 +70,14 @@ namespace stardust
 	void Application::Initialise(const CreateInfo& createInfo)
 	{
 	#ifndef NDEBUG
-		Log::Initialise(createInfo.logFilepath);
+		Log::Initialise(createInfo.filesystem.logFilepath);
 	#endif
 
 		Log::EngineInfo("Logger initialised.");
 		Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName().cpp_str());
 
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
-			//&Application::InitialiseVFS,
+			&Application::InitialiseVFS,
 			//&Application::InitialiseConfig,
 			//&Application::InitialiseLocale,
 			//&Application::InitialiseSoundSystem,
@@ -95,8 +96,25 @@ namespace stardust
 		}
 
 		m_fixedTimestep = createInfo.fixedTimestep;
+		m_ticksCount = SDL_GetPerformanceCounter();
 
 		m_didInitialiseSuccessfully = true;
+	}
+
+	Status Application::InitialiseVFS(const CreateInfo& createInfo)
+	{
+		if (!vfs::Initialise(createInfo.filesystem.argv0))
+		{
+			//message_box::Show("Filesystem Error", "Virtual filesystem failed to initialise.", message_box::Type::Error);
+			Log::EngineError("Failed to initialise virtual filesystem.");
+
+			return Status::Fail;
+		}
+
+		vfs::AddToSearchPath(Vector<String>{ createInfo.filesystem.assetsArchive, createInfo.filesystem.localesArchive });
+		Log::EngineInfo("Virtual filesystem initialised.");
+
+		return Status::Success;
 	}
 
 	Status Application::InitialiseSDL(const CreateInfo&)

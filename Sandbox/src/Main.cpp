@@ -8,7 +8,12 @@ int main([[maybe_unused]] const int argc, char* argv[])
 {
 	sd::Application application(sd::Application::CreateInfo{
 		.title = "Stardust Sandbox",
-		.logFilepath = "log.txt",
+		.filesystem = sd::Application::FilesystemInfo{
+			.argv0 = argv[0],
+			.assetsArchive = "assets.pak",
+			.localesArchive = "locales.pak",
+			.logFilepath = "log.txt",
+		},
 		.fixedTimestep = 0.01f,
 	});
 
