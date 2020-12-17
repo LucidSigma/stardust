@@ -1,7 +1,6 @@
 #include "stardust/window/Window.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <utility>
 
 namespace stardust
@@ -25,7 +24,7 @@ namespace stardust
 	}
 
 	Window::Window(Window&& other) noexcept
-		: m_handle(nullptr), m_size(glm::uvec2{ 0u, 0u }), m_sizeBeforeFullscreen(NullOpt), m_fullscreenType(FullscreenType::Hard), m_isFullscreen(false), m_hasUpdatedFullscreen(false)
+		: m_handle(nullptr), m_size(UVec2{ 0u, 0u }), m_sizeBeforeFullscreen(NullOpt), m_fullscreenType(FullscreenType::Hard), m_isFullscreen(false), m_hasUpdatedFullscreen(false)
 	{
 		std::swap(m_handle, other.m_handle);
 
@@ -41,7 +40,7 @@ namespace stardust
 	{
 		m_handle = std::exchange(other.m_handle, nullptr);
 
-		m_size = std::exchange(other.m_size, glm::uvec2{ 0u, 0u });
+		m_size = std::exchange(other.m_size, UVec2{ 0u, 0u });
 		m_sizeBeforeFullscreen = std::exchange(other.m_sizeBeforeFullscreen, NullOpt);
 
 		m_fullscreenType = std::exchange(other.m_fullscreenType, FullscreenType::Hard);
@@ -83,7 +82,7 @@ namespace stardust
 			}
 			else [[likely]]
 			{
-				windowFlags |= static_cast<std::uint32_t>(windowFlag);
+				windowFlags |= static_cast<u32>(windowFlag);
 			}
 		}
 
@@ -121,7 +120,7 @@ namespace stardust
 		{
 			m_handle = nullptr;
 
-			m_size = glm::uvec2{ 0u, 0u };
+			m_size = UVec2{ 0u, 0u };
 			m_sizeBeforeFullscreen = NullOpt;
 			m_isFullscreen = false;
 			m_hasUpdatedFullscreen = false;
@@ -147,7 +146,7 @@ namespace stardust
 			// m_size = displayData.size;
 			// 
 			// SDL_SetWindowSize(GetRawHandle(), m_size.x, m_size.y);
-			// SDL_SetWindowFullscreen(GetRawHandle(), static_cast<std::uint32_t>(m_fullscreenType));
+			// SDL_SetWindowFullscreen(GetRawHandle(), static_cast<u32>(m_fullscreenType));
 			// 
 			// m_hasUpdatedFullscreen = true;
 		}
@@ -155,13 +154,13 @@ namespace stardust
 		m_isFullscreen = !m_isFullscreen;
 	}
 
-	void Window::ChangeSize(const glm::uvec2& newSize)
+	void Window::ChangeSize(const UVec2& newSize)
 	{
 		SDL_SetWindowSize(GetRawHandle(), newSize.x, newSize.y);
 		ProcessResize(newSize);
 	}
 
-	void Window::ProcessResize(const glm::uvec2& newSize)
+	void Window::ProcessResize(const UVec2& newSize)
 	{
 		if (!m_hasUpdatedFullscreen)
 		{
@@ -229,31 +228,31 @@ namespace stardust
 	//	iconData = nullptr;
 	//}
 
-	[[nodiscard]] glm::uvec2 Window::GetMinimumSize() const noexcept
+	[[nodiscard]] UVec2 Window::GetMinimumSize() const noexcept
 	{
 		i32 minimumX = 0;
 		i32 minimumY = 0;
 		SDL_GetWindowMinimumSize(GetRawHandle(), &minimumX, &minimumY);
 
-		return glm::uvec2{ minimumX, minimumY };
+		return UVec2{ minimumX, minimumY };
 	}
 
-	[[nodiscard]] glm::uvec2 Window::GetMaximumSize() const noexcept
+	[[nodiscard]] UVec2 Window::GetMaximumSize() const noexcept
 	{
 		i32 maximumX = 0;
 		i32 maximumY = 0;
 		SDL_GetWindowMaximumSize(GetRawHandle(), &maximumX, &maximumY);
 
-		return glm::uvec2{ maximumX, maximumY };
+		return UVec2{ maximumX, maximumY };
 	}
 
-	[[nodiscard]] glm::ivec2 Window::GetPosition() const noexcept
+	[[nodiscard]] IVec2 Window::GetPosition() const noexcept
 	{
 		i32 x = 0;
 		i32 y = 0;
 		SDL_GetWindowPosition(GetRawHandle(), &x, &y);
 
-		return glm::ivec2{ x, y };
+		return IVec2{ x, y };
 	}
 
 	i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const

@@ -7,10 +7,10 @@
 
 #include <type_traits>
 
-#include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
+#include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 
@@ -59,12 +59,12 @@ namespace stardust
 
 			Variant<i32, Position> x = Position::Centred;
 			Variant<i32, Position> y = Position::Centred;
-			glm::uvec2 size;
+			UVec2 size;
 
 			Vector<CreateFlag> flags;
 
-			Optional<glm::uvec2> minimumSize = NullOpt;
-			Optional<glm::uvec2> maximumSize = NullOpt;
+			Optional<UVec2> minimumSize = NullOpt;
+			Optional<UVec2> maximumSize = NullOpt;
 		};
 
 	private:
@@ -75,8 +75,8 @@ namespace stardust
 
 		UniquePtr<SDL_Window, WindowDestroyer> m_handle = nullptr;
 
-		glm::uvec2 m_size{ 0u, 0u };
-		Optional<glm::uvec2> m_sizeBeforeFullscreen = NullOpt;
+		UVec2 m_size{ 0u, 0u };
+		Optional<UVec2> m_sizeBeforeFullscreen = NullOpt;
 
 		FullscreenType m_fullscreenType = FullscreenType::Hard;
 		bool m_isFullscreen = false;
@@ -98,8 +98,8 @@ namespace stardust
 
 		void ToggleFullscreen();
 
-		void ChangeSize(const glm::uvec2& newSize);
-		void ProcessResize(const glm::uvec2& newSize);
+		void ChangeSize(const UVec2& newSize);
+		void ProcessResize(const UVec2& newSize);
 
 		f32 GetOpacity() const noexcept;
 		void SetOpacity(const f32 opacity) const noexcept;
@@ -109,16 +109,16 @@ namespace stardust
 		inline bool IsValid() const noexcept { return m_handle != nullptr; }
 		inline void UpdateSurface() const noexcept { SDL_UpdateWindowSurface(GetRawHandle()); }
 
-		inline const glm::uvec2& GetSize() const noexcept { return m_size; }
+		inline const UVec2& GetSize() const noexcept { return m_size; }
 		[[nodiscard]] inline f32 GetAspectRatio() const noexcept { return static_cast<f32>(m_size.x) / static_cast<f32>(m_size.y); }
 
-		[[nodiscard]] glm::uvec2 GetMinimumSize() const noexcept;
-		inline void SetMinimumSize(const glm::uvec2& minimumSize) const noexcept { SDL_SetWindowMinimumSize(GetRawHandle(), minimumSize.x, minimumSize.y); }
-		[[nodiscard]] glm::uvec2 GetMaximumSize() const noexcept;
-		inline void SetMaximumSize(const glm::uvec2& maximumSize) const noexcept { SDL_SetWindowMaximumSize(GetRawHandle(), maximumSize.x, maximumSize.y); }
+		[[nodiscard]] UVec2 GetMinimumSize() const noexcept;
+		inline void SetMinimumSize(const UVec2& minimumSize) const noexcept { SDL_SetWindowMinimumSize(GetRawHandle(), minimumSize.x, minimumSize.y); }
+		[[nodiscard]] UVec2 GetMaximumSize() const noexcept;
+		inline void SetMaximumSize(const UVec2& maximumSize) const noexcept { SDL_SetWindowMaximumSize(GetRawHandle(), maximumSize.x, maximumSize.y); }
 
-		[[nodiscard]] glm::ivec2 GetPosition() const noexcept;
-		inline void SetPosition(const glm::ivec2& position) const noexcept { SDL_SetWindowPosition(GetRawHandle(), position.x, position.y); }
+		[[nodiscard]] IVec2 GetPosition() const noexcept;
+		inline void SetPosition(const IVec2& position) const noexcept { SDL_SetWindowPosition(GetRawHandle(), position.x, position.y); }
 
 		[[nodiscard]] inline String GetTitle() const noexcept { return SDL_GetWindowTitle(GetRawHandle()); }
 		inline void SetTitle(const String& title) const noexcept { SDL_SetWindowTitle(GetRawHandle(), title.c_str()); }
