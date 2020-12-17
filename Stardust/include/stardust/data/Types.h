@@ -2,11 +2,14 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <cmath.>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 
-//#include <EASTL/any.h>
+#include <EASTL/allocator.h>
+#include <EASTL/type_traits.h>
+#include <EASTL/utility.h>
+#include <EASTL/any.h>
 #include <EASTL/optional.h>
 #include <EASTL/variant.h>
 #include <glad/glad.h>
@@ -72,7 +75,7 @@ namespace stardust
 	template <typename... Types>
 	using Variant = eastl::variant<Types...>;
 
-	//using Any = eastl::any;
+	using Any = eastl::any;
 }
 
 #endif
