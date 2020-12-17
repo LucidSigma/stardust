@@ -107,52 +107,51 @@ namespace stardust
 		// void SetIcon(const String& iconFilepath, const Locale& locale) const;
 
 		inline bool IsValid() const noexcept { return m_handle != nullptr; }
-		inline void UpdateSurface() const noexcept { SDL_UpdateWindowSurface(GetRawHandle()); }
 
 		inline const UVec2& GetSize() const noexcept { return m_size; }
 		[[nodiscard]] inline f32 GetAspectRatio() const noexcept { return static_cast<f32>(m_size.x) / static_cast<f32>(m_size.y); }
 
 		[[nodiscard]] UVec2 GetMinimumSize() const noexcept;
-		inline void SetMinimumSize(const UVec2& minimumSize) const noexcept { SDL_SetWindowMinimumSize(GetRawHandle(), minimumSize.x, minimumSize.y); }
+		void SetMinimumSize(const UVec2& minimumSize) const noexcept;
 		[[nodiscard]] UVec2 GetMaximumSize() const noexcept;
-		inline void SetMaximumSize(const UVec2& maximumSize) const noexcept { SDL_SetWindowMaximumSize(GetRawHandle(), maximumSize.x, maximumSize.y); }
+		void SetMaximumSize(const UVec2& maximumSize) const noexcept;
 
 		[[nodiscard]] IVec2 GetPosition() const noexcept;
-		inline void SetPosition(const IVec2& position) const noexcept { SDL_SetWindowPosition(GetRawHandle(), position.x, position.y); }
+		void SetPosition(const IVec2& position) const noexcept;
 
-		[[nodiscard]] inline String GetTitle() const noexcept { return SDL_GetWindowTitle(GetRawHandle()); }
-		inline void SetTitle(const String& title) const noexcept { SDL_SetWindowTitle(GetRawHandle(), title.c_str()); }
+		[[nodiscard]] String GetTitle() const noexcept;
+		void SetTitle(const String& title) const noexcept;
 
 		inline bool IsFullscreen() const noexcept { return m_isFullscreen; }
 		inline FullscreenType GetFullscreenType() const noexcept { return m_fullscreenType; }
 		inline void SetFullscreenType(const FullscreenType fullscreenType) noexcept { m_fullscreenType = fullscreenType; }
 
-		inline bool IsBorderless() const noexcept { return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_BORDERLESS; }
-		inline void SetBorderless(const bool isBorderless) const noexcept { SDL_SetWindowBordered(GetRawHandle(), static_cast<SDL_bool>(!isBorderless)); }
+		bool IsBorderless() const noexcept;
+		void SetBorderless(const bool isBorderless) const noexcept;
 
 		[[nodiscard]] inline SDL_Window* const GetRawHandle() const noexcept { return m_handle.get(); }
-		[[nodiscard]] inline SDL_Surface* GetSurface() const noexcept { return SDL_GetWindowSurface(GetRawHandle()); }
-		[[nodiscard]] inline u32 GetPixelFormat() const noexcept { return SDL_GetWindowPixelFormat(GetRawHandle()); }
-		inline i32 GetDisplayIndex() const noexcept { return SDL_GetWindowDisplayIndex(GetRawHandle()); }
+		[[nodiscard]] SDL_Surface* GetSurface() const noexcept;
+		[[nodiscard]] u32 GetPixelFormat() const noexcept;
+		i32 GetDisplayIndex() const noexcept;
 
-		inline bool IsMinimised() const noexcept { return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_MINIMIZED; }
-		inline void Minimise() const noexcept { SDL_MinimizeWindow(GetRawHandle()); }
-		inline bool IsMaximised() const noexcept { return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_MAXIMIZED; }
-		inline bool Maximise() const noexcept { SDL_MaximizeWindow(GetRawHandle()); }
+		bool IsMinimised() const noexcept;
+		void Minimise() const noexcept;
+		bool IsMaximised() const noexcept;
+		void Maximise() const noexcept;
 
-		inline bool IsResizable() const noexcept { return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_RESIZABLE; }
-		inline void SetResizable(const bool isResizable) const noexcept { SDL_SetWindowResizable(GetRawHandle(), static_cast<SDL_bool>(isResizable)); }
+		bool IsResizable() const noexcept;
+		void SetResizable(const bool isResizable) const noexcept;
 
-		inline bool IsShown() const noexcept { return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_SHOWN; }
-		inline void Show() const noexcept { SDL_ShowWindow(GetRawHandle()); }
-		inline bool IsHidden() const noexcept { return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_HIDDEN; }
-		inline void Hide() const noexcept { SDL_HideWindow(GetRawHandle()); }
+		bool IsShown() const noexcept;
+		void Show() const noexcept;
+		bool IsHidden() const noexcept;
+		void Hide() const noexcept;
 
-		inline void Raise() const noexcept { SDL_RaiseWindow(GetRawHandle()); }
-		inline void Restore() const noexcept { SDL_RestoreWindow(GetRawHandle()); }
+		void Raise() const noexcept;
+		void Restore() const noexcept;
 
-		inline bool IsGrabbed() const noexcept { return SDL_GetWindowGrab(GetRawHandle()); }
-		inline void SetGrabbed(const bool isGrabbed) const noexcept { SDL_SetWindowGrab(GetRawHandle(), static_cast<SDL_bool>(isGrabbed)); }
+		bool IsGrabbed() const noexcept;
+		void SetGrabbed(const bool isGrabbed) const noexcept;
 
 	private:
 		i32 GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const;

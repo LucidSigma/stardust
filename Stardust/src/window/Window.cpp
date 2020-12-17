@@ -237,6 +237,11 @@ namespace stardust
 		return UVec2{ minimumX, minimumY };
 	}
 
+	void Window::SetMinimumSize(const UVec2& minimumSize) const noexcept
+	{
+		SDL_SetWindowMinimumSize(GetRawHandle(), minimumSize.x, minimumSize.y);
+	}
+
 	[[nodiscard]] UVec2 Window::GetMaximumSize() const noexcept
 	{
 		i32 maximumX = 0;
@@ -244,6 +249,11 @@ namespace stardust
 		SDL_GetWindowMaximumSize(GetRawHandle(), &maximumX, &maximumY);
 
 		return UVec2{ maximumX, maximumY };
+	}
+
+	void Window::SetMaximumSize(const UVec2& maximumSize) const noexcept
+	{
+		SDL_SetWindowMaximumSize(GetRawHandle(), maximumSize.x, maximumSize.y);
 	}
 
 	[[nodiscard]] IVec2 Window::GetPosition() const noexcept
@@ -255,16 +265,126 @@ namespace stardust
 		return IVec2{ x, y };
 	}
 
+	void Window::SetPosition(const IVec2& position) const noexcept
+	{
+		SDL_SetWindowPosition(GetRawHandle(), position.x, position.y);
+	}
+
+	[[nodiscard]] String Window::GetTitle() const noexcept
+	{
+		return SDL_GetWindowTitle(GetRawHandle());
+	}
+
+	void Window::SetTitle(const String& title) const noexcept
+	{
+		SDL_SetWindowTitle(GetRawHandle(), title.c_str());
+	}
+
+	bool Window::IsBorderless() const noexcept
+	{
+		return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_BORDERLESS;
+	}
+
+	void Window::SetBorderless(const bool isBorderless) const noexcept
+	{
+		SDL_SetWindowBordered(GetRawHandle(), static_cast<SDL_bool>(!isBorderless));
+	}
+
+	[[nodiscard]] SDL_Surface* Window::GetSurface() const noexcept
+	{
+		return SDL_GetWindowSurface(GetRawHandle());
+	}
+
+	[[nodiscard]] u32 Window::GetPixelFormat() const noexcept
+	{
+		return SDL_GetWindowPixelFormat(GetRawHandle());
+	}
+
+	i32 Window::GetDisplayIndex() const noexcept
+	{
+		return SDL_GetWindowDisplayIndex(GetRawHandle());
+	}
+
+	bool Window::IsMinimised() const noexcept
+	{
+		return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_MINIMIZED;
+	}
+
+	void Window::Minimise() const noexcept
+	{
+		SDL_MinimizeWindow(GetRawHandle());
+	}
+
+	bool Window::IsMaximised() const noexcept
+	{
+		return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_MAXIMIZED;
+	}
+
+	void Window::Maximise() const noexcept
+	{
+		SDL_MaximizeWindow(GetRawHandle());
+	}
+
+	bool Window::IsResizable() const noexcept
+	{
+		return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_RESIZABLE;
+	}
+
+	void Window::SetResizable(const bool isResizable) const noexcept
+	{
+		SDL_SetWindowResizable(GetRawHandle(), static_cast<SDL_bool>(isResizable));
+	}
+
+	bool Window::IsShown() const noexcept
+	{
+		return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_SHOWN;
+	}
+
+	void Window::Show() const noexcept
+	{
+		SDL_ShowWindow(GetRawHandle());
+	}
+
+	bool Window::IsHidden() const noexcept
+	{
+		return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_HIDDEN;
+	}
+
+	void Window::Hide() const noexcept
+	{
+		SDL_HideWindow(GetRawHandle());
+	}
+
+	void Window::Raise() const noexcept
+	{
+		SDL_RaiseWindow(GetRawHandle());
+	}
+
+	void Window::Restore() const noexcept
+	{
+		SDL_RestoreWindow(GetRawHandle());
+	}
+
+	bool Window::IsGrabbed() const noexcept
+	{
+		return SDL_GetWindowGrab(GetRawHandle());
+	}
+
+	void Window::SetGrabbed(const bool isGrabbed) const noexcept
+	{
+		SDL_SetWindowGrab(GetRawHandle(), static_cast<SDL_bool>(isGrabbed));
+	}
+
 	i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const
 	{
 		if (const Position* windowPosition = eastl::get_if<Position>(&windowCoordinate);
 			windowPosition != nullptr) [[likely]]
 		{
-			return static_cast<int>(*windowPosition);
+			return static_cast<i32>(*windowPosition);
 		}
 		else
 		{
-			return eastl::get<int>(windowCoordinate);
+			return eastl::get<i32>(windowCoordinate);
 		}
 	}
 }
