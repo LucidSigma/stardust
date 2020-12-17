@@ -57,11 +57,11 @@ namespace stardust
 		{
 			String title;
 
-			Variant<int, Position> x = Position::Centred;
-			Variant<int, Position> y = Position::Centred;
+			Variant<i32, Position> x = Position::Centred;
+			Variant<i32, Position> y = Position::Centred;
 			glm::uvec2 size;
 
-			std::vector<CreateFlag> flags;
+			Vector<CreateFlag> flags;
 
 			Optional<glm::uvec2> minimumSize = NullOpt;
 			Optional<glm::uvec2> maximumSize = NullOpt;
@@ -101,16 +101,16 @@ namespace stardust
 		void ChangeSize(const glm::uvec2& newSize);
 		void ProcessResize(const glm::uvec2& newSize);
 
-		float GetOpacity() const noexcept;
-		void SetOpacity(const float opacity) const noexcept;
+		f32 GetOpacity() const noexcept;
+		void SetOpacity(const f32 opacity) const noexcept;
 
-		// void SetIcon(const std::string_view& iconFilepath, const Locale& locale) const;
+		// void SetIcon(const String& iconFilepath, const Locale& locale) const;
 
 		inline bool IsValid() const noexcept { return m_handle != nullptr; }
 		inline void UpdateSurface() const noexcept { SDL_UpdateWindowSurface(GetRawHandle()); }
 
 		inline const glm::uvec2& GetSize() const noexcept { return m_size; }
-		[[nodiscard]] inline float GetAspectRatio() const noexcept { return static_cast<float>(m_size.x) / static_cast<float>(m_size.y); }
+		[[nodiscard]] inline f32 GetAspectRatio() const noexcept { return static_cast<f32>(m_size.x) / static_cast<f32>(m_size.y); }
 
 		[[nodiscard]] glm::uvec2 GetMinimumSize() const noexcept;
 		inline void SetMinimumSize(const glm::uvec2& minimumSize) const noexcept { SDL_SetWindowMinimumSize(GetRawHandle(), minimumSize.x, minimumSize.y); }
@@ -155,7 +155,7 @@ namespace stardust
 		inline void SetGrabbed(const bool isGrabbed) const noexcept { SDL_SetWindowGrab(GetRawHandle(), static_cast<SDL_bool>(isGrabbed)); }
 
 	private:
-		int GetWindowCoordinate(const Variant<int, Position>& windowCoordinate) const;
+		i32 GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const;
 	};
 }
 

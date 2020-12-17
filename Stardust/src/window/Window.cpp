@@ -58,10 +58,10 @@ namespace stardust
 
 	void Window::Initialise(const CreateInfo& createInfo)
 	{
-		const int x = GetWindowCoordinate(createInfo.x);
-		const int y = GetWindowCoordinate(createInfo.y);
+		const i32 x = GetWindowCoordinate(createInfo.x);
+		const i32 y = GetWindowCoordinate(createInfo.y);
 
-		std::uint32_t windowFlags = 0u;
+		u32 windowFlags = 0u;
 		bool startWithFullscreen = false;
 		bool startBorderless = false;
 
@@ -173,15 +173,15 @@ namespace stardust
 		}
 	}
 
-	float Window::GetOpacity() const noexcept
+	f32 Window::GetOpacity() const noexcept
 	{
-		float opacity = 0.0f;
+		f32 opacity = 0.0f;
 		SDL_GetWindowOpacity(GetRawHandle(), &opacity);
 
 		return opacity;
 	}
 
-	void Window::SetOpacity(const float opacity) const noexcept
+	void Window::SetOpacity(const f32 opacity) const noexcept
 	{
 		SDL_SetWindowOpacity(GetRawHandle(), std::clamp(opacity, 0.0f, 1.0f));
 	}
@@ -231,8 +231,8 @@ namespace stardust
 
 	[[nodiscard]] glm::uvec2 Window::GetMinimumSize() const noexcept
 	{
-		int minimumX = 0;
-		int minimumY = 0;
+		i32 minimumX = 0;
+		i32 minimumY = 0;
 		SDL_GetWindowMinimumSize(GetRawHandle(), &minimumX, &minimumY);
 
 		return glm::uvec2{ minimumX, minimumY };
@@ -240,8 +240,8 @@ namespace stardust
 
 	[[nodiscard]] glm::uvec2 Window::GetMaximumSize() const noexcept
 	{
-		int maximumX = 0;
-		int maximumY = 0;
+		i32 maximumX = 0;
+		i32 maximumY = 0;
 		SDL_GetWindowMaximumSize(GetRawHandle(), &maximumX, &maximumY);
 
 		return glm::uvec2{ maximumX, maximumY };
@@ -249,14 +249,14 @@ namespace stardust
 
 	[[nodiscard]] glm::ivec2 Window::GetPosition() const noexcept
 	{
-		int x = 0;
-		int y = 0;
+		i32 x = 0;
+		i32 y = 0;
 		SDL_GetWindowPosition(GetRawHandle(), &x, &y);
 
 		return glm::ivec2{ x, y };
 	}
 
-	int Window::GetWindowCoordinate(const Variant<int, Position>& windowCoordinate) const
+	i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const
 	{
 		if (const Position* windowPosition = eastl::get_if<Position>(&windowCoordinate);
 			windowPosition != nullptr) [[likely]]

@@ -26,7 +26,7 @@ namespace stardust
 
 	[[nodiscard]] String Application::GetPlatformName() const
 	{
-		return String(SDL_GetPlatform());
+		return SDL_GetPlatform();
 	}
 
 	void Application::PollEvents(SDL_Event& event)

@@ -2,34 +2,39 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <cmath.>
+#include <cstddef>
+#include <cstdint>
+
 #include <EASTL/any.h>
 #include <EASTL/optional.h>
 #include <EASTL/variant.h>
 #include <glad/glad.h>
-#include <type_safe/narrow_cast.hpp>
-#include <type_safe/types.hpp>
 
 namespace stardust
 {
-	using i8 = type_safe::int8_t;
-	using i16 = type_safe::int16_t;
-	using i32 = type_safe::int32_t;
-	using i64 = type_safe::int64_t;
+	using i8 = std::int8_t;
+	using i16 = std::int16_t;
+	using i32 = std::int32_t;
+	using i64 = std::int64_t;
 
-	using u8 = type_safe::uint8_t;
-	using u16 = type_safe::uint16_t;
-	using u32 = type_safe::uint32_t;
-	using u64 = type_safe::uint64_t;
+	using u8 = std::uint8_t;
+	using u16 = std::uint16_t;
+	using u32 = std::uint32_t;
+	using u64 = std::uint64_t;
 
-	using iptr = type_safe::intptr_t;
-	using uptr = type_safe::uintptr_t;
-	using isize = type_safe::ptrdiff_t;
-	using usize = type_safe::size_t;
+	using ibyte = i8;
+	using ubyte = u8;
 
-	using f32 = type_safe::float_t;
+	using iptr = std::intptr_t;
+	using uptr = std::uintptr_t;
+	using isize = std::ptrdiff_t;
+	using usize = std::size_t;
+
+	using f32 = std::float_t;
 	static_assert(sizeof(f32) == 4u);
 
-	using f64 = type_safe::double_t;
+	using f64 = std::double_t;
 	static_assert(sizeof(f64) == 8u);
 
 	static_assert(sizeof(GLboolean) == sizeof(bool));
@@ -68,12 +73,6 @@ namespace stardust
 	using Variant = eastl::variant<Types...>;
 
 	using Any = eastl::any;
-
-	template <typename Target, typename Source>
-	inline constexpr Target NarrowCast(const Source& source) noexcept
-	{
-		return type_safe::narrow_cast<Target>(source);
-	}
 }
 
 #endif

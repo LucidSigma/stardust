@@ -31,7 +31,6 @@ endif()
 add_subdirectory("dep/debug_assert-1.3.3")
 add_subdirectory("dep/EABase-2.09.05")
 add_subdirectory("dep/tiny-utf8-4.3")
-add_subdirectory("dep/type_safe-0.2.1")
 
 # Other dependencies.
 add_subdirectory("dep/EASTL-3.17.03")

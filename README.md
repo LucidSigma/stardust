@@ -10,7 +10,6 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * [Glad](https://glad.dav1d.de/)
 
 ### Data
-* [type_safe](https://github.com/foonathan/type_safe)
 * [EABase](https://github.com/electronicarts/EABase) and [EASTL](https://github.com/electronicarts/EASTL)
 * [tiny-utf8](https://github.com/DuffsDevice/tiny-utf8)
 
