@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
+#include "stardust/data/Types.h"
 #include "stardust/utility/enums/Status.h"
 
 namespace stardust
@@ -29,10 +30,10 @@ namespace stardust
 		[[nodiscard]] virtual Status OnLoad() = 0;
 		virtual void OnUnload() noexcept = 0;
 
-		inline virtual void FixedUpdate(const float fixedDeltaTime) { };
+		inline virtual void FixedUpdate(const f32 fixedDeltaTime) { };
 		virtual void ProcessInput() = 0;
-		virtual void Update(const float deltaTime) = 0;
-		inline virtual void LateUpdate(const float deltaTime) { }
+		virtual void Update(const f32 deltaTime) = 0;
+		inline virtual void LateUpdate(const f32 deltaTime) { }
 
 		// virtual void Render(const Renderer& renderer) const = 0;
 
