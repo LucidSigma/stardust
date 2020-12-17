@@ -6,6 +6,7 @@
 #include <EASTL/optional.h>
 #include <EASTL/variant.h>
 #include <glad/glad.h>
+#include <type_safe/narrow_cast.hpp>
 #include <type_safe/types.hpp>
 
 namespace stardust
@@ -61,10 +62,18 @@ namespace stardust
 	template <typename T>
 	using Optional = eastl::optional<T>;
 
+	constexpr eastl::nullopt_t NullOpt = eastl::nullopt;
+
 	template <typename... Types>
 	using Variant = eastl::variant<Types...>;
 
 	using Any = eastl::any;
+
+	template <typename Target, typename Source>
+	inline constexpr Target NarrowCast(const Source& source) noexcept
+	{
+		return type_safe::narrow_cast<Target>(source);
+	}
 }
 
 #endif

@@ -11,6 +11,8 @@
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"
 
+#include "window/Window.h"
+
 namespace sd = stardust;
 
 #endif
