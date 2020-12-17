@@ -4,7 +4,16 @@
 
 int main([[maybe_unused]] const int argc, char* argv[])
 {
-	const sd::Application application;
+	sd::Application application(sd::Application::CreateInfo{
+		.title = "Stardust Sandbox"
+	});
+
+	if (!application.DidInitialiseSuccessfully())
+	{
+		return EXIT_FAILURE;
+	}
+
+	application.Run();
 
 	return EXIT_SUCCESS;
 }

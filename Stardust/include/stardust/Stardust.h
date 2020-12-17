@@ -8,6 +8,7 @@
 #include "data/Pointers.h"
 #include "data/Types.h"
 
+#include "utility/enums/Status.h"
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"
 

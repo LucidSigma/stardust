@@ -44,6 +44,8 @@ namespace stardust
 			Foreign = SDL_WINDOW_FOREIGN,
 			AllowHighDPI = SDL_WINDOW_ALLOW_HIGHDPI,
 			MouseCapture = SDL_WINDOW_MOUSE_CAPTURE,
+			OpenGL = SDL_WINDOW_OPENGL,
+			Vulkan = SDL_WINDOW_VULKAN,
 		};
 
 		enum class FullscreenType
