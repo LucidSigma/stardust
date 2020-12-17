@@ -1,6 +1,8 @@
 #include <cstdlib>
 
-#include "stardust/Stardust.h"
+#include <stardust/Stardust.h>
+
+#include "TestScene.h"
 
 int main([[maybe_unused]] const int argc, char* argv[])
 {
@@ -15,6 +17,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
+	application.GetSceneManager().PushScene<TestScene>(application, "Test");
 	application.Run();
 
 	return EXIT_SUCCESS;

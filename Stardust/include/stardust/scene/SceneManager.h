@@ -25,7 +25,7 @@ namespace stardust
 		template <typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<Scene, T>&& std::is_constructible_v<T, Args...>>>
 		void PushScene(Args&&... args)
 		{
-			m_scenes.push(std::make_unique<T>(std::forward<Args>(args)...));
+			m_scenes.push(eastl::make_unique<T>(std::forward<Args>(args)...));
 		}
 
 		void PopScene();
