@@ -9,10 +9,6 @@ namespace stardust
 	Application::Application(const CreateInfo& createInfo)
 	{
 		Initialise(createInfo);
-
-
-
-		SDL_Init(SDL_INIT_EVERYTHING);
 	}
 
 	Application::~Application() noexcept
