@@ -1,7 +1,6 @@
 #include "stardust/application/Application.h"
 
 #include <functional>
-#include <string>
 #include <utility>
 
 #include "stardust/data/MathTypes.h"
@@ -75,6 +74,16 @@ namespace stardust
 	[[nodiscard]] String Application::GetPlatformName() const
 	{
 		return SDL_GetPlatform();
+	}
+
+	Any& Application::GetFromGlobalSceneData(const String& dataName)
+	{
+		return m_globalSceneData[dataName.c_str()];
+	}
+
+	void Application::RemoveFromGlobalSceneData(const String& dataName)
+	{
+		m_globalSceneData.erase(dataName.c_str());
 	}
 
 	void Application::Initialise(const CreateInfo& createInfo)

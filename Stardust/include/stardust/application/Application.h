@@ -6,6 +6,7 @@
 #include "stardust/utility/interfaces/INonmovable.h"
 
 #include <EASTL/atomic.h>
+#include <EASTL/string.h>
 #include <SDL2/SDL.h>
 
 #include "stardust/config/Config.h"
@@ -69,6 +70,8 @@ namespace stardust
 		Optional<InitialiseCallback> m_onInitialise = NullOpt;
 		Optional<ExitCallback> m_onExit = NullOpt;
 
+		HashMap<eastl::string, Any> m_globalSceneData{ };
+
 	public:
 		Application(const CreateInfo& createInfo);
 		~Application() noexcept;
@@ -92,6 +95,17 @@ namespace stardust
 		inline u64 GetTicksCount() const noexcept { return m_ticksCount; }
 		inline f32 GetElapsedTime() const noexcept { return m_elapsedTime; }
 		inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
+
+		template <typename T>
+		void SetGlobalSceneData(const String& dataName, const T& data)
+		{
+			m_globalSceneData[dataName.cpp_str()] = data;
+		}
+
+		Any& GetFromGlobalSceneData(const String& dataName);
+		void RemoveFromGlobalSceneData(const String& dataName);
+
+		inline HashMap<eastl::string, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
 	private:
 		void Initialise(const CreateInfo& createInfo);
