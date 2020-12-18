@@ -16,6 +16,9 @@ int main([[maybe_unused]] const int argc, char* argv[])
 			.configFilepath = "config.json",
 		},
 		.fixedTimestep = 0.01f,
+
+		.initialiseCallback = sd::Application::InitialiseCallback([](const auto& application) -> sd::Status { sd::Log::Debug("Application initialised."); return sd::Status::Success; }),
+		.exitCallback = sd::NullOpt,
 	});
 
 	if (!application.DidInitialiseSuccessfully())

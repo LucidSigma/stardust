@@ -16,7 +16,14 @@ namespace stardust
 
 	Application::~Application() noexcept
 	{
+		if (m_onExit.has_value())
+		{
+			m_onExit.value()(*this);
+		}
+
 		m_window.Destroy();
+
+		vfs::Quit();
 
 		SDL_Quit();
 	}
@@ -91,6 +98,17 @@ namespace stardust
 		for (const auto& initialisationFunction : initialisationFunctions)
 		{
 			if (initialisationFunction(this, createInfo) != Status::Success)
+			{
+				return;
+			}
+		}
+
+		m_onInitialise = createInfo.initialiseCallback;
+		m_onExit = createInfo.exitCallback;
+
+		if (m_onInitialise.has_value())
+		{
+			if (m_onInitialise.value()(*this) != Status::Success)
 			{
 				return;
 			}

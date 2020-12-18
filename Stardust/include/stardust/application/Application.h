@@ -21,6 +21,9 @@ namespace stardust
 		: private INoncopyable, private INonmovable
 	{
 	public:
+		using InitialiseCallback = std::function<Status(Application&)>;
+		using ExitCallback = std::function<void(Application&)>;
+
 		struct FilesystemInfo
 		{
 			const char* argv0;
@@ -38,6 +41,9 @@ namespace stardust
 			FilesystemInfo filesystem;
 
 			f32 fixedTimestep;
+
+			Optional<InitialiseCallback> initialiseCallback;
+			Optional<ExitCallback> exitCallback;
 		};
 
 	private:
@@ -57,6 +63,9 @@ namespace stardust
 
 		SceneManager m_sceneManager;
 		bool m_isCurrentSceneFinished = false;
+
+		Optional<InitialiseCallback> m_onInitialise = NullOpt;
+		Optional<ExitCallback> m_onExit = NullOpt;
 
 	public:
 		Application(const CreateInfo& createInfo);
