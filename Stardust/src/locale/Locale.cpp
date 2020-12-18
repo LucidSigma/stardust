@@ -31,7 +31,7 @@ namespace stardust
 
 		for (const auto& localeFile : localeFiles)
 		{
-			if (vfs::GetFileExtension(localeFile) == "json")
+			if (vfs::GetFileExtension(localeFile) == ".json")
 			{
 				const auto localeSubdata = LoadLocaleFile(localeFile);
 
