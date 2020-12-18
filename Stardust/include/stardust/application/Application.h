@@ -11,6 +11,7 @@
 #include "stardust/config/Config.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
+#include "stardust/locale/Locale.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/utility/enums/Status.h"
 #include "stardust/window/Window.h"
@@ -50,6 +51,7 @@ namespace stardust
 		bool m_didInitialiseSuccessfully = false;
 
 		Config m_config;
+		Locale m_locale;
 
 		Window m_window;
 		bool m_hasWindowFocus = true;
@@ -79,6 +81,7 @@ namespace stardust
 		inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
 
 		inline Config& GetConfig() noexcept { return m_config; }
+		inline Locale& GetLocale() noexcept { return m_locale; }
 
 		inline Window& GetWindow() noexcept { return m_window; }
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
@@ -94,6 +97,7 @@ namespace stardust
 		void Initialise(const CreateInfo& createInfo);
 		Status InitialiseVFS(const CreateInfo& createInfo);
 		Status InitialiseConfig(const CreateInfo& createInfo);
+		Status InitialiseLocale(const CreateInfo& createInfo);
 		Status InitialiseSDL(const CreateInfo&);
 		Status InitialiseWindow(const CreateInfo& createInfo);
 		void InitialiseScenes();

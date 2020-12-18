@@ -14,7 +14,6 @@ namespace stardust
 	[[nodiscard]] Status Locale::SetLocale(const String& localeName)
 	{
 		const String localeDirectory = m_baseLocaleDirectory + "/" + localeName;
-			//m_engineLocaleDirectory + "/" + localeName + ".json";
 
 		if (!vfs::IsDirectory(localeDirectory))
 		{

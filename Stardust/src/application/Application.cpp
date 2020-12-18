@@ -1,6 +1,7 @@
 #include "stardust/application/Application.h"
 
 #include <functional>
+#include <string>
 #include <utility>
 
 #include "stardust/data/MathTypes.h"
@@ -87,7 +88,7 @@ namespace stardust
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
 			&Application::InitialiseVFS,
 			&Application::InitialiseConfig,
-			//&Application::InitialiseLocale,
+			&Application::InitialiseLocale,
 			//&Application::InitialiseSoundSystem,
 			&Application::InitialiseSDL,
 			&Application::InitialiseWindow,
@@ -151,7 +152,24 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseSDL(const CreateInfo&)
+	Status Application::InitialiseLocale(const CreateInfo& createInfo)
+	{
+		m_locale.Initialise("locales");
+
+		if (m_locale.SetLocale(std::string(m_config["locale"])) == Status::Fail)
+		{
+			//message_box::Show("Locale Error", "Failed to load initial locale files.", message_box::Type::Error);
+			Log::EngineError("Failed to load locale files for initial locale {}.", m_config["locale"]);
+
+			return Status::Fail;
+		}
+
+		Log::EngineInfo("Locale \"{}\" loaded.", m_locale.GetCurrentLocaleName().cpp_str());
+
+		return Status::Success;
+	}
+
+	Status Application::InitialiseSDL(const CreateInfo& createInfo)
 	{
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
