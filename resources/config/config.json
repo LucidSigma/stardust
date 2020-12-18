@@ -1,0 +1,27 @@
+{
+	"audio": {
+	  "volumes": {
+		"master": 1.0
+	  }
+	},
+	"controls": {
+	  "controller-deadzone": 8000
+	},
+	"frame-rate": {
+	  "cap-fps": false,
+	  "fps-limit": 60,
+	  "enable-vsync": false
+	},
+	"graphics": {
+	  "enable-fullscreen-minimise": true
+	},
+	"locale": "en-gb",
+	"window": {
+	  "borderless": false,
+	  "fullscreen": false,
+	  "size": {
+		"height": 720,
+		"width": 1280
+	  }
+	}
+  }

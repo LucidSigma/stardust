@@ -8,6 +8,7 @@
 #include <EASTL/atomic.h>
 #include <SDL2/SDL.h>
 
+#include "stardust/config/Config.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 #include "stardust/scene/SceneManager.h"
@@ -28,6 +29,7 @@ namespace stardust
 			String localesArchive;
 
 			String logFilepath;
+			String configFilepath;
 		};
 
 		struct CreateInfo
@@ -40,6 +42,8 @@ namespace stardust
 
 	private:
 		bool m_didInitialiseSuccessfully = false;
+
+		Config m_config;
 
 		Window m_window;
 		bool m_hasWindowFocus = true;
@@ -65,6 +69,8 @@ namespace stardust
 
 		inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
 
+		inline Config& GetConfig() noexcept { return m_config; }
+
 		inline Window& GetWindow() noexcept { return m_window; }
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 
@@ -78,6 +84,7 @@ namespace stardust
 	private:
 		void Initialise(const CreateInfo& createInfo);
 		Status InitialiseVFS(const CreateInfo& createInfo);
+		Status InitialiseConfig(const CreateInfo& createInfo);
 		Status InitialiseSDL(const CreateInfo&);
 		Status InitialiseWindow(const CreateInfo& createInfo);
 		void InitialiseScenes();

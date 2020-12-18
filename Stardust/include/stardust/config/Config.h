@@ -23,6 +23,7 @@ namespace stardust
 		void Save() const;
 
 		inline auto& operator [](const String& configType) { return m_data[configType.data()]; }
+		inline const auto& operator [](const String& configType) const { return m_data[configType.data()]; }
 	};
 }
 

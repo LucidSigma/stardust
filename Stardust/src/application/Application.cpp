@@ -1,6 +1,7 @@
 #include "stardust/application/Application.h"
 
 #include <functional>
+#include <utility>
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/debug/logging/Log.h"
@@ -78,7 +79,7 @@ namespace stardust
 
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
 			&Application::InitialiseVFS,
-			//&Application::InitialiseConfig,
+			&Application::InitialiseConfig,
 			//&Application::InitialiseLocale,
 			//&Application::InitialiseSoundSystem,
 			&Application::InitialiseSDL,
@@ -117,6 +118,21 @@ namespace stardust
 		return Status::Success;
 	}
 
+	Status Application::InitialiseConfig(const CreateInfo& createInfo)
+	{
+		if (m_config.Initialise(createInfo.filesystem.configFilepath) == Status::Fail)
+		{
+			// message_box::Show("Config Error", "Config file is invalid.", message_box::Type::Error);
+			Log::EngineError("Failed to load config file at {}.", createInfo.filesystem.configFilepath.cpp_str());
+
+			return Status::Fail;
+		}
+
+		Log::EngineInfo("Config loaded.");
+
+		return Status::Success;
+	}
+
 	Status Application::InitialiseSDL(const CreateInfo&)
 	{
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -134,14 +150,26 @@ namespace stardust
 
 	Status Application::InitialiseWindow(const CreateInfo& createInfo)
 	{
-		// config here
+		Window::SetMinimiseOnFullscreenFocusLoss(m_config["graphics"]["enable-fullscreen-minimise"]);
+
+		Vector<Window::CreateFlag> windowCreateFlags{ Window::CreateFlag::AllowHighDPI, Window::CreateFlag::Shown };
+
+		if (m_config["window"]["fullscreen"])
+		{
+			windowCreateFlags.push_back(Window::CreateFlag::HardFullscreen);
+
+			if (m_config["window"]["borderless"])
+			{
+				windowCreateFlags.push_back(Window::CreateFlag::Borderless);
+			}
+		}
 
 		m_window.Initialise(Window::CreateInfo{
 			.title = createInfo.title.data(),
 			.x = Window::Position::Centred,
 			.y = Window::Position::Centred,
-			.size = UVec2{ 1280u, 720u }, //UVec2{ m_config["window"]["size"]["width"], m_config["window"]["size"]["height"] },
-			.flags = { Window::CreateFlag::OpenGL } // std::move(windowCreateFlags),
+			.size = UVec2{ m_config["window"]["size"]["width"], m_config["window"]["size"]["height"] },
+			.flags = std::move(windowCreateFlags),
 		});
 
 		if (!m_window.IsValid())
@@ -273,26 +301,26 @@ namespace stardust
 
 	void Application::CalculateDeltaTime()
 	{
-		// static const bool capFramerate = m_config["frame-rate"]["cap-fps"];
-		// static const f32 fpsLimit = m_config["frame-rate"]["fps-limit"];
+		static const bool capFramerate = m_config["frame-rate"]["cap-fps"];
+		static const f32 fpsLimit = m_config["frame-rate"]["fps-limit"];
 
 		const u64 newTicks = SDL_GetPerformanceCounter();
 		const u64 frameTicks = newTicks - m_ticksCount;
 		m_deltaTime = static_cast<float>(frameTicks) / static_cast<float>(SDL_GetPerformanceFrequency());
 
-		//if (capFramerate)
-		//{
-		//	static const f32 timeToWait = 1.0f / fpsLimit;
-		//
-		//	if (m_deltaTime < timeToWait)
-		//	{
-		//		constexpr f32 MillisecondsPerSecond = 1'000.0f;
-		//
-		//		SDL_Delay(static_cast<u32>((timeToWait - m_deltaTime) * MillisecondsPerSecond));
-		//	}
-		//
-		//	m_deltaTime = timeToWait;
-		//}
+		if (capFramerate)
+		{
+			static const f32 timeToWait = 1.0f / fpsLimit;
+		
+			if (m_deltaTime < timeToWait)
+			{
+				constexpr f32 MillisecondsPerSecond = 1'000.0f;
+		
+				SDL_Delay(static_cast<u32>((timeToWait - m_deltaTime) * MillisecondsPerSecond));
+			}
+		
+			m_deltaTime = timeToWait;
+		}
 
 		m_ticksCount = newTicks;
 	}

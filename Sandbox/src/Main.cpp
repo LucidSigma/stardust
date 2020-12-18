@@ -13,6 +13,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
 			.assetsArchive = "assets.pak",
 			.localesArchive = "locales.pak",
 			.logFilepath = "log.txt",
+			.configFilepath = "config.json",
 		},
 		.fixedTimestep = 0.01f,
 	});
