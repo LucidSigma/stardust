@@ -3,6 +3,7 @@
 #define STARDUST_H
 
 #include "application/Application.h"
+#include "config/Config.h"
 
 #include "data/Containers.h"
 #include "data/MathTypes.h"
