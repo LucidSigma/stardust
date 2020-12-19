@@ -37,6 +37,7 @@ add_subdirectory("dep/spdlog-1.8.2")
 add_subdirectory("dep/EASTL-3.17.03")
 add_subdirectory("dep/Glad-0.1.34")
 add_subdirectory("dep/physfs-3.0.2")
+add_subdirectory("dep/stb_image-2.26")
 
 # Projects in workspace.
 add_subdirectory("Stardust")

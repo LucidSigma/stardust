@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <utility>
 
+#include <stb_image/stb_image.h>
+
 #include "stardust/window/display/Display.h"
 
 namespace stardust

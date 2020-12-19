@@ -16,6 +16,7 @@ target_include_directories(Stardust PUBLIC
 	${PHYSFS_INCLUDE_DIRS}
 	${SDL2_INCLUDE_DIRS}
 	${SPDLOG_INCLUDE_DIRS}
+	${STB_IMAGE_INCLUDE_DIRS}
 	${TINY_UTF8_INCLUDE_DIRS}
 	${TYPE_SAFE_INCLUDE_DIRS}
 )
@@ -30,6 +31,7 @@ target_link_libraries(Stardust PUBLIC
 	EASTL
 	glad
 	physfs
+	stb_image
 )
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${STARDUST_SOURCE_FILES})
