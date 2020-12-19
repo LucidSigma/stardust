@@ -29,6 +29,7 @@ if(NOT OPENGL_FOUND)
 endif()
 
 # Header-only dependencies.
+add_subdirectory("dep/concurrentqueue-1.0.2")
 add_subdirectory("dep/EABase-2.09.05")
 add_subdirectory("dep/nlohmann_json-3.9.1")
 add_subdirectory("dep/spdlog-1.8.2")

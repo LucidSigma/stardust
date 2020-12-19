@@ -10,6 +10,7 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * [OpenGL](https://www.opengl.org/)
 
 ### Data
+* [concurrentqueue](https://github.com/cameron314/concurrentqueue)
 * [EABase](https://github.com/electronicarts/EABase) and [EASTL](https://github.com/electronicarts/EASTL)
 * [nlohmann JSON](https://github.com/nlohmann/json)
 
