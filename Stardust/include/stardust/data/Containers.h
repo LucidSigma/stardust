@@ -3,7 +3,6 @@
 #define CONTAINERS_H
 
 #include <cstddef>
-#include <cstdint>
 
 #include <EASTL/array.h>
 #include <EASTL/deque.h>
@@ -63,6 +62,6 @@ namespace stardust
 #endif
 
 extern void* __cdecl operator new[](const std::size_t size, const char* name, const int flags, const unsigned int debugFlags, const char* file, const int line);
-extern void* __cdecl operator new[](const std::size_t, const std::size_t alignment, const std::size_t size, const char* name, const int flags, const unsigned debugFlags, const char* file, const int line);
+extern void* __cdecl operator new[](const std::size_t, const std::size_t alignment, const std::size_t size, const char* name, const int flags, const unsigned int debugFlags, const char* file, const int line);
 
 #endif
