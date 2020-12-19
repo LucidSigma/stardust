@@ -104,6 +104,8 @@ namespace stardust
 		Any& GetFromGlobalSceneData(const String& dataName);
 		void RemoveFromGlobalSceneData(const String& dataName);
 
+		// Take screenshot
+
 		inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
 	private:

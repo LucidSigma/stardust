@@ -13,6 +13,7 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/locale/Locale.h"
 
 namespace stardust
 {
@@ -57,7 +58,7 @@ namespace stardust
 
 		struct CreateInfo
 		{
-			String title;
+			StringView title;
 
 			Variant<i32, Position> x = Position::Centred;
 			Variant<i32, Position> y = Position::Centred;
@@ -106,7 +107,7 @@ namespace stardust
 		f32 GetOpacity() const noexcept;
 		void SetOpacity(const f32 opacity) const noexcept;
 
-		// void SetIcon(const String& iconFilepath, const Locale& locale) const;
+		void SetIcon(const StringView& iconFilepath, const Locale& locale) const;
 
 		inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
@@ -122,7 +123,7 @@ namespace stardust
 		void SetPosition(const IVec2& position) const noexcept;
 
 		[[nodiscard]] String GetTitle() const noexcept;
-		void SetTitle(const String& title) const noexcept;
+		void SetTitle(const StringView& title) const noexcept;
 
 		inline bool IsFullscreen() const noexcept { return m_isFullscreen; }
 		inline FullscreenType GetFullscreenType() const noexcept { return m_fullscreenType; }

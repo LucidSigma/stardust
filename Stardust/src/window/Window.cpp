@@ -1,10 +1,15 @@
 #include "stardust/window/Window.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include <stb_image/stb_image.h>
 
+#include "stardust/debug/logging/Log.h"
+#include "stardust/debug/message_box/MessageBox.h"
+#include "stardust/graphics/surface/PixelSurface.h"
+#include "stardust/vfs/VFS.h"
 #include "stardust/window/display/Display.h"
 
 namespace stardust
@@ -189,48 +194,48 @@ namespace stardust
 		SDL_SetWindowOpacity(GetRawHandle(), std::clamp(opacity, 0.0f, 1.0f));
 	}
 
-	//void Window::SetIcon(const std::string_view& iconFilepath, const Locale& locale) const
-	//{
-	//	const std::vector<std::byte> rawIconData = vfs::ReadFileData(iconFilepath);
-	//
-	//	if (rawIconData.empty())
-	//	{
-	//		message_box::Show(locale["warnings"]["titles"]["window"], locale["warnings"]["bodies"]["window-icon-load"], message_box::Type::Warning);
-	//		Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath);
-	//
-	//		return;
-	//	}
-	//
-	//	int iconWidth = 0;
-	//	int iconHeight = 0;
-	//	stbi_uc* iconData = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(rawIconData.data()), static_cast<int>(rawIconData.size()), &iconWidth, &iconHeight, nullptr, STBI_rgb_alpha);
-	//
-	//	if (iconData == nullptr)
-	//	{
-	//		message_box::Show(locale["warnings"]["titles"]["window"], locale["warnings"]["bodies"]["window-icon-load"], message_box::Type::Warning);
-	//		Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath);
-	//
-	//		return;
-	//	}
-	//
-	//	const PixelSurface iconSurface(iconWidth, iconHeight, 4u, iconData);
-	//
-	//	if (!iconSurface.IsValid())
-	//	{
-	//		message_box::Show(locale["warnings"]["titles"]["window"], locale["warnings"]["bodies"]["window-icon-convert"], message_box::Type::Warning);
-	//		Log::EngineWarn("Could not convert window icon image: {}.", SDL_GetError());
-	//
-	//		stbi_image_free(iconData);
-	//		iconData = nullptr;
-	//
-	//		return;
-	//	}
-	//
-	//	SDL_SetWindowIcon(GetRawHandle(), iconSurface.GetRawHandle());
-	//
-	//	stbi_image_free(iconData);
-	//	iconData = nullptr;
-	//}
+	void Window::SetIcon(const StringView& iconFilepath, const Locale& locale) const
+	{
+		const Vector<ubyte> rawIconData = vfs::ReadFileData(iconFilepath);
+	
+		if (rawIconData.empty())
+		{
+			message_box::Show(std::string_view(locale["warnings"]["titles"]["window"]), std::string_view(locale["warnings"]["bodies"]["window-icon-load"]), message_box::Type::Warning);
+			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath.data());
+	
+			return;
+		}
+	
+		i32 iconWidth = 0;
+		i32 iconHeight = 0;
+		stbi_uc* iconData = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(rawIconData.data()), static_cast<int>(rawIconData.size()), &iconWidth, &iconHeight, nullptr, STBI_rgb_alpha);
+	
+		if (iconData == nullptr)
+		{
+			message_box::Show(std::string_view(locale["warnings"]["titles"]["window"]), std::string_view(locale["warnings"]["bodies"]["window-icon-load"]), message_box::Type::Warning);
+			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath.data());
+	
+			return;
+		}
+	
+		const PixelSurface iconSurface(iconWidth, iconHeight, 4u, iconData);
+	
+		if (!iconSurface.IsValid())
+		{
+			message_box::Show(std::string_view(locale["warnings"]["titles"]["window"]), std::string_view(locale["warnings"]["bodies"]["window-icon-convert"]), message_box::Type::Warning);
+			Log::EngineWarn("Could not convert window icon image: {}.", SDL_GetError());
+	
+			stbi_image_free(iconData);
+			iconData = nullptr;
+	
+			return;
+		}
+	
+		SDL_SetWindowIcon(GetRawHandle(), iconSurface.GetRawHandle());
+	
+		stbi_image_free(iconData);
+		iconData = nullptr;
+	}
 
 	[[nodiscard]] UVec2 Window::GetMinimumSize() const noexcept
 	{
@@ -279,9 +284,9 @@ namespace stardust
 		return SDL_GetWindowTitle(GetRawHandle());
 	}
 
-	void Window::SetTitle(const String& title) const noexcept
+	void Window::SetTitle(const StringView& title) const noexcept
 	{
-		SDL_SetWindowTitle(GetRawHandle(), title.c_str());
+		SDL_SetWindowTitle(GetRawHandle(), title.data());
 	}
 
 	bool Window::IsBorderless() const noexcept
