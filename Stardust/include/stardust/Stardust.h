@@ -26,6 +26,7 @@
 #include "utility/enums/Status.h"
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"
+#include "utility/random/Random.h"
 
 #include "window/display/Display.h"
 #include "window/Window.h"

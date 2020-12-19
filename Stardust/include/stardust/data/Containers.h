@@ -16,6 +16,7 @@
 #include <EASTL/set.h>
 #include <EASTL/stack.h>
 #include <EASTL/string.h>
+#include <EASTL/string_view.h>
 #include <EASTL/vector.h>
 
 namespace stardust
