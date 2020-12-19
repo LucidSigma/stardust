@@ -90,7 +90,7 @@ namespace stardust
 	void Application::Initialise(const CreateInfo& createInfo)
 	{
 	#ifndef NDEBUG
-		Log::Initialise(createInfo.filesystem.logFilepath);
+		Log::Initialise(createInfo.filepaths.logFilepath);
 	#endif
 
 		Log::EngineInfo("Logger initialised.");
@@ -152,12 +152,12 @@ namespace stardust
 
 	Status Application::InitialiseConfig(const CreateInfo& createInfo)
 	{
-		if (m_config.Initialise(createInfo.filesystem.configFilepath) == Status::Fail)
+		if (m_config.Initialise(createInfo.filepaths.configFilepath) == Status::Fail)
 		{
 			using namespace eastl::literals::string_view_literals;
 
 			message_box::Show("Config Error"sv, "Config file is invalid."sv, message_box::Type::Error);
-			Log::EngineError("Failed to load config file at {}.", createInfo.filesystem.configFilepath.data());
+			Log::EngineError("Failed to load config file at {}.", createInfo.filepaths.configFilepath.data());
 
 			return Status::Fail;
 		}
@@ -233,7 +233,7 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		// Set window icon.
+		m_window.SetIcon(createInfo.filepaths.windowIconFile, m_locale);
 		Log::EngineInfo("Window created.");
 
 		return Status::Success;

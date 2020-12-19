@@ -12,8 +12,11 @@ int main([[maybe_unused]] const int argc, char* argv[])
 			.argv0 = argv[0],
 			.assetsArchive = "assets.pak",
 			.localesArchive = "locales.pak",
+		},
+		.filepaths = {
 			.logFilepath = "log.txt",
 			.configFilepath = "config.json",
+			.windowIconFile = "assets/icon/icon.png",
 		},
 		.fixedTimestep = 0.01f,
 

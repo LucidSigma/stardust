@@ -31,15 +31,20 @@ namespace stardust
 
 			StringView assetsArchive;
 			StringView localesArchive;
+		};
 
+		struct FilepathsInfo
+		{
 			StringView logFilepath;
 			StringView configFilepath;
+			StringView windowIconFile;
 		};
 
 		struct CreateInfo
 		{
 			StringView title;
 			FilesystemInfo filesystem;
+			FilepathsInfo filepaths;
 
 			f32 fixedTimestep;
 
