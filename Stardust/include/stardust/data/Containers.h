@@ -4,6 +4,7 @@
 
 #include <cstddef>
 
+#include <concurrentqueue/concurrentqueue.h>
 #include <EASTL/array.h>
 #include <EASTL/deque.h>
 #include <EASTL/hash_map.h>
@@ -56,6 +57,9 @@ namespace stardust
 
 	template <typename T>
 	using Stack = eastl::stack<T>;
+
+	template <typename T>
+	using ConcurrentQueue = moodycamel::ConcurrentQueue<T>;
 }
 
 #ifndef WIN32
