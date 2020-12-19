@@ -44,9 +44,6 @@ namespace stardust
 
 	protected:
 		// class Entity CreateEntity();
-
-	private:
-		// Add helper functions to make getting data from the main Application much easier.
 	};
 }
 
