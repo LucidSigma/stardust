@@ -23,5 +23,4 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * [GLM](https://github.com/g-truc/glm)
 
 ### Debugging
-* [debug_assert](https://github.com/foonathan/debug_assert)
 * [spdlog](https://github.com/gabime/spdlog)
