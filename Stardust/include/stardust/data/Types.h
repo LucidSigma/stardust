@@ -13,7 +13,6 @@
 #include <EASTL/optional.h>
 #include <EASTL/variant.h>
 #include <glad/glad.h>
-#undef APIENTRY
 
 namespace stardust
 {
