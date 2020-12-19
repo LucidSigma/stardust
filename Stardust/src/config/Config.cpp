@@ -32,7 +32,9 @@ namespace stardust
 
 		if (!configFile.is_open())
 		{
-			message_box::Show("Config Warning", "Failed to save config file.", message_box::Type::Warning);
+			using namespace std::literals::string_literals;
+
+			message_box::Show("Config Warning"s, "Failed to save config file."s, message_box::Type::Warning);
 
 			return;
 		}

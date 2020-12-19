@@ -6,7 +6,6 @@
 #include "stardust/utility/interfaces/INonmovable.h"
 
 #include <EASTL/atomic.h>
-#include <EASTL/string.h>
 #include <SDL2/SDL.h>
 
 #include "stardust/config/Config.h"
@@ -70,7 +69,7 @@ namespace stardust
 		Optional<InitialiseCallback> m_onInitialise = NullOpt;
 		Optional<ExitCallback> m_onExit = NullOpt;
 
-		HashMap<eastl::string, Any> m_globalSceneData{ };
+		HashMap<String, Any> m_globalSceneData{ };
 
 	public:
 		Application(const CreateInfo& createInfo);
@@ -99,13 +98,13 @@ namespace stardust
 		template <typename T>
 		void SetGlobalSceneData(const String& dataName, const T& data)
 		{
-			m_globalSceneData[dataName.cpp_str()] = data;
+			m_globalSceneData[dataName] = data;
 		}
 
 		Any& GetFromGlobalSceneData(const String& dataName);
 		void RemoveFromGlobalSceneData(const String& dataName);
 
-		inline HashMap<eastl::string, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
+		inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
 	private:
 		void Initialise(const CreateInfo& createInfo);

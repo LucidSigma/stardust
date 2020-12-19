@@ -2,6 +2,7 @@
 #ifndef MESSAGE_BOX_H
 #define MESSAGE_BOX_H
 
+#include <string>
 #include <type_traits>
 
 #include <SDL2/SDL.h>
@@ -21,6 +22,7 @@ namespace stardust
 		};
 
 		void Show(const String& title, const String& message, const Type type);
+		void Show(const std::string& title, const std::string& message, const Type type);
 	}
 
 	namespace modal = message_box;

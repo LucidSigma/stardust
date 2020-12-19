@@ -3,6 +3,7 @@
 #define CONTAINERS_H
 
 #include <cstddef>
+#include <cstdint>
 
 #include <EASTL/array.h>
 #include <EASTL/deque.h>
@@ -15,12 +16,13 @@
 #include <EASTL/queue.h>
 #include <EASTL/set.h>
 #include <EASTL/stack.h>
+#include <EASTL/string.h>
 #include <EASTL/vector.h>
-#include <tinyutf8/tinyutf8.h>
 
 namespace stardust
 {
-	using String = tiny_utf8::basic_string<char32_t, char>;
+	using String = eastl::string;
+	using StringView = eastl::string_view;
 
 	template <typename T, std::size_t N = 1u>
 	using Array = eastl::array<T, N>;

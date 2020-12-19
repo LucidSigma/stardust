@@ -145,22 +145,22 @@ namespace stardust
 
 		[[nodiscard]] String GetParentFilepath(const String& filepath)
 		{
-			return std::filesystem::path(filepath.cpp_str()).parent_path().string();
+			return std::filesystem::path(filepath.c_str()).parent_path().string().c_str();
 		}
 
 		[[nodiscard]] String GetFilenameFromDirectory(const String& filepath)
 		{
-			return std::filesystem::path(filepath.cpp_str()).filename().string();
+			return std::filesystem::path(filepath.c_str()).filename().string().c_str();
 		}
 
 		[[nodiscard]] String GetFileStem(const String& filename)
 		{
-			return std::filesystem::path(filename.cpp_str()).stem().string();
+			return std::filesystem::path(filename.c_str()).stem().string().c_str();
 		}
 
 		[[nodiscard]] String GetFileExtension(const String& filename)
 		{
-			return std::filesystem::path(filename.cpp_str()).extension().string();
+			return std::filesystem::path(filename.c_str()).extension().string().c_str();
 		}
 
 		[[nodiscard]] Vector<ubyte> ReadFileData(const String& filepath)

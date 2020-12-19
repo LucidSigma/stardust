@@ -10,5 +10,10 @@ namespace stardust
 		{
 			SDL_ShowSimpleMessageBox(static_cast<u32>(type), title.c_str(), message.c_str(), nullptr);
 		}
+
+		void Show(const std::string& title, const std::string& message, const Type type)
+		{
+			SDL_ShowSimpleMessageBox(static_cast<u32>(type), title.c_str(), message.c_str(), nullptr);
+		}
 	}
 }

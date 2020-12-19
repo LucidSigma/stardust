@@ -1,6 +1,7 @@
 #include "stardust/application/Application.h"
 
 #include <functional>
+#include <string>
 #include <utility>
 
 #include "stardust/data/MathTypes.h"
@@ -78,12 +79,12 @@ namespace stardust
 
 	Any& Application::GetFromGlobalSceneData(const String& dataName)
 	{
-		return m_globalSceneData[dataName.c_str()];
+		return m_globalSceneData[dataName];
 	}
 
 	void Application::RemoveFromGlobalSceneData(const String& dataName)
 	{
-		m_globalSceneData.erase(dataName.c_str());
+		m_globalSceneData.erase(dataName);
 	}
 
 	void Application::Initialise(const CreateInfo& createInfo)
@@ -93,7 +94,7 @@ namespace stardust
 	#endif
 
 		Log::EngineInfo("Logger initialised.");
-		Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName().cpp_str());
+		Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName().c_str());
 
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
 			&Application::InitialiseVFS,
@@ -135,7 +136,9 @@ namespace stardust
 	{
 		if (!vfs::Initialise(createInfo.filesystem.argv0))
 		{
-			message_box::Show("Filesystem Error", "Virtual filesystem failed to initialise.", message_box::Type::Error);
+			using namespace eastl::literals::string_literals;
+
+			message_box::Show("Filesystem Error"s, "Virtual filesystem failed to initialise."s, message_box::Type::Error);
 			Log::EngineError("Failed to initialise virtual filesystem.");
 
 			return Status::Fail;
@@ -151,8 +154,10 @@ namespace stardust
 	{
 		if (m_config.Initialise(createInfo.filesystem.configFilepath) == Status::Fail)
 		{
-			message_box::Show("Config Error", "Config file is invalid.", message_box::Type::Error);
-			Log::EngineError("Failed to load config file at {}.", createInfo.filesystem.configFilepath.cpp_str());
+			using namespace eastl::literals::string_literals;
+
+			message_box::Show("Config Error"s, "Config file is invalid."s, message_box::Type::Error);
+			Log::EngineError("Failed to load config file at {}.", createInfo.filesystem.configFilepath.c_str());
 
 			return Status::Fail;
 		}
@@ -166,15 +171,17 @@ namespace stardust
 	{
 		m_locale.Initialise("locales");
 
-		if (m_locale.SetLocale(std::string(m_config["locale"])) == Status::Fail)
+		if (m_locale.SetLocale(std::string(m_config["locale"]).c_str()) == Status::Fail)
 		{
-			message_box::Show("Locale Error", "Failed to load initial locale files.", message_box::Type::Error);
+			using namespace eastl::literals::string_literals;
+
+			message_box::Show("Locale Error"s, "Failed to load initial locale files."s, message_box::Type::Error);
 			Log::EngineError("Failed to load locale files for initial locale {}.", m_config["locale"]);
 
 			return Status::Fail;
 		}
 
-		Log::EngineInfo("Locale \"{}\" loaded.", m_locale.GetCurrentLocaleName().cpp_str());
+		Log::EngineInfo("Locale \"{}\" loaded.", m_locale.GetCurrentLocaleName().c_str());
 
 		return Status::Success;
 	}
@@ -243,12 +250,12 @@ namespace stardust
 				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
 				{
 					message_box::Show(std::string(m_locale["errors"]["titles"]["scene"]), std::string(m_locale["errors"]["bodies"]["initial-scene"]), message_box::Type::Error);
-					Log::EngineError("Failed to load initial scene {}.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+					Log::EngineError("Failed to load initial scene {}.", m_sceneManager.CurrentScene()->GetName().c_str());
 					m_isRunning = false;
 				}
 				else
 				{
-					Log::EngineTrace("Initial scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+					Log::EngineTrace("Initial scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName().c_str());
 				}
 			}
 			else [[unlikely]]
@@ -376,7 +383,7 @@ namespace stardust
 	{
 		if (m_isCurrentSceneFinished)
 		{
-			Log::EngineTrace("Scene \"{}\" finished.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+			Log::EngineTrace("Scene \"{}\" finished.", m_sceneManager.CurrentScene()->GetName().c_str());
 
 			m_sceneManager.CurrentScene()->OnUnload();
 			m_sceneManager.PopScene();
@@ -388,12 +395,12 @@ namespace stardust
 				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
 				{
 					message_box::Show(std::string(m_locale["errors"]["titles"]["scene"]), std::string(m_locale["errors"]["bodies"]["next-scene"]), message_box::Type::Error);
-					Log::EngineError("Failed to load scene {}.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+					Log::EngineError("Failed to load scene {}.", m_sceneManager.CurrentScene()->GetName().c_str());
 					m_isRunning = false;
 				}
 				else
 				{
-					Log::EngineTrace("Scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName().cpp_str());
+					Log::EngineTrace("Scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName().c_str());
 				}
 			}
 

@@ -28,7 +28,7 @@ namespace stardust
 		static void EngineTrace(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->trace(message.cpp_str(), std::forward<Args>(args)...);
+			s_engineLogger->trace(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -36,7 +36,7 @@ namespace stardust
 		static void EngineDebug(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->debug(message.cpp_str(), std::forward<Args>(args)...);
+			s_engineLogger->debug(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -44,7 +44,7 @@ namespace stardust
 		static void EngineInfo(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->info(message.cpp_str(), std::forward<Args>(args)...);
+			s_engineLogger->info(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -52,7 +52,7 @@ namespace stardust
 		static void EngineWarn(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->warn(message.cpp_str(), std::forward<Args>(args)...);
+			s_engineLogger->warn(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -60,7 +60,7 @@ namespace stardust
 		static void EngineError(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->error(message.cpp_str(), std::forward<Args>(args)...);
+			s_engineLogger->error(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -68,7 +68,7 @@ namespace stardust
 		static void EngineCritical(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->critical(message.cpp_str(), std::forward<Args>(args)...);
+			s_engineLogger->critical(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -76,7 +76,7 @@ namespace stardust
 		static void Trace(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->trace(message.cpp_str(), std::forward<Args>(args)...);
+			s_clientLogger->trace(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -84,7 +84,7 @@ namespace stardust
 		static void Debug(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->debug(message.cpp_str(), std::forward<Args>(args)...);
+			s_clientLogger->debug(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -92,7 +92,7 @@ namespace stardust
 		static void Info(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->info(message.cpp_str(), std::forward<Args>(args)...);
+			s_clientLogger->info(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -100,7 +100,7 @@ namespace stardust
 		static void Warn(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->warn(message.cpp_str(), std::forward<Args>(args)...);
+			s_clientLogger->warn(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -108,7 +108,7 @@ namespace stardust
 		static void Error(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->error(message.cpp_str(), std::forward<Args>(args)...);
+			s_clientLogger->error(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 
@@ -116,7 +116,7 @@ namespace stardust
 		static void Critical(const String& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->critical(message.cpp_str(), std::forward<Args>(args)...);
+			s_clientLogger->critical(message.c_str(), std::forward<Args>(args)...);
 		#endif
 		}
 

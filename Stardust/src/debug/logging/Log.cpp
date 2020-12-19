@@ -9,7 +9,7 @@ namespace stardust
 	{
 		const Vector<spdlog::sink_ptr> logSinks{
 			std::make_shared<spdlog::sinks::stderr_color_sink_mt>(),
-			std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilepath.cpp_str(), true),
+			std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilepath.c_str(), true),
 		};
 
 		logSinks[0]->set_pattern("%^[%T] %n: %v%$");
