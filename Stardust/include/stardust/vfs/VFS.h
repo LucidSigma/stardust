@@ -13,30 +13,30 @@ namespace stardust
 		[[nodiscard]] extern bool Initialise(const char* argv0);
 		extern void Quit();
 
-		extern void AddToSearchPath(const String& directory);
-		extern void AddToSearchPath(const Vector<String>& directories);
+		extern void AddToSearchPath(const StringView& directory);
+		extern void AddToSearchPath(const Vector<StringView>& directories);
 
-		extern void SetWriteDirectory(const String& writeDirectory);
+		extern void SetWriteDirectory(const StringView& writeDirectory);
 
 		[[nodiscard]] extern String GetDirectorySeparator();
 
-		[[nodiscard]] extern Vector<String> GetAllFilesInDirectory(const String& directory);
-		[[nodiscard]] extern Vector<String> GetAllFilesInDirectoryRecursive(const String& directory);
-		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectory(const String& directory);
-		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectoryRecursive(const String& directory);
-		[[nodiscard]] extern bool DoesFileExist(const String& filepath);
+		[[nodiscard]] extern Vector<String> GetAllFilesInDirectory(const StringView& directory);
+		[[nodiscard]] extern Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory);
+		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectory(const StringView& directory);
+		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory);
+		[[nodiscard]] extern bool DoesFileExist(const StringView& filepath);
 
-		[[nodiscard]] extern bool IsDirectory(const String& filepath);
-		[[nodiscard]] extern String GetParentFilepath(const String& filepath);
-		[[nodiscard]] extern String GetFilenameFromDirectory(const String& filepath);
-		[[nodiscard]] extern String GetFileStem(const String& filename);
-		[[nodiscard]] extern String GetFileExtension(const String& filename);
+		[[nodiscard]] extern bool IsDirectory(const StringView& filepath);
+		[[nodiscard]] extern String GetParentFilepath(const StringView& filepath);
+		[[nodiscard]] extern String GetFilenameFromDirectory(const StringView& filepath);
+		[[nodiscard]] extern String GetFileStem(const StringView& filename);
+		[[nodiscard]] extern String GetFileExtension(const StringView& filename);
 
-		[[nodiscard]] extern Vector<ubyte> ReadFileData(const String& filepath);
-		[[nodiscard]] extern Status WriteToFile(const String& filepath, const Vector<ubyte>& data);
-		[[nodiscard]] extern Status WriteToFile(const String& filepath, const String& data);
-		[[nodiscard]] extern Status AppendToFile(const String& filepath, const Vector<ubyte>& data);
-		[[nodiscard]] extern Status AppendToFile(const String& filepath, const String& data);
+		[[nodiscard]] extern Vector<ubyte> ReadFileData(const StringView& filepath);
+		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);
+		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
+		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
+		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
 	}
 }
 

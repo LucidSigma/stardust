@@ -18,12 +18,12 @@ namespace stardust
 			PHYSFS_deinit();
 		}
 
-		void AddToSearchPath(const String& directory)
+		void AddToSearchPath(const StringView& directory)
 		{
-			PHYSFS_mount(directory.c_str(), nullptr, 1);
+			PHYSFS_mount(directory.data(), nullptr, 1);
 		}
 
-		void AddToSearchPath(const Vector<String>& directories)
+		void AddToSearchPath(const Vector<StringView>& directories)
 		{
 			for (const auto& directory : directories)
 			{
@@ -31,9 +31,9 @@ namespace stardust
 			}
 		}
 
-		void SetWriteDirectory(const String& writeDirectory)
+		void SetWriteDirectory(const StringView& writeDirectory)
 		{
-			PHYSFS_setWriteDir(writeDirectory.c_str());
+			PHYSFS_setWriteDir(writeDirectory.data());
 		}
 
 		[[nodiscard]] String GetDirectorySeparator()
@@ -41,10 +41,10 @@ namespace stardust
 			return String(PHYSFS_getDirSeparator());
 		}
 
-		[[nodiscard]] Vector<String> GetAllFilesInDirectory(const String& directory)
+		[[nodiscard]] Vector<String> GetAllFilesInDirectory(const StringView& directory)
 		{
 			Vector<String> files{ };
-			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.c_str());
+			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.data());
 
 			for (const char* const* filename = enumeratedFiles; *filename != nullptr; ++filename)
 			{
@@ -62,10 +62,10 @@ namespace stardust
 			return files;
 		}
 
-		[[nodiscard]] Vector<String> GetAllFilesInDirectoryRecursive(const String& directory)
+		[[nodiscard]] Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory)
 		{
 			Vector<String> files{ };
-			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.c_str());
+			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.data());
 
 			for (const char* const* filename = enumeratedFiles; *filename != nullptr; ++filename)
 			{
@@ -88,10 +88,10 @@ namespace stardust
 			return files;
 		}
 
-		[[nodiscard]] Vector<String> GetAllFileNamesInDirectory(const String& directory)
+		[[nodiscard]] Vector<String> GetAllFileNamesInDirectory(const StringView& directory)
 		{
 			Vector<String> files{ };
-			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.c_str());
+			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.data());
 
 			for (const char* const* filename = enumeratedFiles; *filename != nullptr; ++filename)
 			{
@@ -107,10 +107,10 @@ namespace stardust
 			return files;
 		}
 
-		[[nodiscard]] Vector<String> GetAllFileNamesInDirectoryRecursive(const String& directory)
+		[[nodiscard]] Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory)
 		{
 			Vector<String> files{ };
-			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.c_str());
+			char** enumeratedFiles = PHYSFS_enumerateFiles(directory.data());
 
 			for (const char* const* filename = enumeratedFiles; *filename != nullptr; ++filename)
 			{
@@ -133,39 +133,39 @@ namespace stardust
 			return files;
 		}
 
-		[[nodiscard]] bool DoesFileExist(const String& filepath)
+		[[nodiscard]] bool DoesFileExist(const StringView& filepath)
 		{
-			return PHYSFS_exists(filepath.c_str()) != 0;
+			return PHYSFS_exists(filepath.data()) != 0;
 		}
 
-		[[nodiscard]] bool IsDirectory(const String& filepath)
+		[[nodiscard]] bool IsDirectory(const StringView& filepath)
 		{
-			return PHYSFS_isDirectory(filepath.c_str()) != 0;
+			return PHYSFS_isDirectory(filepath.data()) != 0;
 		}
 
-		[[nodiscard]] String GetParentFilepath(const String& filepath)
+		[[nodiscard]] String GetParentFilepath(const StringView& filepath)
 		{
-			return std::filesystem::path(filepath.c_str()).parent_path().string().c_str();
+			return std::filesystem::path(filepath.data()).parent_path().string().c_str();
 		}
 
-		[[nodiscard]] String GetFilenameFromDirectory(const String& filepath)
+		[[nodiscard]] String GetFilenameFromDirectory(const StringView& filepath)
 		{
-			return std::filesystem::path(filepath.c_str()).filename().string().c_str();
+			return std::filesystem::path(filepath.data()).filename().string().c_str();
 		}
 
-		[[nodiscard]] String GetFileStem(const String& filename)
+		[[nodiscard]] String GetFileStem(const StringView& filename)
 		{
-			return std::filesystem::path(filename.c_str()).stem().string().c_str();
+			return std::filesystem::path(filename.data()).stem().string().c_str();
 		}
 
-		[[nodiscard]] String GetFileExtension(const String& filename)
+		[[nodiscard]] String GetFileExtension(const StringView& filename)
 		{
-			return std::filesystem::path(filename.c_str()).extension().string().c_str();
+			return std::filesystem::path(filename.data()).extension().string().c_str();
 		}
 
-		[[nodiscard]] Vector<ubyte> ReadFileData(const String& filepath)
+		[[nodiscard]] Vector<ubyte> ReadFileData(const StringView& filepath)
 		{
-			PHYSFS_File* file = PHYSFS_openRead(filepath.c_str());
+			PHYSFS_File* file = PHYSFS_openRead(filepath.data());
 
 			if (file == nullptr)
 			{
@@ -189,9 +189,9 @@ namespace stardust
 			return fileData;
 		}
 
-		[[nodiscard]] Status WriteToFile(const String& filepath, const Vector<ubyte>& data)
+		[[nodiscard]] Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data)
 		{
-			PHYSFS_File* file = PHYSFS_openWrite(filepath.c_str());
+			PHYSFS_File* file = PHYSFS_openWrite(filepath.data());
 
 			if (file == nullptr)
 			{
@@ -212,9 +212,9 @@ namespace stardust
 			return Status::Success;
 		}
 
-		[[nodiscard]] Status WriteToFile(const String& filepath, const String& data)
+		[[nodiscard]] Status WriteToFile(const StringView& filepath, const String& data)
 		{
-			PHYSFS_File* file = PHYSFS_openWrite(filepath.c_str());
+			PHYSFS_File* file = PHYSFS_openWrite(filepath.data());
 
 			if (file == nullptr)
 			{
@@ -235,9 +235,9 @@ namespace stardust
 			return Status::Success;
 		}
 
-		[[nodiscard]] Status AppendToFile(const String& filepath, const Vector<ubyte>& data)
+		[[nodiscard]] Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data)
 		{
-			PHYSFS_File* file = PHYSFS_openAppend(filepath.c_str());
+			PHYSFS_File* file = PHYSFS_openAppend(filepath.data());
 
 			if (file == nullptr)
 			{
@@ -258,9 +258,9 @@ namespace stardust
 			return Status::Success;
 		}
 
-		[[nodiscard]] Status AppendToFile(const String& filepath, const String& data)
+		[[nodiscard]] Status AppendToFile(const StringView& filepath, const String& data)
 		{
-			PHYSFS_File* file = PHYSFS_openAppend(filepath.c_str());
+			PHYSFS_File* file = PHYSFS_openAppend(filepath.data());
 
 			if (file == nullptr)
 			{

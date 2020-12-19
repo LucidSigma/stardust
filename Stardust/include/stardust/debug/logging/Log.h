@@ -22,101 +22,101 @@ namespace stardust
 		inline static std::shared_ptr<spdlog::logger> s_clientLogger = nullptr;
 
 	public:
-		static void Initialise(const String& logFilepath);
+		static void Initialise(const StringView& logFilepath);
 
 		template <typename... Args>
-		static void EngineTrace(const String& message, Args&&... args)
+		static void EngineTrace(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->trace(message.c_str(), std::forward<Args>(args)...);
+			s_engineLogger->trace(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void EngineDebug(const String& message, Args&&... args)
+		static void EngineDebug(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->debug(message.c_str(), std::forward<Args>(args)...);
+			s_engineLogger->debug(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void EngineInfo(const String& message, Args&&... args)
+		static void EngineInfo(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->info(message.c_str(), std::forward<Args>(args)...);
+			s_engineLogger->info(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void EngineWarn(const String& message, Args&&... args)
+		static void EngineWarn(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->warn(message.c_str(), std::forward<Args>(args)...);
+			s_engineLogger->warn(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void EngineError(const String& message, Args&&... args)
+		static void EngineError(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->error(message.c_str(), std::forward<Args>(args)...);
+			s_engineLogger->error(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void EngineCritical(const String& message, Args&&... args)
+		static void EngineCritical(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_engineLogger->critical(message.c_str(), std::forward<Args>(args)...);
+			s_engineLogger->critical(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void Trace(const String& message, Args&&... args)
+		static void Trace(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->trace(message.c_str(), std::forward<Args>(args)...);
+			s_clientLogger->trace(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void Debug(const String& message, Args&&... args)
+		static void Debug(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->debug(message.c_str(), std::forward<Args>(args)...);
+			s_clientLogger->debug(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void Info(const String& message, Args&&... args)
+		static void Info(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->info(message.c_str(), std::forward<Args>(args)...);
+			s_clientLogger->info(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void Warn(const String& message, Args&&... args)
+		static void Warn(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->warn(message.c_str(), std::forward<Args>(args)...);
+			s_clientLogger->warn(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void Error(const String& message, Args&&... args)
+		static void Error(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->error(message.c_str(), std::forward<Args>(args)...);
+			s_clientLogger->error(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 
 		template <typename... Args>
-		static void Critical(const String& message, Args&&... args)
+		static void Critical(const StringView& message, Args&&... args)
 		{
 		#ifndef NDEBUG
-			s_clientLogger->critical(message.c_str(), std::forward<Args>(args)...);
+			s_clientLogger->critical(message.data(), std::forward<Args>(args)...);
 		#endif
 		}
 

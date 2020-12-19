@@ -6,7 +6,7 @@
 
 namespace stardust
 {
-	void Locale::Initialise(const String& baseLocaleDirectory)
+	void Locale::Initialise(const StringView& baseLocaleDirectory)
 	{
 		m_baseLocaleDirectory = baseLocaleDirectory;
 	}

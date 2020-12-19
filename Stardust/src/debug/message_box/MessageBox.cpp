@@ -6,14 +6,14 @@ namespace stardust
 {
 	namespace message_box
 	{
-		void Show(const String& title, const String& message, const Type type)
+		void Show(const StringView& title, const StringView& message, const Type type)
 		{
-			SDL_ShowSimpleMessageBox(static_cast<u32>(type), title.c_str(), message.c_str(), nullptr);
+			SDL_ShowSimpleMessageBox(static_cast<u32>(type), title.data(), message.data(), nullptr);
 		}
 
-		void Show(const std::string& title, const std::string& message, const Type type)
+		void Show(const std::string_view& title, const std::string_view& message, const Type type)
 		{
-			SDL_ShowSimpleMessageBox(static_cast<u32>(type), title.c_str(), message.c_str(), nullptr);
+			SDL_ShowSimpleMessageBox(static_cast<u32>(type), title.data(), message.data(), nullptr);
 		}
 	}
 }

@@ -29,16 +29,16 @@ namespace stardust
 		{
 			const char* argv0;
 
-			String assetsArchive;
-			String localesArchive;
+			StringView assetsArchive;
+			StringView localesArchive;
 
-			String logFilepath;
-			String configFilepath;
+			StringView logFilepath;
+			StringView configFilepath;
 		};
 
 		struct CreateInfo
 		{
-			String title;
+			StringView title;
 			FilesystemInfo filesystem;
 
 			f32 fixedTimestep;

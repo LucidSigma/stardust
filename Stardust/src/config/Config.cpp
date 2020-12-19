@@ -7,7 +7,7 @@
 
 namespace stardust
 {
-	[[nodiscard]] Status Config::Initialise(const String& configFilepath)
+	[[nodiscard]] Status Config::Initialise(const StringView& configFilepath)
 	{
 		std::ifstream configFile(configFilepath.data());
 

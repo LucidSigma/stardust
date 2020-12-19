@@ -12,18 +12,18 @@ namespace stardust
 	class Config
 	{
 	private:
-		String m_filepath;
+		StringView m_filepath;
 		nlohmann::json m_data;
 
 	public:
 		Config() = default;
 		~Config() noexcept = default;
 
-		[[nodiscard]] Status Initialise(const String& configFilepath);
+		[[nodiscard]] Status Initialise(const StringView& configFilepath);
 		void Save() const;
 
-		inline auto& operator [](const String& configType) { return m_data[configType.data()]; }
-		inline const auto& operator [](const String& configType) const { return m_data[configType.data()]; }
+		inline auto& operator [](const StringView& configType) { return m_data[configType.data()]; }
+		inline const auto& operator [](const StringView& configType) const { return m_data[configType.data()]; }
 	};
 }
 

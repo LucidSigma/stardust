@@ -22,11 +22,11 @@ namespace stardust
 		Locale() = default;
 		~Locale() noexcept = default;
 
-		void Initialise(const String& baseLocaleDirectory);
+		void Initialise(const StringView& baseLocaleDirectory);
 		[[nodiscard]] Status SetLocale(const String& localeName);
 
 		inline const String& GetCurrentLocaleName() const noexcept { return m_currentLocaleName; }
-		inline const nlohmann::json& operator [](const String& localeString) const { return m_currentLocale[localeString.data()]; }
+		inline const nlohmann::json& operator [](const StringView& localeString) const { return m_currentLocale[localeString.data()]; }
 
 	private:
 		[[nodiscard]] Optional<nlohmann::json> LoadLocaleFile(const String& filepath) const;

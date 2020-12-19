@@ -1,7 +1,7 @@
 #include "stardust/application/Application.h"
 
 #include <functional>
-#include <string>
+#include <string_view>
 #include <utility>
 
 #include "stardust/data/MathTypes.h"
@@ -136,15 +136,15 @@ namespace stardust
 	{
 		if (!vfs::Initialise(createInfo.filesystem.argv0))
 		{
-			using namespace eastl::literals::string_literals;
+			using namespace eastl::literals::string_view_literals;
 
-			message_box::Show("Filesystem Error"s, "Virtual filesystem failed to initialise."s, message_box::Type::Error);
+			message_box::Show("Filesystem Error"sv, "Virtual filesystem failed to initialise."sv, message_box::Type::Error);
 			Log::EngineError("Failed to initialise virtual filesystem.");
 
 			return Status::Fail;
 		}
 
-		vfs::AddToSearchPath(Vector<String>{ createInfo.filesystem.assetsArchive, createInfo.filesystem.localesArchive });
+		vfs::AddToSearchPath({ createInfo.filesystem.assetsArchive, createInfo.filesystem.localesArchive });
 		Log::EngineInfo("Virtual filesystem initialised.");
 
 		return Status::Success;
@@ -154,10 +154,10 @@ namespace stardust
 	{
 		if (m_config.Initialise(createInfo.filesystem.configFilepath) == Status::Fail)
 		{
-			using namespace eastl::literals::string_literals;
+			using namespace eastl::literals::string_view_literals;
 
-			message_box::Show("Config Error"s, "Config file is invalid."s, message_box::Type::Error);
-			Log::EngineError("Failed to load config file at {}.", createInfo.filesystem.configFilepath.c_str());
+			message_box::Show("Config Error"sv, "Config file is invalid."sv, message_box::Type::Error);
+			Log::EngineError("Failed to load config file at {}.", createInfo.filesystem.configFilepath.data());
 
 			return Status::Fail;
 		}
@@ -173,9 +173,9 @@ namespace stardust
 
 		if (m_locale.SetLocale(std::string(m_config["locale"]).c_str()) == Status::Fail)
 		{
-			using namespace eastl::literals::string_literals;
+			using namespace eastl::literals::string_view_literals;
 
-			message_box::Show("Locale Error"s, "Failed to load initial locale files."s, message_box::Type::Error);
+			message_box::Show("Locale Error"sv, "Failed to load initial locale files."sv, message_box::Type::Error);
 			Log::EngineError("Failed to load locale files for initial locale {}.", m_config["locale"]);
 
 			return Status::Fail;
@@ -190,7 +190,7 @@ namespace stardust
 	{
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
-			message_box::Show(std::string(m_locale["errors"]["titles"]["initialise"]), std::string(m_locale["errors"]["bodies"]["initialise-sdl"]), message_box::Type::Error);
+			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["initialise"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["initialise-sdl"]), message_box::Type::Error);
 			Log::EngineCritical("Failed to initialise SDL: {}.", SDL_GetError());
 
 			return Status::Fail;
@@ -227,7 +227,7 @@ namespace stardust
 
 		if (!m_window.IsValid())
 		{
-			message_box::Show(std::string(m_locale["errors"]["titles"]["window"]), std::string(m_locale["errors"]["bodies"]["window"]), message_box::Type::Error);
+			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["window"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["window"]), message_box::Type::Error);
 			Log::EngineCritical("Failed to create window: {}.", SDL_GetError());
 
 			return Status::Fail;
@@ -249,7 +249,7 @@ namespace stardust
 			{
 				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
 				{
-					message_box::Show(std::string(m_locale["errors"]["titles"]["scene"]), std::string(m_locale["errors"]["bodies"]["initial-scene"]), message_box::Type::Error);
+					message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["scene"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["initial-scene"]), message_box::Type::Error);
 					Log::EngineError("Failed to load initial scene {}.", m_sceneManager.CurrentScene()->GetName().c_str());
 					m_isRunning = false;
 				}
@@ -260,7 +260,7 @@ namespace stardust
 			}
 			else [[unlikely]]
 			{
-				message_box::Show(std::string(m_locale["warnings"]["titles"]["scene"]), std::string(m_locale["warnings"]["bodies"]["initial-scene"]), message_box::Type::Warning);
+				message_box::Show(std::string_view(m_locale["engine"]["warnings"]["titles"]["scene"]), std::string_view(m_locale["engine"]["warnings"]["bodies"]["initial-scene"]), message_box::Type::Warning);
 				Log::EngineWarn("No initial scene loaded.");
 			}
 		}
@@ -394,7 +394,7 @@ namespace stardust
 			{
 				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
 				{
-					message_box::Show(std::string(m_locale["errors"]["titles"]["scene"]), std::string(m_locale["errors"]["bodies"]["next-scene"]), message_box::Type::Error);
+					message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["scene"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["next-scene"]), message_box::Type::Error);
 					Log::EngineError("Failed to load scene {}.", m_sceneManager.CurrentScene()->GetName().c_str());
 					m_isRunning = false;
 				}
