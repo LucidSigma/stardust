@@ -2,6 +2,8 @@
 #ifndef STARDUST_H
 #define STARDUST_H
 
+#include <SDL2/SDL.h>
+
 #include "application/Application.h"
 #include "config/Config.h"
 

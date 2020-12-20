@@ -1,0 +1,10 @@
+{
+	"graphics": {
+		"multisample": true,
+		"resolution": {
+			"height": 1080,
+			"width": 1920
+		}
+	},
+	"locale": "en_gb"
+}
