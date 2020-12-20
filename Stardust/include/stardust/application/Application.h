@@ -36,8 +36,9 @@ namespace stardust
 
 		struct FilepathsInfo
 		{
-			StringView logFilepath;
 			StringView configFilepath;
+			StringView logFilepath;
+			StringView screenshotDirectory;
 			StringView windowIconFile;
 		};
 
@@ -78,6 +79,8 @@ namespace stardust
 
 		HashMap<String, Any> m_globalSceneData{ };
 
+		String m_screenshotDirectory;
+
 	public:
 		Application(const CreateInfo& createInfo);
 		~Application() noexcept;
@@ -102,6 +105,8 @@ namespace stardust
 		inline f32 GetElapsedTime() const noexcept { return m_elapsedTime; }
 		inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
 
+		void CaptureScreenshot() const;
+
 		template <typename T>
 		void SetGlobalSceneData(const String& dataName, const T& data)
 		{
@@ -110,8 +115,6 @@ namespace stardust
 
 		Any& GetFromGlobalSceneData(const String& dataName);
 		void RemoveFromGlobalSceneData(const String& dataName);
-
-		// Take screenshot
 
 		inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 

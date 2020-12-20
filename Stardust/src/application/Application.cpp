@@ -1,8 +1,13 @@
 #include "stardust/application/Application.h"
 
+#include <chrono>
 #include <functional>
+#include <string>
 #include <string_view>
 #include <utility>
+
+#include <glad/glad.h>
+#include <stb_image/stb_image_write.h>
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/debug/logging/Log.h"
@@ -78,6 +83,41 @@ namespace stardust
 		return SDL_GetPlatform();
 	}
 
+	void Application::CaptureScreenshot() const
+	{
+		constexpr usize PixelChannelCount = 3u;
+		const UVec2 screenshotSize = m_window.GetDrawableSize();
+
+		Vector<ubyte> imageData(PixelChannelCount * screenshotSize.x * screenshotSize.y);
+
+		glReadPixels(
+			0, 0,
+			static_cast<i32>(screenshotSize.x), static_cast<i32>(screenshotSize.y),
+			GL_RGB, GL_UNSIGNED_BYTE,
+			imageData.data()
+		);
+
+		const u64 currentTime = static_cast<u64>(std::chrono::system_clock::now().time_since_epoch().count());
+		const String screenshotFilename = m_screenshotDirectory + "/screenshot_" + std::to_string(currentTime).c_str() + ".png";
+
+		const i32 screenshotWriteResult = stbi_write_png(
+			screenshotFilename.c_str(),
+			static_cast<i32>(screenshotSize.x), static_cast<i32>(screenshotSize.y), static_cast<i32>(PixelChannelCount),
+			imageData.data(),
+			static_cast<i32>(screenshotSize.x * PixelChannelCount)
+		);
+
+		if (screenshotWriteResult == 0)
+		{
+			message_box::Show(std::string_view(m_locale["engine"]["warnings"]["titles"]["screenshot"]), std::string_view(m_locale["engine"]["warnings"]["bodies"]["screenshot"]), message_box::Type::Warning);
+			Log::EngineWarn("Failed to take screenshot.");
+		}
+		else [[likely]]
+		{
+			Log::EngineTrace("Screenshot captured at {}.", screenshotFilename.c_str());
+		}
+	}
+
 	Any& Application::GetFromGlobalSceneData(const String& dataName)
 	{
 		return m_globalSceneData[dataName];
@@ -130,6 +170,7 @@ namespace stardust
 
 		m_fixedTimestep = createInfo.fixedTimestep;
 		m_ticksCount = SDL_GetPerformanceCounter();
+		m_screenshotDirectory = createInfo.filepaths.screenshotDirectory;
 
 		m_didInitialiseSuccessfully = true;
 	}
@@ -423,6 +464,20 @@ namespace stardust
 		{
 			switch (event.type)
 			{
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_F2:
+					CaptureScreenshot();
+
+					break;
+
+				default:
+					break;
+				}
+
+				break;
+
 			case SDL_QUIT:
 				m_isRunning = false;
 

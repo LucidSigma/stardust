@@ -49,8 +49,10 @@ namespace stardust
 				break;
 
 			case GL_DEBUG_SEVERITY_MEDIUM:
-				// This Nvidia warning is usually always a false positive, so it is best not to log it.
-				if (!isNvidiaGPU || (isNvidiaGPU && id != 131'218u))
+				// The following Nvidia warnings are usually always false positives in this engine, so it is best not to log them.
+				// 131218 is to do with shaders matching the state when they're bound and used for rendering.
+				// 131154 is to do with not using separate hardware transfer queues. Right now it's a false positive when taking screenshots.
+				if (!isNvidiaGPU || (isNvidiaGPU && (id != 131'218u && id != 131'154u)))
 				{
 					Log::EngineWarn("[OPENGL WARNING]: {}", message);
 				}
