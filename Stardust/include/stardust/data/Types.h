@@ -41,6 +41,7 @@ namespace stardust
 	static_assert(sizeof(f64) == 8u);
 
 	static_assert(sizeof(GLboolean) == sizeof(bool));
+	static_assert(sizeof(GLchar) == sizeof(char));
 
 	static_assert(sizeof(GLbyte) == sizeof(i8));
 	static_assert(sizeof(GLshort) == sizeof(i16));

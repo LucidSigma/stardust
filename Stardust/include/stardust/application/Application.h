@@ -11,6 +11,7 @@
 #include "stardust/config/Config.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
+#include "stardust/graphics/backend/OpenGLContext.h"
 #include "stardust/locale/Locale.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/utility/enums/Status.h"
@@ -59,6 +60,7 @@ namespace stardust
 		Locale m_locale;
 
 		Window m_window;
+		OpenGLContext m_openGLContext;
 		bool m_hasWindowFocus = true;
 
 		eastl::atomic<bool> m_isRunning = true;
@@ -117,9 +119,10 @@ namespace stardust
 		void Initialise(const CreateInfo& createInfo);
 		Status InitialiseVFS(const CreateInfo& createInfo);
 		Status InitialiseConfig(const CreateInfo& createInfo);
-		Status InitialiseLocale(const CreateInfo& createInfo);
+		Status InitialiseLocale(const CreateInfo&);
 		Status InitialiseSDL(const CreateInfo&);
 		Status InitialiseWindow(const CreateInfo& createInfo);
+		Status InitialiseOpenGL(const CreateInfo&);
 		void InitialiseScenes();
 
 		void FixedUpdate();

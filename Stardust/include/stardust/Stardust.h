@@ -13,6 +13,7 @@
 #include "debug/message_box/MessageBox.h"
 #include "debug/logging/Log.h"
 
+#include "graphics/backend/OpenGLContext.h"
 #include "graphics/surface/PixelSurface.h"
 
 #include "locale/Locale.h"

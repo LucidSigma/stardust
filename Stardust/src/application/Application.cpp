@@ -103,6 +103,7 @@ namespace stardust
 			//&Application::InitialiseSoundSystem,
 			&Application::InitialiseSDL,
 			&Application::InitialiseWindow,
+			&Application::InitialiseOpenGL,
 			//&Application::InitialiseRenderer,
 			//&Application::InitialiseTextSystem,
 		};
@@ -167,7 +168,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseLocale(const CreateInfo& createInfo)
+	Status Application::InitialiseLocale(const CreateInfo&)
 	{
 		m_locale.Initialise("locales");
 
@@ -186,7 +187,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseSDL(const CreateInfo& createInfo)
+	Status Application::InitialiseSDL(const CreateInfo&)
 	{
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
@@ -203,9 +204,24 @@ namespace stardust
 
 	Status Application::InitialiseWindow(const CreateInfo& createInfo)
 	{
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, SDL_TRUE);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8); // Use config.
+		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+	#if defined(__APPLE__) && !defined(NDEBUG)
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	#elif defined(__APPLE__)
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	#elif !defined(NDEBUG)
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	#endif
+
 		Window::SetMinimiseOnFullscreenFocusLoss(m_config["graphics"]["enable-fullscreen-minimise"]);
 
-		Vector<Window::CreateFlag> windowCreateFlags{ Window::CreateFlag::AllowHighDPI, Window::CreateFlag::Shown };
+		Vector<Window::CreateFlag> windowCreateFlags{ Window::CreateFlag::AllowHighDPI, Window::CreateFlag::OpenGL, Window::CreateFlag::Shown };
 
 		if (m_config["window"]["fullscreen"])
 		{
@@ -235,6 +251,43 @@ namespace stardust
 
 		m_window.SetIcon(createInfo.filepaths.windowIconFile, m_locale);
 		Log::EngineInfo("Window created.");
+
+		return Status::Success;
+	}
+
+	Status Application::InitialiseOpenGL(const CreateInfo&)
+	{
+		m_openGLContext.Initialise(m_window);
+
+		if (!m_openGLContext.IsValid())
+		{
+			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-context"]), message_box::Type::Error);
+			Log::EngineCritical("Failed to create OpenGL context: {}.", SDL_GetError());
+
+			return Status::Fail;
+		}
+
+		if (m_openGLContext.MakeCurrent() != Status::Success)
+		{
+			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-current"]), message_box::Type::Error);
+			Log::EngineCritical("Failed to set current OpenGL context: {}.", SDL_GetError());
+
+			return Status::Fail;
+		}
+
+		if (OpenGLContext::InitialiseLoader() != Status::Success)
+		{
+			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-load"]), message_box::Type::Error);
+			Log::EngineCritical("Failed to load OpenGL functions.");
+
+			return Status::Fail;
+		}
+
+	#ifndef NDEBUG
+		OpenGLContext::InitialiseDebugCallback();
+	#endif
+
+		Log::EngineInfo("OpenGL set up successfully.");
 
 		return Status::Success;
 	}
