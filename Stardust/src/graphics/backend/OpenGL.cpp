@@ -1,6 +1,5 @@
 #include "stardust/graphics/backend/OpenGL.h"
 
-#include <glad/glad.h>
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
@@ -40,7 +39,7 @@ namespace stardust
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		}
 
-		void __cdecl DebugMessageCallback(const u32 source, const u32 type, const u32 id, const u32 severity, const i32 length, const char* message, const void* userParams) noexcept
+		void __cdecl DebugMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const GLchar* message, const void* userParams) noexcept
 		{
 			switch (severity)
 			{
