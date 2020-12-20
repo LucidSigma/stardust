@@ -6,7 +6,7 @@
 #include "stardust/data/Containers.h"
 #include "stardust/debug/logging/Log.h"
 
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 
 extern "C"
