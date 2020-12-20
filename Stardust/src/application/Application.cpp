@@ -7,6 +7,7 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
+#include "stardust/graphics/backend/OpenGL.h"
 #include "stardust/vfs/VFS.h"
 
 namespace stardust
@@ -275,7 +276,7 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		if (OpenGLContext::InitialiseLoader() != Status::Success)
+		if (opengl::InitialiseLoader() != Status::Success)
 		{
 			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-load"]), message_box::Type::Error);
 			Log::EngineCritical("Failed to load OpenGL functions.");
@@ -284,7 +285,7 @@ namespace stardust
 		}
 
 	#ifndef NDEBUG
-		OpenGLContext::InitialiseDebugCallback();
+		opengl::InitialiseDebugCallback();
 	#endif
 
 		Log::EngineInfo("OpenGL set up successfully.");
@@ -381,7 +382,7 @@ namespace stardust
 		switch (windowEvent.event)
 		{
 		case SDL_WINDOWEVENT_SIZE_CHANGED:
-			m_window.ProcessResize(glm::uvec2{ windowEvent.data1, windowEvent.data2 });
+			m_window.ProcessResize(UVec2{ windowEvent.data1, windowEvent.data2 });
 
 			break;
 
@@ -413,7 +414,7 @@ namespace stardust
 
 		const u64 newTicks = SDL_GetPerformanceCounter();
 		const u64 frameTicks = newTicks - m_ticksCount;
-		m_deltaTime = static_cast<float>(frameTicks) / static_cast<float>(SDL_GetPerformanceFrequency());
+		m_deltaTime = static_cast<f32>(frameTicks) / static_cast<f32>(SDL_GetPerformanceFrequency());
 
 		if (capFramerate)
 		{
