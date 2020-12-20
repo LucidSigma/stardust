@@ -26,7 +26,7 @@ namespace stardust
 		return m_data.is_discarded() ? Status::Fail : Status::Success;
 	}
 
-	void Config::Save() const
+	Status Config::Save() const
 	{
 		std::ofstream configFile(m_filepath.data(), std::ios_base::out | std::ios_base::trunc);
 
@@ -36,10 +36,12 @@ namespace stardust
 
 			message_box::Show("Config Warning"s, "Failed to save config file."s, message_box::Type::Warning);
 
-			return;
+			return Status::Fail;
 		}
 
 		configFile << m_data << "\n";
 		configFile.close();
+
+		return Status::Success;
 	}
 }
