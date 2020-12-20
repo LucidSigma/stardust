@@ -321,6 +321,7 @@ namespace stardust
 		opengl::InitialiseDebugCallback();
 	#endif
 
+		glEnable(GL_SCISSOR_TEST);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 
@@ -337,7 +338,7 @@ namespace stardust
 			glEnable(GL_FRAMEBUFFER_SRGB);
 		}
 
-		glEnable(GL_SCISSOR_TEST);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		Log::EngineInfo("OpenGL set up successfully.");
 
@@ -404,9 +405,16 @@ namespace stardust
 
 	void Application::Render() const
 	{
+		// TEMPORARY.
+		glClearColor(0.3f, 0.05f, 0.5f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+
 		// m_renderer.Clear(colours::Black);
 		// m_sceneManager.CurrentScene()->Render(m_renderer);
 		// m_renderer.Present();
+	
+		m_window.Present();
 	}
 
 	void Application::PollEvents(SDL_Event& event)
