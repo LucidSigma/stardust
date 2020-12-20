@@ -25,6 +25,12 @@ namespace stardust
 	using String = eastl::string;
 	using StringView = eastl::string_view;
 
+	using UTF16String = eastl::u16string;
+	using UTF16StringView = eastl::u16string_view;
+
+	using UTF32String = eastl::u32string;
+	using UTF32StringView = eastl::u32string_view;
+
 	template <typename T, std::size_t N = 1u>
 	using Array = eastl::array<T, N>;
 
