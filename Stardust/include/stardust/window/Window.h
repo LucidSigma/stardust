@@ -112,6 +112,7 @@ namespace stardust
 		inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
 		inline const UVec2& GetSize() const noexcept { return m_size; }
+		[[nodiscard]] UVec2 GetDrawableSize() const noexcept;
 		[[nodiscard]] inline f32 GetAspectRatio() const noexcept { return static_cast<f32>(m_size.x) / static_cast<f32>(m_size.y); }
 
 		[[nodiscard]] UVec2 GetMinimumSize() const noexcept;

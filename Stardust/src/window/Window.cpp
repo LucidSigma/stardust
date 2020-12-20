@@ -237,6 +237,15 @@ namespace stardust
 		iconData = nullptr;
 	}
 
+	[[nodiscard]] UVec2 Window::GetDrawableSize() const noexcept
+	{
+		i32 drawableX = 0;
+		i32 drawableY = 0;
+		SDL_GL_GetDrawableSize(GetRawHandle(), &drawableX, &drawableY);
+
+		return UVec2{ drawableX, drawableY };
+	}
+
 	[[nodiscard]] UVec2 Window::GetMinimumSize() const noexcept
 	{
 		i32 minimumX = 0;
