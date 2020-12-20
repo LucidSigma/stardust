@@ -281,22 +281,22 @@ namespace stardust
 			return Status::Success;
 		}
 		
-		[[nodiscard]] String UTF16ToUTF8(const UTF16String& utf16String)
+		[[nodiscard]] UTF8String UTF16ToUTF8(const UTF16String& utf16String)
 		{
-			String utf8String;
+			UTF8String utf8String;
 			utf8String.resize(utf16String.size());
 
-			PHYSFS_utf8FromUtf16(reinterpret_cast<const PHYSFS_uint16*>(utf16String.data()), utf8String.data(), utf8String.length());
+			PHYSFS_utf8FromUtf16(reinterpret_cast<const PHYSFS_uint16*>(utf16String.data()), reinterpret_cast<char*>(utf8String.data()), utf8String.length());
 
 			return utf8String;
 		}
 
-		[[nodiscard]] UTF16String UTF8ToUTF16(const String& utf8String)
+		[[nodiscard]] UTF16String UTF8ToUTF16(const UTF8String& utf8String)
 		{
 			UTF16String utf16String;
 			utf16String.resize(utf8String.size());
 
-			PHYSFS_utf8ToUtf16(utf8String.data(), reinterpret_cast<PHYSFS_uint16*>(utf16String.data()), utf16String.length());
+			PHYSFS_utf8ToUtf16(reinterpret_cast<const char*>(utf8String.data()), reinterpret_cast<PHYSFS_uint16*>(utf16String.data()), utf16String.length() * sizeof(char16_t));
 
 			return utf16String;
 		}

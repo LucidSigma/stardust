@@ -25,6 +25,9 @@ namespace stardust
 	using String = eastl::string;
 	using StringView = eastl::string_view;
 
+	using UTF8String = eastl::u8string;
+	using UTF8StringView = eastl::u8string_view;
+
 	using UTF16String = eastl::u16string;
 	using UTF16StringView = eastl::u16string_view;
 

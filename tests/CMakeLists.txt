@@ -10,6 +10,10 @@ target_link_libraries(vfs_test PUBLIC Stardust)
 
 set_target_properties(vfs_test PROPERTIES FOLDER "Tests")
 
+add_custom_command(TARGET vfs_test POST_BUILD COMMAND
+	${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/vfs/resources.zip" $<TARGET_FILE_DIR:vfs_test>
+)
+
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
         add_custom_command(TARGET vfs_test POST_BUILD COMMAND
