@@ -290,8 +290,8 @@ namespace stardust
 			{
 				if (SDL_GL_SetSwapInterval(-1) != 0)
 				{
-					didAdaptiveVSyncFail = true;
 					Log::EngineWarn("Failed to set adaptive VSync; defaulting to regular VSync.");
+					didAdaptiveVSyncFail = true;
 				}
 			}
 

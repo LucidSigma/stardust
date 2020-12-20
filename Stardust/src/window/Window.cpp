@@ -136,6 +136,11 @@ namespace stardust
 		}
 	}
 
+	void Window::Present() const
+	{
+		SDL_GL_SwapWindow(GetRawHandle());
+	}
+
 	void Window::ToggleFullscreen()
 	{
 		if (m_isFullscreen)

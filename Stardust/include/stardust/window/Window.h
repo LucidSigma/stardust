@@ -99,6 +99,8 @@ namespace stardust
 		void Initialise(const CreateInfo& createInfo);
 		void Destroy() noexcept;
 
+		void Present() const;
+
 		void ToggleFullscreen();
 
 		void ChangeSize(const UVec2& newSize);
