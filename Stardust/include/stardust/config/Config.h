@@ -12,7 +12,7 @@ namespace stardust
 	class Config
 	{
 	private:
-		StringView m_filepath;
+		String m_filepath;
 		nlohmann::json m_data;
 
 	public:
