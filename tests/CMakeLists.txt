@@ -8,10 +8,14 @@ add_executable(vfs_test "vfs/src/Main.cpp")
 target_include_directories(vfs_test PUBLIC "${PROJECT_SOURCE_DIR}/Stardust/include" ${CATCH2_INCLUDE_DIRS})
 target_link_libraries(vfs_test PUBLIC Stardust)
 
-set_target_properties(vfs_test PROPERTIES FOLDER "Tests")
+set_target_properties(vfs_test 
+	PROPERTIES
+	FOLDER "Tests"
+	RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/tests
+)
 
 add_custom_command(TARGET vfs_test POST_BUILD COMMAND
-	${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/vfs/resources.zip" $<TARGET_FILE_DIR:vfs_test>
+	${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/vfs/vfs_resources.zip" $<TARGET_FILE_DIR:vfs_test>
 )
 
 if(WIN32)

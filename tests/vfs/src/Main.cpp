@@ -5,17 +5,17 @@
 TEST_CASE("VFS can open and read from zip files", "[vfs]")
 {
 	REQUIRE(sd::vfs::Initialise(nullptr));
-	sd::vfs::AddToSearchPath("resources.zip");
+	sd::vfs::AddToSearchPath("vfs_resources.zip");
 	
 	SECTION("Can read files from a zip archive")
 	{
-		REQUIRE(sd::vfs::GetAllFilesInDirectory("resources").size() == 2);
-		REQUIRE(sd::vfs::GetAllFileNamesInDirectory("resources").size() == 2);
+		REQUIRE(sd::vfs::GetAllFilesInDirectory("resources").size() == 2u);
+		REQUIRE(sd::vfs::GetAllFileNamesInDirectory("resources").size() == 2u);
 	}
 	
 	SECTION("Can recursively read files from a zip archive")
 	{
-		REQUIRE(sd::vfs::GetAllFilesInDirectoryRecursive("resources").size() == 4);
+		REQUIRE(sd::vfs::GetAllFilesInDirectoryRecursive("resources").size() == 4u);
 		REQUIRE(sd::vfs::GetAllFileNamesInDirectoryRecursive("resources").size() == 4);
 	}
 	
