@@ -209,7 +209,12 @@ namespace stardust
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8); // Use config.
+		SDL_GL_SetAttribute(
+			SDL_GL_MULTISAMPLESAMPLES,
+			m_config["graphics"]["multisampling"]["enabled"] 
+				? static_cast<i32>(m_config["graphics"]["multisampling"]["sample-count"]) 
+				: 1
+		);
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 	#if defined(__APPLE__) && !defined(NDEBUG)
@@ -276,6 +281,34 @@ namespace stardust
 			return Status::Fail;
 		}
 
+		if (m_config["frame-rate"]["vsync"]["enabled"])
+		{
+			const bool useAdaptiveVSync = m_config["frame-rate"]["vsync"]["adaptive"];
+			bool didAdaptiveVSyncFail = false;
+
+			if (useAdaptiveVSync)
+			{
+				if (SDL_GL_SetSwapInterval(-1) != 0)
+				{
+					didAdaptiveVSyncFail = true;
+					Log::EngineWarn("Failed to set adaptive VSync; defaulting to regular VSync.");
+				}
+			}
+
+			if (!useAdaptiveVSync || didAdaptiveVSyncFail)
+			{
+				if (SDL_GL_SetSwapInterval(1) != 0)
+				{
+					Log::EngineWarn("Failed to set VSync.");
+					SDL_GL_SetSwapInterval(0);
+				}
+			}
+		}
+		else
+		{
+			SDL_GL_SetSwapInterval(0);
+		}
+
 		if (opengl::InitialiseLoader() != Status::Success)
 		{
 			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-load"]), message_box::Type::Error);
@@ -287,6 +320,24 @@ namespace stardust
 	#ifndef NDEBUG
 		opengl::InitialiseDebugCallback();
 	#endif
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		if (m_config["graphics"]["multisampling"]["enabled"])
+		{
+			glEnable(GL_MULTISAMPLE);
+		}
+
+		if (m_config["graphics"]["srgb-gamma"])
+		{
+			glEnable(GL_FRAMEBUFFER_SRGB);
+		}
+
+		glEnable(GL_SCISSOR_TEST);
 
 		Log::EngineInfo("OpenGL set up successfully.");
 
