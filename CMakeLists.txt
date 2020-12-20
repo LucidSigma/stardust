@@ -44,3 +44,4 @@ add_subdirectory("dep/stb_image-2.26")
 # Projects in workspace.
 add_subdirectory("Stardust")
 add_subdirectory("Sandbox")
+add_subdirectory("tests")
