@@ -37,9 +37,6 @@ namespace stardust
 		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
-
-		[[nodiscard]] extern UTF8String UTF16ToUTF8(const UTF16String& utf16String);
-		[[nodiscard]] extern UTF16String UTF8ToUTF16(const UTF8String& utf8String);
 	}
 }
 
