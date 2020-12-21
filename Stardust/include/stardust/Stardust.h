@@ -22,6 +22,7 @@
 
 #include "locale/Locale.h"
 
+#include "math/Math.h"
 #include "rect/Rect.h"
 
 #include "scene/components/Components.h"
