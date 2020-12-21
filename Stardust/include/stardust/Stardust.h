@@ -19,6 +19,7 @@
 
 #include "graphics/backend/OpenGL.h"
 #include "graphics/backend/OpenGLContext.h"
+#include "graphics/renderer/objects/VertexBuffer.h"
 #include "graphics/surface/PixelSurface.h"
 
 #include "locale/Locale.h"
