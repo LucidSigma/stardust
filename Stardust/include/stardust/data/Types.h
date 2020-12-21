@@ -12,7 +12,6 @@
 #include <EASTL/any.h>
 #include <EASTL/optional.h>
 #include <EASTL/variant.h>
-#include <glad/glad.h>
 
 namespace stardust
 {
@@ -39,34 +38,6 @@ namespace stardust
 
 	using f64 = std::double_t;
 	static_assert(sizeof(f64) == 8u);
-
-	static_assert(sizeof(GLboolean) == sizeof(bool));
-	static_assert(sizeof(GLchar) == sizeof(char));
-
-	static_assert(sizeof(GLbyte) == sizeof(i8));
-	static_assert(sizeof(GLshort) == sizeof(i16));
-	static_assert(sizeof(GLint) == sizeof(i32));
-	static_assert(sizeof(GLint64) == sizeof(i64));
-
-	static_assert(sizeof(GLubyte) == sizeof(u8));
-	static_assert(sizeof(GLushort) == sizeof(u16));
-	static_assert(sizeof(GLuint) == sizeof(u32));
-	static_assert(sizeof(GLuint64) == sizeof(u64));
-
-	static_assert(sizeof(GLsizei) == sizeof(i32));
-	static_assert(sizeof(GLenum) == sizeof(u32));
-	static_assert(sizeof(GLfixed) == sizeof(i32));
-	static_assert(sizeof(GLbitfield) == sizeof(u32));
-
-	static_assert(sizeof(GLintptr) == sizeof(iptr));
-	static_assert(sizeof(GLsizeiptr) == sizeof(isize));
-	static_assert(sizeof(GLsync) == sizeof(iptr));
-
-	static_assert(sizeof(GLhalf) == sizeof(u16));
-	static_assert(sizeof(GLfloat) == sizeof(f32));
-	static_assert(sizeof(GLclampf) == sizeof(f32));
-	static_assert(sizeof(GLdouble) == sizeof(f64));
-	static_assert(sizeof(GLclampd) == sizeof(f64));
 
 	template <typename T>
 	using Optional = eastl::optional<T>;

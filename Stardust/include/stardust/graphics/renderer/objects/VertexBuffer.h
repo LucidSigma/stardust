@@ -8,13 +8,12 @@
 #include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/objects/BufferUsage.h"
 
-
 namespace stardust
 {
 	class VertexBuffer
 	{
 	private:
-		u32 m_id = 0u;
+		GLuint m_id = 0u;
 
 	public:
 		VertexBuffer();
@@ -32,7 +31,7 @@ namespace stardust
 		void Initialise(const Vector<T>& vertices, const BufferUsage usage = BufferUsage::Static)
 		{
 			Bind();
-			glBufferData(GL_ARRAY_BUFFER, sizeof(T) * vertices.size(), vertices.data(), static_cast<u32>(usage));
+			glBufferData(GL_ARRAY_BUFFER, sizeof(T) * vertices.size(), vertices.data(), static_cast<GLenum>(usage));
 			Unbind();
 		}
 
@@ -43,7 +42,7 @@ namespace stardust
 		void Bind() const;
 		void Unbind() const;
 
-		inline u32 GetID() const noexcept { return m_id; }
+		inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 	};
 }
 

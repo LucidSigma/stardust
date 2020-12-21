@@ -2,12 +2,12 @@
 #ifndef BUFFER_USAGE_H
 #define BUFFER_USAGE_H
 
-#include "stardust/data/Types.h"
+#include <glad/glad.h>
 
 namespace stardust
 {
 	enum class BufferUsage
-		: u32
+		: GLenum
 	{
 		Static = GL_STATIC_DRAW,
 		Dynamic = GL_DYNAMIC_DRAW,

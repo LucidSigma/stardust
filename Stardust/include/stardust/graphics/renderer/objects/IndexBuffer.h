@@ -15,10 +15,10 @@ namespace stardust
 	class IndexBuffer
 	{
 	private:
-		u32 m_id = 0u;
+		GLuint m_id = 0u;
 		u32 m_indexCount = 0u;
 
-		u32 m_dataType = GL_UNSIGNED_INT;
+		GLenum m_dataType = GL_UNSIGNED_INT;
 
 	public:
 		IndexBuffer();
@@ -36,7 +36,7 @@ namespace stardust
 		void Initialise(const Vector<T>& indices, const BufferUsage usage = BufferUsage::Static)
 		{
 			Bind();
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(T) * indices.size(), indices.data(), static_cast<u32>(usage));
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(T) * indices.size(), indices.data(), static_cast<GLenum>(usage));
 			Unbind();
 
 			m_indexCount = static_cast<u32>(indices.size());
@@ -50,15 +50,19 @@ namespace stardust
 		void Bind() const;
 		void Unbind() const;
 
-		inline u32 GetID() const noexcept { return m_id; }
+		inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 
 		inline unsigned int GetIndexCount() const noexcept { return m_indexCount; }
-		inline u32 GetDataType() const noexcept { return m_dataType; }
+		inline u32 GetDataType() const noexcept { return static_cast<u32>(m_dataType); }
 
 	private:
 		template <typename T>
-		static constexpr u32 GetGLType()
+		static constexpr GLenum GetGLType()
 		{
+			static_assert(sizeof(u8) == sizeof(GLubyte));
+			static_assert(sizeof(u16) == sizeof(GLushort));
+			static_assert(sizeof(u32) == sizeof(GLuint));
+
 			if constexpr (std::is_same_v<T, u32>)
 			{
 				return GL_UNSIGNED_INT;
