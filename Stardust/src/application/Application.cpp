@@ -111,7 +111,11 @@ namespace stardust
 
 		if (screenshotWriteResult == 0)
 		{
-			message_box::Show(std::string_view(m_locale["engine"]["warnings"]["titles"]["screenshot"]), std::string_view(m_locale["engine"]["warnings"]["bodies"]["screenshot"]), message_box::Type::Warning);
+			message_box::Show(
+				std::string_view(m_locale["engine"]["warnings"]["titles"]["screenshot"]),
+				std::string_view(m_locale["engine"]["warnings"]["bodies"]["screenshot"]),
+				message_box::Type::Warning
+			);
 			Log::EngineWarn("Failed to take screenshot.");
 		}
 		else [[likely]]
@@ -236,7 +240,11 @@ namespace stardust
 	{
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
-			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["initialise"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["initialise-sdl"]), message_box::Type::Error);
+			message_box::Show(
+				std::string_view(m_locale["engine"]["errors"]["titles"]["initialise"]),
+				std::string_view(m_locale["engine"]["errors"]["bodies"]["initialise-sdl"]),
+				message_box::Type::Error
+			);
 			Log::EngineCritical("Failed to initialise SDL: {}.", SDL_GetError());
 
 			return Status::Fail;
@@ -293,7 +301,11 @@ namespace stardust
 
 		if (!m_window.IsValid())
 		{
-			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["window"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["window"]), message_box::Type::Error);
+			message_box::Show(
+				std::string_view(m_locale["engine"]["errors"]["titles"]["window"]),
+				std::string_view(m_locale["engine"]["errors"]["bodies"]["window"]),
+				message_box::Type::Error
+			);
 			Log::EngineCritical("Failed to create window: {}.", SDL_GetError());
 
 			return Status::Fail;
@@ -311,7 +323,11 @@ namespace stardust
 
 		if (!m_openGLContext.IsValid())
 		{
-			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-context"]), message_box::Type::Error);
+			message_box::Show(
+				std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]),
+				std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-context"]),
+				message_box::Type::Error
+			);
 			Log::EngineCritical("Failed to create OpenGL context: {}.", SDL_GetError());
 
 			return Status::Fail;
@@ -319,7 +335,11 @@ namespace stardust
 
 		if (m_openGLContext.MakeCurrent() != Status::Success)
 		{
-			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-current"]), message_box::Type::Error);
+			message_box::Show(
+				std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]),
+				std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-current"]),
+				message_box::Type::Error
+			);
 			Log::EngineCritical("Failed to set current OpenGL context: {}.", SDL_GetError());
 
 			return Status::Fail;
@@ -355,7 +375,11 @@ namespace stardust
 
 		if (opengl::InitialiseLoader() != Status::Success)
 		{
-			message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-load"]), message_box::Type::Error);
+			message_box::Show(
+				std::string_view(m_locale["engine"]["errors"]["titles"]["opengl"]),
+				std::string_view(m_locale["engine"]["errors"]["bodies"]["opengl-load"]),
+				message_box::Type::Error
+			);
 			Log::EngineCritical("Failed to load OpenGL functions.");
 
 			return Status::Fail;
@@ -399,7 +423,11 @@ namespace stardust
 			{
 				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
 				{
-					message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["scene"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["initial-scene"]), message_box::Type::Error);
+					message_box::Show(
+						std::string_view(m_locale["engine"]["errors"]["titles"]["scene"]),
+						std::string_view(m_locale["engine"]["errors"]["bodies"]["initial-scene"]),
+						message_box::Type::Error
+					);
 					Log::EngineError("Failed to load initial scene {}.", m_sceneManager.CurrentScene()->GetName().c_str());
 					m_isRunning = false;
 				}
@@ -410,7 +438,11 @@ namespace stardust
 			}
 			else [[unlikely]]
 			{
-				message_box::Show(std::string_view(m_locale["engine"]["warnings"]["titles"]["scene"]), std::string_view(m_locale["engine"]["warnings"]["bodies"]["initial-scene"]), message_box::Type::Warning);
+				message_box::Show(
+					std::string_view(m_locale["engine"]["warnings"]["titles"]["scene"]),
+					std::string_view(m_locale["engine"]["warnings"]["bodies"]["initial-scene"]),
+					message_box::Type::Warning
+				);
 				Log::EngineWarn("No initial scene loaded.");
 			}
 		}
@@ -565,7 +597,11 @@ namespace stardust
 			{
 				if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
 				{
-					message_box::Show(std::string_view(m_locale["engine"]["errors"]["titles"]["scene"]), std::string_view(m_locale["engine"]["errors"]["bodies"]["next-scene"]), message_box::Type::Error);
+					message_box::Show(
+						std::string_view(m_locale["engine"]["errors"]["titles"]["scene"]),
+						std::string_view(m_locale["engine"]["errors"]["bodies"]["next-scene"]),
+						message_box::Type::Error
+					);
 					Log::EngineError("Failed to load scene {}.", m_sceneManager.CurrentScene()->GetName().c_str());
 					m_isRunning = false;
 				}

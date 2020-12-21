@@ -205,7 +205,11 @@ namespace stardust
 	
 		if (rawIconData.empty())
 		{
-			message_box::Show(std::string_view(locale["engine"]["warnings"]["titles"]["window"]), std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-load"]), message_box::Type::Warning);
+			message_box::Show(
+				std::string_view(locale["engine"]["warnings"]["titles"]["window"]),
+				std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-load"]),
+				message_box::Type::Warning
+			);
 			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath.data());
 	
 			return;
@@ -217,7 +221,11 @@ namespace stardust
 	
 		if (iconData == nullptr)
 		{
-			message_box::Show(std::string_view(locale["engine"]["warnings"]["titles"]["window"]), std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-load"]), message_box::Type::Warning);
+			message_box::Show(std::string_view(
+				locale["engine"]["warnings"]["titles"]["window"]),
+				std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-load"]),
+				message_box::Type::Warning
+			);
 			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath.data());
 	
 			return;
@@ -227,7 +235,11 @@ namespace stardust
 	
 		if (!iconSurface.IsValid())
 		{
-			message_box::Show(std::string_view(locale["engine"]["warnings"]["titles"]["window"]), std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-convert"]), message_box::Type::Warning);
+			message_box::Show(
+				std::string_view(locale["engine"]["warnings"]["titles"]["window"]),
+				std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-convert"]),
+				message_box::Type::Warning
+			);
 			Log::EngineWarn("Could not convert window icon image: {}.", SDL_GetError());
 	
 			stbi_image_free(iconData);
