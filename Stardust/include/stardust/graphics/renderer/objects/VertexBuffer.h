@@ -6,28 +6,21 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
+#include "stardust/graphics/renderer/objects/BufferUsage.h"
+
 
 namespace stardust
 {
 	class VertexBuffer
 	{
-	public:
-		enum class Usage
-			: u32
-		{
-			Static = GL_STATIC_DRAW,
-			Dynamic = GL_DYNAMIC_DRAW,
-			Stream = GL_STREAM_DRAW,
-		};
-
 	private:
-		GLuint m_id = 0u;
+		u32 m_id = 0u;
 
 	public:
 		VertexBuffer();
 
 		template <typename T = f32>
-		VertexBuffer(const Vector<T>& vertices, const Usage usage = Usage::Static)
+		VertexBuffer(const Vector<T>& vertices, const BufferUsage usage = BufferUsage::Static)
 			: VertexBuffer()
 		{
 			Initialise(vertices, usage);
@@ -36,10 +29,10 @@ namespace stardust
 		~VertexBuffer() noexcept;
 
 		template <typename T = f32>
-		void Initialise(const Vector<T>& vertices, const Usage usage = Usage::Static)
+		void Initialise(const Vector<T>& vertices, const BufferUsage usage = BufferUsage::Static)
 		{
 			Bind();
-			glBufferData(GL_ARRAY_BUFFER, sizeof(T) * vertices.size(), vertices.data(), static_cast<GLenum>(usage));
+			glBufferData(GL_ARRAY_BUFFER, sizeof(T) * vertices.size(), vertices.data(), static_cast<u32>(usage));
 			Unbind();
 		}
 

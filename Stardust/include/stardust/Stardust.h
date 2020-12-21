@@ -19,6 +19,8 @@
 
 #include "graphics/backend/OpenGL.h"
 #include "graphics/backend/OpenGLContext.h"
+#include "graphics/renderer/objects/BufferUsage.h"
+#include "graphics/renderer/objects/IndexBuffer.h"
 #include "graphics/renderer/objects/VertexBuffer.h"
 #include "graphics/surface/PixelSurface.h"
 
