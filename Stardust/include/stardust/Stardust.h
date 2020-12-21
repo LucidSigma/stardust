@@ -24,6 +24,7 @@
 
 #include "rect/Rect.h"
 
+#include "scene/entity/Entity.h"
 #include "scene/Scene.h"
 #include "scene/SceneManager.h"
 

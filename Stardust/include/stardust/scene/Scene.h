@@ -44,7 +44,7 @@ namespace stardust
 		inline const String& GetName() const noexcept { return m_name; }
 
 	protected:
-		// class Entity CreateEntity();
+		class Entity CreateEntity();
 	};
 }
 
