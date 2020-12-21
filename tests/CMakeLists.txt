@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 3.15)
 
 add_executable(config_test "config/src/Main.cpp")
 add_executable(rect_test "rect/src/Main.cpp")
-add_executable(scene_test "scene/src/Main.cpp")
 add_executable(vfs_test "vfs/src/Main.cpp")
 
-set(TEST_TARGETS config_test rect_test scene_test vfs_test)
+set(TEST_TARGETS config_test rect_test vfs_test)
 
 foreach(TEST_TARGET ${TEST_TARGETS})
     target_include_directories(${TEST_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/Stardust/include" ${CATCH2_INCLUDE_DIRS})

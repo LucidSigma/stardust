@@ -32,6 +32,8 @@ namespace stardust
 
 		inline const UniquePtr<Scene>& CurrentScene() const { return m_scenes.front(); }
 		inline bool IsEmpty() const noexcept { return m_scenes.empty(); }
+
+		inline usize GetSceneCount() const noexcept { return m_scenes.size(); }
 	};
 }
 
