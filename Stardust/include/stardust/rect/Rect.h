@@ -33,8 +33,11 @@ namespace stardust
 		[[nodiscard]] extern bool HasIntersection(const Rect& rect, const Line& line);
 		[[nodiscard]] extern Optional<Rect> GetIntersection(const Rect& a, const Rect& b);
 		[[nodiscard]] extern Rect GetUnion(const Rect& a, const Rect& b);
-		extern void ClipLineToRect(const Rect& rect, Line& line);
 	}
 }
+
+[[nodiscard]] extern bool operator ==(const stardust::rect::Point& lhs, const stardust::rect::Point& rhs) noexcept;
+[[nodiscard]] extern bool operator ==(const stardust::rect::Rect& lhs, const stardust::rect::Rect& rhs) noexcept;
+[[nodiscard]] extern bool operator ==(const stardust::rect::Line& lhs, const stardust::rect::Line& rhs) noexcept;
 
 #endif

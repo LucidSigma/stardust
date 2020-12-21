@@ -82,10 +82,20 @@ namespace stardust
 
 			return rectUnion;
 		}
-
-		void ClipLineToRect(const Rect& rect, Line& line)
-		{
-			SDL_IntersectRectAndLine(&rect, &line.first.x, &line.first.y, &line.second.x, &line.second.y);
-		}
 	}
+}
+
+[[nodiscard]] bool operator ==(const stardust::rect::Point& lhs, const stardust::rect::Point& rhs) noexcept
+{
+	return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+[[nodiscard]] bool operator ==(const stardust::rect::Rect& lhs, const stardust::rect::Rect& rhs) noexcept
+{
+	return lhs.x == rhs.x && lhs.y == rhs.y && lhs.w == rhs.w && lhs.h == rhs.h;
+}
+
+[[nodiscard]] bool operator ==(const stardust::rect::Line& lhs, const stardust::rect::Line& rhs) noexcept
+{
+	return lhs.first == rhs.first && lhs.second == rhs.second;
 }
