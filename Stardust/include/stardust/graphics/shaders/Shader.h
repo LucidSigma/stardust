@@ -29,10 +29,10 @@ namespace stardust
 
 	private:
 		GLuint m_id = 0u;
-		bool m_isValid;
+		bool m_isValid = false;
 
 	public:
-		Shader(const Type type, const String& filepath, const bool isSpirV = false);
+		Shader(const Type type, const StringView& filepath, const bool isSpirV = false);
 
 		Shader(Shader&& other) noexcept;
 		Shader& operator =(Shader&& other) noexcept;

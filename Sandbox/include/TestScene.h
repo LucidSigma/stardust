@@ -13,6 +13,14 @@ public:
 
 	[[nodiscard]] virtual sd::Status OnLoad() override
 	{
+		const auto vertexShader = sd::Shader(sd::Shader::Type::Vertex, "assets/shaders/quad.vert");
+		const auto fragmentShader = sd::Shader(sd::Shader::Type::Fragment, "assets/shaders/quad.frag");
+
+		if (!vertexShader.IsValid() || !fragmentShader.IsValid())
+		{
+			return sd::Status::Fail;
+		}
+
 		return sd::Status::Success;
 	}
 

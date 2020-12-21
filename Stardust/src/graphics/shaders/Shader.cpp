@@ -1,6 +1,5 @@
 #include "stardust/graphics/shaders/Shader.h"
 
-#include <sstream>
 #include <utility>
 
 #include "stardust/debug/logging/Log.h"
@@ -8,10 +7,15 @@
 
 namespace stardust
 {
-	Shader::Shader(const Type type, const String& filepath, const bool isSpirV)
+	Shader::Shader(const Type type, const StringView& filepath, const bool isSpirV)
 		: m_id(glCreateShader(static_cast<GLenum>(type)))
 	{
 		const auto shaderCode = vfs::ReadFileData(filepath);
+
+		if (shaderCode.empty())
+		{
+			return;
+		}
 
 		if (isSpirV)
 		{
@@ -19,7 +23,12 @@ namespace stardust
 		}
 		else
 		{
-			const char* shaderCodeData = reinterpret_cast<const char*>(shaderCode.data());
+			const String shaderCodeString(
+				reinterpret_cast<const char*>(shaderCode.data()),
+				reinterpret_cast<const char*>(shaderCode.data() + shaderCode.size())
+			);
+			const char* shaderCodeData = shaderCodeString.data();
+			
 			CompileGLSL(shaderCodeData);
 		}
 
@@ -84,7 +93,7 @@ namespace stardust
 			Vector<char> infoLog(infoLogLength);
 			glGetShaderInfoLog(m_id, infoLogLength, nullptr, infoLog.data());
 
-			Log::EngineError("Shader {} failed to compile: {}.", m_id, infoLog.data());
+			Log::EngineError("Shader {} failed to compile: {}", m_id, infoLog.data());
 
 			return Status::Fail;
 		}
