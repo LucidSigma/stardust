@@ -2,6 +2,8 @@
 #ifndef VERTEX_BUFFER_H
 #define VERTEX_BUFFER_H
 
+#include "stardust/utility/interfaces/INoncopyable.h"
+
 #include <glad/glad.h>
 
 #include "stardust/data/Containers.h"
@@ -11,6 +13,7 @@
 namespace stardust
 {
 	class VertexBuffer
+		: private INoncopyable
 	{
 	private:
 		GLuint m_id = 0u;
@@ -24,6 +27,9 @@ namespace stardust
 		{
 			Initialise(vertices, usage);
 		}
+
+		VertexBuffer(VertexBuffer&& other) noexcept;
+		VertexBuffer& operator =(VertexBuffer&& other) noexcept;
 
 		~VertexBuffer() noexcept;
 

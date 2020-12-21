@@ -15,11 +15,12 @@ namespace stardust
 	OpenGLContext::OpenGLContext(OpenGLContext&& other) noexcept
 	{
 		Destroy();
+
 		std::swap(m_handle, other.m_handle);
 		std::swap(m_window, other.m_window);
 	}
 
-	OpenGLContext& OpenGLContext::operator=(OpenGLContext&& other) noexcept
+	OpenGLContext& OpenGLContext::operator =(OpenGLContext&& other) noexcept
 	{
 		Destroy();
 		std::swap(m_handle, other.m_handle);

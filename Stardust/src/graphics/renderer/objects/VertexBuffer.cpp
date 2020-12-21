@@ -1,10 +1,27 @@
 #include "stardust/graphics/renderer/objects/VertexBuffer.h"
 
+#include <utility>
+
 namespace stardust
 {
 	VertexBuffer::VertexBuffer()
 	{
 		glGenBuffers(1, &m_id);
+	}
+
+	VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
+	{
+		Destroy();
+
+		std::swap(m_id, other.m_id);
+	}
+
+	VertexBuffer& VertexBuffer::operator =(VertexBuffer&& other) noexcept
+	{
+		Destroy();
+		std::swap(m_id, other.m_id);
+
+		return *this;
 	}
 
 	VertexBuffer::~VertexBuffer() noexcept

@@ -2,6 +2,8 @@
 #ifndef INDEX_BUFFER_H
 #define INDEX_BUFFER_H
 
+#include "stardust/utility/interfaces/INoncopyable.h"
+
 #include <type_traits>
 
 #include <glad/glad.h>
@@ -13,6 +15,7 @@
 namespace stardust
 {
 	class IndexBuffer
+		: private INoncopyable
 	{
 	private:
 		GLuint m_id = 0u;
@@ -29,6 +32,9 @@ namespace stardust
 		{
 			Initialise(indices, usage);
 		}
+
+		IndexBuffer(IndexBuffer&& other) noexcept;
+		IndexBuffer& operator =(IndexBuffer&& other) noexcept;
 
 		~IndexBuffer() noexcept;
 

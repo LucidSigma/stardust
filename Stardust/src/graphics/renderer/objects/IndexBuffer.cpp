@@ -1,10 +1,32 @@
 #include "stardust/graphics/renderer/objects/IndexBuffer.h"
 
+#include <utility>
+
 namespace stardust
 {
 	IndexBuffer::IndexBuffer()
 	{
 		glGenBuffers(1, &m_id);
+	}
+
+	IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
+	{
+		Destroy();
+
+		std::swap(m_id, other.m_id);
+		std::swap(m_indexCount, other.m_indexCount);
+		std::swap(m_dataType, other.m_dataType);
+	}
+
+	IndexBuffer& IndexBuffer::operator =(IndexBuffer&& other) noexcept
+	{
+		Destroy();
+
+		std::swap(m_id, other.m_id);
+		std::swap(m_indexCount, other.m_indexCount);
+		std::swap(m_dataType, other.m_dataType);
+
+		return *this;
 	}
 
 	IndexBuffer::~IndexBuffer() noexcept
@@ -19,7 +41,10 @@ namespace stardust
 		if (m_id != 0u)
 		{
 			glDeleteBuffers(1, &m_id);
+
 			m_id = 0u;
+			m_indexCount = 0u;
+			m_dataType = GL_UNSIGNED_INT;
 		}
 	}
 
