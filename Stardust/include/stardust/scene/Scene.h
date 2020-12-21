@@ -5,6 +5,7 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
 
+#include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
@@ -21,7 +22,7 @@ namespace stardust
 
 	protected:
 		class Application& m_application;
-		// entt::registry& m_entityRegistry;
+		entt::registry& m_entityRegistry;
 
 	public:
 		Scene(class Application& application, const String& name);
@@ -39,7 +40,7 @@ namespace stardust
 
 		inline virtual void PollEvent(const SDL_Event& event) { }
 
-		// inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 		inline const String& GetName() const noexcept { return m_name; }
 
 	protected:

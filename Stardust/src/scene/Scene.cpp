@@ -5,6 +5,6 @@
 namespace stardust
 {
 	Scene::Scene(Application& application, const String& name)
-		: m_name(name), m_application(application)//, m_entityRegistry(application.GetEntityRegistry())
+		: m_name(name), m_application(application), m_entityRegistry(application.GetEntityRegistry())
 	{ }
 }

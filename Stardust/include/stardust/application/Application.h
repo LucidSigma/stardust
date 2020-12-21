@@ -6,6 +6,7 @@
 #include "stardust/utility/interfaces/INonmovable.h"
 
 #include <EASTL/atomic.h>
+#include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
 #include "stardust/config/Config.h"
@@ -74,12 +75,13 @@ namespace stardust
 		SceneManager m_sceneManager;
 		bool m_isCurrentSceneFinished = false;
 
-		Optional<InitialiseCallback> m_onInitialise = NullOpt;
-		Optional<ExitCallback> m_onExit = NullOpt;
-
+		entt::registry m_entityRegistry{ };
 		HashMap<String, Any> m_globalSceneData{ };
 
 		String m_screenshotDirectory;
+
+		Optional<ExitCallback> m_onExit = NullOpt;
+		Optional<InitialiseCallback> m_onInitialise = NullOpt;
 
 	public:
 		Application(const CreateInfo& createInfo);
@@ -97,6 +99,7 @@ namespace stardust
 
 		inline Window& GetWindow() noexcept { return m_window; }
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
+		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 
 		[[nodiscard]] String GetPlatformName() const;
 

@@ -24,6 +24,8 @@ namespace stardust
 
 	Application::~Application() noexcept
 	{
+		m_entityRegistry.clear();
+
 		m_window.Destroy();
 
 		vfs::Quit();
@@ -136,6 +138,7 @@ namespace stardust
 
 		Log::EngineInfo("Logger initialised.");
 		Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName().c_str());
+		Log::EngineInfo("ECS initialised.");
 
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
 			&Application::InitialiseVFS,
@@ -555,7 +558,7 @@ namespace stardust
 
 			m_sceneManager.CurrentScene()->OnUnload();
 			m_sceneManager.PopScene();
-			// m_entityRegistry.clear();
+			m_entityRegistry.clear();
 			// m_soundSystem.GetListener().Reset();
 
 			if (!m_sceneManager.IsEmpty())
