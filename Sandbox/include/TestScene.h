@@ -3,6 +3,12 @@
 class TestScene final
 	: public sd::Scene
 {
+private:
+	sd::Shader m_vertexShader;
+	sd::Shader m_fragmentShader;
+
+	sd::ShaderProgram m_shaderProgram;
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -14,17 +20,17 @@ public:
 
 	[[nodiscard]] virtual sd::Status OnLoad() override
 	{
-		const auto vertexShader = sd::Shader(sd::Shader::Type::Vertex, "assets/shaders/quad.vert");
-		const auto fragmentShader = sd::Shader(sd::Shader::Type::Fragment, "assets/shaders/quad.frag");
+		m_vertexShader.Initialise(sd::Shader::Type::Vertex, "assets/shaders/quad.vert");
+		m_fragmentShader.Initialise(sd::Shader::Type::Fragment, "assets/shaders/quad.frag");
 
-		if (!vertexShader.IsValid() || !fragmentShader.IsValid())
+		if (!m_vertexShader.IsValid() || !m_fragmentShader.IsValid())
 		{
 			return sd::Status::Fail;
 		}
 
-		const auto shaderProgram = sd::ShaderProgram({ &vertexShader, &fragmentShader });
+		m_shaderProgram.Initialise({ &m_vertexShader, &m_fragmentShader });
 
-		if (!shaderProgram.IsValid())
+		if (!m_shaderProgram.IsValid())
 		{
 			return sd::Status::Fail;
 		}
@@ -41,10 +47,14 @@ public:
 
 	}
 
-	virtual void Update(const sd::f32 deltaTime)override { }
+	virtual void Update(const sd::f32 deltaTime) override
+	{
+
+	}
+
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
 
-	// virtual void Render(const Renderer& renderer) const override { };
+	// virtual void Render(const Renderer& renderer) const override { }
 
 	virtual void PollEvent(const SDL_Event& event) override
 	{

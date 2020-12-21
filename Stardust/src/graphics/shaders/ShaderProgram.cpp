@@ -6,9 +6,43 @@
 
 namespace stardust
 {
+	ShaderProgram::ShaderProgram()
+	{ }
+
 	ShaderProgram::ShaderProgram(const Vector<ObserverPtr<const Shader>>& shaders)
-		: m_id(glCreateProgram())
 	{
+		Initialise(shaders);
+	}
+
+	ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
+	{
+		Destroy();
+
+		std::swap(m_id, other.m_id);
+		std::swap(m_isValid, other.m_isValid);
+		std::swap(m_uniformCache, other.m_uniformCache);
+	}
+
+	ShaderProgram& ShaderProgram::operator =(ShaderProgram&& other) noexcept
+	{
+		Destroy();
+
+		std::swap(m_id, other.m_id);
+		std::swap(m_isValid, other.m_isValid);
+		std::swap(m_uniformCache, other.m_uniformCache);
+
+		return *this;
+	}
+
+	ShaderProgram::~ShaderProgram() noexcept
+	{
+		Destroy();
+	}
+
+	void ShaderProgram::Initialise(const Vector<ObserverPtr<const Shader>>& shaders)
+	{
+		m_id = glCreateProgram();
+
 		for (const auto& shader : shaders)
 		{
 			glAttachShader(m_id, shader->GetID());
@@ -38,31 +72,6 @@ namespace stardust
 		}
 
 		m_isValid = true;
-	}
-
-	ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
-	{
-		Destroy();
-
-		std::swap(m_id, other.m_id);
-		std::swap(m_isValid, other.m_isValid);
-		std::swap(m_uniformCache, other.m_uniformCache);
-	}
-
-	ShaderProgram& ShaderProgram::operator =(ShaderProgram&& other) noexcept
-	{
-		Destroy();
-
-		std::swap(m_id, other.m_id);
-		std::swap(m_isValid, other.m_isValid);
-		std::swap(m_uniformCache, other.m_uniformCache);
-
-		return *this;
-	}
-
-	ShaderProgram::~ShaderProgram() noexcept
-	{
-		Destroy();
 	}
 
 	void ShaderProgram::Destroy() noexcept

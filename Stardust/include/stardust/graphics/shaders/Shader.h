@@ -27,18 +27,26 @@ namespace stardust
 			Compute = GL_COMPUTE_SHADER,
 		};
 
+		enum class Language
+		{
+			GLSL,
+			SPIR_V,
+		};
+
 	private:
 		GLuint m_id = 0u;
 		bool m_isValid = false;
 
 	public:
-		Shader(const Type type, const StringView& filepath, const bool isSpirV = false);
+		Shader();
+		Shader(const Type type, const StringView& filepath, const Language language = Language::GLSL);
 
 		Shader(Shader&& other) noexcept;
 		Shader& operator =(Shader&& other) noexcept;
 
 		~Shader() noexcept;
 
+		void Initialise(const Type type, const StringView& filepath, const Language language = Language::GLSL);
 		void Destroy() noexcept;
 
 		inline bool IsValid() const noexcept { return m_id != 0u && m_isValid; }

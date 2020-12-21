@@ -7,32 +7,12 @@
 
 namespace stardust
 {
-	Shader::Shader(const Type type, const StringView& filepath, const bool isSpirV)
-		: m_id(glCreateShader(static_cast<GLenum>(type)))
+	Shader::Shader()
+	{ }
+
+	Shader::Shader(const Type type, const StringView& filepath, const Language language)
 	{
-		const auto shaderCode = vfs::ReadFileData(filepath);
-
-		if (shaderCode.empty())
-		{
-			return;
-		}
-
-		if (isSpirV)
-		{
-			CompileSpirV(shaderCode);
-		}
-		else
-		{
-			const String shaderCodeString(
-				reinterpret_cast<const char*>(shaderCode.data()),
-				reinterpret_cast<const char*>(shaderCode.data() + shaderCode.size())
-			);
-			const char* shaderCodeData = shaderCodeString.c_str();
-			
-			CompileGLSL(shaderCodeData);
-		}
-
-		m_isValid = CheckCompilationErrors() == Status::Success;
+		Initialise(type, filepath, language);
 	}
 
 	Shader::Shader(Shader&& other) noexcept
@@ -56,6 +36,41 @@ namespace stardust
 	Shader::~Shader() noexcept
 	{
 		Destroy();
+	}
+
+	void Shader::Initialise(const Type type, const StringView& filepath, const Language language)
+	{
+		m_id = glCreateShader(static_cast<GLenum>(type));
+		const auto shaderCode = vfs::ReadFileData(filepath);
+
+		if (shaderCode.empty())
+		{
+			return;
+		}
+
+		switch (language)
+		{
+		case Language::SPIR_V:
+			CompileSpirV(shaderCode);
+
+			break;
+
+		case Language::GLSL:
+		default:
+		{
+			const String shaderCodeString(
+				reinterpret_cast<const char*>(shaderCode.data()),
+				reinterpret_cast<const char*>(shaderCode.data() + shaderCode.size())
+			);
+			const char* shaderCodeData = shaderCodeString.c_str();
+
+			CompileGLSL(shaderCodeData);
+
+			break;
+		}
+		}
+
+		m_isValid = CheckCompilationErrors() == Status::Success;
 	}
 
 	void Shader::Destroy() noexcept

@@ -25,6 +25,7 @@ namespace stardust
 		mutable HashMap<String, GLint> m_uniformCache{ };
 
 	public:
+		ShaderProgram();
 		ShaderProgram(const Vector<ObserverPtr<const Shader>>& shaders);
 
 		ShaderProgram(ShaderProgram&& other) noexcept;
@@ -32,6 +33,7 @@ namespace stardust
 
 		~ShaderProgram() noexcept;
 
+		void Initialise(const Vector<ObserverPtr<const Shader>>& shaders);
 		void Destroy() noexcept;
 
 		inline bool IsValid() const noexcept { return m_id != 0u && m_isValid; }
