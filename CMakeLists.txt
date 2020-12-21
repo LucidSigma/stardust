@@ -31,13 +31,11 @@ endif()
 # Header-only dependencies.
 add_subdirectory("dep/Catch2-2.13.3")
 add_subdirectory("dep/concurrentqueue-1.0.2")
-add_subdirectory("dep/EABase-2.09.05")
 add_subdirectory("dep/entt-3.5.2")
 add_subdirectory("dep/nlohmann_json-3.9.1")
 add_subdirectory("dep/spdlog-1.8.2")
 
 # Other dependencies.
-add_subdirectory("dep/EASTL-3.17.03")
 add_subdirectory("dep/Glad-0.1.34")
 add_subdirectory("dep/physfs-3.0.2")
 add_subdirectory("dep/stb_image-2.26")

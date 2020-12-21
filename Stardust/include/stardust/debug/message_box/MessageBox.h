@@ -2,7 +2,6 @@
 #ifndef MESSAGE_BOX_H
 #define MESSAGE_BOX_H
 
-#include <string_view>
 #include <type_traits>
 
 #include <SDL2/SDL.h>
@@ -22,7 +21,6 @@ namespace stardust
 		};
 
 		void Show(const StringView& title, const StringView& message, const Type type);
-		void Show(const std::string_view& title, const std::string_view& message, const Type type);
 	}
 
 	namespace modal = message_box;

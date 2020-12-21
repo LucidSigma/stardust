@@ -2,27 +2,25 @@
 #ifndef POINTERS_H
 #define POINTERS_H
 
-#include <EASTL/functional.h>
-#include <EASTL/shared_ptr.h>
-#include <EASTL/unique_ptr.h>
-#include <EASTL/weak_ptr.h>
+#include <functional>
+#include <memory>
 
 namespace stardust
 {
-	template <typename T, typename Deleter = eastl::default_delete<T>>
-	using UniquePtr = eastl::unique_ptr<T, Deleter>;
+	template <typename T, typename Deleter = std::default_delete<T>>
+	using UniquePtr = std::unique_ptr<T, Deleter>;
 
 	template <typename T>
-	using SharedPtr = eastl::shared_ptr<T>;
+	using SharedPtr = std::shared_ptr<T>;
 
 	template <typename T>
-	using WeakPtr = eastl::weak_ptr<T>;
+	using WeakPtr = std::weak_ptr<T>;
 
 	template <typename T>
 	using ObserverPtr = T*;
 
 	template <typename T>
-	using ReferenceWrapper = eastl::reference_wrapper<T>;
+	using ReferenceWrapper = std::reference_wrapper<T>;
 }
 
 #endif

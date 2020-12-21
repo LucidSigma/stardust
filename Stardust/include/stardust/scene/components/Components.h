@@ -5,4 +5,9 @@
 #include "TagComponent.h"
 #include "TransformComponent.h"
 
+namespace stardust
+{
+	namespace comp = components;
+}
+
 #endif

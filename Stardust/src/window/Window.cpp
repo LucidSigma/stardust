@@ -1,7 +1,6 @@
 #include "stardust/window/Window.h"
 
 #include <algorithm>
-#include <string_view>
 #include <utility>
 
 #include <stb_image/stb_image.h>
@@ -206,27 +205,32 @@ namespace stardust
 		if (rawIconData.empty())
 		{
 			message_box::Show(
-				std::string_view(locale["engine"]["warnings"]["titles"]["window"]),
-				std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-load"]),
+				locale["engine"]["warnings"]["titles"]["window"],
+				locale["engine"]["warnings"]["bodies"]["window-icon-load"],
 				message_box::Type::Warning
 			);
-			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath.data());
+			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath);
 	
 			return;
 		}
 	
 		i32 iconWidth = 0;
 		i32 iconHeight = 0;
-		stbi_uc* iconData = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(rawIconData.data()), static_cast<int>(rawIconData.size()), &iconWidth, &iconHeight, nullptr, STBI_rgb_alpha);
+		stbi_uc* iconData = stbi_load_from_memory(
+			reinterpret_cast<const stbi_uc*>(rawIconData.data()),
+			static_cast<i32>(rawIconData.size()),
+			&iconWidth, &iconHeight, nullptr,
+			STBI_rgb_alpha
+		);
 	
 		if (iconData == nullptr)
 		{
-			message_box::Show(std::string_view(
-				locale["engine"]["warnings"]["titles"]["window"]),
-				std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-load"]),
+			message_box::Show(
+				locale["engine"]["warnings"]["titles"]["window"],
+				locale["engine"]["warnings"]["bodies"]["window-icon-load"],
 				message_box::Type::Warning
 			);
-			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath.data());
+			Log::EngineWarn("Failed to open window icon file at {}.", iconFilepath);
 	
 			return;
 		}
@@ -236,8 +240,8 @@ namespace stardust
 		if (!iconSurface.IsValid())
 		{
 			message_box::Show(
-				std::string_view(locale["engine"]["warnings"]["titles"]["window"]),
-				std::string_view(locale["engine"]["warnings"]["bodies"]["window-icon-convert"]),
+				locale["engine"]["warnings"]["titles"]["window"],
+				locale["engine"]["warnings"]["bodies"]["window-icon-convert"],
 				message_box::Type::Warning
 			);
 			Log::EngineWarn("Could not convert window icon image: {}.", SDL_GetError());
@@ -412,14 +416,14 @@ namespace stardust
 
 	i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const
 	{
-		if (const Position* windowPosition = eastl::get_if<Position>(&windowCoordinate);
+		if (const Position* windowPosition = std::get_if<Position>(&windowCoordinate);
 			windowPosition != nullptr) [[likely]]
 		{
 			return static_cast<i32>(*windowPosition);
 		}
 		else
 		{
-			return eastl::get<i32>(windowCoordinate);
+			return std::get<i32>(windowCoordinate);
 		}
 	}
 }

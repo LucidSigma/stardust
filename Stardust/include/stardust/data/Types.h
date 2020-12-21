@@ -2,16 +2,12 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <any>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-
-#include <EASTL/allocator.h>
-#include <EASTL/type_traits.h>
-#include <EASTL/utility.h>
-#include <EASTL/any.h>
-#include <EASTL/optional.h>
-#include <EASTL/variant.h>
+#include <optional>
+#include <variant>
 
 namespace stardust
 {
@@ -40,14 +36,14 @@ namespace stardust
 	static_assert(sizeof(f64) == 8u);
 
 	template <typename T>
-	using Optional = eastl::optional<T>;
+	using Optional = std::optional<T>;
 
-	constexpr eastl::nullopt_t NullOpt = eastl::nullopt;
+	constexpr std::nullopt_t NullOpt = std::nullopt;
 
 	template <typename... Types>
-	using Variant = eastl::variant<Types...>;
+	using Variant = std::variant<Types...>;
 
-	using Any = eastl::any;
+	using Any = std::any;
 }
 
 #endif

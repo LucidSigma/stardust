@@ -1,7 +1,6 @@
 #include "stardust/utility/random/Random.h"
 
 #include <algorithm>
-#include <iterator>
 
 namespace stardust
 {
@@ -64,7 +63,7 @@ namespace stardust
 
 	[[nodiscard]] usize Random::DiscreteDistribution(const Vector<f64>& weights)
 	{
-		const std::discrete_distribution discreteDistribution(eastl::cbegin(weights), eastl::cend(weights));
+		const std::discrete_distribution discreteDistribution(std::cbegin(weights), std::cend(weights));
 
 		return discreteDistribution(s_randomEngine);
 	}

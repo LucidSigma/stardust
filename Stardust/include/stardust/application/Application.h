@@ -5,9 +5,9 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
 
+#include <atomic>
 #include <functional>
 
-#include <EASTL/atomic.h>
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
@@ -69,7 +69,7 @@ namespace stardust
 		OpenGLContext m_openGLContext;
 		bool m_hasWindowFocus = true;
 
-		eastl::atomic<bool> m_isRunning = true;
+		std::atomic_bool m_isRunning = true;
 
 		f32 m_fixedTimestep = 0.0f;
 		f32 m_deltaTime = 0.0f;

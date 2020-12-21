@@ -52,7 +52,7 @@ namespace stardust
 
 	const VertexLayout& VertexLayout::AddVertexBuffer(const VertexBuffer& vertexBuffer) const
 	{
-		m_vertexBuffers.push_back(eastl::cref(vertexBuffer));
+		m_vertexBuffers.push_back(std::cref(vertexBuffer));
 
 		return *this;
 	}
@@ -89,7 +89,7 @@ namespace stardust
 				static_cast<f32>(attribute.elementCount) / static_cast<f32>(MaxVertexInputElementCount)
 			));
 
-			for (u32 i = 0; i < vertexInputSlotCount; ++i)
+			for (u32 i = 0u; i < vertexInputSlotCount; ++i)
 			{
 				glVertexAttribPointer(
 					currentVertexLocation,
@@ -107,13 +107,14 @@ namespace stardust
 			m_attributes.pop();
 		}
 
+		Unbind();
+
 		for (const auto& vertexBuffer : m_vertexBuffers)
 		{
 			vertexBuffer.get().Unbind();
 		}
 
 		m_vertexBuffers.clear();
-		Unbind();
 	}
 
 	void VertexLayout::Destroy() noexcept

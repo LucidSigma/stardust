@@ -2,80 +2,78 @@
 #ifndef CONTAINERS_H
 #define CONTAINERS_H
 
+#include <array>
 #include <cstddef>
+#include <deque>
+#include <iterator>
+#include <list>
+#include <map>
+#include <queue>
+#include <set>
+#include <stack>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include <concurrentqueue/concurrentqueue.h>
-#include <EASTL/array.h>
-#include <EASTL/deque.h>
-#include <EASTL/hash_map.h>
-#include <EASTL/hash_set.h>
-#include <EASTL/iterator.h>
-#include <EASTL/list.h>
-#include <EASTL/map.h>
-#include <EASTL/priority_queue.h>
-#include <EASTL/queue.h>
-#include <EASTL/set.h>
-#include <EASTL/stack.h>
-#include <EASTL/string.h>
-#include <EASTL/string_view.h>
-#include <EASTL/vector.h>
 
 namespace stardust
 {
-	using String = eastl::string;
-	using StringView = eastl::string_view;
+	using String = std::string;
+	using StringView = std::string_view;
 
-	using UTF8String = eastl::u8string;
-	using UTF8StringView = eastl::u8string_view;
+	using UTF8String = std::u8string;
+	using UTF8StringView = std::u8string_view;
 
-	using UTF16String = eastl::u16string;
-	using UTF16StringView = eastl::u16string_view;
+	using UTF16String = std::u16string;
+	using UTF16StringView = std::u16string_view;
 
-	using UTF32String = eastl::u32string;
-	using UTF32StringView = eastl::u32string_view;
+	using UTF32String = std::u32string;
+	using UTF32StringView = std::u32string_view;
 
 	template <typename T, std::size_t N = 1u>
-	using Array = eastl::array<T, N>;
+	using Array = std::array<T, N>;
 
 	template <typename T>
-	using Vector = eastl::vector<T>;
+	using Vector = std::vector<T>;
 
 	template <typename T>
-	using Deque = eastl::deque<T>;
+	using Deque = std::deque<T>;
 
 	template <typename T>
-	using LinkedList = eastl::list<T>;
+	using LinkedList = std::list<T>;
 
 	template <typename K, typename V>
-	using HashMap = eastl::hash_map<K, V>;
+	using HashMap = std::unordered_map<K, V>;
 
 	template <typename T>
-	using HashSet = eastl::hash_set<T>;
+	using HashSet = std::unordered_set<T>;
 
 	template <typename K, typename V>
-	using Map = eastl::map<K, V>;
+	using Map = std::map<K, V>;
+
+	template <typename K, typename V>
+	using MultiMap = std::multimap<K, V>;
 
 	template <typename T>
-	using Set = eastl::set<T>;
+	using Set = std::set<T>;
 
 	template <typename T>
-	using Queue = eastl::queue<T>;
+	using MultiSet = std::multiset<T>;
 
 	template <typename T>
-	using PriorityQueue = eastl::priority_queue<T>;
+	using Queue = std::queue<T>;
 
 	template <typename T>
-	using Stack = eastl::stack<T>;
+	using PriorityQueue = std::priority_queue<T>;
+
+	template <typename T>
+	using Stack = std::stack<T>;
 
 	template <typename T>
 	using ConcurrentQueue = moodycamel::ConcurrentQueue<T>;
 }
-
-#ifndef WIN32
-#define __cdecl
-#endif
-
-extern void* __cdecl operator new[](const std::size_t size, const char* name, const int flags, const unsigned int debugFlags, const char* file, const int line);
-extern void* __cdecl operator new[](const std::size_t, const std::size_t alignment, const std::size_t size, const char* name, const int flags, const unsigned int debugFlags, const char* file, const int line);
 
 #endif

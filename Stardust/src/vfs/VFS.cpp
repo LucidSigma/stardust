@@ -78,7 +78,7 @@ namespace stardust
 				else
 				{
 					const auto filesInDirectory = GetAllFilesInDirectoryRecursive(fullFilepath);
-					files.insert(eastl::cend(files), eastl::cbegin(filesInDirectory), eastl::cend(filesInDirectory));
+					files.insert(std::cend(files), std::cbegin(filesInDirectory), std::cend(filesInDirectory));
 				}
 			}
 
@@ -123,7 +123,7 @@ namespace stardust
 				else
 				{
 					const auto filesInDirectory = GetAllFileNamesInDirectoryRecursive(fullFilepath);
-					files.insert(eastl::cend(files), eastl::cbegin(filesInDirectory), eastl::cend(filesInDirectory));
+					files.insert(std::cend(files), std::cbegin(filesInDirectory), std::cend(filesInDirectory));
 				}
 			}
 
