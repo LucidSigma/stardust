@@ -22,6 +22,7 @@
 #include "graphics/renderer/objects/BufferUsage.h"
 #include "graphics/renderer/objects/IndexBuffer.h"
 #include "graphics/renderer/objects/VertexBuffer.h"
+#include "graphics/renderer/objects/VertexLayout.h"
 #include "graphics/surface/PixelSurface.h"
 
 #include "locale/Locale.h"

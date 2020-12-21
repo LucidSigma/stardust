@@ -2,6 +2,7 @@
 #ifndef POINTERS_H
 #define POINTERS_H
 
+#include <EASTL/functional.h>
 #include <EASTL/shared_ptr.h>
 #include <EASTL/unique_ptr.h>
 #include <EASTL/weak_ptr.h>
@@ -19,6 +20,9 @@ namespace stardust
 
 	template <typename T>
 	using ObserverPtr = T*;
+
+	template <typename T>
+	using ReferenceWrapper = eastl::reference_wrapper<T>;
 }
 
 #endif

@@ -5,6 +5,8 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
 
+#include <functional>
+
 #include <EASTL/atomic.h>
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
