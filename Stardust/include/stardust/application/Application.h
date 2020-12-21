@@ -47,7 +47,9 @@ namespace stardust
 
 		struct CreateInfo
 		{
-			StringView title;
+			StringView applicationName;
+			StringView windowTitle;
+
 			FilesystemInfo filesystem;
 			FilepathsInfo filepaths;
 

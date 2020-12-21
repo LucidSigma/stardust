@@ -5,7 +5,7 @@
 
 namespace stardust
 {
-	void Log::Initialise(const StringView& logFilepath)
+	void Log::Initialise(const StringView& applicationName, const StringView& logFilepath)
 	{
 		const Vector<spdlog::sink_ptr> logSinks{
 			std::make_shared<spdlog::sinks::stderr_color_sink_mt>(),
@@ -15,12 +15,15 @@ namespace stardust
 		logSinks[0]->set_pattern("%^[%T] %n: %v%$");
 		logSinks[1]->set_pattern("[%T] [%l] %n: %v");
 
+		String clientLoggerName = applicationName.data();
+		clientLoggerName.make_upper();
+
 		s_engineLogger = std::make_shared<spdlog::logger>("STARDUST", eastl::cbegin(logSinks), eastl::cend(logSinks));
 		spdlog::register_logger(s_engineLogger);
 		s_engineLogger->set_level(spdlog::level::trace);
 		s_engineLogger->flush_on(spdlog::level::trace);
 
-		s_clientLogger = std::make_shared<spdlog::logger>("CLIENT", eastl::cbegin(logSinks), eastl::cend(logSinks));
+		s_clientLogger = std::make_shared<spdlog::logger>(clientLoggerName.c_str(), eastl::cbegin(logSinks), eastl::cend(logSinks));
 		spdlog::register_logger(s_clientLogger);
 		s_clientLogger->set_level(spdlog::level::trace);
 		s_clientLogger->flush_on(spdlog::level::trace);

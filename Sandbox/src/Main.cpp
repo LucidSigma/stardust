@@ -7,7 +7,9 @@
 int main([[maybe_unused]] const int argc, char* argv[])
 {
 	sd::Application application(sd::Application::CreateInfo{
-		.title = "Stardust Sandbox",
+		.applicationName = "Sandbox",
+		.windowTitle = "Stardust Sandbox",
+
 		.filesystem = sd::Application::FilesystemInfo{
 			.argv0 = argv[0],
 			.assetsArchive = "assets.pak",

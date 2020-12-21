@@ -137,7 +137,7 @@ namespace stardust
 	void Application::Initialise(const CreateInfo& createInfo)
 	{
 	#ifndef NDEBUG
-		Log::Initialise(createInfo.filepaths.logFilepath);
+		Log::Initialise(createInfo.applicationName, createInfo.filepaths.logFilepath);
 	#endif
 
 		Log::EngineInfo("Logger initialised.");
@@ -292,7 +292,7 @@ namespace stardust
 		}
 
 		m_window.Initialise(Window::CreateInfo{
-			.title = createInfo.title.data(),
+			.title = createInfo.windowTitle,
 			.x = Window::Position::Centred,
 			.y = Window::Position::Centred,
 			.size = UVec2{ m_config["window"]["size"]["width"], m_config["window"]["size"]["height"] },

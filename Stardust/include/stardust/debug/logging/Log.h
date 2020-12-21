@@ -22,7 +22,7 @@ namespace stardust
 		inline static std::shared_ptr<spdlog::logger> s_clientLogger = nullptr;
 
 	public:
-		static void Initialise(const StringView& logFilepath);
+		static void Initialise(const StringView& applicationName, const StringView& logFilepath);
 
 		template <typename... Args>
 		static void EngineTrace(const StringView& message, Args&&... args)
