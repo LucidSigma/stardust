@@ -7,6 +7,7 @@
 
 #include "application/Application.h"
 #include "config/Config.h"
+#include "camera/Camera2D.h"
 
 #include "data/Containers.h"
 #include "data/MathTypes.h"
