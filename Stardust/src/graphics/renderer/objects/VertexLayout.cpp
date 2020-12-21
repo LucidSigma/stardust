@@ -126,8 +126,12 @@ namespace stardust
 			m_id = 0u;
 
 			m_vertexBuffers.clear();
-			m_attributes = { };
 			m_vertexSize = 0u;
+
+			if (!m_attributes.empty())
+			{
+				m_attributes = { };
+			}
 		}
 	}
 
