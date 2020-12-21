@@ -2,6 +2,7 @@
 #ifndef STARDUST_H
 #define STARDUST_H
 
+#include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
 #include "application/Application.h"
