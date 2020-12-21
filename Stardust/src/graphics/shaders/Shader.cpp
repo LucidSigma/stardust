@@ -27,7 +27,7 @@ namespace stardust
 				reinterpret_cast<const char*>(shaderCode.data()),
 				reinterpret_cast<const char*>(shaderCode.data() + shaderCode.size())
 			);
-			const char* shaderCodeData = shaderCodeString.data();
+			const char* shaderCodeData = shaderCodeString.c_str();
 			
 			CompileGLSL(shaderCodeData);
 		}

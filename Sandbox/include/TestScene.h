@@ -9,6 +9,7 @@ public:
 	{
 
 	}
+
 	virtual ~TestScene() noexcept = default;
 
 	[[nodiscard]] virtual sd::Status OnLoad() override
@@ -17,6 +18,13 @@ public:
 		const auto fragmentShader = sd::Shader(sd::Shader::Type::Fragment, "assets/shaders/quad.frag");
 
 		if (!vertexShader.IsValid() || !fragmentShader.IsValid())
+		{
+			return sd::Status::Fail;
+		}
+
+		const auto shaderProgram = sd::ShaderProgram({ &vertexShader, &fragmentShader });
+
+		if (!shaderProgram.IsValid())
 		{
 			return sd::Status::Fail;
 		}

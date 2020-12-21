@@ -165,7 +165,7 @@ namespace stardust
 		}
 	}
 
-	usize VertexLayout::GetDataTypeSize(const GLenum dataType)
+	[[nodiscard]] usize VertexLayout::GetDataTypeSize(const GLenum dataType)
 	{
 		static const HashMap<GLenum, usize> sizeLookup{
 			{ GL_FLOAT, sizeof(GLfloat) },

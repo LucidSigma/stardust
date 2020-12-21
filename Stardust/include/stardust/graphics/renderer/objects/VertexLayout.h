@@ -76,7 +76,7 @@ namespace stardust
 		inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 
 	private:
-		static usize GetDataTypeSize(const GLenum dataType);
+		[[nodiscard]] static usize GetDataTypeSize(const GLenum dataType);
 	};
 }
 
