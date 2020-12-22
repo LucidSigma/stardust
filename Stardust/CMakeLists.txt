@@ -37,8 +37,8 @@ source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/include/stardust" FILES ${STARDUST_
 
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
-        add_custom_command(TARGET Stardust POST_BUILD COMMAND
-			${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
+		add_custom_command(TARGET Stardust POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
 		)
     endforeach()
 endif()

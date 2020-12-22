@@ -20,23 +20,22 @@ set_target_properties(
 	RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Tests
 )
 
-add_custom_command(TARGET config_test POST_BUILD COMMAND
-	${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/config/config_test.json" $<TARGET_FILE_DIR:config_test>
+add_custom_command(TARGET config_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/config/config_test.json" $<TARGET_FILE_DIR:config_test>
 )
 
-add_custom_command(TARGET fs_test POST_BUILD COMMAND
-	${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/filesystem/fs_resources.zip" $<TARGET_FILE_DIR:fs_test>
+add_custom_command(TARGET fs_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/filesystem/fs_resources.zip" $<TARGET_FILE_DIR:fs_test>
 )
 
-
-add_custom_command(TARGET fs_test POST_BUILD COMMAND
-	${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/filesystem/resources $<TARGET_FILE_DIR:fs_test>/fs_resources
+add_custom_command(TARGET fs_test POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/filesystem/resources $<TARGET_FILE_DIR:fs_test>/fs_resources
 )
 
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
-        add_custom_command(TARGET fs_test POST_BUILD COMMAND
-            ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:config_test>
+        add_custom_command(TARGET fs_test POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:config_test>
         )
     endforeach()
 endif()

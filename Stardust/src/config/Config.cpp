@@ -6,6 +6,7 @@
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/filesystem/Filesystem.h"
 #include "stardust/filesystem/vfs/VFS.h"
+#include "stardust/locale/Locale.h"
 
 namespace stardust
 {
@@ -20,8 +21,9 @@ namespace stardust
 		}
 
 		const String configFilepath = String(configDirectory) + "/" + String(configFilename);
+		bool doesConfigFileExist = filesystem::DoesFileExist(configFilepath);
 
-		if (!filesystem::DoesFileExist(configFilepath))
+		if (!doesConfigFileExist)
 		{
 			Log::EngineWarn("{} not found; copying from default.", configFilename);
 
@@ -51,7 +53,33 @@ namespace stardust
 		m_data = nlohmann::json::parse(configFileData, nullptr, false);
 		m_filepath = configFilepath;
 
-		return m_data.is_discarded() ? Status::Fail : Status::Success;
+		if (m_data.is_discarded())
+		{
+			return Status::Fail;
+		}
+
+		if (!doesConfigFileExist)
+		{
+			String preferredLocale = "en_gb";
+			const auto preferredLocales = Locale::GetSystemPreferredLocales();
+
+			for (const auto& locale : preferredLocales)
+			{
+				if (vfs::IsDirectory("locales/" + locale))
+				{
+					preferredLocale = locale;
+					Log::EngineWarn("Locale {} loaded from system preferences.", preferredLocale);
+
+					break;
+				}
+			}
+
+			m_data["locale"] = preferredLocale;
+			
+			return Save();
+		}
+
+		return Status::Success;
 	}
 
 	Status Config::Save() const
