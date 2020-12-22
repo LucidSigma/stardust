@@ -26,6 +26,11 @@ add_custom_command(TARGET fs_test POST_BUILD COMMAND
 	${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/filesystem/fs_resources.zip" $<TARGET_FILE_DIR:fs_test>
 )
 
+
+add_custom_command(TARGET fs_test POST_BUILD COMMAND
+	${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/filesystem/resources $<TARGET_FILE_DIR:fs_test>/fs_resources
+)
+
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
         add_custom_command(TARGET fs_test POST_BUILD COMMAND

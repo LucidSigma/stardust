@@ -14,7 +14,10 @@ namespace stardust
 
 			for (const auto& file : std::filesystem::directory_iterator(directory))
 			{
-				files.push_back(file.path().string());
+				if (!file.is_directory())
+				{
+					files.push_back(file.path().string());
+				}
 			}
 
 			return files;
@@ -26,7 +29,10 @@ namespace stardust
 
 			for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
 			{
-				files.push_back(file.path().string());
+				if (!file.is_directory())
+				{
+					files.push_back(file.path().string());
+				}
 			}
 
 			return files;
@@ -38,7 +44,10 @@ namespace stardust
 
 			for (const auto& file : std::filesystem::directory_iterator(directory))
 			{
-				files.push_back(file.path().filename().string());
+				if (!file.is_directory())
+				{
+					files.push_back(file.path().filename().string());
+				}
 			}
 
 			return files;
@@ -50,7 +59,10 @@ namespace stardust
 
 			for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
 			{
-				files.push_back(file.path().filename().string());
+				if (!file.is_directory())
+				{
+					files.push_back(file.path().filename().string());
+				}
 			}
 
 			return files;
