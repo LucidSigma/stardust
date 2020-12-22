@@ -1,6 +1,4 @@
-#include "stardust/vfs/VFS.h"
-
-#include <filesystem>
+#include "stardust/filesystem/vfs/VFS.h"
 
 #include <physfs/physfs.h>
 
@@ -141,26 +139,6 @@ namespace stardust
 		[[nodiscard]] bool IsDirectory(const StringView& filepath)
 		{
 			return PHYSFS_isDirectory(filepath.data()) != 0;
-		}
-
-		[[nodiscard]] String GetParentFilepath(const StringView& filepath)
-		{
-			return std::filesystem::path(filepath.data()).parent_path().string().c_str();
-		}
-
-		[[nodiscard]] String GetFilenameFromDirectory(const StringView& filepath)
-		{
-			return std::filesystem::path(filepath.data()).filename().string().c_str();
-		}
-
-		[[nodiscard]] String GetFileStem(const StringView& filename)
-		{
-			return std::filesystem::path(filename.data()).stem().string().c_str();
-		}
-
-		[[nodiscard]] String GetFileExtension(const StringView& filename)
-		{
-			return std::filesystem::path(filename.data()).extension().string().c_str();
 		}
 
 		[[nodiscard]] Vector<ubyte> ReadFileData(const StringView& filepath)

@@ -2,7 +2,8 @@
 
 #include <utility>
 
-#include "stardust/filesystem//vfs/VFS.h"
+#include "stardust/filesystem/Filesystem.h"
+#include "stardust/filesystem/vfs/VFS.h"
 
 namespace stardust
 {
@@ -31,7 +32,7 @@ namespace stardust
 
 		for (const auto& localeFile : localeFiles)
 		{
-			if (vfs::GetFileExtension(localeFile) == ".json")
+			if (filesystem::GetFileExtension(localeFile) == ".json")
 			{
 				const auto localeSubdata = LoadLocaleFile(localeFile);
 

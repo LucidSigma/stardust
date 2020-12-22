@@ -24,13 +24,9 @@ namespace stardust
 		[[nodiscard]] extern Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory);
 		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectory(const StringView& directory);
 		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory);
-		[[nodiscard]] extern bool DoesFileExist(const StringView& filepath);
 
+		[[nodiscard]] extern bool DoesFileExist(const StringView& filepath);
 		[[nodiscard]] extern bool IsDirectory(const StringView& filepath);
-		[[nodiscard]] extern String GetParentFilepath(const StringView& filepath);
-		[[nodiscard]] extern String GetFilenameFromDirectory(const StringView& filepath);
-		[[nodiscard]] extern String GetFileStem(const StringView& filename);
-		[[nodiscard]] extern String GetFileExtension(const StringView& filename);
 
 		[[nodiscard]] extern Vector<ubyte> ReadFileData(const StringView& filepath);
 		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);

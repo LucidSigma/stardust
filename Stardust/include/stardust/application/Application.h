@@ -128,6 +128,9 @@ namespace stardust
 
 		inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
+		inline const String& GetBaseDirectory() const noexcept { return m_baseDirectory; }
+		inline const String& GetPreferenceDirectory() const noexcept { return m_preferenceDirectory; }
+
 	private:
 		void Initialise(const CreateInfo& createInfo);
 		Status InitialiseFilesystem(const CreateInfo& createInfo);
