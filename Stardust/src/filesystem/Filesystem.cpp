@@ -8,6 +8,54 @@ namespace stardust
 {
 	namespace filesystem
 	{
+		[[nodiscard]] Vector<String> GetAllFilesInDirectory(const StringView& directory)
+		{
+			Vector<String> files{ };
+
+			for (const auto& file : std::filesystem::directory_iterator(directory))
+			{
+				files.push_back(file.path().string());
+			}
+
+			return files;
+		}
+
+		[[nodiscard]] Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory)
+		{
+			Vector<String> files{ };
+
+			for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
+			{
+				files.push_back(file.path().string());
+			}
+
+			return files;
+		}
+
+		[[nodiscard]] Vector<String> GetAllFileNamesInDirectory(const StringView& directory)
+		{
+			Vector<String> files{ };
+
+			for (const auto& file : std::filesystem::directory_iterator(directory))
+			{
+				files.push_back(file.path().filename().string());
+			}
+
+			return files;
+		}
+
+		[[nodiscard]] Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory)
+		{
+			Vector<String> files{ };
+
+			for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
+			{
+				files.push_back(file.path().filename().string());
+			}
+
+			return files;
+		}
+
 		[[nodiscard]] bool DoesFileExist(const StringView& filepath)
 		{
 			return std::filesystem::exists(filepath);

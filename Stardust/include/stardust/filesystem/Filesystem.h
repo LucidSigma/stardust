@@ -14,6 +14,11 @@ namespace stardust
 {
 	namespace filesystem
 	{
+		[[nodiscard]] extern Vector<String> GetAllFilesInDirectory(const StringView& directory);
+		[[nodiscard]] extern Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory);
+		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectory(const StringView& directory);
+		[[nodiscard]] extern Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory);
+
 		[[nodiscard]] extern bool DoesFileExist(const StringView& filepath);
 		[[nodiscard]] extern bool IsDirectory(const StringView& filepath);
 
