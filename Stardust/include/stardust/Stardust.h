@@ -17,6 +17,9 @@
 #include "debug/message_box/MessageBox.h"
 #include "debug/logging/Log.h"
 
+#include "filesystem/Filesystem.h"
+#include "filesystem/vfs/VFS.h"
+
 #include "graphics/backend/OpenGL.h"
 #include "graphics/backend/OpenGLContext.h"
 #include "graphics/renderer/objects/BufferUsage.h"
@@ -48,8 +51,6 @@
 
 #include "window/display/Display.h"
 #include "window/Window.h"
-
-#include "vfs/VFS.h"
 
 namespace sd = stardust;
 

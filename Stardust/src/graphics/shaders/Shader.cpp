@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "stardust/debug/logging/Log.h"
-#include "stardust/vfs/VFS.h"
+#include "stardust/filesystem//vfs/VFS.h"
 
 namespace stardust
 {

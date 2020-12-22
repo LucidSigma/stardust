@@ -32,6 +32,8 @@ int main([[maybe_unused]] const int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
+	sd::Log::Debug("{}", SDL_GetPrefPath("triangulum_desire", "Sandbox"));
+
 	application.GetSceneManager().PushScene<TestScene>(application, "Test");
 	application.Run();
 

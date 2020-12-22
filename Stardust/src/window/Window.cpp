@@ -8,7 +8,7 @@
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/graphics/surface/PixelSurface.h"
-#include "stardust/vfs/VFS.h"
+#include "stardust/filesystem//vfs/VFS.h"
 #include "stardust/window/display/Display.h"
 
 namespace stardust
