@@ -5,12 +5,12 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
 
-#include <memory>
 #include <utility>
 
 #include <spdlog/spdlog.h>
 
 #include "stardust/data/Containers.h"
+#include "stardust/data/Pointers.h"
 
 namespace stardust
 {
@@ -18,8 +18,8 @@ namespace stardust
 		: private INoncopyable, private INonmovable
 	{
 	private:
-		inline static std::shared_ptr<spdlog::logger> s_engineLogger = nullptr;
-		inline static std::shared_ptr<spdlog::logger> s_clientLogger = nullptr;
+		inline static SharedPtr<spdlog::logger> s_engineLogger = nullptr;
+		inline static SharedPtr<spdlog::logger> s_clientLogger = nullptr;
 
 	public:
 		static void Initialise(const StringView& applicationName, const StringView& logFilepath);
