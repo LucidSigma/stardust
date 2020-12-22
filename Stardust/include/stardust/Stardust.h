@@ -26,6 +26,7 @@
 #include "graphics/shaders/Shader.h"
 #include "graphics/shaders/ShaderProgram.h"
 #include "graphics/surface/PixelSurface.h"
+#include "graphics/Colour.h"
 
 #include "locale/Locale.h"
 
