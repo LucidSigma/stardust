@@ -1,0 +1,42 @@
+{
+	"audio": {
+		"volumes": {
+			"master": 1.0
+		}
+	},
+	"input": {
+		"controller-deadzone": 8000,
+		"controls": {
+
+		}
+	},
+	"frame-rate": {
+		"cap-fps": false,
+		"fps-limit": 60,
+		"vsync": {
+			"enabled": false,
+			"adaptive": true
+		}
+	},
+	"graphics": {
+		"enable-fullscreen-minimise": false,
+		"multisampling": {
+			"enabled": true,
+			"sample-count": 8
+		},
+		"srgb-gamma": true,
+		"resolution": {
+			"height": 1080,
+			"width": 1920
+		}
+	},
+	"locale": "en_gb",
+	"window": {
+		"borderless": false,
+		"fullscreen": false,
+		"size": {
+			"height": 720,
+			"width": 1280
+		}
+	}
+}

@@ -39,7 +39,10 @@ namespace stardust
 
 		struct FilepathsInfo
 		{
-			StringView configFilepath;
+			StringView configDirectory;
+			StringView configFilename;
+			StringView defaultConfigFilepath;
+
 			StringView logFilepath;
 			StringView screenshotDirectory;
 			StringView windowIconFile;

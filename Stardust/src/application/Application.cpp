@@ -230,10 +230,10 @@ namespace stardust
 
 	Status Application::InitialiseConfig(const CreateInfo& createInfo)
 	{
-		if (m_config.Initialise(createInfo.filepaths.configFilepath) == Status::Fail)
+		if (m_config.Initialise(m_preferenceDirectory + String(createInfo.filepaths.configDirectory), createInfo.filepaths.configFilename, createInfo.filepaths.defaultConfigFilepath) == Status::Fail)
 		{
-			message_box::Show("Config Error", "Config file is invalid.", message_box::Type::Error);
-			Log::EngineError("Failed to load config file at {}.", createInfo.filepaths.configFilepath);
+			message_box::Show("Config Error", "Failed to load config file.", message_box::Type::Error);
+			Log::EngineError("Failed to load config file.");
 
 			return Status::Fail;
 		}

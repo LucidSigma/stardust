@@ -8,6 +8,8 @@
 #include "stardust/data/Types.h"
 #include "stardust/utility/enums/Status.h"
 
+#undef CreateDirectory
+
 namespace stardust
 {
 	namespace filesystem

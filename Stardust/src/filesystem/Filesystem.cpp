@@ -78,7 +78,7 @@ namespace stardust
 
 		[[nodiscard]] Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data)
 		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::trunc);
+			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
 			if (!outputFile.is_open())
 			{
@@ -123,7 +123,7 @@ namespace stardust
 
 		[[nodiscard]] Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data)
 		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
+			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
 
 			if (!outputFile.is_open())
 			{
