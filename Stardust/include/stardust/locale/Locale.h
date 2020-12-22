@@ -19,6 +19,8 @@ namespace stardust
 		String m_currentLocaleName;
 
 	public:
+		[[nodiscard]] static Vector<String> GetSystemPreferredLocales();
+
 		Locale() = default;
 		~Locale() noexcept = default;
 

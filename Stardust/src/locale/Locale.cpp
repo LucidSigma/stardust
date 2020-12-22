@@ -2,11 +2,36 @@
 
 #include <utility>
 
+#include <SDL2/SDL.h>
+
 #include "stardust/filesystem/Filesystem.h"
 #include "stardust/filesystem/vfs/VFS.h"
 
 namespace stardust
 {
+	[[nodiscard]] Vector<String> Locale::GetSystemPreferredLocales()
+	{
+		Vector<String> preferredLocaleStrings{ };
+		SDL_Locale* preferredLocales = SDL_GetPreferredLocales();
+
+		for (const SDL_Locale* currentLocale = preferredLocales; currentLocale != nullptr && currentLocale->language != nullptr; ++currentLocale)
+		{
+			String currentLocaleString = MakeLower(currentLocale->language);
+
+			if (currentLocale->country != nullptr && currentLocale->country != "")
+			{
+				currentLocaleString += "_" + MakeLower(currentLocale->country);
+			}
+
+			preferredLocaleStrings.push_back(currentLocaleString);
+		}
+
+		SDL_free(preferredLocales);
+		preferredLocales = nullptr;
+
+		return preferredLocaleStrings;
+	}
+
 	void Locale::Initialise(const StringView& baseLocaleDirectory)
 	{
 		m_baseLocaleDirectory = baseLocaleDirectory;
