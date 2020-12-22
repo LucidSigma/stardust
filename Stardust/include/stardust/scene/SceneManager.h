@@ -2,7 +2,6 @@
 #ifndef SCENE_MANAGER_H
 #define SCENE_MANAGER_H
 
-#include <memory>
 #include <type_traits>
 #include <utility>
 

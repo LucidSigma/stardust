@@ -153,6 +153,7 @@ namespace stardust
 
 		Log::EngineInfo("Logger initialised.");
 		Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName());
+		Log::EngineDebug("Base directory: \"{}\"", m_baseDirectory);
 		Log::EngineInfo("ECS initialised.");
 
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{

@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "application/Application.h"
+#include "assets/AssetManager.h"
 #include "config/Config.h"
 #include "camera/Camera2D.h"
 
