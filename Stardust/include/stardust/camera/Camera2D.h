@@ -22,14 +22,17 @@ namespace stardust
 
 		Mat4 m_projectionMatrix{ 1.0f };
 
-		// ObserverPtr<const class Renderer> m_renderer = nullptr;
+		ObserverPtr<const class Renderer> m_renderer = nullptr;
 
 	public:
-		Camera2D(const f32 halfSize/*, const class Renderer& renderer*/);
+		Camera2D() = default;
+		Camera2D(const f32 halfSize, const class Renderer& renderer);
 		~Camera2D() noexcept = default;
 
+		void Initialise(const f32 halfSize, const class Renderer& renderer);
+
 		void Refresh();
-		// void ResetTransform();
+		void ResetTransform();
 
 		inline Vec3& GetPosition() noexcept { return m_position; }
 		inline const Vec3& GetPosition() const noexcept { return m_position; }
@@ -48,13 +51,12 @@ namespace stardust
 		inline f32 GetPixelsPerUnit() const noexcept { return m_pixelsPerUnit; }
 
 		inline const Mat4& GetProjectionMatrix() const noexcept { return m_projectionMatrix; }
-		// inline const Renderer& GetRenderer() const noexcept { return *m_renderer; }
+		inline const class Renderer& GetRenderer() const noexcept { return *m_renderer; }
 
 		[[nodiscard]] UVec2 WorldSpaceToScreenSpace(Vec2 position) const noexcept;
 		[[nodiscard]] Vec2 ScreenSpaceToWorldSpace(const UVec2& position) const noexcept;
 
 	private:
-		void Initialise(const f32 halfSize);
 		void UpdateProjectionMatrix();
 	};
 }

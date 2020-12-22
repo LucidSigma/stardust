@@ -1,27 +1,41 @@
 #include "stardust/camera/Camera2D.h"
 
+#include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/math/Math.h"
 
 namespace stardust
 {
-	Camera2D::Camera2D(const f32 halfSize/*, const Renderer& renderer*/)
-		//: m_renderer(renderer)
+	Camera2D::Camera2D(const f32 halfSize, const Renderer& renderer)
 	{
-		Initialise(halfSize);
+		Initialise(halfSize, renderer);
+	}
+
+	void Camera2D::Initialise(const f32 halfSize, const Renderer& renderer)
+	{
+		m_renderer = &renderer;
+		m_aspectRatio = static_cast<f32>(m_renderer->GetVirtualSize().x) / static_cast<f32>(m_renderer->GetVirtualSize().y);
+		SetHalfSize(halfSize);
 	}
 
 	void Camera2D::Refresh()
 	{
-		// m_aspectRatio = static_cast<f32>(m_renderer->GetVirtualSize().x) / static_cast<f32>(m_renderer->GetVirtualSize().y);
-		// m_pixelsPerUnit = static_cast<f32>(m_renderer->GetVirtualSize().x) / (m_halfSize * 2.0f);
+		m_aspectRatio = static_cast<f32>(m_renderer->GetVirtualSize().x) / static_cast<f32>(m_renderer->GetVirtualSize().y);
+		m_pixelsPerUnit = static_cast<f32>(m_renderer->GetVirtualSize().x) / (m_halfSize * 2.0f);
 
 		UpdateProjectionMatrix();
+	}
+
+	void Camera2D::ResetTransform()
+	{
+		m_position = Vec3{ 0.0f, 0.0f, 0.0f };
+		m_rotation = 0.0f;
+		m_zoom = 1.0f;
 	}
 
 	void Camera2D::SetHalfSize(const f32 halfSize) noexcept
 	{
 		m_halfSize = halfSize;
-		// m_pixelsPerUnit = static_cast<f32>(m_renderer->GetVirtualSize().x) / (m_halfSize * 2.0f);
+		m_pixelsPerUnit = static_cast<f32>(m_renderer->GetVirtualSize().x) / (m_halfSize * 2.0f);
 
 		UpdateProjectionMatrix();
 	}
@@ -47,12 +61,6 @@ namespace stardust
 		worldSpace.y += m_halfSize / m_aspectRatio;
 
 		return worldSpace;
-	}
-
-	void Camera2D::Initialise(const f32 halfSize)
-	{
-		//m_aspectRatio = static_cast<f32>(m_renderer->GetVirtualSize().x) / static_cast<f32>(m_renderer->GetVirtualSize().y);
-		SetHalfSize(halfSize);
 	}
 
 	void Camera2D::UpdateProjectionMatrix()
