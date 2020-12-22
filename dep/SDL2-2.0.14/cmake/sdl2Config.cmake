@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(SDL2_VERSION 2.0.12)
+set(SDL2_VERSION 2.0.14)
 
 get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)

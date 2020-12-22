@@ -14,7 +14,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # External CMake modules.
 if(WIN32)
-	set(SDL2_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2-2.0.12/cmake")
+	set(SDL2_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2-2.0.14/cmake")
 endif()
 
 find_package(SDL2 REQUIRED)

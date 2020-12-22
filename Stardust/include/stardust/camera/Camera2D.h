@@ -29,6 +29,7 @@ namespace stardust
 		~Camera2D() noexcept = default;
 
 		void Refresh();
+		// void ResetTransform();
 
 		inline Vec3& GetPosition() noexcept { return m_position; }
 		inline const Vec3& GetPosition() const noexcept { return m_position; }
@@ -47,7 +48,6 @@ namespace stardust
 		inline f32 GetPixelsPerUnit() const noexcept { return m_pixelsPerUnit; }
 
 		inline const Mat4& GetProjectionMatrix() const noexcept { return m_projectionMatrix; }
-
 		// inline const Renderer& GetRenderer() const noexcept { return *m_renderer; }
 
 		[[nodiscard]] UVec2 WorldSpaceToScreenSpace(Vec2 position) const noexcept;
