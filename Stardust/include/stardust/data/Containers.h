@@ -74,6 +74,10 @@ namespace stardust
 
 	template <typename T>
 	using ConcurrentQueue = moodycamel::ConcurrentQueue<T>;
+
+	[[nodiscard]] extern Vector<String> SplitString(const String& string, const char delimiter = ' ');
+	[[nodiscard]] extern String MakeUpper(String string);
+	[[nodiscard]] extern String MakeLower(String string);
 }
 
 #endif

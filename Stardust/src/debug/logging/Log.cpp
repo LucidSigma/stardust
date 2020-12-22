@@ -1,8 +1,5 @@
 #include "stardust/debug/logging/Log.h"
 
-#include <algorithm>
-#include <cctype>
-
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -18,11 +15,7 @@ namespace stardust
 		logSinks[0]->set_pattern("%^[%T] %n: %v%$");
 		logSinks[1]->set_pattern("[%T] [%l] %n: %v");
 
-		String clientLoggerName = applicationName.data();
-		std::transform(std::cbegin(clientLoggerName), std::cend(clientLoggerName), std::begin(clientLoggerName), [](const char letter) -> char
-		{
-			return static_cast<char>(std::toupper(static_cast<unsigned char>(letter)));
-		});
+		const String clientLoggerName = MakeUpper(applicationName.data());
 
 		s_engineLogger = std::make_shared<spdlog::logger>("STARDUST", std::cbegin(logSinks), std::cend(logSinks));
 		spdlog::register_logger(s_engineLogger);

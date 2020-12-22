@@ -1,8 +1,5 @@
 #include "stardust/graphics/backend/OpenGL.h"
 
-#include <algorithm>
-#include <cctype>
-
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
@@ -33,12 +30,7 @@ namespace stardust
 
 		void InitialiseDebugCallback()
 		{
-			String vendorName(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-			std::transform(std::cbegin(vendorName), std::cend(vendorName), std::begin(vendorName), [](const char letter) -> char
-			{
-				return static_cast<char>(std::tolower(static_cast<unsigned char>(letter)));
-			});
-
+			const String vendorName = MakeLower(String(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
 			isNvidiaGPU = vendorName.find("nvidia") != String::npos;
 
 			glDebugMessageCallback(DebugMessageCallback, nullptr);
