@@ -2,6 +2,8 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
+#include <nlohmann/json.hpp>
+
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 #include "stardust/utility/enums/Status.h"
@@ -24,8 +26,10 @@ namespace stardust
 		[[nodiscard]] extern Vector<ubyte> ReadFileBytes(const StringView& filepath);
 		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);
 		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
+		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const nlohmann::json& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
+		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const nlohmann::json& data);
 	}
 
 	namespace fs = filesystem;

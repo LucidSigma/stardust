@@ -106,6 +106,21 @@ namespace stardust
 			return Status::Success;
 		}
 
+		[[nodiscard]] Status WriteToFile(const StringView& filepath, const nlohmann::json& data)
+		{
+			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::trunc);
+
+			if (!outputFile.is_open())
+			{
+				return Status::Fail;
+			}
+
+			outputFile << data;
+			outputFile.close();
+
+			return Status::Success;
+		}
+
 		[[nodiscard]] Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data)
 		{
 			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
@@ -122,6 +137,21 @@ namespace stardust
 		}
 
 		[[nodiscard]] Status AppendToFile(const StringView& filepath, const String& data)
+		{
+			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
+
+			if (!outputFile.is_open())
+			{
+				return Status::Fail;
+			}
+
+			outputFile << data;
+			outputFile.close();
+
+			return Status::Success;
+		}
+
+		[[nodiscard]] Status AppendToFile(const StringView& filepath, const nlohmann::json& data)
 		{
 			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
 
