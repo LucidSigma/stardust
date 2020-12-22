@@ -134,8 +134,21 @@ namespace stardust
 
 	void Application::Initialise(const CreateInfo& createInfo)
 	{
+		if (char* baseDirectory = SDL_GetBasePath();
+			baseDirectory != nullptr)
+		{
+			m_baseDirectory = baseDirectory;
+
+			SDL_free(baseDirectory);
+			baseDirectory = nullptr;
+		}
+
 	#ifndef NDEBUG
-		Log::Initialise(createInfo.applicationName, createInfo.filepaths.logFilepath);
+		{
+			const String logFilepath = m_baseDirectory + String(createInfo.filepaths.logFilepath);
+
+			Log::Initialise(createInfo.applicationName, logFilepath);
+		}
 	#endif
 
 		Log::EngineInfo("Logger initialised.");
@@ -181,15 +194,7 @@ namespace stardust
 
 	Status Application::InitialiseFilesystem(const CreateInfo& createInfo)
 	{
-		if (char* baseDirectory = SDL_GetBasePath(); 
-			baseDirectory != nullptr)
-		{
-			m_baseDirectory = baseDirectory;
-
-			SDL_free(baseDirectory);
-			baseDirectory = nullptr;
-		}
-		else
+		if (m_baseDirectory.empty())
 		{
 			Log::EngineWarn("Failed to get base directory.");
 		}
@@ -222,7 +227,14 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		vfs::AddToSearchPath({ createInfo.filesystem.assetsArchive, createInfo.filesystem.localesArchive });
+		const String assetsFilepath = m_baseDirectory + String(createInfo.filesystem.assetsArchive);
+		const String localesFilepath = m_baseDirectory + String(createInfo.filesystem.localesArchive);
+
+		vfs::AddToSearchPath({
+			assetsFilepath,
+			localesFilepath,
+		});
+
 		Log::EngineInfo("Virtual filesystem initialised.");
 
 		return Status::Success;
