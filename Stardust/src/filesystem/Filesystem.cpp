@@ -121,6 +121,26 @@ namespace stardust
 			return fileDataStream.str();
 		}
 
+		[[nodiscard]] Vector<String> ReadFileLines(const StringView& filepath)
+		{
+			std::ifstream file(filepath);
+
+			if (!file.is_open())
+			{
+				return { };
+			}
+
+			Vector<String> fileLines{ };
+			String currentLine;
+
+			while (std::getline(file, currentLine))
+			{
+				fileLines.push_back(currentLine);
+			}
+
+			return fileLines;
+		}
+
 		[[nodiscard]] Vector<ubyte> ReadFileBytes(const StringView& filepath)
 		{
 			std::basic_ifstream<ubyte> file(filepath, std::ios_base::in | std::ios_base::binary);

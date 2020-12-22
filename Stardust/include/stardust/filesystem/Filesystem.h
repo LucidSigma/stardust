@@ -30,10 +30,13 @@ namespace stardust
 		[[nodiscard]] extern Status CreateDirectory(const StringView& path);
 
 		[[nodiscard]] extern String ReadFile(const StringView& filepath);
+		[[nodiscard]] extern Vector<String> ReadFileLines(const StringView& filepath);
 		[[nodiscard]] extern Vector<ubyte> ReadFileBytes(const StringView& filepath);
+
 		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);
 		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
 		[[nodiscard]] extern Status WriteToFile(const StringView& filepath, const nlohmann::json& data);
+
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const nlohmann::json& data);
