@@ -11,6 +11,7 @@
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
+#include "stardust/camera/Camera2D.h"
 #include "stardust/config/Config.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
@@ -76,6 +77,8 @@ namespace stardust
 		bool m_hasWindowFocus = true;
 
 		std::atomic_bool m_isRunning = true;
+
+		Camera2D m_camera;
 
 		f32 m_fixedTimestep = 0.0f;
 		f32 m_deltaTime = 0.0f;

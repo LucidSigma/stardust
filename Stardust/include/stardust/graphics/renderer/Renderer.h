@@ -48,6 +48,9 @@ namespace stardust
 		void Clear() const;
 
 		inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }
+		inline const Vec2& GetVirtualScale() const noexcept { return m_virtualScale; }
+		inline f32 GetVirtualAspectRatio() const noexcept { return m_virtualAspectRatio; }
+
 		inline const Mat4& GetScreenProjectionMatrix() const noexcept { return m_screenProjectionMatrix; }
 
 		inline bool IsValid() const noexcept { return m_isValid; }

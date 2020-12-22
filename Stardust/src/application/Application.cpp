@@ -11,6 +11,7 @@
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/filesystem/Filesystem.h"
+#include "stardust/graphics/Colour.h"
 #include "stardust/graphics/backend/OpenGL.h"
 
 namespace stardust
@@ -475,10 +476,12 @@ namespace stardust
 
 	Status Application::InitialiseRenderer(const CreateInfo&)
 	{
-		// Use config.
 		m_renderer.Initialise(Renderer::CreateInfo{
 			.window = &m_window,
-			.virtualSize = NullOpt,
+			.virtualSize = UVec2{
+				m_config["graphics"]["resolution"]["width"],
+				m_config["graphics"]["resolution"]["height"],
+			},
 		});
 
 		if (!m_renderer.IsValid())
@@ -493,7 +496,8 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		Log::EngineInfo("Renderer created.");
+		m_camera.Initialise(8.0f, m_renderer);
+		Log::EngineInfo("Renderer and camera created.");
 
 		return Status::Success;
 	}
@@ -616,6 +620,7 @@ namespace stardust
 		case SDL_WINDOWEVENT_SIZE_CHANGED:
 			m_window.ProcessResize(UVec2{ windowEvent.data1, windowEvent.data2 });
 			m_renderer.ProcessResize();
+			m_camera.Refresh();
 
 			break;
 
@@ -674,6 +679,9 @@ namespace stardust
 
 			m_sceneManager.CurrentScene()->OnUnload();
 			m_sceneManager.PopScene();
+
+			m_renderer.SetClearColour(colours::Black);
+			m_camera.ResetTransform();
 			m_entityRegistry.clear();
 			// m_soundSystem.GetListener().Reset();
 
