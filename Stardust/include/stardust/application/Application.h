@@ -48,6 +48,7 @@ namespace stardust
 		struct CreateInfo
 		{
 			StringView applicationName;
+			StringView organisationName;
 			StringView windowTitle;
 
 			FilesystemInfo filesystem;
@@ -82,6 +83,8 @@ namespace stardust
 		entt::registry m_entityRegistry{ };
 		HashMap<String, Any> m_globalSceneData{ };
 
+		String m_baseDirectory;
+		String m_preferenceDirectory;
 		String m_screenshotDirectory;
 
 		Optional<ExitCallback> m_onExit = NullOpt;
@@ -127,7 +130,7 @@ namespace stardust
 
 	private:
 		void Initialise(const CreateInfo& createInfo);
-		Status InitialiseVFS(const CreateInfo& createInfo);
+		Status InitialiseFilesystem(const CreateInfo& createInfo);
 		Status InitialiseConfig(const CreateInfo& createInfo);
 		Status InitialiseLocale(const CreateInfo&);
 		Status InitialiseSDL(const CreateInfo&);

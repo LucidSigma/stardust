@@ -8,6 +8,8 @@ int main([[maybe_unused]] const int argc, char* argv[])
 {
 	sd::Application application(sd::Application::CreateInfo{
 		.applicationName = "Sandbox",
+		.organisationName = "test_organisation",
+
 		.windowTitle = "Stardust Sandbox",
 
 		.filesystem = sd::Application::FilesystemInfo{
@@ -31,8 +33,6 @@ int main([[maybe_unused]] const int argc, char* argv[])
 	{
 		return EXIT_FAILURE;
 	}
-
-	sd::Log::Debug("{}", SDL_GetPrefPath("triangulum_desire", "Sandbox"));
 
 	application.GetSceneManager().PushScene<TestScene>(application, "Test");
 	application.Run();

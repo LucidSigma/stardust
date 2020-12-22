@@ -143,7 +143,7 @@ namespace stardust
 		Log::EngineInfo("ECS initialised.");
 
 		static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
-			&Application::InitialiseVFS,
+			&Application::InitialiseFilesystem,
 			&Application::InitialiseConfig,
 			&Application::InitialiseLocale,
 			//&Application::InitialiseSoundSystem,
@@ -175,13 +175,45 @@ namespace stardust
 
 		m_fixedTimestep = createInfo.fixedTimestep;
 		m_ticksCount = SDL_GetPerformanceCounter();
-		m_screenshotDirectory = createInfo.filepaths.screenshotDirectory;
 
 		m_didInitialiseSuccessfully = true;
 	}
 
-	Status Application::InitialiseVFS(const CreateInfo& createInfo)
+	Status Application::InitialiseFilesystem(const CreateInfo& createInfo)
 	{
+		if (char* baseDirectory = SDL_GetBasePath(); 
+			baseDirectory != nullptr)
+		{
+			m_baseDirectory = baseDirectory;
+
+			SDL_free(baseDirectory);
+			baseDirectory = nullptr;
+		}
+		else
+		{
+			Log::EngineWarn("Failed to get base directory.");
+		}
+
+		if (char* preferenceDirectory = SDL_GetPrefPath(createInfo.organisationName.data(), createInfo.applicationName.data());
+			preferenceDirectory != nullptr)
+		{
+			m_preferenceDirectory = preferenceDirectory;
+
+			SDL_free(preferenceDirectory);
+			preferenceDirectory = nullptr;
+		}
+		else
+		{
+			message_box::Show("Filesystem Error", "Failed to get preference directory.", message_box::Type::Error);
+			Log::EngineError("Failed to get preference directory.");
+
+			return Status::Fail;
+		}
+
+		m_screenshotDirectory = createInfo.filepaths.screenshotDirectory;
+
+		Log::EngineInfo("Filesystem initialised.");
+
 		if (!vfs::Initialise(createInfo.filesystem.argv0))
 		{
 			message_box::Show("Filesystem Error", "Virtual filesystem failed to initialise.", message_box::Type::Error);
