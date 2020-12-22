@@ -10,6 +10,7 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
+#include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/utility/enums/Status.h"
 
 namespace stardust
@@ -36,7 +37,7 @@ namespace stardust
 		virtual void Update(const f32 deltaTime) = 0;
 		inline virtual void LateUpdate(const f32 deltaTime) { }
 
-		// virtual void Render(const Renderer& renderer) const = 0;
+		virtual void Render(const Renderer& renderer) const = 0;
 
 		inline virtual void PollEvent(const SDL_Event& event) { }
 

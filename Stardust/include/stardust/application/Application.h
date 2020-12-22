@@ -15,6 +15,7 @@
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 #include "stardust/graphics/backend/OpenGLContext.h"
+#include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/locale/Locale.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/utility/enums/Status.h"
@@ -71,6 +72,7 @@ namespace stardust
 
 		Window m_window;
 		OpenGLContext m_openGLContext;
+		Renderer m_renderer;
 		bool m_hasWindowFocus = true;
 
 		std::atomic_bool m_isRunning = true;
@@ -108,6 +110,7 @@ namespace stardust
 		inline Locale& GetLocale() noexcept { return m_locale; }
 
 		inline Window& GetWindow() noexcept { return m_window; }
+		inline Renderer& GetRenderer() noexcept { return m_renderer; }
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 
@@ -142,6 +145,7 @@ namespace stardust
 		Status InitialiseSDL(const CreateInfo&);
 		Status InitialiseWindow(const CreateInfo& createInfo);
 		Status InitialiseOpenGL(const CreateInfo&);
+		Status InitialiseRenderer(const CreateInfo&);
 		void InitialiseScenes();
 
 		void FixedUpdate();

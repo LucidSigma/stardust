@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 
 #include "stardust/data/MathTypes.h"
+#include "stardust/data/Types.h"
 
 namespace stardust
 {
@@ -41,6 +42,11 @@ namespace stardust
 
 		constexpr Colour Clear{ 0u, 0u, 0u, 0u };
 	}
+
+	[[nodiscard]] extern Colour CreateColour(const u8 red, const u8 green, const u8 blue);
+	[[nodiscard]] extern Colour CreateColour(const u8 red, const u8 green, const u8 blue, const u8 alpha);
+	[[nodiscard]] extern Colour CreateColour(const f32 red, const f32 green, const f32 blue);
+	[[nodiscard]] extern Colour CreateColour(const f32 red, const f32 green, const f32 blue, const f32 alpha);
 
 	[[nodiscard]] extern Vec4 ColourToVec4(const Colour& colour);
 	[[nodiscard]] extern Colour Vec4ToColour(const Vec4& vector);

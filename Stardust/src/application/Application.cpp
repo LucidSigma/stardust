@@ -9,8 +9,9 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
-#include "stardust/graphics/backend/OpenGL.h"
 #include "stardust/filesystem/vfs/VFS.h"
+#include "stardust/filesystem/Filesystem.h"
+#include "stardust/graphics/backend/OpenGL.h"
 
 namespace stardust
 {
@@ -23,6 +24,9 @@ namespace stardust
 	{
 		m_entityRegistry.clear();
 
+		// Input::RemoveAllGameControllers();
+
+		// m_renderer.Destroy();
 		m_openGLContext.Destroy();
 		m_window.Destroy();
 
@@ -85,7 +89,7 @@ namespace stardust
 
 	void Application::CaptureScreenshot() const
 	{
-		constexpr usize PixelChannelCount = 3u;
+		constexpr usize PixelChannelCount = 4u;
 		const UVec2 screenshotSize = m_window.GetDrawableSize();
 
 		Vector<ubyte> imageData(PixelChannelCount * screenshotSize.x * screenshotSize.y);
@@ -93,7 +97,7 @@ namespace stardust
 		glReadPixels(
 			0, 0,
 			static_cast<i32>(screenshotSize.x), static_cast<i32>(screenshotSize.y),
-			GL_RGB, GL_UNSIGNED_BYTE,
+			GL_RGBA, GL_UNSIGNED_BYTE,
 			imageData.data()
 		);
 
@@ -146,7 +150,6 @@ namespace stardust
 	#ifndef NDEBUG
 		{
 			const String logFilepath = m_baseDirectory + String(createInfo.filepaths.logFilepath);
-
 			Log::Initialise(createInfo.applicationName, logFilepath);
 		}
 	#endif
@@ -164,7 +167,7 @@ namespace stardust
 			&Application::InitialiseSDL,
 			&Application::InitialiseWindow,
 			&Application::InitialiseOpenGL,
-			//&Application::InitialiseRenderer,
+			&Application::InitialiseRenderer,
 			//&Application::InitialiseTextSystem,
 		};
 
@@ -216,7 +219,15 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		m_screenshotDirectory = createInfo.filepaths.screenshotDirectory;
+		m_screenshotDirectory = m_preferenceDirectory + String(createInfo.filepaths.screenshotDirectory);
+
+		if (!filesystem::IsDirectory(m_screenshotDirectory))
+		{
+			if (filesystem::CreateDirectory(m_screenshotDirectory) == Status::Fail)
+			{
+				Log::EngineWarn("Failed to create screenshot directory.");
+			}
+		}
 
 		Log::EngineInfo("Filesystem initialised.");
 
@@ -323,7 +334,12 @@ namespace stardust
 
 		Window::SetMinimiseOnFullscreenFocusLoss(m_config["graphics"]["enable-fullscreen-minimise"]);
 
-		Vector<Window::CreateFlag> windowCreateFlags{ Window::CreateFlag::AllowHighDPI, Window::CreateFlag::OpenGL, Window::CreateFlag::Shown };
+		Vector<Window::CreateFlag> windowCreateFlags{ 
+			Window::CreateFlag::AllowHighDPI,
+			Window::CreateFlag::OpenGL,
+			Window::CreateFlag::Shown,
+			Window::CreateFlag::Resizable,
+		};
 
 		if (m_config["window"]["fullscreen"])
 		{
@@ -457,6 +473,31 @@ namespace stardust
 		return Status::Success;
 	}
 
+	Status Application::InitialiseRenderer(const CreateInfo&)
+	{
+		// Use config.
+		m_renderer.Initialise(Renderer::CreateInfo{
+			.window = &m_window,
+			.virtualSize = NullOpt,
+		});
+
+		if (!m_renderer.IsValid())
+		{
+			message_box::Show(
+				m_locale["engine"]["errors"]["titles"]["renderer"],
+				m_locale["engine"]["errors"]["bodies"]["renderer"],
+				message_box::Type::Error
+			);
+			Log::EngineCritical("Failed to initialise renderer.");
+
+			return Status::Fail;
+		}
+
+		Log::EngineInfo("Renderer created.");
+
+		return Status::Success;
+	}
+
 	void Application::InitialiseScenes()
 	{
 		if (m_didInitialiseSuccessfully)
@@ -525,10 +566,8 @@ namespace stardust
 
 	void Application::Render() const
 	{
-		// m_renderer.Clear(colours::Black);
-		// m_sceneManager.CurrentScene()->Render(m_renderer);
-		// m_renderer.Present();
-	
+		m_renderer.Clear();
+		m_sceneManager.CurrentScene()->Render(m_renderer);
 		m_window.Present();
 	}
 
@@ -538,6 +577,11 @@ namespace stardust
 		{
 			switch (event.type)
 			{
+			case SDL_WINDOWEVENT:
+				ProcessWindowEvents(event.window);
+
+				break;
+
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym)
 				{
@@ -571,6 +615,7 @@ namespace stardust
 		{
 		case SDL_WINDOWEVENT_SIZE_CHANGED:
 			m_window.ProcessResize(UVec2{ windowEvent.data1, windowEvent.data2 });
+			m_renderer.ProcessResize();
 
 			break;
 

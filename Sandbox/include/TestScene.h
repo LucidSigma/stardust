@@ -38,8 +38,7 @@ public:
 
 	[[nodiscard]] virtual sd::Status OnLoad() override
 	{
-		glViewport(0, 0, m_application.GetWindow().GetSize().x, m_application.GetWindow().GetSize().y);
-		glScissor(0, 0, m_application.GetWindow().GetSize().x, m_application.GetWindow().GetSize().y);
+		m_application.GetRenderer().SetClearColour(sd::CreateColour(0.3f, 0.05f, 0.5f, 1.0f));
 
 		m_vertexBuffer.Initialise(s_vertices);
 		m_indexBuffer.Initialise(s_indices);
@@ -93,10 +92,14 @@ public:
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
-		glClearColor(0.3f, 0.05f, 0.5f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+	}
 
-		m_shaderProgram.Use();		
+	virtual void LateUpdate(const sd::f32 deltaTime) override { }
+
+	virtual void Render(const sd::Renderer& renderer) const override
+	{
+		m_shaderProgram.Use();
 
 		m_shaderProgram.SetUniform<sd::Mat4>("u_MVP", sd::Mat4{ 1.0f });
 		m_shaderProgram.SetUniform<sd::Vec4>("u_Colour", sd::Vec4{ 1.0f, 0.5f, 0.2f, 1.0f });
@@ -107,10 +110,6 @@ public:
 
 		m_shaderProgram.Disuse();
 	}
-
-	virtual void LateUpdate(const sd::f32 deltaTime) override { }
-
-	// virtual void Render(const Renderer& renderer) const override { }
 
 	virtual void PollEvent(const SDL_Event& event) override
 	{

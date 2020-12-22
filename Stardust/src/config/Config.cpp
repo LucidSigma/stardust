@@ -82,7 +82,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Config::Save() const
+	[[nodiscard]] Status Config::Save() const
 	{
 		return filesystem::WriteToFile(m_filepath, m_data);
 	}
