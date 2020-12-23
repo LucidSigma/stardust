@@ -17,7 +17,6 @@
 #include "stardust/graphics/renderer/objects/VertexBuffer.h"
 #include "stardust/graphics/renderer/objects/VertexLayout.h"
 #include "stardust/graphics/shaders/ShaderProgram.h"
-#include "stardust/rect/Rect.h"
 #include "stardust/window/Window.h"
 
 namespace stardust

@@ -10,7 +10,6 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
-#include "stardust/rect/Rect.h"
 
 namespace stardust
 {

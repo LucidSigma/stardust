@@ -6,7 +6,6 @@
 
 #include <SDL2/SDL.h>
 
-#include "stardust/rect/Rect.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"
