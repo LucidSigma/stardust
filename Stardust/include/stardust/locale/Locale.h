@@ -13,13 +13,15 @@ namespace stardust
 	class Locale
 	{
 	private:
+		inline static Vector<String> s_systemPreferredLocales{ };
+
 		String m_baseLocaleDirectory;
 
 		nlohmann::json m_currentLocale;
 		String m_currentLocaleName;
 
 	public:
-		[[nodiscard]] static Vector<String> GetSystemPreferredLocales();
+		static const Vector<String>& GetSystemPreferredLocales();
 
 		Locale() = default;
 		~Locale() noexcept = default;

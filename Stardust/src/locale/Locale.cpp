@@ -9,27 +9,32 @@
 
 namespace stardust
 {
-	[[nodiscard]] Vector<String> Locale::GetSystemPreferredLocales()
+	const Vector<String>& Locale::GetSystemPreferredLocales()
 	{
-		Vector<String> preferredLocaleStrings{ };
-		SDL_Locale* preferredLocales = SDL_GetPreferredLocales();
-
-		for (const SDL_Locale* currentLocale = preferredLocales; currentLocale != nullptr && currentLocale->language != nullptr; ++currentLocale)
+		if (s_systemPreferredLocales.empty())
 		{
-			String currentLocaleString = MakeLower(currentLocale->language);
+			Vector<String> preferredLocaleStrings{ };
+			SDL_Locale* preferredLocales = SDL_GetPreferredLocales();
 
-			if (currentLocale->country != nullptr && currentLocale->country != "")
+			for (const SDL_Locale* currentLocale = preferredLocales; currentLocale != nullptr && currentLocale->language != nullptr; ++currentLocale)
 			{
-				currentLocaleString += "_" + MakeLower(currentLocale->country);
+				String currentLocaleString = MakeLower(currentLocale->language);
+
+				if (currentLocale->country != nullptr && currentLocale->country != "")
+				{
+					currentLocaleString += "_" + MakeLower(currentLocale->country);
+				}
+
+				preferredLocaleStrings.push_back(currentLocaleString);
 			}
 
-			preferredLocaleStrings.push_back(currentLocaleString);
+			SDL_free(preferredLocales);
+			preferredLocales = nullptr;
+
+			s_systemPreferredLocales = preferredLocaleStrings;
 		}
 
-		SDL_free(preferredLocales);
-		preferredLocales = nullptr;
-
-		return preferredLocaleStrings;
+		return s_systemPreferredLocales;
 	}
 
 	void Locale::Initialise(const StringView& baseLocaleDirectory)
