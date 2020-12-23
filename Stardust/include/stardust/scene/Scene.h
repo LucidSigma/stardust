@@ -46,6 +46,18 @@ namespace stardust
 
 	protected:
 		class Entity CreateEntity();
+
+		class Window& GetWindow() noexcept;
+		const class Window& GetWindow() const noexcept;
+
+		class Renderer& GetRenderer() noexcept;
+		const class Renderer& GetRenderer() const noexcept;
+
+		class Camera2D& GetCamera() noexcept;
+		const class Camera2D& GetCamera() const noexcept;
+
+		class SceneManager& GetSceneManager() noexcept;
+		const class SceneManager& GetSceneManager() const noexcept;
 	};
 }
 

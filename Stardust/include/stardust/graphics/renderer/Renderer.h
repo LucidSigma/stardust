@@ -115,7 +115,8 @@ namespace stardust
 		// DrawTexturedScreenQuad
 
 		// BeginFrame
-		// SubmitBatch
+		// SubmitWorldBatch (use camera here)
+		// SubmitScreenBatch
 
 		[[nodiscard]] PixelReadData ReadPixels() const;
 
