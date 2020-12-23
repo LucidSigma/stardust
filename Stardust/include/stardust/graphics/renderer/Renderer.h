@@ -43,6 +43,7 @@ namespace stardust
 		// Add destroy function.
 
 		void ProcessResize();
+		void SetVirtualSize(const UVec2& virtualSize);
 
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;

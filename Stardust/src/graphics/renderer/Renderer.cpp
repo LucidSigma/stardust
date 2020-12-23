@@ -14,16 +14,14 @@ namespace stardust
 	void Renderer::Initialise(const CreateInfo& createInfo)
 	{
 		m_window = createInfo.window;
-		m_virtualSize = createInfo.virtualSize.has_value() ? createInfo.virtualSize.value() : m_window->GetDrawableSize();
-		m_virtualAspectRatio = static_cast<f32>(m_virtualSize.x) / static_cast<f32>(m_virtualSize.y);
 
-		SetClearColour(colours::Black);
-
+		SetVirtualSize(createInfo.virtualSize.has_value() ? createInfo.virtualSize.value() : m_window->GetDrawableSize());
 		UpdateScreenProjectionMatrix();
 		ProcessResize();
 
 		// Put in-built shaders and objects here and test for their validity.
 
+		SetClearColour(colours::Black);
 		m_isValid = true;
 	}
 
@@ -50,6 +48,15 @@ namespace stardust
 
 		glViewport(viewportX, viewportY, width, height);
 		glScissor(viewportX, viewportY, width, height);
+	}
+
+	void Renderer::SetVirtualSize(const UVec2& virtualSize)
+	{
+		m_virtualSize = virtualSize;
+		m_virtualAspectRatio = static_cast<f32>(m_virtualSize.x) / static_cast<f32>(m_virtualSize.y);
+
+		UpdateScreenProjectionMatrix();
+		ProcessResize();
 	}
 
 	void Renderer::SetClearColour(const Colour& colour) const

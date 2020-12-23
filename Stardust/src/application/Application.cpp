@@ -197,7 +197,7 @@ namespace stardust
 		m_didInitialiseSuccessfully = true;
 	}
 
-	Status Application::InitialiseFilesystem(const CreateInfo& createInfo)
+	[[nodiscard]] Status Application::InitialiseFilesystem(const CreateInfo& createInfo)
 	{
 		if (m_baseDirectory.empty())
 		{
@@ -253,7 +253,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseConfig(const CreateInfo& createInfo)
+	[[nodiscard]] Status Application::InitialiseConfig(const CreateInfo& createInfo)
 	{
 		if (m_config.Initialise(m_preferenceDirectory + String(createInfo.filepaths.configDirectory), createInfo.filepaths.configFilename, createInfo.filepaths.defaultConfigFilepath) == Status::Fail)
 		{
@@ -268,7 +268,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseLocale(const CreateInfo&)
+	[[nodiscard]] Status Application::InitialiseLocale(const CreateInfo&)
 	{
 		m_locale.Initialise("locales");
 
@@ -285,7 +285,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseSDL(const CreateInfo&)
+	[[nodiscard]] Status Application::InitialiseSDL(const CreateInfo&)
 	{
 		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
@@ -304,7 +304,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseWindow(const CreateInfo& createInfo)
+	[[nodiscard]] Status Application::InitialiseWindow(const CreateInfo& createInfo)
 	{
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, SDL_TRUE);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -378,7 +378,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseOpenGL(const CreateInfo&)
+	[[nodiscard]] Status Application::InitialiseOpenGL(const CreateInfo&)
 	{
 		m_openGLContext.Initialise(m_window);
 		
@@ -474,7 +474,7 @@ namespace stardust
 		return Status::Success;
 	}
 
-	Status Application::InitialiseRenderer(const CreateInfo&)
+	[[nodiscard]] Status Application::InitialiseRenderer(const CreateInfo&)
 	{
 		m_renderer.Initialise(Renderer::CreateInfo{
 			.window = &m_window,

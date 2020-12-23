@@ -142,13 +142,13 @@ namespace stardust
 
 	private:
 		void Initialise(const CreateInfo& createInfo);
-		Status InitialiseFilesystem(const CreateInfo& createInfo);
-		Status InitialiseConfig(const CreateInfo& createInfo);
-		Status InitialiseLocale(const CreateInfo&);
-		Status InitialiseSDL(const CreateInfo&);
-		Status InitialiseWindow(const CreateInfo& createInfo);
-		Status InitialiseOpenGL(const CreateInfo&);
-		Status InitialiseRenderer(const CreateInfo&);
+		[[nodiscard]] Status InitialiseFilesystem(const CreateInfo& createInfo);
+		[[nodiscard]] Status InitialiseConfig(const CreateInfo& createInfo);
+		[[nodiscard]] Status InitialiseLocale(const CreateInfo&);
+		[[nodiscard]] Status InitialiseSDL(const CreateInfo&);
+		[[nodiscard]] Status InitialiseWindow(const CreateInfo& createInfo);
+		[[nodiscard]] Status InitialiseOpenGL(const CreateInfo&);
+		[[nodiscard]] Status InitialiseRenderer(const CreateInfo&);
 		void InitialiseScenes();
 
 		void FixedUpdate();
