@@ -94,7 +94,7 @@ namespace stardust
 		~Renderer() noexcept = default;
 
 		void Initialise(const CreateInfo& createInfo);
-		// Add destroy function.
+		void Destroy() noexcept;
 
 		void ProcessResize();
 		void SetVirtualSize(const UVec2& virtualSize);

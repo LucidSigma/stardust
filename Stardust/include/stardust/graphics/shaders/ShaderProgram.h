@@ -25,7 +25,7 @@ namespace stardust
 		mutable HashMap<String, GLint> m_uniformCache{ };
 
 	public:
-		ShaderProgram();
+		ShaderProgram() = default;
 		ShaderProgram(const Vector<ObserverPtr<const Shader>>& shaders);
 
 		ShaderProgram(ShaderProgram&& other) noexcept;

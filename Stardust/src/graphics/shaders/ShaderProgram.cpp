@@ -6,9 +6,6 @@
 
 namespace stardust
 {
-	ShaderProgram::ShaderProgram()
-	{ }
-
 	ShaderProgram::ShaderProgram(const Vector<ObserverPtr<const Shader>>& shaders)
 	{
 		Initialise(shaders);

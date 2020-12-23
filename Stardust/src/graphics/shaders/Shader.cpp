@@ -7,9 +7,6 @@
 
 namespace stardust
 {
-	Shader::Shader()
-	{ }
-
 	Shader::Shader(const Type type, const StringView& filepath, const Language language)
 	{
 		Initialise(type, filepath, language);

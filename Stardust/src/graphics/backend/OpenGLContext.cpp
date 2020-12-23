@@ -40,7 +40,7 @@ namespace stardust
 		m_window = &window;
 	}
 
-	void OpenGLContext::Destroy()
+	void OpenGLContext::Destroy() noexcept
 	{
 		if (m_handle != nullptr)
 		{

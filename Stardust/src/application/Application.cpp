@@ -28,7 +28,7 @@ namespace stardust
 
 		// Input::RemoveAllGameControllers();
 
-		// m_renderer.Destroy();
+		m_renderer.Destroy();
 		m_openGLContext.Destroy();
 		m_window.Destroy();
 

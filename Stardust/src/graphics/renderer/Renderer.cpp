@@ -43,6 +43,15 @@ namespace stardust
 		m_isValid = true;
 	}
 
+	void Renderer::Destroy() noexcept
+	{
+		m_shaderPrograms.clear();
+
+		m_quadVertexLayout.Destroy();
+		m_quadVBO.Destroy();
+		m_quadIBO.Destroy();
+	}
+
 	void Renderer::ProcessResize()
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();

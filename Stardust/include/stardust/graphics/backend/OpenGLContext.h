@@ -29,7 +29,7 @@ namespace stardust
 		~OpenGLContext() noexcept;
 
 		void Initialise(const Window& window);
-		void Destroy();
+		void Destroy() noexcept;
 
 		Status MakeCurrent() const;
 

@@ -38,7 +38,7 @@ namespace stardust
 		bool m_isValid = false;
 
 	public:
-		Shader();
+		Shader() = default;
 		Shader(const Type type, const StringView& filepath, const Language language = Language::GLSL);
 
 		Shader(Shader&& other) noexcept;
