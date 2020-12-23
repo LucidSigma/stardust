@@ -63,13 +63,13 @@ namespace stardust
 		inline static const Vector<f32> s_quadVertices{
 			-0.5f, -0.5f, 0.0f, 0.0f,
 			-0.5f, 0.5f, 0.0f, 1.0f,
-			0.5f, -0.5f, 1.0f, 0.0f,
 			0.5f, 0.5f, 1.0f, 1.0f,
+			0.5f, -0.5f, 1.0f, 0.0f,
 		};
 
 		inline static const Vector<u32> s_quadIndices{
 			0u, 2u, 1u,
-			1u, 2u, 3u,
+			0u, 2u, 3u,
 		};
 
 		ObserverPtr<Window> m_window = nullptr;
@@ -105,6 +105,8 @@ namespace stardust
 
 		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Vec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
+
+		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order.
 		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour) const;
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 

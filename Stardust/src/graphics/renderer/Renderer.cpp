@@ -136,6 +136,84 @@ namespace stardust
 		m_shaderPrograms.at(ShaderName::Quad).Disuse();
 	}
 
+	void Renderer::DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour) const
+	{
+		const Vector<f32> quadVertices{
+			points[0].x, points[0].y, 0.0f, 0.0f,
+			points[1].x, points[1].y, 0.0f, 0.0f,
+			points[2].x, points[2].y, 0.0f, 0.0f,
+			points[3].x, points[3].y, 0.0f, 0.0f,
+		};
+
+		VertexBuffer quadBuffer(quadVertices);
+		VertexLayout quadVertexLayout;
+
+		quadVertexLayout
+			.AddAttribute({
+				// Position.
+				.elementCount = 2u,
+				.dataType = GL_FLOAT,
+				.isNormalised = true,
+			})
+			.AddAttribute({
+				// Texture coordinate.
+				.elementCount = 2u,
+				.dataType = GL_FLOAT,
+				.isNormalised = true,
+			})
+			.AddVertexBuffer(quadBuffer)
+			.Initialise();
+
+		m_shaderPrograms.at(ShaderName::Quad).Use();
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
+
+		quadVertexLayout.Bind();
+		quadVertexLayout.DrawIndexed(m_quadIBO);
+		quadVertexLayout.Unbind();
+
+		m_shaderPrograms.at(ShaderName::Quad).Disuse();
+	}
+
+	void Renderer::DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const
+	{
+		const Vector<f32> quadVertices{
+			static_cast<f32>(points[0].x), static_cast<f32>(m_virtualSize.y - points[0].y), 0.0f, 0.0f,
+			static_cast<f32>(points[1].x), static_cast<f32>(m_virtualSize.y - points[1].y), 0.0f, 0.0f,
+			static_cast<f32>(points[2].x), static_cast<f32>(m_virtualSize.y - points[2].y), 0.0f, 0.0f,
+			static_cast<f32>(points[3].x), static_cast<f32>(m_virtualSize.y - points[3].y), 0.0f, 0.0f,
+		};
+
+		VertexBuffer quadBuffer(quadVertices);
+		VertexLayout quadVertexLayout;
+
+		quadVertexLayout
+			.AddAttribute({
+				// Position.
+				.elementCount = 2u,
+				.dataType = GL_FLOAT,
+				.isNormalised = true,
+			})
+			.AddAttribute({
+				// Texture coordinate.
+				.elementCount = 2u,
+				.dataType = GL_FLOAT,
+				.isNormalised = true,
+			})
+			.AddVertexBuffer(quadBuffer)
+			.Initialise();
+
+		m_shaderPrograms.at(ShaderName::Quad).Use();
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix);
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
+
+		quadVertexLayout.Bind();
+		quadVertexLayout.DrawIndexed(m_quadIBO);
+		quadVertexLayout.Unbind();
+
+		m_shaderPrograms.at(ShaderName::Quad).Disuse();
+	}
+
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();
