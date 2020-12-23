@@ -96,22 +96,7 @@ namespace stardust
 
 	void Renderer::DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2> rotationCentreOffset)
 	{
-		Mat4 modelMatrix{ 1.0f };
-		modelMatrix = glm::translate(modelMatrix, Vec3(position, 0.0f));
-
-		if (rotationCentreOffset.has_value())
-		{
-			modelMatrix = glm::translate(modelMatrix, Vec3{ rotationCentreOffset.value(), 0.0f });
-		}
-
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
-
-		if (rotationCentreOffset.has_value())
-		{
-			modelMatrix = glm::translate(modelMatrix, Vec3{ -rotationCentreOffset.value(), 0.0f });
-		}
-
-		modelMatrix = glm::scale(modelMatrix, Vec3{ scale, 1.0f });
+		const Mat4 modelMatrix = CreateModelMatrix(position, colour, scale, rotation, rotationCentreOffset);
 
 		Mat4 viewMatrix{ 1.0f };
 		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera.GetRotation()), Vec3{ 0.0f, 0.0f, 1.0f });
@@ -193,6 +178,28 @@ namespace stardust
 			&quadVertexShader,
 			&quadFragmentShader,
 		});
+	}
+
+	[[nodiscard]] Mat4 Renderer::CreateModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2> rotationCentreOffset)
+	{
+		Mat4 modelMatrix{ 1.0f };
+		modelMatrix = glm::translate(modelMatrix, Vec3(position, 0.0f));
+
+		if (rotationCentreOffset.has_value())
+		{
+			modelMatrix = glm::translate(modelMatrix, Vec3{ rotationCentreOffset.value(), 0.0f });
+		}
+
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+
+		if (rotationCentreOffset.has_value())
+		{
+			modelMatrix = glm::translate(modelMatrix, Vec3{ -rotationCentreOffset.value(), 0.0f });
+		}
+
+		modelMatrix = glm::scale(modelMatrix, Vec3{ scale, 1.0f });
+
+		return modelMatrix;
 	}
 
 	void Renderer::UpdateScreenProjectionMatrix()

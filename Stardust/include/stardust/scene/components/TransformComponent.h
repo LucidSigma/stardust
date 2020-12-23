@@ -13,14 +13,15 @@ namespace stardust
 		{
 			Vec2 position;
 			f32 rotation;
+			Optional<Vec2> rotationCentreOffset;
 			Vec2 scale;
 
 			Transform()
-				: position(Vec2{ 0.0f, 0.0f }), rotation(0.0f), scale(Vec2{ 1.0f, 1.0f })
+				: position(Vec2{ 0.0f, 0.0f }), rotation(0.0f), rotationCentreOffset(NullOpt), scale(Vec2{ 1.0f, 1.0f })
 			{ }
 
-			explicit Transform(const Vec2& position, const f32 rotation = 0.0f, const Vec2& scale = Vec2{ 1.0f, 1.0f })
-				: position(position), rotation(rotation), scale(scale)
+			explicit Transform(const Vec2& position, const f32 rotation = 0.0f, const Optional<Vec2>& rotationCentreOffset = NullOpt, const Vec2& scale = Vec2{ 1.0f, 1.0f })
+				: position(position), rotation(rotation), rotationCentreOffset(rotationCentreOffset), scale(scale)
 			{ }
 
 			~Transform() noexcept = default;

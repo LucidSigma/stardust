@@ -37,16 +37,6 @@ namespace stardust
 			usize channelCount;
 		};
 
-		struct WorldTransform
-		{
-			Vec2 position{ 0.0f, 0.0f };
-
-			f32 rotation = 0.0f;
-			Optional<f32> rotationCentreOffset = NullOpt;
-
-			Vec2 scale{ 1.0f, 1.0f };
-		};
-
 	private:
 		enum class ShaderName
 		{
@@ -110,6 +100,8 @@ namespace stardust
 	private:
 		void InitialiseVertexObjects();
 		void InitialiseShaders();
+
+		[[nodiscard]] Mat4 CreateModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2> rotationCentreOffset);
 
 		void UpdateScreenProjectionMatrix();
 	};
