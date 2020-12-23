@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 
+#include "stardust/graphics/shaders/Shader.h"
 #include "stardust/math/Math.h"
 
 namespace stardust
@@ -21,9 +22,26 @@ namespace stardust
 		UpdateScreenProjectionMatrix();
 		ProcessResize();
 
-		// Put in-built shaders and objects here and test for their validity.
-
 		SetClearColour(colours::Black);
+		
+		// Put in-built shaders and objects here and test for their validity.
+		InitialiseVertexObjects();
+
+		if (!m_quadVertexLayout.IsValid() || !m_quadVBO.IsValid() || !m_quadIBO.IsValid())
+		{
+			return;
+		}
+
+		InitialiseShaders();
+
+		for (const auto& [shaderName, shaderProgram] : m_shaderPrograms)
+		{
+			if (!shaderProgram.IsValid())
+			{
+				return;
+			}
+		}
+
 		m_isValid = true;
 	}
 
@@ -76,6 +94,41 @@ namespace stardust
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	void Renderer::DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2> rotationCentreOffset)
+	{
+		Mat4 modelMatrix{ 1.0f };
+		modelMatrix = glm::translate(modelMatrix, Vec3(position, 0.0f));
+
+		if (rotationCentreOffset.has_value())
+		{
+			modelMatrix = glm::translate(modelMatrix, Vec3{ rotationCentreOffset.value(), 0.0f });
+		}
+
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+
+		if (rotationCentreOffset.has_value())
+		{
+			modelMatrix = glm::translate(modelMatrix, Vec3{ -rotationCentreOffset.value(), 0.0f });
+		}
+
+		modelMatrix = glm::scale(modelMatrix, Vec3{ scale, 1.0f });
+
+		Mat4 viewMatrix{ 1.0f };
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera.GetRotation()), Vec3{ 0.0f, 0.0f, 1.0f });
+		viewMatrix = glm::scale(viewMatrix, Vec3{ camera.GetZoom(), camera.GetZoom(), 1.0f });
+		viewMatrix = glm::translate(viewMatrix, Vec3{ -camera.GetPosition().x, -camera.GetPosition().y, 0.0f });
+
+		m_shaderPrograms.at(ShaderName::Quad).Use();
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * viewMatrix * modelMatrix);
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
+
+		m_quadVertexLayout.Bind();
+		m_quadVertexLayout.DrawIndexed(m_quadIBO);
+		m_quadVertexLayout.Unbind();
+
+		m_shaderPrograms.at(ShaderName::Quad).Disuse();
+	}
+
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();
@@ -107,6 +160,39 @@ namespace stardust
 			.extent = UVec2{ pixelsWidth, pixelsHeight },
 			.channelCount = PixelChannelCount,
 		};
+	}
+
+	void Renderer::InitialiseVertexObjects()
+	{
+		m_quadVBO.Initialise(s_quadVertices);
+		m_quadIBO.Initialise(s_quadIndices);
+
+		m_quadVertexLayout
+			.AddAttribute({
+				// Position.
+				.elementCount = 2u,
+				.dataType = GL_FLOAT,
+				.isNormalised = true,
+			})
+			.AddAttribute({
+				// Texture coordinate.
+				.elementCount = 2u,
+				.dataType = GL_FLOAT,
+				.isNormalised = true,
+			})
+			.AddVertexBuffer(m_quadVBO)
+			.Initialise();
+	}
+
+	void Renderer::InitialiseShaders()
+	{
+		const Shader quadVertexShader(Shader::Type::Vertex, "assets/shaders/quad.vert");
+		const Shader quadFragmentShader(Shader::Type::Fragment, "assets/shaders/quad.frag");
+
+		m_shaderPrograms.emplace(ShaderName::Quad, Vector<ObserverPtr<const Shader>>{
+			&quadVertexShader,
+			&quadFragmentShader,
+		});
 	}
 
 	void Renderer::UpdateScreenProjectionMatrix()

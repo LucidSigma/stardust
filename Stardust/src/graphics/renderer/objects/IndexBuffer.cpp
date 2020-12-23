@@ -4,11 +4,6 @@
 
 namespace stardust
 {
-	IndexBuffer::IndexBuffer()
-	{
-		glGenBuffers(1, &m_id);
-	}
-
 	IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
 	{
 		Destroy();

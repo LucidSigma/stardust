@@ -19,11 +19,10 @@ namespace stardust
 		GLuint m_id = 0u;
 
 	public:
-		VertexBuffer();
+		VertexBuffer() = default;
 
 		template <typename T = f32>
 		VertexBuffer(const Vector<T>& vertices, const BufferUsage usage = BufferUsage::Static)
-			: VertexBuffer()
 		{
 			Initialise(vertices, usage);
 		}
@@ -36,8 +35,11 @@ namespace stardust
 		template <typename T = f32>
 		void Initialise(const Vector<T>& vertices, const BufferUsage usage = BufferUsage::Static)
 		{
+			glGenBuffers(1, &m_id);
 			Bind();
+
 			glBufferData(GL_ARRAY_BUFFER, sizeof(T) * vertices.size(), vertices.data(), static_cast<GLenum>(usage));
+			
 			Unbind();
 		}
 

@@ -114,6 +114,7 @@ namespace stardust
 
 		inline Window& GetWindow() noexcept { return m_window; }
 		inline Renderer& GetRenderer() noexcept { return m_renderer; }
+		inline Camera2D& GetCamera() noexcept { return m_camera; }
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 

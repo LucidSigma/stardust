@@ -24,11 +24,10 @@ namespace stardust
 		GLenum m_dataType = GL_UNSIGNED_INT;
 
 	public:
-		IndexBuffer();
+		IndexBuffer() = default;
 
 		template <typename T = u32>
 		IndexBuffer(const Vector<T>& indices, const BufferUsage usage = BufferUsage::Static)
-			: IndexBuffer()
 		{
 			Initialise(indices, usage);
 		}
@@ -41,8 +40,11 @@ namespace stardust
 		template <typename T = u32>
 		void Initialise(const Vector<T>& indices, const BufferUsage usage = BufferUsage::Static)
 		{
+			glGenBuffers(1, &m_id);
 			Bind();
+
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(T) * indices.size(), indices.data(), static_cast<GLenum>(usage));
+			
 			Unbind();
 
 			m_indexCount = static_cast<u32>(indices.size());

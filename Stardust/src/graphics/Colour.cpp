@@ -41,20 +41,20 @@ namespace stardust
 	[[nodiscard]] Vec4 ColourToVec4(const Colour& colour)
 	{
 		return Vec4{
-			colour.r,
-			colour.g,
-			colour.b,
-			colour.a,
+			static_cast<f32>(colour.r) / 255.0f,
+			static_cast<f32>(colour.g) / 255.0f,
+			static_cast<f32>(colour.b) / 255.0f,
+			static_cast<f32>(colour.a) / 255.0f,
 		};
 	}
 
 	[[nodiscard]] Colour Vec4ToColour(const Vec4& vector)
 	{
 		return Colour{
-			static_cast<u8>(vector.x),
-			static_cast<u8>(vector.y),
-			static_cast<u8>(vector.z),
-			static_cast<u8>(vector.w),
+			static_cast<u8>(vector.x * 255.0f),
+			static_cast<u8>(vector.y * 255.0f),
+			static_cast<u8>(vector.z * 255.0f),
+			static_cast<u8>(vector.w * 255.0f),
 		};
 	}
 }

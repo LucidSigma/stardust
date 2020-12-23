@@ -4,11 +4,6 @@
 
 namespace stardust
 {
-	VertexBuffer::VertexBuffer()
-	{
-		glGenBuffers(1, &m_id);
-	}
-
 	VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
 	{
 		Destroy();

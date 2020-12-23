@@ -7,11 +7,6 @@
 
 namespace stardust
 {
-	VertexLayout::VertexLayout()
-	{
-		glGenVertexArrays(1, &m_id);
-	}
-
 	VertexLayout::VertexLayout(VertexLayout&& other) noexcept
 	{
 		Destroy();
@@ -39,7 +34,7 @@ namespace stardust
 		Destroy();
 	}
 
-	const VertexLayout& VertexLayout::AddAttribute(const Attribute& attribute) const
+	VertexLayout& VertexLayout::AddAttribute(const Attribute& attribute)
 	{
 		m_attributes.push(AttributeState{
 			.attribute = attribute,
@@ -50,15 +45,16 @@ namespace stardust
 		return *this;
 	}
 
-	const VertexLayout& VertexLayout::AddVertexBuffer(const VertexBuffer& vertexBuffer) const
+	VertexLayout& VertexLayout::AddVertexBuffer(const VertexBuffer& vertexBuffer)
 	{
 		m_vertexBuffers.push_back(std::cref(vertexBuffer));
 
 		return *this;
 	}
 
-	void VertexLayout::Initialise() const
+	void VertexLayout::Initialise()
 	{
+		glGenVertexArrays(1, &m_id);
 		Bind();
 
 	#ifndef NDEBUG

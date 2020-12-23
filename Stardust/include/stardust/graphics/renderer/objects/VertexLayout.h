@@ -47,21 +47,21 @@ namespace stardust
 
 		GLuint m_id = 0u;
 
-		mutable Vector<ReferenceWrapper<const VertexBuffer>> m_vertexBuffers{ };
-		mutable Queue<AttributeState> m_attributes{ };
-		mutable usize m_vertexSize = 0u;
+		Vector<ReferenceWrapper<const VertexBuffer>> m_vertexBuffers{ };
+		Queue<AttributeState> m_attributes{ };
+		usize m_vertexSize = 0u;
 
 	public:
-		VertexLayout();
+		VertexLayout() = default;
 
 		VertexLayout(VertexLayout&& other) noexcept;
 		VertexLayout& operator =(VertexLayout&& other) noexcept;
 
 		~VertexLayout() noexcept;
 
-		const VertexLayout& AddAttribute(const Attribute& attribute) const;
-		const VertexLayout& AddVertexBuffer(const VertexBuffer& vertexBuffer) const;
-		void Initialise() const;
+		VertexLayout& AddAttribute(const Attribute& attribute);
+		VertexLayout& AddVertexBuffer(const VertexBuffer& vertexBuffer);
+		void Initialise();
 
 		void Destroy() noexcept;
 
