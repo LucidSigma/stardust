@@ -27,8 +27,13 @@ namespace stardust
 			displayData.refreshRate = displayMode.refresh_rate;
 			displayData.format = displayMode.format;
 
-			SDL_GetDisplayBounds(displayIndex, &displayData.bounds);
-			SDL_GetDisplayUsableBounds(displayIndex, &displayData.usableBounds);
+			SDL_Rect displayBounds{ };
+			SDL_Rect usableDisplayBounds{ };
+			SDL_GetDisplayBounds(displayIndex, &displayBounds);
+			SDL_GetDisplayUsableBounds(displayIndex, &usableDisplayBounds);
+
+			displayData.bounds = Pair<IVec2, IVec2>{ IVec2{ displayBounds.x, displayBounds.y }, IVec2{ displayBounds.w, displayBounds.h } };
+			displayData.usableBounds = Pair<IVec2, IVec2>{ IVec2{ usableDisplayBounds.x, usableDisplayBounds.y }, IVec2{ usableDisplayBounds.w, usableDisplayBounds.h } };
 
 			displayData.orientation = static_cast<DisplayOrientation>(SDL_GetDisplayOrientation(displayIndex));
 

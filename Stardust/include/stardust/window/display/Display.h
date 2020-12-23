@@ -33,8 +33,8 @@ namespace stardust
 			u32 refreshRate;
 			u32 format;
 
-			rect::Rect bounds;
-			rect::Rect usableBounds;
+			Pair<IVec2, IVec2> bounds;
+			Pair<IVec2, IVec2> usableBounds;
 
 			DisplayOrientation orientation;
 
