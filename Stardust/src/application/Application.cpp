@@ -90,26 +90,16 @@ namespace stardust
 
 	void Application::CaptureScreenshot() const
 	{
-		constexpr usize PixelChannelCount = 4u;
-		const UVec2 screenshotSize = m_window.GetDrawableSize();
-
-		Vector<ubyte> imageData(PixelChannelCount * screenshotSize.x * screenshotSize.y);
-
-		glReadPixels(
-			0, 0,
-			static_cast<i32>(screenshotSize.x), static_cast<i32>(screenshotSize.y),
-			GL_RGBA, GL_UNSIGNED_BYTE,
-			imageData.data()
-		);
+		const Renderer::PixelReadData pixelReadData = m_renderer.ReadPixels();
 
 		const u64 currentTime = static_cast<u64>(std::chrono::system_clock::now().time_since_epoch().count());
 		const String screenshotFilename = m_screenshotDirectory + "/screenshot_" + std::to_string(currentTime) + ".png";
 
 		const i32 screenshotWriteResult = stbi_write_png(
 			screenshotFilename.c_str(),
-			static_cast<i32>(screenshotSize.x), static_cast<i32>(screenshotSize.y), static_cast<i32>(PixelChannelCount),
-			imageData.data(),
-			static_cast<i32>(screenshotSize.x * PixelChannelCount)
+			static_cast<i32>(pixelReadData.extent.x), static_cast<i32>(pixelReadData.extent.y), static_cast<i32>(pixelReadData.channelCount),
+			pixelReadData.pixels.data(),
+			static_cast<i32>(pixelReadData.extent.x * pixelReadData.channelCount)
 		);
 
 		if (screenshotWriteResult == 0)

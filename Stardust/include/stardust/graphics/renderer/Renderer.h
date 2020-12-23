@@ -5,6 +5,7 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
@@ -21,6 +22,14 @@ namespace stardust
 		{
 			ObserverPtr<Window> window = nullptr;
 			Optional<UVec2> virtualSize = NullOpt;
+		};
+
+		struct PixelReadData
+		{
+			Vector<ubyte> pixels;
+
+			UVec2 extent;
+			usize channelCount;
 		};
 
 	private:
@@ -47,6 +56,8 @@ namespace stardust
 
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;
+
+		[[nodiscard]] PixelReadData ReadPixels() const;
 
 		inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }
 		inline const Vec2& GetVirtualScale() const noexcept { return m_virtualScale; }

@@ -1,5 +1,7 @@
 #include "stardust/graphics/renderer/Renderer.h"
 
+#include <utility>
+
 #include <glad/glad.h>
 
 #include "stardust/math/Math.h"
@@ -72,6 +74,39 @@ namespace stardust
 	void Renderer::Clear() const
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
+	{
+		const UVec2 windowSize = m_window->GetDrawableSize();
+
+		u32 pixelsWidth = windowSize.x;
+		u32 pixelsHeight = static_cast<u32>(pixelsWidth / m_virtualAspectRatio + 0.5f);
+
+		if (pixelsHeight > static_cast<u32>(windowSize.y))
+		{
+			pixelsHeight = windowSize.y;
+			pixelsWidth = static_cast<u32>(pixelsHeight * m_virtualAspectRatio + 0.5f);
+		}
+
+		const i32 pixelReadX = (windowSize.x / 2) - (pixelsWidth / 2);
+		const i32 pixelReadY = (windowSize.y / 2) - (pixelsHeight / 2);
+
+		constexpr usize PixelChannelCount = 4u;
+		Vector<ubyte> imageData(PixelChannelCount * pixelsWidth * pixelsHeight);
+
+		glReadPixels(
+			pixelReadX, pixelReadY,
+			pixelsWidth, pixelsHeight,
+			GL_RGBA, GL_UNSIGNED_BYTE,
+			imageData.data()
+		);
+
+		return PixelReadData{
+			.pixels = std::move(imageData),
+			.extent = UVec2{ pixelsWidth, pixelsHeight },
+			.channelCount = PixelChannelCount,
+		};
 	}
 
 	void Renderer::UpdateScreenProjectionMatrix()
