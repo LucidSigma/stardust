@@ -5,6 +5,8 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
 
+#include <glad/glad.h>
+
 #include "stardust/camera/Camera2D.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
@@ -23,6 +25,21 @@ namespace stardust
 		: private INoncopyable, private INonmovable
 	{
 	public:
+		enum class PolygonMode
+			: GLenum
+		{
+			Filled = GL_FILL,
+			Outlines = GL_LINE,
+		};
+
+		enum class FlipType
+		{
+			None,
+			Horizontal,
+			Vertical,
+			Both,
+		};
+
 		struct CreateInfo
 		{
 			ObserverPtr<Window> window = nullptr;
@@ -82,10 +99,14 @@ namespace stardust
 		void ProcessResize();
 		void SetVirtualSize(const UVec2& virtualSize);
 
+		void SetPolygonMode(const PolygonMode polygonMode) const;
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;
 
-		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const f32 rotation = 0.0f, const Optional<Vec2> rotationCentreOffset = NullOpt);
+		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void DrawWorldRectOutline(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void DrawScreenRect(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt);
+		void DrawScreenRectOutline(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt);
 
 		[[nodiscard]] PixelReadData ReadPixels() const;
 
@@ -101,7 +122,10 @@ namespace stardust
 		void InitialiseVertexObjects();
 		void InitialiseShaders();
 
-		[[nodiscard]] Mat4 CreateModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2> rotationCentreOffset);
+		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot);
+		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Colour& colour, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot);
+
+		[[nodiscard]] Vec2 GetScaleFromFlipType(const FlipType flipType) const noexcept;
 
 		void UpdateScreenProjectionMatrix();
 	};

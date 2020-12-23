@@ -2,8 +2,6 @@
 
 #include <utility>
 
-#include <glad/glad.h>
-
 #include "stardust/graphics/shaders/Shader.h"
 #include "stardust/math/Math.h"
 
@@ -79,6 +77,11 @@ namespace stardust
 		ProcessResize();
 	}
 
+	void Renderer::SetPolygonMode(const PolygonMode polygonMode) const
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, static_cast<GLenum>(polygonMode));
+	}
+
 	void Renderer::SetClearColour(const Colour& colour) const
 	{
 		glClearColor(
@@ -94,17 +97,12 @@ namespace stardust
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2> rotationCentreOffset)
+	void Renderer::DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
 	{
-		const Mat4 modelMatrix = CreateModelMatrix(position, colour, scale, rotation, rotationCentreOffset);
-
-		Mat4 viewMatrix{ 1.0f };
-		viewMatrix = glm::rotate(viewMatrix, glm::radians(camera.GetRotation()), Vec3{ 0.0f, 0.0f, 1.0f });
-		viewMatrix = glm::scale(viewMatrix, Vec3{ camera.GetZoom(), camera.GetZoom(), 1.0f });
-		viewMatrix = glm::translate(viewMatrix, Vec3{ -camera.GetPosition().x, -camera.GetPosition().y, 0.0f });
+		const Mat4 modelMatrix = CreateWorldModelMatrix(position, colour, size, rotation, pivot);
 
 		m_shaderPrograms.at(ShaderName::Quad).Use();
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * viewMatrix * modelMatrix);
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
 		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
 
 		m_quadVertexLayout.Bind();
@@ -112,6 +110,31 @@ namespace stardust
 		m_quadVertexLayout.Unbind();
 
 		m_shaderPrograms.at(ShaderName::Quad).Disuse();
+	}
+
+	void Renderer::DrawWorldRectOutline(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
+	{
+		
+	}
+
+	void Renderer::DrawScreenRect(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation, const Optional<IVec2>& pivot)
+	{
+		const Mat4 modelMatrix = CreateScreenModelMatrix(position, colour, size, FlipType::None, rotation, pivot);
+
+		m_shaderPrograms.at(ShaderName::Quad).Use();
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
+
+		m_quadVertexLayout.Bind();
+		m_quadVertexLayout.DrawIndexed(m_quadIBO);
+		m_quadVertexLayout.Unbind();
+
+		m_shaderPrograms.at(ShaderName::Quad).Disuse();
+	}
+
+	void Renderer::DrawScreenRectOutline(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation, const Optional<IVec2>& pivot)
+	{
+		
 	}
 
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
@@ -180,26 +203,84 @@ namespace stardust
 		});
 	}
 
-	[[nodiscard]] Mat4 Renderer::CreateModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2> rotationCentreOffset)
+	[[nodiscard]] Mat4 Renderer::CreateWorldModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot)
 	{
 		Mat4 modelMatrix{ 1.0f };
 		modelMatrix = glm::translate(modelMatrix, Vec3(position, 0.0f));
 
-		if (rotationCentreOffset.has_value())
+		if (pivot.has_value())
 		{
-			modelMatrix = glm::translate(modelMatrix, Vec3{ rotationCentreOffset.value(), 0.0f });
+			modelMatrix = glm::translate(modelMatrix, Vec3{ pivot.value(), 0.0f });
 		}
 
 		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
 
-		if (rotationCentreOffset.has_value())
+		if (pivot.has_value())
 		{
-			modelMatrix = glm::translate(modelMatrix, Vec3{ -rotationCentreOffset.value(), 0.0f });
+			modelMatrix = glm::translate(modelMatrix, Vec3{ -pivot.value(), 0.0f });
 		}
 
 		modelMatrix = glm::scale(modelMatrix, Vec3{ scale, 1.0f });
 
 		return modelMatrix;
+	}
+
+	Mat4 Renderer::CreateScreenModelMatrix(const Vec2& position, const Colour& colour, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot)
+	{
+		Mat4 modelMatrix{ 1.0f };
+		modelMatrix = glm::translate(modelMatrix, Vec3{
+			position.x + static_cast<i32>(size.x) / 2,
+			m_virtualSize.y - position.y - static_cast<i32>(size.y) / 2,
+			0.0f,
+		});
+
+		if (pivot.has_value())
+		{
+			const IVec2& pivotValue = pivot.value();
+			modelMatrix = glm::translate(modelMatrix, Vec3{ pivotValue.x, -pivotValue.y, 0.0f });
+		}
+
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+
+		if (pivot.has_value())
+		{
+			const IVec2& pivotValue = pivot.value();
+			modelMatrix = glm::translate(modelMatrix, Vec3{ -pivotValue.x, pivotValue.y, 0.0f });
+		}
+
+		const Vec2 flipScale = GetScaleFromFlipType(flip);
+		modelMatrix = glm::scale(modelMatrix, Vec3{ static_cast<f32>(size.x) * flipScale.x, static_cast<f32>(size.y) * flipScale.y, 1.0f });
+
+		return modelMatrix;
+	}
+
+	Vec2 Renderer::GetScaleFromFlipType(const FlipType flipType) const noexcept
+	{
+		Vec2 flipScale{ 1.0f, 1.0f };
+
+		switch (flipType)
+		{
+		case FlipType::Horizontal:
+			flipScale.x *= -1.0f;
+
+			break;
+
+		case FlipType::Vertical:
+			flipScale.y *= -1.0f;
+
+			break;
+
+		case FlipType::Both:
+			flipScale *= -1.0f;
+
+			break;
+
+		case FlipType::None:
+		default:
+			break;
+		}
+
+		return flipScale;
 	}
 
 	void Renderer::UpdateScreenProjectionMatrix()

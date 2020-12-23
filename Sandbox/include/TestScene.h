@@ -46,6 +46,7 @@ public:
 	virtual void Render(const sd::Renderer& renderer) const override
 	{
 		m_application.GetRenderer().DrawWorldRect(m_application.GetCamera(), { 0.0f, 0.0f }, sd::CreateColour(1.0f, 0.5f, 0.2f, 1.0f), { 3.0f, 0.5f }, m_application.GetElapsedTime() * 50.0f);
+		m_application.GetRenderer().DrawScreenRect({ 50, 50 }, sd::colours::Lime, { 100u, 200u });
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

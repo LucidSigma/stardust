@@ -50,6 +50,7 @@ namespace stardust
 		inline f32 GetAspectRatio() const noexcept { return m_aspectRatio; }
 		inline f32 GetPixelsPerUnit() const noexcept { return m_pixelsPerUnit; }
 
+		[[nodiscard]] Mat4 GetViewMatrix() const noexcept;
 		inline const Mat4& GetProjectionMatrix() const noexcept { return m_projectionMatrix; }
 		inline const class Renderer& GetRenderer() const noexcept { return *m_renderer; }
 

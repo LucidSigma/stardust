@@ -40,6 +40,16 @@ namespace stardust
 		UpdateProjectionMatrix();
 	}
 
+	[[nodiscard]] Mat4 Camera2D::GetViewMatrix() const noexcept
+	{
+		Mat4 viewMatrix{ 1.0f };
+		viewMatrix = glm::rotate(viewMatrix, glm::radians(m_rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+		viewMatrix = glm::scale(viewMatrix, Vec3{ m_zoom, m_zoom, 1.0f });
+		viewMatrix = glm::translate(viewMatrix, Vec3{ -m_position.x, -m_position.y, 0.0f });
+
+		return viewMatrix;
+	}
+
 	[[nodiscard]] UVec2 Camera2D::WorldSpaceToScreenSpace(Vec2 position) const noexcept
 	{
 		position.x += m_halfSize;
