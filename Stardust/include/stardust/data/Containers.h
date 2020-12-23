@@ -13,6 +13,8 @@
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <tuple>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -74,6 +76,12 @@ namespace stardust
 
 	template <typename T>
 	using ConcurrentQueue = moodycamel::ConcurrentQueue<T>;
+
+	template <typename T, typename U>
+	using Pair = std::pair<T, U>;
+
+	template <typename... Types>
+	using Tuple = std::tuple<Types...>;
 
 	[[nodiscard]] extern Vector<String> SplitString(const String& string, const char delimiter = ' ');
 	[[nodiscard]] extern String MakeUpper(String string);

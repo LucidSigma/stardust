@@ -17,6 +17,7 @@
 #include "stardust/graphics/renderer/objects/VertexBuffer.h"
 #include "stardust/graphics/renderer/objects/VertexLayout.h"
 #include "stardust/graphics/shaders/ShaderProgram.h"
+#include "stardust/rect/Rect.h"
 #include "stardust/window/Window.h"
 
 namespace stardust
@@ -29,7 +30,7 @@ namespace stardust
 			: GLenum
 		{
 			Filled = GL_FILL,
-			Outlines = GL_LINE,
+			Outline = GL_LINE,
 		};
 
 		enum class FlipType
@@ -103,10 +104,18 @@ namespace stardust
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;
 
-		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
-		void DrawWorldRectOutline(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
-		void DrawScreenRect(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt);
-		void DrawScreenRectOutline(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt);
+		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Vec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
+		void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
+		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour) const;
+		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
+
+		// DrawTexturedWorldRect
+		// DrawTexturedScreenRect
+		// DrawTexturedWorldQuad
+		// DrawTexturedScreenQuad
+
+		// BeginFrame
+		// SubmitBatch
 
 		[[nodiscard]] PixelReadData ReadPixels() const;
 
@@ -122,8 +131,8 @@ namespace stardust
 		void InitialiseVertexObjects();
 		void InitialiseShaders();
 
-		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot);
-		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Colour& colour, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot);
+		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot) const;
+		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot) const;
 
 		[[nodiscard]] Vec2 GetScaleFromFlipType(const FlipType flipType) const noexcept;
 

@@ -21,8 +21,8 @@ namespace stardust
 		ProcessResize();
 
 		SetClearColour(colours::Black);
+		SetPolygonMode(PolygonMode::Filled);
 		
-		// Put in-built shaders and objects here and test for their validity.
 		InitialiseVertexObjects();
 
 		if (!m_quadVertexLayout.IsValid() || !m_quadVBO.IsValid() || !m_quadIBO.IsValid())
@@ -97,9 +97,9 @@ namespace stardust
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::DrawWorldRect(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldRect(const Camera2D& camera, const Vec2& position, const Vec2& size, const Colour& colour, const f32 rotation, const Optional<Vec2>& pivot) const
 	{
-		const Mat4 modelMatrix = CreateWorldModelMatrix(position, colour, size, rotation, pivot);
+		const Mat4 modelMatrix = CreateWorldModelMatrix(position, size, rotation, pivot);
 
 		m_shaderPrograms.at(ShaderName::Quad).Use();
 		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
@@ -112,14 +112,9 @@ namespace stardust
 		m_shaderPrograms.at(ShaderName::Quad).Disuse();
 	}
 
-	void Renderer::DrawWorldRectOutline(const Camera2D& camera, const Vec2& position, const Colour& colour, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
 	{
-		
-	}
-
-	void Renderer::DrawScreenRect(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation, const Optional<IVec2>& pivot)
-	{
-		const Mat4 modelMatrix = CreateScreenModelMatrix(position, colour, size, FlipType::None, rotation, pivot);
+		const Mat4 modelMatrix = CreateScreenModelMatrix(position, size, FlipType::None, rotation, pivot);
 
 		m_shaderPrograms.at(ShaderName::Quad).Use();
 		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
@@ -130,11 +125,6 @@ namespace stardust
 		m_quadVertexLayout.Unbind();
 
 		m_shaderPrograms.at(ShaderName::Quad).Disuse();
-	}
-
-	void Renderer::DrawScreenRectOutline(const IVec2& position, const Colour& colour, const UVec2& size, const f32 rotation, const Optional<IVec2>& pivot)
-	{
-		
 	}
 
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
@@ -203,7 +193,7 @@ namespace stardust
 		});
 	}
 
-	[[nodiscard]] Mat4 Renderer::CreateWorldModelMatrix(const Vec2& position, const Colour& colour, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot)
+	[[nodiscard]] Mat4 Renderer::CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot) const
 	{
 		Mat4 modelMatrix{ 1.0f };
 		modelMatrix = glm::translate(modelMatrix, Vec3(position, 0.0f));
@@ -225,7 +215,7 @@ namespace stardust
 		return modelMatrix;
 	}
 
-	Mat4 Renderer::CreateScreenModelMatrix(const Vec2& position, const Colour& colour, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot)
+	Mat4 Renderer::CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot) const
 	{
 		Mat4 modelMatrix{ 1.0f };
 		modelMatrix = glm::translate(modelMatrix, Vec3{
