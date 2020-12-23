@@ -4,6 +4,7 @@
 #include <utility>
 
 #include <glad/glad.h>
+#include <stb_image/stb_image.h>
 #include <stb_image/stb_image_write.h>
 
 #include "stardust/data/MathTypes.h"
@@ -181,6 +182,9 @@ namespace stardust
 			}
 		}
 
+		stbi_set_flip_vertically_on_load(true);
+		stbi_flip_vertically_on_write(true);
+		
 		m_fixedTimestep = createInfo.fixedTimestep;
 		m_ticksCount = SDL_GetPerformanceCounter();
 

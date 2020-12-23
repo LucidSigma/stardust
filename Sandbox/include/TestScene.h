@@ -55,5 +55,20 @@ public:
 		{
 			m_application.FinishCurrentScene();
 		}
+
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F11)
+		{
+			if (!GetWindow().IsFullscreen())
+			{
+				GetWindow().SetBorderless(true);
+			}
+
+			GetWindow().ToggleFullscreen();
+
+			if (!GetWindow().IsFullscreen())
+			{
+				GetWindow().SetBorderless(false);
+			}
+		}
 	}
 };
