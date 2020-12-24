@@ -58,7 +58,7 @@ public:
 		GetRenderer().DrawWorldQuad(GetCamera(), { sd::Vec2{ 5.0f, 4.0f }, sd::Vec2{ 4.5f, -3.0f }, sd::Vec2{ 6.5f, -2.5f }, sd::Vec2{ 5.5f, 3.5f } }, sd::colours::Blue);
 		GetRenderer().DrawScreenQuad({ sd::IVec2{ 500, 50 }, sd::IVec2{ 600, 250 }, sd::IVec2{ 700, 200 }, sd::IVec2{ 800, 100 } }, sd::colours::Beige);
 
-		GetRenderer().DrawTexturedWorldRect(GetCamera(), m_texture, { -1, -1 }, { 4.0f, 4.0f });
+		GetRenderer().DrawTexturedWorldRect(GetCamera(), m_texture, { -1, -1 }, { 4.0f, 4.0f }, sd::colours::Maroon);
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

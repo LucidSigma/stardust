@@ -23,9 +23,6 @@ namespace stardust
 		SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, minimiseOnFocusLoss ? "1" : "0", SDL_HINT_OVERRIDE);
 	}
 
-	Window::Window()
-	{ }
-
 	Window::Window(const CreateInfo& createInfo)
 	{
 		Initialise(createInfo);

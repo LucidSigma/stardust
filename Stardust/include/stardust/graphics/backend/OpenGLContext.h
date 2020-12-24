@@ -20,7 +20,7 @@ namespace stardust
 		ObserverPtr<const Window> m_window = nullptr;
 
 	public:
-		OpenGLContext();
+		OpenGLContext() = default;
 		OpenGLContext(const Window& window);
 
 		OpenGLContext(OpenGLContext&& other) noexcept;

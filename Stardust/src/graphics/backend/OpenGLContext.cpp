@@ -4,9 +4,6 @@
 
 namespace stardust
 {
-	OpenGLContext::OpenGLContext()
-	{ }
-
 	OpenGLContext::OpenGLContext(const Window& window)
 	{
 		Initialise(window);

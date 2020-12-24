@@ -88,7 +88,7 @@ namespace stardust
 	public:
 		static void SetMinimiseOnFullscreenFocusLoss(const bool minimiseOnFocusLoss);
 
-		Window();
+		Window() = default;
 		explicit Window(const CreateInfo& createInfo);
 
 		Window(Window&& other) noexcept;
