@@ -47,6 +47,7 @@
 #include "scene/SceneManager.h"
 
 #include "text/clipboard/Clipboard.h"
+#include "text/text_input/TextInput.h"
 
 #include "utility/cpu/CPU.h"
 #include "utility/interfaces/INoncopyable.h"

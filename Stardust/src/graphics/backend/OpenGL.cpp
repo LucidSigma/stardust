@@ -10,8 +10,6 @@
 #include "stardust/debug/logging/Log.h"
 
 #ifdef WIN32
-#include <windows.h>
-
 extern "C"
 {
 	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001u;
