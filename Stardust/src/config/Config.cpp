@@ -10,8 +10,10 @@
 
 namespace stardust
 {
-	[[nodiscard]] Status Config::Initialise(const StringView& configDirectory, const StringView& configFilename, const StringView& defaultConfigFilepath)
+	[[nodiscard]] Status Config::Initialise(const StringView& preferenceDirectory, const StringView& defaultConfigFilepath)
 	{
+		const String configDirectory = String(preferenceDirectory) + "config";
+
 		if (!filesystem::DoesFileExist(configDirectory))
 		{
 			if (filesystem::CreateDirectory(configDirectory) != Status::Success)
@@ -20,12 +22,12 @@ namespace stardust
 			}
 		}
 
-		const String configFilepath = String(configDirectory) + "/" + String(configFilename);
+		const String configFilepath = String(configDirectory) + "/config.json";
 		bool doesConfigFileExist = filesystem::DoesFileExist(configFilepath);
 
 		if (!doesConfigFileExist)
 		{
-			Log::EngineWarn("{} not found; copying from default.", configFilename);
+			Log::EngineWarn("config.json not found; copying from default.");
 
 			const auto defaultConfigData = vfs::ReadFileData(defaultConfigFilepath);
 

@@ -141,7 +141,7 @@ namespace stardust
 
 	#ifndef NDEBUG
 		{
-			const String logFilepath = m_baseDirectory + String(createInfo.filepaths.logFilepath);
+			const String logFilepath = m_baseDirectory + "log.txt";
 			Log::Initialise(createInfo.applicationName, logFilepath);
 		}
 	#endif
@@ -214,7 +214,7 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		m_screenshotDirectory = m_preferenceDirectory + String(createInfo.filepaths.screenshotDirectory);
+		m_screenshotDirectory = m_preferenceDirectory + "screenshots";
 
 		if (!filesystem::IsDirectory(m_screenshotDirectory))
 		{
@@ -249,7 +249,7 @@ namespace stardust
 
 	[[nodiscard]] Status Application::InitialiseConfig(const CreateInfo& createInfo)
 	{
-		if (m_config.Initialise(m_preferenceDirectory + String(createInfo.filepaths.configDirectory), createInfo.filepaths.configFilename, createInfo.filepaths.defaultConfigFilepath) == Status::Fail)
+		if (m_config.Initialise(m_preferenceDirectory, createInfo.filepaths.defaultConfigFilepath) == Status::Fail)
 		{
 			message_box::Show("Config Error", "Failed to load config file.", message_box::Type::Error);
 			Log::EngineError("Failed to load config file.");

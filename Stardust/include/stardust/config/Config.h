@@ -19,7 +19,7 @@ namespace stardust
 		Config() = default;
 		~Config() noexcept = default;
 
-		[[nodiscard]] Status Initialise(const StringView& configDirectory, const StringView& configFilename, const StringView& defaultConfigFilepath);
+		[[nodiscard]] Status Initialise(const StringView& preferenceDirectory, const StringView& defaultConfigFilepath);
 		[[nodiscard]] Status Save() const;
 
 		inline auto& operator [](const StringView& configType) { return m_data[configType.data()]; }

@@ -18,11 +18,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
 			.localesArchive = "locales.pak",
 		},
 		.filepaths = {
-			.configDirectory = "config",
-			.configFilename = "config.json",
 			.defaultConfigFilepath = "assets/defaults/config.json",
-			.logFilepath = "log.txt",
-			.screenshotDirectory = "screenshots",
 			.windowIconFile = "assets/icon/icon.png",
 		},
 		.fixedTimestep = 0.01f,
