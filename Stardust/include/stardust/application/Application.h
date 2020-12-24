@@ -19,7 +19,7 @@
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/locale/Locale.h"
 #include "stardust/scene/SceneManager.h"
-#include "stardust/utility/enums/Status.h"
+#include "stardust/utility/status/Status.h"
 #include "stardust/window/Window.h"
 
 namespace stardust

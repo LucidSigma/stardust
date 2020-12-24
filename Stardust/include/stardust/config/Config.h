@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 
 #include "stardust/data/Containers.h"
-#include "stardust/utility/enums/Status.h"
+#include "stardust/utility/status/Status.h"
 
 namespace stardust
 {

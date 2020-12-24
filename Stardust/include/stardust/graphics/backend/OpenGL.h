@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-#include "stardust/utility/enums/Status.h"
+#include "stardust/utility/status/Status.h"
 
 #ifndef WIN32
 #define __cdecl

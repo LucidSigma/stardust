@@ -7,7 +7,7 @@
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Pointers.h"
-#include "stardust/utility/enums/Status.h"
+#include "stardust/utility/status/Status.h"
 #include "stardust/window/Window.h"
 
 namespace stardust

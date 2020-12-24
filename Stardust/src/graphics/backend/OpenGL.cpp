@@ -2,6 +2,10 @@
 
 #include <SDL2/SDL.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include "stardust/data/Containers.h"
 #include "stardust/debug/logging/Log.h"
 

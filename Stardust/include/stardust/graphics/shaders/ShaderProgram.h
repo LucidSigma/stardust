@@ -11,7 +11,7 @@
 #include "stardust/data/Types.h"
 #include "stardust/graphics/shaders/Shader.h"
 #include "stardust/math/Math.h"
-#include "stardust/utility/enums/Status.h"
+#include "stardust/utility/status/Status.h"
 
 namespace stardust
 {
