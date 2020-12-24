@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef SAMPLER_H
+#define SAMPLER_H
 
 #include <glad/glad.h>
 
