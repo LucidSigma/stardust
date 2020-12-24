@@ -108,7 +108,7 @@ namespace stardust
 		glBindTexture(GL_TEXTURE_2D, 0u);
 	}
 
-	Status Texture::LoadFromImageFile(const StringView& filepath, const Sampler& sampler)
+	[[nodiscard]] Status Texture::LoadFromImageFile(const StringView& filepath, const Sampler& sampler)
 	{
 		const Vector<ubyte> rawTextureData = vfs::ReadFileData(filepath);
 

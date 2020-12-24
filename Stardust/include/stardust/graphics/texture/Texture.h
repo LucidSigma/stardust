@@ -58,7 +58,7 @@ namespace stardust
 		inline const UVec2& GetSize() const noexcept { return m_size; }
 
 	private:
-		Status LoadFromImageFile(const StringView& filepath, const Sampler& sampler);
+		[[nodiscard]] Status LoadFromImageFile(const StringView& filepath, const Sampler& sampler);
 		void SetupParameters(const GLint internalFormat, const GLenum format, const ubyte* data, const Sampler& sampler);
 	};
 }

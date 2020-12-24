@@ -448,7 +448,7 @@ namespace stardust
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
-		if (m_config["graphics"]["multisampling"]["enabled"])
+		if (m_config["graphics"]["anti-aliasing"])
 		{
 			glEnable(GL_MULTISAMPLE);
 		}

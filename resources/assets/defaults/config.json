@@ -19,9 +19,7 @@
 		}
 	},
 	"graphics": {
-		"multisampling": {
-			"enabled": true
-		},
+		"anti-aliasing": true,
 		"resolution": {
 			"height": 1080,
 			"width": 1920

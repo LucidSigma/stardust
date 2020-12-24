@@ -33,7 +33,7 @@ add_custom_command(TARGET fs_test POST_BUILD
 
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
-        add_custom_command(TARGET fs_test POST_BUILD
+        add_custom_command(TARGET ${TEST_TARGETS} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:config_test>
         )
     endforeach()
