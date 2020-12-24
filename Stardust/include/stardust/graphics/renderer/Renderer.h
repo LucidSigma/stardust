@@ -116,6 +116,8 @@ namespace stardust
 		// SubmitWorldBatch (use camera here)
 		// SubmitScreenBatch
 
+		void SetAntiAliasing(const bool enableAntiAliasing) const;
+
 		[[nodiscard]] PixelReadData ReadPixels() const;
 
 		inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }

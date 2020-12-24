@@ -1,4 +1,4 @@
-#include "stardust/window/display/Display.h"
+#include "stardust/graphics/display/Display.h"
 
 namespace stardust
 {

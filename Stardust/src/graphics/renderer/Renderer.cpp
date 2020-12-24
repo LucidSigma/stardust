@@ -256,6 +256,18 @@ namespace stardust
 		texture.Unbind();
 	}
 
+	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const
+	{
+		if (enableAntiAliasing)
+		{
+			glEnable(GL_MULTISAMPLE);
+		}
+		else
+		{
+			glDisable(GL_MULTISAMPLE);
+		}
+	}
+
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();

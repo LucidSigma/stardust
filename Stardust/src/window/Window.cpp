@@ -7,9 +7,9 @@
 
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
+#include "stardust/graphics/display/Display.h"
 #include "stardust/graphics/surface/PixelSurface.h"
-#include "stardust/filesystem//vfs/VFS.h"
-#include "stardust/window/display/Display.h"
+#include "stardust/filesystem/vfs/VFS.h"
 
 namespace stardust
 {
@@ -21,6 +21,13 @@ namespace stardust
 	void Window::SetMinimiseOnFullscreenFocusLoss(const bool minimiseOnFocusLoss)
 	{
 		SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, minimiseOnFocusLoss ? "1" : "0", SDL_HINT_OVERRIDE);
+	}
+
+	Status Window::SetVSync(const VSyncType vSyncType)
+	{
+		return SDL_GL_SetSwapInterval(static_cast<i32>(vSyncType)) == 0
+			? Status::Success
+			: Status::Fail;
 	}
 
 	Window::Window(const CreateInfo& createInfo)

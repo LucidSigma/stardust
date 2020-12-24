@@ -404,7 +404,7 @@ namespace stardust
 
 			if (useAdaptiveVSync)
 			{
-				if (SDL_GL_SetSwapInterval(-1) != 0)
+				if (Window::SetVSync(VSyncType::Adaptive) != Status::Success)
 				{
 					Log::EngineWarn("Failed to set adaptive VSync; defaulting to regular VSync.");
 					didAdaptiveVSyncFail = true;
@@ -413,16 +413,16 @@ namespace stardust
 
 			if (!useAdaptiveVSync || didAdaptiveVSyncFail)
 			{
-				if (SDL_GL_SetSwapInterval(1) != 0)
+				if (Window::SetVSync(VSyncType::Regular) != Status::Success)
 				{
 					Log::EngineWarn("Failed to set VSync.");
-					SDL_GL_SetSwapInterval(0);
+					Window::SetVSync(VSyncType::None);
 				}
 			}
 		}
 		else
 		{
-			SDL_GL_SetSwapInterval(0);
+			Window::SetVSync(VSyncType::None);
 		}
 
 		if (opengl::InitialiseLoader() != Status::Success)
@@ -447,17 +447,6 @@ namespace stardust
 		
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		if (m_config["graphics"]["anti-aliasing"])
-		{
-			glEnable(GL_MULTISAMPLE);
-		}
-		else
-		{
-			glDisable(GL_MULTISAMPLE);
-		}
-
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		Log::EngineInfo("OpenGL set up successfully.");
 
@@ -485,6 +474,9 @@ namespace stardust
 
 			return Status::Fail;
 		}
+
+		m_renderer.SetAntiAliasing(m_config["graphics"]["anti-aliasing"]);
+		m_renderer.SetClearColour(colours::Black);
 
 		m_camera.Initialise(8.0f, m_renderer);
 		Log::EngineInfo("Renderer and camera created. Camera pixels per unit is {}.", m_camera.GetPixelsPerUnit());

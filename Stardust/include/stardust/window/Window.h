@@ -13,7 +13,9 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/graphics/display/VSyncType.h"
 #include "stardust/locale/Locale.h"
+#include "stardust/utility/status/Status.h"
 
 namespace stardust
 {
@@ -87,6 +89,7 @@ namespace stardust
 
 	public:
 		static void SetMinimiseOnFullscreenFocusLoss(const bool minimiseOnFocusLoss);
+		static Status SetVSync(const VSyncType vSyncType);
 
 		Window() = default;
 		explicit Window(const CreateInfo& createInfo);

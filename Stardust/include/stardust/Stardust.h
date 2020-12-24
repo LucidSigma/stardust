@@ -23,6 +23,9 @@
 
 #include "graphics/backend/OpenGL.h"
 #include "graphics/backend/OpenGLContext.h"
+#include "graphics/display/Display.h"
+#include "graphics/display/VSyncType.h"
+
 #include "graphics/renderer/objects/BufferUsage.h"
 #include "graphics/renderer/objects/IndexBuffer.h"
 #include "graphics/renderer/objects/VertexBuffer.h"
@@ -55,7 +58,6 @@
 #include "utility/random/Random.h"
 #include "utility/status/Status.h"
 
-#include "window/display/Display.h"
 #include "window/Window.h"
 
 namespace sd = stardust;
