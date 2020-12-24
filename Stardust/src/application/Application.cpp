@@ -313,12 +313,7 @@ namespace stardust
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(
-			SDL_GL_MULTISAMPLESAMPLES,
-			m_config["graphics"]["multisampling"]["enabled"] 
-				? static_cast<i32>(m_config["graphics"]["multisampling"]["sample-count"]) 
-				: 1
-		);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
 	#if defined(__APPLE__) && !defined(NDEBUG)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
@@ -328,7 +323,7 @@ namespace stardust
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 	#endif
 
-		Window::SetMinimiseOnFullscreenFocusLoss(m_config["graphics"]["enable-fullscreen-minimise"]);
+		Window::SetMinimiseOnFullscreenFocusLoss(m_config["graphics"]["window"]["enable-fullscreen-minimise"]);
 
 		Vector<Window::CreateFlag> windowCreateFlags{ 
 			Window::CreateFlag::AllowHighDPI,
@@ -337,11 +332,11 @@ namespace stardust
 			Window::CreateFlag::Resizable,
 		};
 
-		if (m_config["window"]["fullscreen"])
+		if (m_config["graphics"]["window"]["fullscreen"])
 		{
 			windowCreateFlags.push_back(Window::CreateFlag::HardFullscreen);
 
-			if (m_config["window"]["borderless"])
+			if (m_config["graphics"]["window"]["borderless"])
 			{
 				windowCreateFlags.push_back(Window::CreateFlag::Borderless);
 			}
@@ -351,7 +346,7 @@ namespace stardust
 			.title = createInfo.windowTitle,
 			.x = Window::Position::Centred,
 			.y = Window::Position::Centred,
-			.size = UVec2{ m_config["window"]["size"]["width"], m_config["window"]["size"]["height"] },
+			.size = UVec2{ m_config["graphics"]["window"]["size"]["width"], m_config["graphics"]["window"]["size"]["height"] },
 			.flags = std::move(windowCreateFlags),
 		});
 
@@ -455,11 +450,6 @@ namespace stardust
 		if (m_config["graphics"]["multisampling"]["enabled"])
 		{
 			glEnable(GL_MULTISAMPLE);
-		}
-		
-		if (m_config["graphics"]["srgb-gamma"])
-		{
-			glEnable(GL_FRAMEBUFFER_SRGB);
 		}
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

@@ -19,24 +19,22 @@
 		}
 	},
 	"graphics": {
-		"enable-fullscreen-minimise": false,
 		"multisampling": {
-			"enabled": true,
-			"sample-count": 8
+			"enabled": true
 		},
-		"srgb-gamma": true,
 		"resolution": {
 			"height": 1080,
 			"width": 1920
+		},
+		"window": {
+			"borderless": false,
+			"enable-fullscreen-minimise": false,
+			"fullscreen": false,
+			"size": {
+				"height": 1080,
+				"width": 1920
+			}
 		}
 	},
-	"locale": "en_gb",
-	"window": {
-		"borderless": false,
-		"fullscreen": false,
-		"size": {
-			"height": 720,
-			"width": 1280
-		}
-	}
+	"locale": "en_gb"
 }

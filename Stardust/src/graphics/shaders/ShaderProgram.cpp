@@ -149,17 +149,19 @@ namespace stardust
 	{
 		static_assert(sizeof(i32) == sizeof(GLint));
 
-		if (m_uniformCache.find(uniformName) != std::cend(m_uniformCache))
+		if (m_uniformCache.contains(uniformName))
 		{
 			return static_cast<i32>(m_uniformCache[uniformName]);
 		}
 
 		const GLint location = glGetUniformLocation(m_id, uniformName.c_str());
 
+	#ifndef NDEBUG
 		if (location == GL_INVALID_INDEX)
 		{
 			Log::EngineWarn("Uniform {} not found in shader program {}.", uniformName.c_str(), m_id);
 		}
+	#endif
 
 		m_uniformCache[uniformName] = location;
 

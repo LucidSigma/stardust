@@ -49,7 +49,7 @@ namespace stardust
 		void Initialise(const Vec2& size, const Sampler& sampler = Sampler{ });
 		void Destroy() noexcept;
 
-		void Bind(const int index = 0) const;
+		void Bind(const i32 index = 0) const;
 		void Unbind() const;
 
 		inline bool IsValid() const noexcept { return m_id != 0 && m_isValid; }

@@ -35,7 +35,7 @@ namespace stardust
 		std::swap(m_isValid, other.m_isValid);
 	}
 
-	Texture& Texture::operator=(Texture && other) noexcept
+	Texture& Texture::operator =(Texture&& other) noexcept
 	{
 		Destroy();
 
@@ -90,7 +90,7 @@ namespace stardust
 		}
 	}
 
-	void Texture::Bind(const int index) const
+	void Texture::Bind(const i32 index) const
 	{
 	#ifndef NDEBUG
 		if (index >= s_maxTextureUnits)
@@ -184,7 +184,7 @@ namespace stardust
 
 		if (sampler.enableAnisotropicFiltering)
 		{
-			float maxAnisotropy = 0.0f;
+			f32 maxAnisotropy = 0.0f;
 			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisotropy);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, maxAnisotropy);
 		}
