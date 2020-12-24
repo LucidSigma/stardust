@@ -28,9 +28,12 @@
 #include "graphics/renderer/objects/VertexBuffer.h"
 #include "graphics/renderer/objects/VertexLayout.h"
 #include "graphics/renderer/Renderer.h"
+
 #include "graphics/shaders/Shader.h"
 #include "graphics/shaders/ShaderProgram.h"
 #include "graphics/surface/PixelSurface.h"
+#include "graphics/texture/Sampler.h"
+#include "graphics/texture/Texture.h"
 #include "graphics/Colour.h"
 
 #include "locale/Locale.h"
