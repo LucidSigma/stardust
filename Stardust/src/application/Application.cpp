@@ -492,7 +492,7 @@ namespace stardust
 		}
 
 		m_camera.Initialise(8.0f, m_renderer);
-		Log::EngineInfo("Renderer and camera created.");
+		Log::EngineInfo("Renderer and camera created. Camera pixels per unit is {}.", m_camera.GetPixelsPerUnit());
 
 		return Status::Success;
 	}

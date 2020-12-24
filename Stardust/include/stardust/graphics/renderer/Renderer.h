@@ -112,7 +112,7 @@ namespace stardust
 		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour) const;
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 
-		void DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale, const Colour& colour, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
+		void DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		// DrawTexturedScreenRect
 		// DrawTexturedWorldQuad
 		// DrawTexturedScreenQuad

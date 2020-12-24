@@ -45,8 +45,8 @@ namespace stardust
 
 		~Texture() noexcept;
 
-		void Initialise(const StringView& filepath, const Sampler& sampler);
-		void Initialise(const Vec2& size, const Sampler& sampler);
+		void Initialise(const StringView& filepath, const Sampler& sampler = Sampler{ });
+		void Initialise(const Vec2& size, const Sampler& sampler = Sampler{ });
 		void Destroy() noexcept;
 
 		void Bind(const int index = 0) const;
