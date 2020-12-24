@@ -12,12 +12,13 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
-#include "stardust/graphics/Colour.h"
 #include "stardust/graphics/renderer/objects/IndexBuffer.h"
 #include "stardust/graphics/renderer/objects/VertexBuffer.h"
 #include "stardust/graphics/renderer/objects/VertexLayout.h"
+#include "stardust/graphics/renderer/FlipType.h"
 #include "stardust/graphics/shaders/ShaderProgram.h"
 #include "stardust/graphics/texture/Texture.h"
+#include "stardust/graphics/Colour.h"
 #include "stardust/window/Window.h"
 
 namespace stardust
@@ -31,14 +32,6 @@ namespace stardust
 		{
 			Filled = GL_FILL,
 			Outline = GL_LINE,
-		};
-
-		enum class FlipType
-		{
-			None,
-			Horizontal,
-			Vertical,
-			Both,
 		};
 
 		struct CreateInfo
@@ -113,7 +106,7 @@ namespace stardust
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 
 		void DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
-		// DrawTexturedScreenRect
+		void DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const FlipType flip = FlipType::None, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		// DrawTexturedWorldQuad
 		// DrawTexturedScreenQuad
 

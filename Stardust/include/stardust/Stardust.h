@@ -27,6 +27,7 @@
 #include "graphics/renderer/objects/IndexBuffer.h"
 #include "graphics/renderer/objects/VertexBuffer.h"
 #include "graphics/renderer/objects/VertexLayout.h"
+#include "graphics/renderer/FlipType.h"
 #include "graphics/renderer/Renderer.h"
 
 #include "graphics/shaders/Shader.h"

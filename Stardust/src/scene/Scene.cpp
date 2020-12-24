@@ -57,4 +57,9 @@ namespace stardust
 	{
 		return m_application.GetSceneManager();
 	}
+
+	f32 Scene::GetElapsedTime() const noexcept
+	{
+		return m_application.GetElapsedTime();
+	}
 }

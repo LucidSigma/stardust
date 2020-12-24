@@ -58,6 +58,8 @@ namespace stardust
 
 		class SceneManager& GetSceneManager() noexcept;
 		const class SceneManager& GetSceneManager() const noexcept;
+
+		f32 GetElapsedTime() const noexcept;
 	};
 }
 

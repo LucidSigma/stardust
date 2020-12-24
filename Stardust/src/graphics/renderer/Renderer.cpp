@@ -123,7 +123,7 @@ namespace stardust
 
 	void Renderer::DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
 	{
-		const Mat4 modelMatrix = CreateScreenModelMatrix(position, size, FlipType::None, rotation, pivot);
+		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(position), size, FlipType::None, rotation, pivot);
 
 		m_shaderPrograms.at(ShaderName::Quad).Use();
 		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
@@ -237,6 +237,25 @@ namespace stardust
 		texture.Unbind();
 	}
 
+	void Renderer::DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale, const FlipType flip, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
+	{
+		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(position), scale * Vec2(texture.GetSize()), flip, rotation, pivot);
+
+		texture.Bind();
+
+		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
+		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
+		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_ColourMod", ColourToVec4(colour));
+		m_shaderPrograms.at(ShaderName::TexturedQuad).SetTextureUniform("u_TextureSampler", 0);
+
+		m_quadVertexLayout.Bind();
+		m_quadVertexLayout.DrawIndexed(m_quadIBO);
+		m_quadVertexLayout.Unbind();
+
+		m_shaderPrograms.at(ShaderName::TexturedQuad).Disuse();
+		texture.Unbind();
+	}
+
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();
@@ -333,7 +352,7 @@ namespace stardust
 		return modelMatrix;
 	}
 
-	Mat4 Renderer::CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot) const
+	[[nodiscard]] Mat4 Renderer::CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot) const
 	{
 		Mat4 modelMatrix{ 1.0f };
 		modelMatrix = glm::translate(modelMatrix, Vec3{
@@ -362,7 +381,7 @@ namespace stardust
 		return modelMatrix;
 	}
 
-	Vec2 Renderer::GetScaleFromFlipType(const FlipType flipType) const noexcept
+	[[nodiscard]] Vec2 Renderer::GetScaleFromFlipType(const FlipType flipType) const noexcept
 	{
 		Vec2 flipScale{ 1.0f, 1.0f };
 
