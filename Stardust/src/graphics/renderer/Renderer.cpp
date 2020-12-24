@@ -214,6 +214,28 @@ namespace stardust
 		m_shaderPrograms.at(ShaderName::Quad).Disuse();
 	}
 
+	void Renderer::DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale, const Colour& colour, const f32 rotation, const Optional<Vec2>& pivot) const
+	{
+		const Vec2 pixelScale = Vec2(texture.GetSize()) / camera.GetPixelsPerUnit();
+		// TODO: Subtextures (texture coordinates/snippets) pixelScale.
+
+		const Mat4 modelMatrix = CreateWorldModelMatrix(position, pixelScale * scale, rotation, pivot);
+
+		texture.Bind();
+		// TODO: Subtextures (texture coordinates/snippets) vertex buffer.
+
+		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
+		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
+		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_Colour", ColourToVec4(colour));
+
+		m_quadVertexLayout.Bind();
+		m_quadVertexLayout.DrawIndexed(m_quadIBO);
+		m_quadVertexLayout.Unbind();
+
+		m_shaderPrograms.at(ShaderName::TexturedQuad).Disuse();
+		texture.Unbind();
+	}
+
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();
@@ -277,6 +299,14 @@ namespace stardust
 		m_shaderPrograms.emplace(ShaderName::Quad, Vector<ObserverPtr<const Shader>>{
 			&quadVertexShader,
 			&quadFragmentShader,
+		});
+
+		const Shader texturedQuadVertexShader(Shader::Type::Vertex, "assets/shaders/quad.vert");
+		const Shader texturedQuadFragmentShader(Shader::Type::Fragment, "assets/shaders/quad.frag");
+
+		m_shaderPrograms.emplace(ShaderName::TexturedQuad, Vector<ObserverPtr<const Shader>>{
+			&texturedQuadVertexShader,
+			&texturedQuadFragmentShader,
 		});
 	}
 

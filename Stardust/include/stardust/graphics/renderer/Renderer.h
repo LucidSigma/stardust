@@ -17,6 +17,7 @@
 #include "stardust/graphics/renderer/objects/VertexBuffer.h"
 #include "stardust/graphics/renderer/objects/VertexLayout.h"
 #include "stardust/graphics/shaders/ShaderProgram.h"
+#include "stardust/graphics/texture/Texture.h"
 #include "stardust/window/Window.h"
 
 namespace stardust
@@ -58,6 +59,7 @@ namespace stardust
 		enum class ShaderName
 		{
 			Quad,
+			TexturedQuad,
 		};
 
 		inline static const Vector<f32> s_quadVertices{
@@ -110,7 +112,7 @@ namespace stardust
 		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour) const;
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 
-		// DrawTexturedWorldRect
+		void DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale, const Colour& colour, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		// DrawTexturedScreenRect
 		// DrawTexturedWorldQuad
 		// DrawTexturedScreenQuad
