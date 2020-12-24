@@ -1,6 +1,6 @@
 #pragma once
-#ifndef BUFFER_USAGE_H
-#define BUFFER_USAGE_H
+#ifndef STARDUST_BUFFER_USAGE_H
+#define STARDUST_BUFFER_USAGE_H
 
 #include <glad/glad.h>
 

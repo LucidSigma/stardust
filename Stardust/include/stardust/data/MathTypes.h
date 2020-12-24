@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MATH_TYPES_H
-#define MATH_TYPES_H
+#ifndef STARDUST_MATH_TYPES_H
+#define STARDUST_MATH_TYPES_H
 
 #include <glm/glm.hpp>
 

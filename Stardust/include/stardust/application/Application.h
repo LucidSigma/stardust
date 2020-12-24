@@ -1,6 +1,6 @@
 #pragma once
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef STARDUST_APPLICATION_H
+#define STARDUST_APPLICATION_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"

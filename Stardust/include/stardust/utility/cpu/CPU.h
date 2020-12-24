@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CPU_H
-#define CPU_H
+#ifndef STARDUST_CPU_H
+#define STARDUST_CPU_H
 
 #include "stardust/data/Types.h"
 

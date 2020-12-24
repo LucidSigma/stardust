@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ENTITY_H
-#define ENTITY_H
+#ifndef STARDUST_ENTITY_H
+#define STARDUST_ENTITY_H
 
 #include <utility>
 

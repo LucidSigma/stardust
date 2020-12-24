@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MESSAGE_BOX_H
-#define MESSAGE_BOX_H
+#ifndef STARDUST_MESSAGE_BOX_H
+#define STARDUST_MESSAGE_BOX_H
 
 #include <type_traits>
 

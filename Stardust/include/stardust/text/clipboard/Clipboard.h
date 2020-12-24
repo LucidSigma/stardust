@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CLIPBOARD_H
-#define CLIPBOARD_H
+#ifndef STARDUST_CLIPBOARD_H
+#define STARDUST_CLIPBOARD_H
 
 #include "stardust/data/Containers.h"
 

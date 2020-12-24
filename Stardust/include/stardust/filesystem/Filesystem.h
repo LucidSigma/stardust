@@ -1,6 +1,6 @@
 #pragma once
-#ifndef FILESYSTEM_H
-#define FILESYSTEM_H
+#ifndef STARDUST_FILESYSTEM_H
+#define STARDUST_FILESYSTEM_H
 
 #include <nlohmann/json.hpp>
 

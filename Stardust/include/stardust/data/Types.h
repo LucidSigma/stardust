@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef STARDUST_TYPES_H
+#define STARDUST_TYPES_H
 
 #include <any>
 #include <cmath>

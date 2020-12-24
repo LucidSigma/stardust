@@ -1,6 +1,6 @@
 #pragma once
-#ifndef OPENGL_CONTEXT_H
-#define OPENGL_CONTEXT_H
+#ifndef STARDUST_OPENGL_CONTEXT_H
+#define STARDUST_OPENGL_CONTEXT_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef STARDUST_CONFIG_H
+#define STARDUST_CONFIG_H
 
 #include <nlohmann/json.hpp>
 

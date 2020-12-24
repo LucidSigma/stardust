@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef STARDUST_SCENE_H
+#define STARDUST_SCENE_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SAMPLER_H
-#define SAMPLER_H
+#ifndef STARDUST_SAMPLER_H
+#define STARDUST_SAMPLER_H
 
 #include <glad/glad.h>
 

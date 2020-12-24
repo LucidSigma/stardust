@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CAMERA_2D_H
-#define CAMERA_2D_H
+#ifndef STARDUST_CAMERA_2D_H
+#define STARDUST_CAMERA_2D_H
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"

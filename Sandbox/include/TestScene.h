@@ -1,3 +1,7 @@
+#pragma once
+#ifndef TEST_SCENE_H
+#define TEST_SCENE_H
+
 #include <stardust/Stardust.h>
 
 #include <glad/glad.h>
@@ -59,11 +63,18 @@ public:
 		GetRenderer().DrawScreenQuad({ sd::IVec2{ 500, 50 }, sd::IVec2{ 600, 250 }, sd::IVec2{ 700, 200 }, sd::IVec2{ 800, 100 } }, sd::colours::Beige);
 
 		GetRenderer().DrawTexturedWorldRect(GetCamera(), m_texture, { -1, -1 }, { 4.0f, 4.0f }, sd::colours::Maroon);
-		GetRenderer().DrawTexturedScreenRect(m_texture, { 400, 400 }, { 3.0f, 2.0f }, sd::FlipType::None, sd::colours::Green, GetElapsedTime() * 50.0f, sd::Vec2{ 250.0f, 1.0f });
+		GetRenderer().DrawTexturedScreenRect(m_texture, { 400, 400 }, { 3.0f, 2.0f }, sd::FlipType::None, sd::colours::Green, GetElapsedTime() * 50.0f, sd::IVec2{ 250, 10 });
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override
 	{
+		if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+		{
+			const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace({ event.button.x, event.button.y });
+
+			sd::Log::Trace("Mouse click: {} {}", mouseClick.x, mouseClick.y);
+		}
+
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
 		{
 			m_application.FinishCurrentScene();
@@ -83,5 +94,16 @@ public:
 				GetWindow().SetBorderless(false);
 			}
 		}
+
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE)
+		{
+			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Outline);
+		}
+		else if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_SPACE)
+		{
+			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
+		}
 	}
 };
+
+#endif

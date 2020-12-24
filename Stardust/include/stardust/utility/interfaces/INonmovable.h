@@ -1,6 +1,6 @@
 #pragma once
-#ifndef I_NONMOVABLE_H
-#define I_NONMOVABLE_H
+#ifndef STARDUST_I_NONMOVABLE_H
+#define STARDUST_I_NONMOVABLE_H
 
 namespace stardust
 {

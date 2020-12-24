@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LOCALE_H
-#define LOCALE_H
+#ifndef STARDUST_LOCALE_H
+#define STARDUST_LOCALE_H
 
 #include <nlohmann/json.hpp>
 

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SCENE_MANAGER_H
-#define SCENE_MANAGER_H
+#ifndef STARDUST_SCENE_MANAGER_H
+#define STARDUST_SCENE_MANAGER_H
 
 #include <type_traits>
 #include <utility>

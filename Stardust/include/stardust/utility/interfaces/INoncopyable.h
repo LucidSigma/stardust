@@ -1,6 +1,6 @@
 #pragma once
-#ifndef I_NONCOPYABLE_H
-#define I_NONCOPYABLE_H
+#ifndef STARDUST_I_NONCOPYABLE_H
+#define STARDUST_I_NONCOPYABLE_H
 
 namespace stardust
 {

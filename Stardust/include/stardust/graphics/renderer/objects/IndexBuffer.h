@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INDEX_BUFFER_H
-#define INDEX_BUFFER_H
+#ifndef STARDUST_INDEX_BUFFER_H
+#define STARDUST_INDEX_BUFFER_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

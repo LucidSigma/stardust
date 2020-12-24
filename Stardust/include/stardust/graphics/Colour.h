@@ -1,6 +1,6 @@
 #pragma once
-#ifndef COLOUR_H
-#define COLOUR_H
+#ifndef STARDUST_COLOUR_H
+#define STARDUST_COLOUR_H
 
 #include <SDL2/SDL.h>
 

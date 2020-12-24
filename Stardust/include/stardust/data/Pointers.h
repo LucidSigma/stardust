@@ -1,6 +1,6 @@
 #pragma once
-#ifndef POINTERS_H
-#define POINTERS_H
+#ifndef STARDUST_POINTERS_H
+#define STARDUST_POINTERS_H
 
 #include <functional>
 #include <memory>

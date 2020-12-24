@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VERTEX_LAYOUT_H
-#define VERTEX_LAYOUT_H
+#ifndef STARDUST_VERTEX_LAYOUT_H
+#define STARDUST_VERTEX_LAYOUT_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

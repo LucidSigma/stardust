@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TAG_COMPONENT_H
-#define TAG_COMPONENT_H
+#ifndef STARDUST_TAG_COMPONENT_H
+#define STARDUST_TAG_COMPONENT_H
 
 #include "stardust/data/Containers.h"
 

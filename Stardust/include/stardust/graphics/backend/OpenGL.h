@@ -1,5 +1,6 @@
-#ifndef OPENGL_H
-#define OPENGL_H
+#pragma once
+#ifndef STARDUST_OPENGL_H
+#define STARDUST_OPENGL_H
 
 #include <glad/glad.h>
 

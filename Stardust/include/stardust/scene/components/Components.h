@@ -1,6 +1,6 @@
 #pragma once
-#ifndef COMPONENTS_H
-#define COMPONENTS_H
+#ifndef STARDUST_COMPONENTS_H
+#define STARDUST_COMPONENTS_H
 
 #include "TagComponent.h"
 #include "TransformComponent.h"

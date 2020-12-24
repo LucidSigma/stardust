@@ -1,6 +1,6 @@
 #pragma once
-#ifndef RENDERER_H
-#define RENDERER_H
+#ifndef STARDUST_RENDERER_H
+#define STARDUST_RENDERER_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"

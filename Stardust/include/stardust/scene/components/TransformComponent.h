@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TRANSFORM_COMPONENT_H
-#define TRANSFORM_COMPONENT_H
+#ifndef STARDUST_TRANSFORM_COMPONENT_H
+#define STARDUST_TRANSFORM_COMPONENT_H
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"

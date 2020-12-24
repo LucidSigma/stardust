@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SHADER_PROGRAM_H
-#define SHADER_PROGRAM_H
+#ifndef STARDUST_SHADER_PROGRAM_H
+#define STARDUST_SHADER_PROGRAM_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

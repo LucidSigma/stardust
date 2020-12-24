@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VERTEX_BUFFER_H
-#define VERTEX_BUFFER_H
+#ifndef STARDUST_VERTEX_BUFFER_H
+#define STARDUST_VERTEX_BUFFER_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

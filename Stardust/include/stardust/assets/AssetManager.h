@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ASSET_MANAGER_H
-#define ASSET_MANAGER_H
+#ifndef STARDUST_ASSET_MANAGER_H
+#define STARDUST_ASSET_MANAGER_H
 
 #include <type_traits>
 #include <utility>

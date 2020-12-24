@@ -1,6 +1,6 @@
 #pragma once
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef STARDUST_DISPLAY_H
+#define STARDUST_DISPLAY_H
 
 #include <type_traits>
 

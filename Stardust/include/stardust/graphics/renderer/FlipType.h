@@ -1,6 +1,6 @@
 #pragma once
-#ifndef FLIP_TYPE_H
-#define FLIP_TYPE_H
+#ifndef STARDUST_FLIP_TYPE_H
+#define STARDUST_FLIP_TYPE_H
 
 namespace stardust
 {

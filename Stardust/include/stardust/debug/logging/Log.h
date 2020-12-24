@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LOG_H
-#define LOG_H
+#ifndef STARDUST_LOG_H
+#define STARDUST_LOG_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"

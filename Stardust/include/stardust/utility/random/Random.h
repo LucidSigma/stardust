@@ -1,6 +1,6 @@
 #pragma once
-#ifndef RANDOM_H
-#define RANDOM_H
+#ifndef STARDUST_RANDOM_H
+#define STARDUST_RANDOM_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
@@ -21,7 +21,7 @@ namespace stardust
 		{
 			Binomial,
 			NegativeBinomial,
-			Geometric
+			Geometric,
 		};
 
 	private:

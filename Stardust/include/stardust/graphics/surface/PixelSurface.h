@@ -1,6 +1,6 @@
 #pragma once
-#ifndef PIXEL_SURFACE_H
-#define PIXEL_SURFACE_H
+#ifndef STARDUST_PIXEL_SURFACE_H
+#define STARDUST_PIXEL_SURFACE_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

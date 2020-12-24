@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VFS_H
-#define VFS_H
+#ifndef STARDUST_VFS_H
+#define STARDUST_VFS_H
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"

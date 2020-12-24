@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CONTAINERS_H
-#define CONTAINERS_H
+#ifndef STARDUST_CONTAINERS_H
+#define STARDUST_CONTAINERS_H
 
 #include <array>
 #include <cstddef>

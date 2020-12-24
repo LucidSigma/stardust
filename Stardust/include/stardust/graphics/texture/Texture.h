@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef STARDUST_TEXTURE_H
+#define STARDUST_TEXTURE_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

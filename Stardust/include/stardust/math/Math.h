@@ -1,6 +1,6 @@
 #pragma once
-#ifndef MATH_H
-#define MATH_H
+#ifndef STARDUST_MATH_H
+#define STARDUST_MATH_H
 
 #include <cmath>
 #include <complex>
