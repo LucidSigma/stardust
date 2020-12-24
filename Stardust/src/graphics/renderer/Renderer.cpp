@@ -227,6 +227,7 @@ namespace stardust
 		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
 		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
 		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_Colour", ColourToVec4(colour));
+		m_shaderPrograms.at(ShaderName::TexturedQuad).SetTextureUniform("u_TextureSampler", 0);
 
 		m_quadVertexLayout.Bind();
 		m_quadVertexLayout.DrawIndexed(m_quadIBO);

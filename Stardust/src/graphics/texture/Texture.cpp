@@ -5,6 +5,7 @@
 #include <stb_image/stb_image.h>
 
 #include "stardust/debug/logging/Log.h"
+#include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/graphics/Colour.h"
 #include "stardust/math/Math.h"
 
@@ -109,11 +110,23 @@ namespace stardust
 
 	Status Texture::LoadFromImageFile(const StringView& filepath, const Sampler& sampler)
 	{
+		const Vector<ubyte> rawTextureData = vfs::ReadFileData(filepath);
+
+		if (rawTextureData.empty())
+		{
+			return Status::Fail;
+		}
+
 		i32 width = 0;
 		i32 height = 0;
 		i32 componentCount = 0;
 
-		ubyte* data = reinterpret_cast<ubyte*>(stbi_load(filepath.data(), &width, &height, &componentCount, STBI_default));
+		ubyte* data = reinterpret_cast<ubyte*>(stbi_load_from_memory(
+			reinterpret_cast<const stbi_uc*>(rawTextureData.data()),
+			static_cast<i32>(rawTextureData.size()),
+			&width, &height, &componentCount,
+			STBI_default
+		));
 
 		if (data == nullptr)
 		{
