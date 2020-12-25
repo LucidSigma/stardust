@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 
 #include "stardust/input/keyboard/Keyboard.h"
+#include "stardust/input/mouse/Mouse.h"
 
 namespace stardust
 {
@@ -18,12 +19,32 @@ namespace stardust
 		inline static Vector<u8> s_currentKeys{ Vector<u8>(SDL_NUM_SCANCODES, SDL_FALSE) };
 		inline static Vector<u8> s_previousKeys{ Vector<u8>(SDL_NUM_SCANCODES, SDL_FALSE) };
 
+		inline static u32 s_currentMouseButtonStates = 0u;
+		inline static u32 s_previousMouseButtonStates = 0u;
+
 		inline static Keyboard s_keyboardState{ s_currentKeys.data(), s_previousKeys.data() };
+		inline static Mouse s_mouseState{ };
+
+		inline static bool s_isMouseCaptured = false;
+		inline static bool s_isMouseInRelativeMode = false;
 
 	public:
+		static bool IsMouseCaptured();
+		static void CaptureMouse(const bool captureMouse);
+
+		static bool IsMouseInRelativeMode();
+		static void SetRelativeMouseMode(const bool isMouseRelative);
+		static void ClearRelativeMouseState();
+
+		static bool IsCursorShown();
+		static void ShowCursor(const bool showCursor);
+		static void WarpMouse(const class Window& window, const i32 x, const i32 y);
+
 		static void UpdateKeyboardState();
+		static void UpdateMouseState();
 
 		static const Keyboard& GetKeyboardState();
+		static const Mouse& GetMouseState();
 
 		Input() = delete;
 		~Input() noexcept = delete;

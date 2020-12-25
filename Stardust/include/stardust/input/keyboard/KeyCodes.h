@@ -156,7 +156,7 @@ namespace stardust
 		AltGr = SDL_SCANCODE_MODE,
 	};
 
-	constexpr usize KeyCodeCount = magic_enum::enum_count<KeyCode>();
+	constexpr usize KeyCount = magic_enum::enum_count<KeyCode>();
 }
 
 #endif

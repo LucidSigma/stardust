@@ -2,7 +2,6 @@
 
 #include "stardust/application/Application.h"
 #include "stardust/camera/Camera2D.h"
-#include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/scene/entity/Entity.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/window/Window.h"

@@ -534,7 +534,7 @@ namespace stardust
 		if (m_hasWindowFocus)
 		{
 			Input::UpdateKeyboardState();
-			// Input::UpdateMouseState();
+			Input::UpdateMouseState();
 			// Input::UpdateGameControllers();
 		}
 

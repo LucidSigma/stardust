@@ -57,6 +57,13 @@ public:
 		{
 			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
 		}
+
+		if (GetMouseState().IsButtonDown(sd::MouseButton::Left))
+		{
+			const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace(GetMouseState().GetProportionalCoordinates(GetRenderer()));
+
+			sd::Log::Trace("Screen: {} {}; World: {} {}", GetMouseState().GetProportionalCoordinates(GetRenderer()).x, GetMouseState().GetProportionalCoordinates(GetRenderer()).y, mouseClick.x, mouseClick.y);
+		}
 	}
 
 	virtual void Update(const sd::f32 deltaTime) override
@@ -85,13 +92,6 @@ public:
 
 	virtual void PollEvent(const SDL_Event& event) override
 	{
-		if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-		{
-			const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace({ event.button.x, event.button.y });
-
-			sd::Log::Trace("Mouse click: {} {}", mouseClick.x, mouseClick.y);
-		}
-
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F11)
 		{
 			if (!GetWindow().IsFullscreen())
