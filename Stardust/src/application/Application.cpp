@@ -14,6 +14,7 @@
 #include "stardust/filesystem/Filesystem.h"
 #include "stardust/graphics/Colour.h"
 #include "stardust/graphics/backend/OpenGL.h"
+#include "stardust/input/Input.h"
 
 namespace stardust
 {
@@ -532,7 +533,7 @@ namespace stardust
 	{
 		if (m_hasWindowFocus)
 		{
-			// Input::UpdateKeyboardState();
+			Input::UpdateKeyboardState();
 			// Input::UpdateMouseState();
 			// Input::UpdateGameControllers();
 		}

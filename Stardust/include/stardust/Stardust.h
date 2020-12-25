@@ -40,6 +40,10 @@
 #include "graphics/texture/Texture.h"
 #include "graphics/Colour.h"
 
+#include "stardust/input/keyboard/Keyboard.h"
+#include "stardust/input/keyboard/KeyCodes.h"
+#include "stardust/input/Input.h"
+
 #include "locale/Locale.h"
 
 #include "math/Math.h"

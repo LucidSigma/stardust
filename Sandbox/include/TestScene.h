@@ -44,7 +44,19 @@ public:
 
 	virtual void ProcessInput() override
 	{
+		if (GetKeyboardState().IsKeyDown(sd::KeyCode::Escape))
+		{
+			m_application.FinishCurrentScene();
+		}
 
+		if (GetKeyboardState().IsKeyDown(sd::KeyCode::Space))
+		{
+			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Outline);
+		}
+		else if (GetKeyboardState().IsKeyUp(sd::KeyCode::Space))
+		{
+			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
+		}
 	}
 
 	virtual void Update(const sd::f32 deltaTime) override
@@ -80,11 +92,6 @@ public:
 			sd::Log::Trace("Mouse click: {} {}", mouseClick.x, mouseClick.y);
 		}
 
-		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-		{
-			m_application.FinishCurrentScene();
-		}
-
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F11)
 		{
 			if (!GetWindow().IsFullscreen())
@@ -98,15 +105,6 @@ public:
 			{
 				GetWindow().SetBorderless(false);
 			}
-		}
-
-		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE)
-		{
-			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Outline);
-		}
-		else if (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_SPACE)
-		{
-			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
 		}
 	}
 };

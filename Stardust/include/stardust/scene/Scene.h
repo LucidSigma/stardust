@@ -10,7 +10,8 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
-#include "stardust/graphics/renderer/Renderer.h"
+#include "stardust/input/keyboard/Keyboard.h"
+#include "stardust/input/Input.h"
 #include "stardust/utility/status/Status.h"
 
 namespace stardust
@@ -37,7 +38,7 @@ namespace stardust
 		virtual void Update(const f32 deltaTime) = 0;
 		inline virtual void LateUpdate(const f32 deltaTime) { }
 
-		virtual void Render(const Renderer& renderer) const = 0;
+		virtual void Render(const class Renderer& renderer) const = 0;
 
 		inline virtual void PollEvent(const SDL_Event& event) { }
 
@@ -58,6 +59,8 @@ namespace stardust
 
 		class SceneManager& GetSceneManager() noexcept;
 		const class SceneManager& GetSceneManager() const noexcept;
+
+		inline const Keyboard& GetKeyboardState() const noexcept { return Input::GetKeyboardState(); }
 
 		f32 GetElapsedTime() const noexcept;
 	};
