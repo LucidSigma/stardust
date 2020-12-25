@@ -301,29 +301,36 @@ namespace stardust
 
 	[[nodiscard]] Status Application::InitialiseWindow(const CreateInfo& createInfo)
 	{
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, SDL_TRUE);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, SDL_TRUE);
+		const Vector<Pair<SDL_GLattr, i32>> glWindowAttributes{
+			{ SDL_GL_DOUBLEBUFFER, SDL_TRUE },
+			{ SDL_GL_CONTEXT_MAJOR_VERSION, 4 },
+			{ SDL_GL_CONTEXT_MINOR_VERSION, 6 },
+			{ SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE },
+			{ SDL_GL_ACCELERATED_VISUAL, SDL_TRUE },
 
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+			{ SDL_GL_RED_SIZE, 8 },
+			{ SDL_GL_GREEN_SIZE, 8 },
+			{ SDL_GL_BLUE_SIZE, 8 },
+			{ SDL_GL_ALPHA_SIZE, 8 },
+			{ SDL_GL_DEPTH_SIZE, 24 },
+			{ SDL_GL_STENCIL_SIZE, 8 },
 
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+			{ SDL_GL_MULTISAMPLEBUFFERS, 1 },
+			{ SDL_GL_MULTISAMPLESAMPLES, 4 },
 
-	#if defined(__APPLE__) && !defined(NDEBUG)
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-	#elif defined(__APPLE__)
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-	#elif !defined(NDEBUG)
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	#endif
+		#if defined(__APPLE__) && !defined(NDEBUG)
+			{ SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG },
+		#elif defined(__APPLE__)
+			{ SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG },
+		#elif !defined(NDEBUG)
+			{ SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG },
+		#endif
+		};
+
+		for (const auto [attribute, value] : glWindowAttributes)
+		{
+			SDL_GL_SetAttribute(attribute, value);
+		}
 
 		Window::SetMinimiseOnFullscreenFocusLoss(m_config["graphics"]["window"]["enable-fullscreen-minimise"]);
 
@@ -337,11 +344,11 @@ namespace stardust
 		if (m_config["graphics"]["window"]["fullscreen"])
 		{
 			windowCreateFlags.push_back(Window::CreateFlag::HardFullscreen);
+		}
 
-			if (m_config["graphics"]["window"]["borderless"])
-			{
-				windowCreateFlags.push_back(Window::CreateFlag::Borderless);
-			}
+		if (m_config["graphics"]["window"]["borderless"])
+		{
+			windowCreateFlags.push_back(Window::CreateFlag::Borderless);
 		}
 
 		m_window.Initialise(Window::CreateInfo{
