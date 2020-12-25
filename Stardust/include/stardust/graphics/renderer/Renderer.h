@@ -101,9 +101,8 @@ namespace stardust
 		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Vec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
-		// TODO: Implement scaling and rotation for these functions.
 		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order.
-		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour) const;
+		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 
 		void DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
@@ -111,7 +110,7 @@ namespace stardust
 		
 		// TODO: Implement scaling and rotation for these functions.
 		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order.
-		void DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Colour& colour = colours::White) const;
+		void DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt, const Colour& colour = colours::White) const;
 		void DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip = FlipType::None, const Colour& colour = colours::White) const;
 
 		// BeginFrame

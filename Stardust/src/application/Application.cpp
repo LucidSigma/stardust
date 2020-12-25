@@ -583,6 +583,16 @@ namespace stardust
 
 				break;
 
+			case SDL_CONTROLLERDEVICEADDED:
+				Log::EngineTrace("Game controller {} added.", event.cdevice.which);
+				
+				break;
+
+			case SDL_CONTROLLERDEVICEREMOVED:
+				Log::EngineTrace("Game controller {} removed.", event.cdevice.which);
+
+				break;
+
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym)
 				{

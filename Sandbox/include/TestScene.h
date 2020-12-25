@@ -91,7 +91,7 @@ public:
 		GetRenderer().DrawTexturedWorldRect(GetCamera(), m_texture, { -1, -1 }, { 4.0f, 4.0f }, sd::colours::Maroon);
 		GetRenderer().DrawTexturedScreenRect(m_texture, { 400, 400 }, { 3.0f, 2.0f }, sd::FlipType::None, sd::colours::Green, GetElapsedTime() * 50.0f, sd::IVec2{ 250, 10 });
 
-		GetRenderer().DrawTexturedWorldQuad(GetCamera(), m_texture, { sd::Vec2{ 2.5f, 2.0f }, sd::Vec2{ 2.25f, -1.5f }, sd::Vec2{ 3.25f, -1.25f }, sd::Vec2{ 2.75f, 1.75f } });
+		GetRenderer().DrawTexturedWorldQuad(GetCamera(), m_texture, { sd::Vec2{ 2.5f, 2.0f }, sd::Vec2{ 2.25f, -1.5f }, sd::Vec2{ 3.25f, -1.25f }, sd::Vec2{ 2.75f, 1.75f } }, sd::Vec2{ 0.0f, 0.0f }, 30.0f);
 		GetRenderer().DrawTexturedScreenQuad(m_texture, { sd::IVec2{ 250, 25 }, sd::IVec2{ 300, 125 }, sd::IVec2{ 350, 100 }, sd::IVec2{ 400, 50 } });
 	}
 

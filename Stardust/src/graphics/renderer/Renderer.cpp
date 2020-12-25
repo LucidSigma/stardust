@@ -136,7 +136,7 @@ namespace stardust
 		m_shaderPrograms.at(ShaderName::Quad).Disuse();
 	}
 
-	void Renderer::DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour) const
+	void Renderer::DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& translation, const f32 rotation, const Optional<Vec2>& pivot) const
 	{
 		const Vector<f32> quadVertices{
 			points[0].x, points[0].y, 0.0f, 0.0f,
@@ -164,8 +164,10 @@ namespace stardust
 			.AddVertexBuffer(quadBuffer)
 			.Initialise();
 
+		const Mat4 modelMatrix = CreateWorldModelMatrix(translation, Vec2{ 1.0f, 1.0f }, rotation, pivot);
+
 		m_shaderPrograms.at(ShaderName::Quad).Use();
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
 		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
 
 		quadVertexLayout.Bind();
@@ -256,7 +258,7 @@ namespace stardust
 		texture.Unbind();
 	}
 
-	void Renderer::DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Colour& colour) const
+	void Renderer::DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation, const f32 rotation, const Optional<Vec2>& pivot, const Colour& colour) const
 	{
 		const Vector<f32> quadVertices{
 			points[0].x, points[0].y, 0.0f, 0.0f,
@@ -284,10 +286,12 @@ namespace stardust
 			.AddVertexBuffer(quadBuffer)
 			.Initialise();
 
+		const Mat4 modelMatrix = CreateWorldModelMatrix(translation, Vec2{ 1.0f, 1.0f }, rotation, pivot);
+
 		texture.Bind();
 
 		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
 		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_ColourMod", ColourToVec4(colour));
 		m_shaderPrograms.at(ShaderName::TexturedQuad).SetTextureUniform("u_TextureSampler", 0);
 
