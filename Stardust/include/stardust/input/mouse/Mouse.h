@@ -13,14 +13,16 @@ namespace stardust
 	class Mouse
 	{
 	private:
-		u32 m_currentButtonStates;
-		u32 m_previousButtonStates;
+		u32 m_currentButtonStates = 0u;
+		u32 m_previousButtonStates = 0u;
 
 		f32 m_x = 0.0f;
 		f32 m_y = 0.0f;
 
-		f32 m_relativeX;
-		f32 m_relativeY;
+		f32 m_relativeX = 0.0f;
+		f32 m_relativeY = 0.0f;
+
+		i32 m_yScrollAmount = 0;
 
 	public:
 		friend class Input;
@@ -45,6 +47,8 @@ namespace stardust
 		[[nodiscard]] bool AreAllButtonsDown(const Vector<MouseButton>& buttons) const;
 		[[nodiscard]] bool AreAllButtonsPressed(const Vector<MouseButton>& buttons) const;
 		[[nodiscard]] bool AreAllButtonsUp(const Vector<MouseButton>& buttons) const;
+
+		inline i32 GetScrollAmount() const noexcept { return m_yScrollAmount; }
 	};
 }
 

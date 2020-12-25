@@ -82,12 +82,12 @@ namespace stardust
 
 	void Input::ResetScrollState() noexcept
 	{
-		s_yScrollAmount = 0;
+		s_mouseState.m_yScrollAmount = 0;
 	}
 
 	void Input::UpdateScrollState(const i32 scrollAmount) noexcept
 	{
-		s_yScrollAmount = scrollAmount;
+		s_mouseState.m_yScrollAmount = scrollAmount;
 	}
 
 	const Keyboard& Input::GetKeyboardState()
@@ -98,10 +98,5 @@ namespace stardust
 	const Mouse& Input::GetMouseState()
 	{
 		return s_mouseState;
-	}
-
-	i32 Input::GetScrollState()
-	{
-		return s_yScrollAmount;
 	}
 }

@@ -65,9 +65,9 @@ public:
 			sd::Log::Trace("Screen: {} {}; World: {} {}", GetMouseState().GetProportionalCoordinates(GetRenderer()).x, GetMouseState().GetProportionalCoordinates(GetRenderer()).y, mouseClick.x, mouseClick.y);
 		}
 
-		if (sd::Input::GetScrollState() != 0)
+		if (GetMouseState().GetScrollAmount() != 0)
 		{
-			sd::Log::Trace("{}", sd::Input::GetScrollState());
+			sd::Log::Trace("{}", GetMouseState().GetScrollAmount());
 		}
 	}
 

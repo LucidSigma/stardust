@@ -27,7 +27,6 @@ namespace stardust
 
 		inline static Keyboard s_keyboardState{ s_currentKeys.data(), s_previousKeys.data() };
 		inline static Mouse s_mouseState{ };
-		inline static i32 s_yScrollAmount = 0;
 
 		inline static bool s_isMouseCaptured = false;
 		inline static bool s_isMouseInRelativeMode = false;
@@ -51,7 +50,6 @@ namespace stardust
 
 		static const Keyboard& GetKeyboardState();
 		static const Mouse& GetMouseState();
-		static i32 GetScrollState();
 
 		Input() = delete;
 		~Input() noexcept = delete;
