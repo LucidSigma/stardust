@@ -58,11 +58,16 @@ public:
 			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
 		}
 
-		if (GetMouseState().IsButtonDown(sd::MouseButton::Left))
+		if (GetMouseState().IsButtonDown(sd::MouseButton::Thumb1))
 		{
 			const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace(GetMouseState().GetProportionalCoordinates(GetRenderer()));
 
 			sd::Log::Trace("Screen: {} {}; World: {} {}", GetMouseState().GetProportionalCoordinates(GetRenderer()).x, GetMouseState().GetProportionalCoordinates(GetRenderer()).y, mouseClick.x, mouseClick.y);
+		}
+
+		if (sd::Input::GetScrollState() != 0)
+		{
+			sd::Log::Trace("{}", sd::Input::GetScrollState());
 		}
 	}
 

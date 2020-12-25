@@ -560,12 +560,19 @@ namespace stardust
 
 	void Application::PollEvents(SDL_Event& event)
 	{
+		Input::ResetScrollState();
+
 		while (SDL_PollEvent(&event) != 0)
 		{
 			switch (event.type)
 			{
 			case SDL_WINDOWEVENT:
 				ProcessWindowEvents(event.window);
+
+				break;
+
+			case SDL_MOUSEWHEEL:
+				Input::UpdateScrollState(event.wheel.y);
 
 				break;
 
@@ -616,10 +623,10 @@ namespace stardust
 		case SDL_WINDOWEVENT_FOCUS_GAINED:
 			m_hasWindowFocus = true;
 
-			// if (Input::IsMouseInRelativeMode())
-			// {
-			// 	Input::ClearRelativeMouseState();
-			// }
+			if (Input::IsMouseInRelativeMode())
+			{
+				Input::ClearRelativeMouseState();
+			}
 
 			break;
 
@@ -678,6 +685,7 @@ namespace stardust
 						message_box::Type::Error
 					);
 					Log::EngineError("Failed to load scene {}.", m_sceneManager.CurrentScene()->GetName());
+
 					m_isRunning = false;
 				}
 				else

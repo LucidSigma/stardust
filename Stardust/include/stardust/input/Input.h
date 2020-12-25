@@ -7,8 +7,11 @@
 
 #include <SDL2/SDL.h>
 
+#include "stardust/data/Containers.h"
+#include "stardust/data/Types.h"
 #include "stardust/input/keyboard/Keyboard.h"
 #include "stardust/input/mouse/Mouse.h"
+#include "stardust/window/Window.h"
 
 namespace stardust
 {
@@ -24,6 +27,7 @@ namespace stardust
 
 		inline static Keyboard s_keyboardState{ s_currentKeys.data(), s_previousKeys.data() };
 		inline static Mouse s_mouseState{ };
+		inline static i32 s_yScrollAmount = 0;
 
 		inline static bool s_isMouseCaptured = false;
 		inline static bool s_isMouseInRelativeMode = false;
@@ -42,9 +46,12 @@ namespace stardust
 
 		static void UpdateKeyboardState();
 		static void UpdateMouseState();
+		static void ResetScrollState() noexcept;
+		static void UpdateScrollState(const i32 scrollAmount) noexcept;
 
 		static const Keyboard& GetKeyboardState();
 		static const Mouse& GetMouseState();
+		static i32 GetScrollState();
 
 		Input() = delete;
 		~Input() noexcept = delete;
