@@ -346,6 +346,9 @@ namespace stardust
 		texture.Unbind();
 	}
 
+	void Renderer::BeginFrame()
+	{ }
+
 	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const
 	{
 		if (enableAntiAliasing)

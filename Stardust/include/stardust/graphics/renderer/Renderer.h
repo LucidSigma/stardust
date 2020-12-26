@@ -63,8 +63,8 @@ namespace stardust
 		};
 
 		inline static const Vector<u32> s_quadIndices{
-			0u, 2u, 1u,
-			0u, 2u, 3u,
+			0u, 1u, 2u,
+			2u, 3u, 0u,
 		};
 
 		ObserverPtr<Window> m_window = nullptr;
@@ -113,8 +113,11 @@ namespace stardust
 		void DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt, const Colour& colour = colours::White) const;
 		void DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip = FlipType::None, const Colour& colour = colours::White) const;
 
-		// BeginFrame
-		// SubmitWorldBatch (use camera here)
+		void BeginFrame();
+
+		void BatchWorldRect();
+
+		void SubmitWorldBatch(const Camera2D& camera);
 		// SubmitScreenBatch
 
 		void SetAntiAliasing(const bool enableAntiAliasing) const;
