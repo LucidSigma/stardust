@@ -53,6 +53,11 @@ namespace stardust
 			return;
 		}
 
+		m_batchShader.Use();
+		m_batchShader.SetTextureUniform("u_Textures[0]", 0);
+		m_batchShader.SetTextureUniform("u_Textures[1]", 1);
+		m_batchShader.Disuse();
+
 		m_isValid = true;
 	}
 
@@ -362,18 +367,18 @@ namespace stardust
 	void Renderer::BeginFrame()
 	{ }
 
-	void Renderer::BatchWorldRect(const Camera2D& camera /* TEMPORARY */) const
+	void Renderer::BatchWorldRect(const Camera2D& camera, const Texture& left, const Texture& right /* TEMPORARY */) const
 	{
 		static const Vector<f32> vertices{
-			-1.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
-			-1.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
-			-0.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
-			-0.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
+			-1.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 0.0f, 0.0f, 0.0f,
+			-1.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 0.0f, 1.0f, 0.0f,
+			-0.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 1.0f, 1.0f, 0.0f,
+			-0.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 1.0f, 0.0f, 0.0f,
 
-			0.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
-			0.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
-			1.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
-			1.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
+			0.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 0.0f, 0.0f, 1.0f,
+			0.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 0.0f, 1.0f, 1.0f,
+			1.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 1.0f, 1.0f, 1.0f,
+			1.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 1.0f, 0.0f, 1.0f,
 		};
 
 		static const Vector<u32> indices{
@@ -400,11 +405,26 @@ namespace stardust
 			.dataType = GL_FLOAT,
 			.isNormalised = true,
 		})
+		.AddAttribute({
+			// Texture coordinates.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture unit index.
+			.elementCount = 1u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
 		.AddVertexBuffer(vbo)
 		.Initialise();
 
 		IndexBuffer ibo;
 		ibo.Initialise(indices);
+
+		left.Bind(0);
+		right.Bind(1);
 
 		m_batchShader.Use();
 		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
@@ -414,6 +434,9 @@ namespace stardust
 		vao.Unbind();
 
 		m_batchShader.Disuse();
+
+		left.Unbind();
+		right.Unbind();
 	}
 
 	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const

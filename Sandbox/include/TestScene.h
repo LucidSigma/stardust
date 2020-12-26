@@ -10,7 +10,8 @@ class TestScene final
 	: public sd::Scene
 {
 private:
-	sd::Texture m_texture;
+	sd::Texture m_crateTexture;
+	sd::Texture m_crumbleTexture;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -25,9 +26,10 @@ public:
 	{
 		m_application.GetRenderer().SetClearColour(sd::CreateColour(0.3f, 0.05f, 0.5f, 1.0f));
 
-		m_texture.Initialise("assets/icon/icon.png");
+		m_crateTexture.Initialise("assets/textures/crate.png");
+		m_crumbleTexture.Initialise("assets/textures/crumble.png");
 
-		if (!m_texture.IsValid())
+		if (!m_crateTexture.IsValid() || !m_crumbleTexture.IsValid())
 		{
 			return sd::Status::Fail;
 		}
@@ -37,7 +39,7 @@ public:
 
 	virtual void OnUnload() noexcept
 	{
-		m_texture.Destroy();
+		m_crateTexture.Destroy();
 	}
 
 	virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override { }
@@ -88,13 +90,13 @@ public:
 		GetRenderer().DrawWorldQuad(GetCamera(), { sd::Vec2{ 5.0f, 4.0f }, sd::Vec2{ 4.5f, -3.0f }, sd::Vec2{ 6.5f, -2.5f }, sd::Vec2{ 5.5f, 3.5f } }, sd::colours::Blue);
 		GetRenderer().DrawScreenQuad({ sd::IVec2{ 500, 50 }, sd::IVec2{ 600, 250 }, sd::IVec2{ 700, 200 }, sd::IVec2{ 800, 100 } }, sd::colours::Beige);
 
-		GetRenderer().DrawTexturedWorldRect(GetCamera(), m_texture, { -1, -1 }, { 4.0f, 4.0f }, sd::colours::Maroon);
-		GetRenderer().DrawTexturedScreenRect(m_texture, { 400, 400 }, { 3.0f, 2.0f }, sd::FlipType::None, sd::colours::Green, GetElapsedTime() * 50.0f, sd::IVec2{ 250, 10 });
+		GetRenderer().DrawTexturedWorldRect(GetCamera(), m_crateTexture, { -1, -1 }, { 4.0f, 4.0f }, sd::colours::Maroon);
+		GetRenderer().DrawTexturedScreenRect(m_crateTexture, { 400, 400 }, { 3.0f, 2.0f }, sd::FlipType::None, sd::colours::Green, GetElapsedTime() * 50.0f, sd::IVec2{ 250, 10 });
 
-		GetRenderer().DrawTexturedWorldQuad(GetCamera(), m_texture, { sd::Vec2{ 2.5f, 2.0f }, sd::Vec2{ 2.25f, -1.5f }, sd::Vec2{ 3.25f, -1.25f }, sd::Vec2{ 2.75f, 1.75f } }, sd::Vec2{ 0.0f, 0.0f }, 30.0f);
-		GetRenderer().DrawTexturedScreenQuad(m_texture, { sd::IVec2{ 250, 25 }, sd::IVec2{ 300, 125 }, sd::IVec2{ 350, 100 }, sd::IVec2{ 400, 50 } });
+		GetRenderer().DrawTexturedWorldQuad(GetCamera(), m_crateTexture, { sd::Vec2{ 2.5f, 2.0f }, sd::Vec2{ 2.25f, -1.5f }, sd::Vec2{ 3.25f, -1.25f }, sd::Vec2{ 2.75f, 1.75f } }, sd::Vec2{ 0.0f, 0.0f }, 30.0f);
+		GetRenderer().DrawTexturedScreenQuad(m_crateTexture, { sd::IVec2{ 250, 25 }, sd::IVec2{ 300, 125 }, sd::IVec2{ 350, 100 }, sd::IVec2{ 400, 50 } });
 
-		GetRenderer().BatchWorldRect(GetCamera());
+		GetRenderer().BatchWorldRect(GetCamera(), m_crumbleTexture, m_crateTexture);
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

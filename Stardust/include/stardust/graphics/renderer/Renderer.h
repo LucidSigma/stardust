@@ -118,7 +118,7 @@ namespace stardust
 
 		void BeginFrame();
 
-		void BatchWorldRect(const Camera2D& camera) const;
+		void BatchWorldRect(const Camera2D& camera, const Texture& left, const Texture& right) const;
 
 		void SubmitWorldBatch(const Camera2D& camera);
 		// SubmitScreenBatch

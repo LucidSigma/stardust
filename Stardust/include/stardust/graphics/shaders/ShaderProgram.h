@@ -110,6 +110,13 @@ namespace stardust
 		}
 
 		template<>
+		void SetUniformVector<i32>(const String& name, const Vector<i32>& values) const
+		{
+			const GLint location = GetUniformLocation(name);
+			glUniform1iv(location, static_cast<GLsizei>(values.size()), values.data());
+		}
+
+		template<>
 		void SetUniformVector<f32>(const String& name, const Vector<f32>& values) const
 		{
 			const GLint location = GetUniformLocation(name);
