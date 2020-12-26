@@ -365,15 +365,15 @@ namespace stardust
 	void Renderer::BatchWorldRect(const Camera2D& camera /* TEMPORARY */) const
 	{
 		static const Vector<f32> vertices{
-			-1.5f, -0.5f,
-			-1.5f, 0.5f,
-			-0.5f, 0.5f,
-			-0.5f, -0.5f,
+			-1.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
+			-1.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
+			-0.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
+			-0.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f,
 
-			0.5f, -0.5f,
-			0.5f, 0.5f,
-			1.5f, 0.5f,
-			1.5f, -0.5f,
+			0.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
+			0.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
+			1.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
+			1.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f,
 		};
 
 		static const Vector<u32> indices{
@@ -389,7 +389,14 @@ namespace stardust
 
 		VertexLayout vao;
 		vao.AddAttribute({
+			// Position.
 			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Colour.
+			.elementCount = 4u,
 			.dataType = GL_FLOAT,
 			.isNormalised = true,
 		})
