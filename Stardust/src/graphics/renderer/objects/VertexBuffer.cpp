@@ -4,6 +4,11 @@
 
 namespace stardust
 {
+	VertexBuffer::VertexBuffer(const usize size, const BufferUsage usage)
+	{
+		Initialise(size, usage);
+	}
+
 	VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
 	{
 		Destroy();
@@ -22,6 +27,16 @@ namespace stardust
 	VertexBuffer::~VertexBuffer() noexcept
 	{
 		Destroy();
+	}
+
+	void VertexBuffer::Initialise(const usize size, const BufferUsage usage)
+	{
+		glGenBuffers(1, &m_id);
+		Bind();
+
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), nullptr, static_cast<GLenum>(usage));
+
+		Unbind();
 	}
 
 	void VertexBuffer::Destroy() noexcept

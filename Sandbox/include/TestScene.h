@@ -96,7 +96,8 @@ public:
 		GetRenderer().DrawTexturedWorldQuad(GetCamera(), m_crateTexture, { sd::Vec2{ 2.5f, 2.0f }, sd::Vec2{ 2.25f, -1.5f }, sd::Vec2{ 3.25f, -1.25f }, sd::Vec2{ 2.75f, 1.75f } }, sd::Vec2{ 0.0f, 0.0f }, 30.0f);
 		GetRenderer().DrawTexturedScreenQuad(m_crateTexture, { sd::IVec2{ 250, 25 }, sd::IVec2{ 300, 125 }, sd::IVec2{ 350, 100 }, sd::IVec2{ 400, 50 } });
 
-		GetRenderer().BatchWorldRect(GetCamera(), m_crumbleTexture, m_crateTexture);
+		GetRenderer().BatchWorldRect(glm::sin(GetElapsedTime()) * 4.0f);
+		GetRenderer().SubmitWorldBatch(GetCamera(), m_crumbleTexture, m_crateTexture);
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

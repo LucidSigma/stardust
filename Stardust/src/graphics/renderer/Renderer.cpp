@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include "stardust/graphics/renderer/objects/BufferUsage.h"
 #include "stardust/graphics/shaders/Shader.h"
 #include "stardust/math/Math.h"
 
@@ -38,6 +39,40 @@ namespace stardust
 			{
 				return;
 			}
+		}
+
+		m_batchVertexBuffer.Initialise(s_VerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
+
+		m_batchVertexLayout.AddAttribute({
+			// Position.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Colour.
+			.elementCount = 4u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture coordinates.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture unit index.
+			.elementCount = 1u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddVertexBuffer(m_batchVertexBuffer)
+		.Initialise();
+
+		if (!m_batchVertexBuffer.IsValid() || !m_batchVertexLayout.IsValid())
+		{
+			return;
 		}
 
 		const Shader batchVertexShader(Shader::Type::Vertex, "assets/shaders/quad_batch.vert");
@@ -367,58 +402,54 @@ namespace stardust
 	void Renderer::BeginFrame()
 	{ }
 
-	void Renderer::BatchWorldRect(const Camera2D& camera, const Texture& left, const Texture& right /* TEMPORARY */) const
+	[[nodiscard]] Vector<Renderer::BatchVertex> Renderer::GenerateQuad(const Vec2& position, const Vec4& colour, const float textureIndex) const
 	{
-		static const Vector<f32> vertices{
-			-1.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 0.0f, 0.0f, 0.0f,
-			-1.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 0.0f, 1.0f, 0.0f,
-			-0.5f, 0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 1.0f, 1.0f, 0.0f,
-			-0.5f, -0.5f, 1.0f, 0.93f, 0.24f, 1.0f, 1.0f, 0.0f, 0.0f,
-
-			0.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 0.0f, 0.0f, 1.0f,
-			0.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 0.0f, 1.0f, 1.0f,
-			1.5f, 0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 1.0f, 1.0f, 1.0f,
-			1.5f, -0.5f, 0.18f, 0.6f, 0.96f, 1.0f, 1.0f, 0.0f, 1.0f,
+		return {
+			BatchVertex{
+				.position = Vec2{ -0.5f, -0.5f } + position,
+				.colour = colour,
+				.textureCoordinates = Vec2{ 0.0f, 0.0f },
+				.textureIndex = textureIndex,
+			},
+			BatchVertex{
+				.position = Vec2{ -0.5f, 0.5f } + position,
+				.colour = colour,
+				.textureCoordinates = Vec2{ 0.0f, 1.0f },
+				.textureIndex = textureIndex,
+			},
+			BatchVertex{
+				.position = Vec2{ 0.5f, 0.5f } + position,
+				.colour = colour,
+				.textureCoordinates = Vec2{ 1.0f, 1.0f },
+				.textureIndex = textureIndex,
+			},
+			BatchVertex{
+				.position = Vec2{ 0.5f, -0.5f } + position,
+				.colour = colour,
+				.textureCoordinates = Vec2{ 1.0f, 0.0f },
+				.textureIndex = textureIndex,
+			},
 		};
+	}
 
+	void Renderer::BatchWorldRect(const float offset) const
+	{
+		const auto leftVertices = GenerateQuad({ -1.0f, 0.0f + offset }, { 1.0f, 0.93f, 0.24f, 1.0f }, 0.0f);
+		const auto rightVertices = GenerateQuad({ 1.0f, 0.0f + offset }, { 0.18f, 0.6f, 0.96f, 1.0f }, 1.0f);
+
+		m_batchVertexBuffer.SetSubData(leftVertices);
+		m_batchVertexBuffer.SetSubData(rightVertices, leftVertices.size() * sizeof(leftVertices.front()));
+	}
+
+	void Renderer::SubmitWorldBatch(const Camera2D& camera, const Texture& left, const Texture& right /* TEMPORARY */) const
+	{
 		static const Vector<u32> indices{
 			0u, 1u, 2u,
 			2u, 3u, 0u,
-
+		
 			4u, 5u, 6u,
 			6u, 7u, 4u,
 		};
-
-		VertexBuffer vbo;
-		vbo.Initialise(vertices);
-
-		VertexLayout vao;
-		vao.AddAttribute({
-			// Position.
-			.elementCount = 2u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Colour.
-			.elementCount = 4u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Texture coordinates.
-			.elementCount = 2u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Texture unit index.
-			.elementCount = 1u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddVertexBuffer(vbo)
-		.Initialise();
 
 		IndexBuffer ibo;
 		ibo.Initialise(indices);
@@ -429,9 +460,9 @@ namespace stardust
 		m_batchShader.Use();
 		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
 
-		vao.Bind();
-		vao.DrawIndexed(ibo);
-		vao.Unbind();
+		m_batchVertexLayout.Bind();
+		m_batchVertexLayout.DrawIndexed(ibo);
+		m_batchVertexLayout.Unbind();
 
 		m_batchShader.Disuse();
 

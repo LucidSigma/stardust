@@ -27,7 +27,7 @@ namespace stardust
 		IndexBuffer() = default;
 
 		template <typename T = u32>
-		IndexBuffer(const Vector<T>& indices, const BufferUsage usage = BufferUsage::Static)
+		explicit IndexBuffer(const Vector<T>& indices, const BufferUsage usage = BufferUsage::Static)
 		{
 			Initialise(indices, usage);
 		}

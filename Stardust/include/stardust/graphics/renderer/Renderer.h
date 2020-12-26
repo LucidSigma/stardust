@@ -84,6 +84,21 @@ namespace stardust
 		bool m_isValid = false;
 
 		// Batching (will replace non-batched rendering when it is finished).
+		struct BatchVertex
+		{
+			Vec2 position;
+			Vec4 colour;
+			Vec2 textureCoordinates;
+			f32 textureIndex;
+		};
+
+		static constexpr usize s_MaxQuadsPerBatch = 4'000u;
+		static constexpr usize s_VerticesPerBatch = s_MaxQuadsPerBatch * 4u;
+		static constexpr usize s_IndicesPerBatch = s_MaxQuadsPerBatch * 6u;
+
+		VertexLayout m_batchVertexLayout;
+		VertexBuffer m_batchVertexBuffer;
+
 		ShaderProgram m_batchShader;
 
 	public:
@@ -118,9 +133,10 @@ namespace stardust
 
 		void BeginFrame();
 
-		void BatchWorldRect(const Camera2D& camera, const Texture& left, const Texture& right) const;
+		[[nodiscard]] Vector<BatchVertex> GenerateQuad(const Vec2& position, const Vec4& colour, const float textureIndex) const; // TODO: Make static method.
+		void BatchWorldRect(const float offset) const;
 
-		void SubmitWorldBatch(const Camera2D& camera);
+		void SubmitWorldBatch(const Camera2D& camera, const Texture& left, const Texture& right) const;
 		// SubmitScreenBatch
 
 		void SetAntiAliasing(const bool enableAntiAliasing) const;
