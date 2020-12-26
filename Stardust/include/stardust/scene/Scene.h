@@ -40,7 +40,7 @@ namespace stardust
 		virtual void Update(const f32 deltaTime) = 0;
 		inline virtual void LateUpdate(const f32 deltaTime) { }
 
-		virtual void Render(const Renderer& renderer) const = 0;
+		virtual void Render(Renderer& renderer) = 0;
 
 		inline virtual void PollEvent(const SDL_Event& event) { }
 

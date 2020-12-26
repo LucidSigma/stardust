@@ -75,12 +75,12 @@ public:
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
-		
+		GetRenderer().BeginFrame();
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
 
-	virtual void Render(const sd::Renderer& renderer) const override
+	virtual void Render(sd::Renderer& renderer) override
 	{
 		GetRenderer().DrawWorldRect(GetCamera(), { 0.0f, 0.0f }, { 3.0f, 0.5f }, sd::CreateColour(1.0f, 0.5f, 0.2f, 1.0f), GetElapsedTime() * 50.0f);
 		GetRenderer().DrawScreenRect({ 50, 50 }, { 100u, 200u }, sd::colours::Lime);
@@ -96,8 +96,8 @@ public:
 		GetRenderer().DrawTexturedWorldQuad(GetCamera(), m_crateTexture, { sd::Vec2{ 2.5f, 2.0f }, sd::Vec2{ 2.25f, -1.5f }, sd::Vec2{ 3.25f, -1.25f }, sd::Vec2{ 2.75f, 1.75f } }, sd::Vec2{ 0.0f, 0.0f }, 30.0f);
 		GetRenderer().DrawTexturedScreenQuad(m_crateTexture, { sd::IVec2{ 250, 25 }, sd::IVec2{ 300, 125 }, sd::IVec2{ 350, 100 }, sd::IVec2{ 400, 50 } });
 
-		GetRenderer().BatchWorldRect(glm::sin(GetElapsedTime()) * 4.0f);
-		GetRenderer().SubmitWorldBatch(GetCamera(), m_crumbleTexture, m_crateTexture);
+		renderer.BatchWorldRect();
+		renderer.SubmitWorldBatch(GetCamera(), m_crumbleTexture, m_crateTexture);
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

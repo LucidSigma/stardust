@@ -31,10 +31,10 @@ namespace stardust
 		~Mouse() noexcept = default;
 
 		[[nodiscard]] inline Vec2 GetCoordinates() const noexcept { return Vec2{ m_x, m_y }; }
-		[[nodiscard]] inline Vec2 GetProportionalCoordinates(const Renderer& renderer) const noexcept { return Vec2{ m_x, m_y } / renderer.GetVirtualScale(); }
+		[[nodiscard]] inline Vec2 GetProportionalCoordinates(const Renderer& renderer) const noexcept { return Vec2{ m_x, m_y } / renderer.GetVirtualScale().x; }
 
 		[[nodiscard]] inline Vec2 GetRelativeCoordinates() const noexcept { return Vec2{ m_relativeX, m_relativeY }; }
-		[[nodiscard]] inline Vec2 GetProportionalRelativeCoordinates(const Renderer& renderer) const noexcept { return Vec2{ m_relativeX, m_relativeY } / renderer.GetVirtualScale(); }
+		[[nodiscard]] inline Vec2 GetProportionalRelativeCoordinates(const Renderer& renderer) const noexcept { return Vec2{ m_relativeX, m_relativeY } / renderer.GetVirtualScale().x; }
 
 		[[nodiscard]] bool IsButtonDown(const MouseButton button) const;
 		[[nodiscard]] bool IsButtonPressed(const MouseButton button) const;

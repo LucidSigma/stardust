@@ -558,7 +558,7 @@ namespace stardust
 		m_sceneManager.CurrentScene()->LateUpdate(m_deltaTime);
 	}
 
-	void Application::Render() const
+	void Application::Render()
 	{
 		m_renderer.Clear();
 		m_sceneManager.CurrentScene()->Render(m_renderer);

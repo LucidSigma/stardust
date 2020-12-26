@@ -98,8 +98,11 @@ namespace stardust
 
 		VertexLayout m_batchVertexLayout;
 		VertexBuffer m_batchVertexBuffer;
+		IndexBuffer m_batchIndexBuffer;
 
 		ShaderProgram m_batchShader;
+
+		u32 m_quadsDrawnThisFrame = 0u;
 
 	public:
 		Renderer() = default;
@@ -133,8 +136,8 @@ namespace stardust
 
 		void BeginFrame();
 
-		[[nodiscard]] Vector<BatchVertex> GenerateQuad(const Vec2& position, const Vec4& colour, const float textureIndex) const; // TODO: Make static method.
-		void BatchWorldRect(const float offset) const;
+		[[nodiscard]] BatchVertex* GenerateQuad(BatchVertex* target, const Vec2& position, const Vec4& colour, const float textureIndex);
+		void BatchWorldRect();
 
 		void SubmitWorldBatch(const Camera2D& camera, const Texture& left, const Texture& right) const;
 		// SubmitScreenBatch

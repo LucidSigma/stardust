@@ -151,7 +151,7 @@ namespace stardust
 		void ProcessInput();
 		void Update();
 		void LateUpdate();
-		void Render() const;
+		void Render();
 
 		void PollEvents(SDL_Event& event);
 		void ProcessWindowEvents(const SDL_WindowEvent& windowEvent);

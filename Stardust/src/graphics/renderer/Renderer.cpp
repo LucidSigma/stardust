@@ -70,7 +70,25 @@ namespace stardust
 		.AddVertexBuffer(m_batchVertexBuffer)
 		.Initialise();
 
-		if (!m_batchVertexBuffer.IsValid() || !m_batchVertexLayout.IsValid())
+		Vector<u32> indices(s_IndicesPerBatch);
+		u32 offset = 0u;
+
+		for (usize i = 0u; i < s_IndicesPerBatch; i += 6u)
+		{
+			indices[i + 0u] = 0u + offset;
+			indices[i + 1u] = 1u + offset;
+			indices[i + 2u] = 2u + offset;
+
+			indices[i + 3u] = 2u + offset;
+			indices[i + 4u] = 3u + offset;
+			indices[i + 5u] = 0u + offset;
+
+			offset += 4u;
+		}
+
+		m_batchIndexBuffer.Initialise(indices);
+
+		if (!m_batchVertexBuffer.IsValid() || !m_batchVertexLayout.IsValid() || !m_batchIndexBuffer.IsValid())
 		{
 			return;
 		}
@@ -400,60 +418,65 @@ namespace stardust
 	}
 
 	void Renderer::BeginFrame()
-	{ }
-
-	[[nodiscard]] Vector<Renderer::BatchVertex> Renderer::GenerateQuad(const Vec2& position, const Vec4& colour, const float textureIndex) const
 	{
-		return {
-			BatchVertex{
-				.position = Vec2{ -0.5f, -0.5f } + position,
-				.colour = colour,
-				.textureCoordinates = Vec2{ 0.0f, 0.0f },
-				.textureIndex = textureIndex,
-			},
-			BatchVertex{
-				.position = Vec2{ -0.5f, 0.5f } + position,
-				.colour = colour,
-				.textureCoordinates = Vec2{ 0.0f, 1.0f },
-				.textureIndex = textureIndex,
-			},
-			BatchVertex{
-				.position = Vec2{ 0.5f, 0.5f } + position,
-				.colour = colour,
-				.textureCoordinates = Vec2{ 1.0f, 1.0f },
-				.textureIndex = textureIndex,
-			},
-			BatchVertex{
-				.position = Vec2{ 0.5f, -0.5f } + position,
-				.colour = colour,
-				.textureCoordinates = Vec2{ 1.0f, 0.0f },
-				.textureIndex = textureIndex,
-			},
-		};
+		m_quadsDrawnThisFrame = 0u;
 	}
 
-	void Renderer::BatchWorldRect(const float offset) const
+	[[nodiscard]] Renderer::BatchVertex* Renderer::GenerateQuad(BatchVertex* target, const Vec2& position, const Vec4& colour, const float textureIndex)
 	{
-		const auto leftVertices = GenerateQuad({ -1.0f, 0.0f + offset }, { 1.0f, 0.93f, 0.24f, 1.0f }, 0.0f);
-		const auto rightVertices = GenerateQuad({ 1.0f, 0.0f + offset }, { 0.18f, 0.6f, 0.96f, 1.0f }, 1.0f);
+		target->position = Vec2{ -0.5f, -0.5f } + position;
+		target->colour = colour;
+		target->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		target->textureIndex = textureIndex;
+		++target;
 
-		m_batchVertexBuffer.SetSubData(leftVertices);
-		m_batchVertexBuffer.SetSubData(rightVertices, leftVertices.size() * sizeof(leftVertices.front()));
+		target->position = Vec2{ -0.5f, 0.5f } + position;
+		target->colour = colour;
+		target->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		target->textureIndex = textureIndex;
+		++target;
+			
+		target->position = Vec2{ 0.5f, 0.5f } + position;
+		target->colour = colour;
+		target->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		target->textureIndex = textureIndex;
+		++target;
+
+		target->position = Vec2{ 0.5f, -0.5f } + position;
+		target->colour = colour;
+		target->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		target->textureIndex = textureIndex;
+		++target;
+
+		++m_quadsDrawnThisFrame;
+
+		return target;
+	}
+
+	void Renderer::BatchWorldRect()
+	{
+		Vector<BatchVertex> vertices(1'000u);
+		BatchVertex* buffer = vertices.data();
+
+		for (i32 x = -3; x <= 3; ++x)
+		{
+			for (i32 y = -3; y <= 3; ++y)
+			{
+				buffer = GenerateQuad(buffer, Vec2{ x, y }, Vec4{ 1.0f, 1.0f, 1.0f, 1.0f }, static_cast<float>((x + y) % 2u));
+			}
+		}
+
+		//const auto leftVertices = GenerateQuad({ -1.0f, 0.0f + offset }, { 1.0f, 0.93f, 0.24f, 1.0f }, 0.0f);
+		//const auto rightVertices = GenerateQuad({ 1.0f, 0.0f + offset }, { 0.18f, 0.6f, 0.96f, 1.0f }, 1.0f);
+
+		m_batchVertexBuffer.SetSubData(vertices);
+
+		//m_batchVertexBuffer.SetSubData(leftVertices);
+		//m_batchVertexBuffer.SetSubData(rightVertices, leftVertices.size() * sizeof(leftVertices.front()));
 	}
 
 	void Renderer::SubmitWorldBatch(const Camera2D& camera, const Texture& left, const Texture& right /* TEMPORARY */) const
 	{
-		static const Vector<u32> indices{
-			0u, 1u, 2u,
-			2u, 3u, 0u,
-		
-			4u, 5u, 6u,
-			6u, 7u, 4u,
-		};
-
-		IndexBuffer ibo;
-		ibo.Initialise(indices);
-
 		left.Bind(0);
 		right.Bind(1);
 
@@ -461,7 +484,7 @@ namespace stardust
 		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
 
 		m_batchVertexLayout.Bind();
-		m_batchVertexLayout.DrawIndexed(ibo);
+		m_batchVertexLayout.DrawIndexed(m_batchIndexBuffer, m_quadsDrawnThisFrame * 6u);
 		m_batchVertexLayout.Unbind();
 
 		m_batchShader.Disuse();

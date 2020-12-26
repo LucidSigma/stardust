@@ -162,6 +162,21 @@ namespace stardust
 		}
 	}
 
+	void VertexLayout::DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer, const DrawMode drawMode) const
+	{
+		if (bindIndexBuffer)
+		{
+			indexBuffer.Bind();
+		}
+
+		glDrawElements(static_cast<GLenum>(drawMode), indexCount, indexBuffer.GetDataType(), nullptr);
+
+		if (bindIndexBuffer)
+		{
+			indexBuffer.Unbind();
+		}
+	}
+
 	[[nodiscard]] usize VertexLayout::GetDataTypeSize(const GLenum dataType)
 	{
 		static const HashMap<GLenum, usize> sizeLookup{
