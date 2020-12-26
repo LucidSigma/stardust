@@ -40,6 +40,19 @@ namespace stardust
 			}
 		}
 
+		const Shader batchVertexShader(Shader::Type::Vertex, "assets/shaders/quad_batch.vert");
+		const Shader batchFragmentShader(Shader::Type::Fragment, "assets/shaders/quad_batch.frag");
+
+		m_batchShader.Initialise({
+			&batchVertexShader,
+			&batchFragmentShader,
+		});
+
+		if (!m_batchShader.IsValid())
+		{
+			return;
+		}
+
 		m_isValid = true;
 	}
 
@@ -348,6 +361,53 @@ namespace stardust
 
 	void Renderer::BeginFrame()
 	{ }
+
+	void Renderer::BatchWorldRect(const Camera2D& camera /* TEMPORARY */) const
+	{
+		static const Vector<f32> vertices{
+			-1.5f, -0.5f,
+			-1.5f, 0.5f,
+			-0.5f, 0.5f,
+			-0.5f, -0.5f,
+
+			0.5f, -0.5f,
+			0.5f, 0.5f,
+			1.5f, 0.5f,
+			1.5f, -0.5f,
+		};
+
+		static const Vector<u32> indices{
+			0u, 1u, 2u,
+			2u, 3u, 0u,
+
+			4u, 5u, 6u,
+			6u, 7u, 4u,
+		};
+
+		VertexBuffer vbo;
+		vbo.Initialise(vertices);
+
+		VertexLayout vao;
+		vao.AddAttribute({
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddVertexBuffer(vbo)
+		.Initialise();
+
+		IndexBuffer ibo;
+		ibo.Initialise(indices);
+
+		m_batchShader.Use();
+		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+
+		vao.Bind();
+		vao.DrawIndexed(ibo);
+		vao.Unbind();
+
+		m_batchShader.Disuse();
+	}
 
 	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const
 	{

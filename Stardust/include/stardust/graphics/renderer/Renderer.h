@@ -83,6 +83,9 @@ namespace stardust
 
 		bool m_isValid = false;
 
+		// Batching (will replace non-batched rendering when it is finished).
+		ShaderProgram m_batchShader;
+
 	public:
 		Renderer() = default;
 		Renderer(const CreateInfo& createInfo);
@@ -101,7 +104,7 @@ namespace stardust
 		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Vec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
-		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order.
+		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
 		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 
@@ -109,13 +112,13 @@ namespace stardust
 		void DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const FlipType flip = FlipType::None, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
 		// TODO: Implement scaling and rotation for these functions.
-		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order.
+		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
 		void DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt, const Colour& colour = colours::White) const;
 		void DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip = FlipType::None, const Colour& colour = colours::White) const;
 
 		void BeginFrame();
 
-		void BatchWorldRect();
+		void BatchWorldRect(const Camera2D& camera) const;
 
 		void SubmitWorldBatch(const Camera2D& camera);
 		// SubmitScreenBatch
