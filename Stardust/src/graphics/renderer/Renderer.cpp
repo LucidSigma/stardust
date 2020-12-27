@@ -1,5 +1,6 @@
 #include "stardust/graphics/renderer/Renderer.h"
 
+#include <numeric>
 #include <utility>
 
 #include "stardust/graphics/renderer/objects/BufferUsage.h"
@@ -40,6 +41,10 @@ namespace stardust
 				return;
 			}
 		}
+
+		// BATCHING.
+		m_quadBuffer.resize(s_VerticesPerBatch);
+		m_quadBufferPtr = m_quadBuffer.data();
 
 		m_batchVertexBuffer.Initialise(s_VerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
 
@@ -93,6 +98,17 @@ namespace stardust
 			return;
 		}
 
+		const Vector<ubyte> blankTextureData{
+			0xFF, 0xFF, 0xFF, 0xFF,
+		};
+
+		m_blankTexture.Initialise(blankTextureData, UVec2{ 1u, 1u }, 4u);
+
+		if (!m_blankTexture.IsValid())
+		{
+			return;
+		}
+
 		const Shader batchVertexShader(Shader::Type::Vertex, "assets/shaders/quad_batch.vert");
 		const Shader batchFragmentShader(Shader::Type::Fragment, "assets/shaders/quad_batch.frag");
 
@@ -106,9 +122,20 @@ namespace stardust
 			return;
 		}
 
+		m_textureSlots[s_BlankTextureSlot] = &m_blankTexture;
+
+		for (usize i = 1u; i < s_MaxTextures; ++i)
+		{
+			m_textureSlots[i] = 0u;
+		}
+
+		Vector<i32> textureIndices(s_MaxTextures);
+		std::iota(std::begin(textureIndices), std::end(textureIndices), 0);
+
 		m_batchShader.Use();
-		m_batchShader.SetTextureUniform("u_Textures[0]", 0);
-		m_batchShader.SetTextureUniform("u_Textures[1]", 1);
+		//m_batchShader.SetTextureUniform("u_Textures[0]", 0);
+		//m_batchShader.SetTextureUniform("u_Textures[1]", 1);
+		m_batchShader.SetUniformVector("u_Textures", textureIndices);
 		m_batchShader.Disuse();
 
 		m_isValid = true;
@@ -412,75 +439,141 @@ namespace stardust
 		m_quadsDrawnThisFrame = 0u;
 	}
 
-	[[nodiscard]] Renderer::BatchVertex* Renderer::GenerateQuad(BatchVertex* target, const Vec2& position, const Vec4& colour, const float textureIndex)
+	void Renderer::BeginBatch()
 	{
-		target->position = Vec2{ -0.5f, -0.5f } + position;
-		target->colour = colour;
-		target->textureCoordinates = Vec2{ 0.0f, 0.0f };
-		target->textureIndex = textureIndex;
-		++target;
-
-		target->position = Vec2{ -0.5f, 0.5f } + position;
-		target->colour = colour;
-		target->textureCoordinates = Vec2{ 0.0f, 1.0f };
-		target->textureIndex = textureIndex;
-		++target;
-			
-		target->position = Vec2{ 0.5f, 0.5f } + position;
-		target->colour = colour;
-		target->textureCoordinates = Vec2{ 1.0f, 1.0f };
-		target->textureIndex = textureIndex;
-		++target;
-
-		target->position = Vec2{ 0.5f, -0.5f } + position;
-		target->colour = colour;
-		target->textureCoordinates = Vec2{ 1.0f, 0.0f };
-		target->textureIndex = textureIndex;
-		++target;
-
-		++m_quadsDrawnThisFrame;
-
-		return target;
+		m_quadBufferPtr = m_quadBuffer.data();
 	}
 
-	void Renderer::BatchWorldRect()
+	void Renderer::EndBatch()
 	{
-		Vector<BatchVertex> vertices(1'000u);
-		BatchVertex* buffer = vertices.data();
+		const isize batchSize = m_quadBufferPtr - m_quadBuffer.data();
 
-		for (i32 x = -3; x <= 3; ++x)
+		m_batchVertexBuffer.SetSubData(m_quadBuffer, static_cast<usize>(batchSize));
+	}
+
+	void Renderer::Flush(const Camera2D& camera)
+	{
+		for (usize i = 0u; i < m_textureSlotIndex; ++i)
 		{
-			for (i32 y = -3; y <= 3; ++y)
+			if (m_textureSlots[i] != nullptr)
 			{
-				buffer = GenerateQuad(buffer, Vec2{ x, y }, Vec4{ 1.0f, 1.0f, 1.0f, 1.0f }, static_cast<float>((x + y) % 2u));
+				m_textureSlots[i]->Bind(static_cast<i32>(i));
 			}
 		}
-
-		//const auto leftVertices = GenerateQuad({ -1.0f, 0.0f + offset }, { 1.0f, 0.93f, 0.24f, 1.0f }, 0.0f);
-		//const auto rightVertices = GenerateQuad({ 1.0f, 0.0f + offset }, { 0.18f, 0.6f, 0.96f, 1.0f }, 1.0f);
-
-		m_batchVertexBuffer.SetSubData(vertices);
-
-		//m_batchVertexBuffer.SetSubData(leftVertices);
-		//m_batchVertexBuffer.SetSubData(rightVertices, leftVertices.size() * sizeof(leftVertices.front()));
-	}
-
-	void Renderer::SubmitWorldBatch(const Camera2D& camera, const Texture& left, const Texture& right /* TEMPORARY */) const
-	{
-		left.Bind(0);
-		right.Bind(1);
 
 		m_batchShader.Use();
 		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
 
 		m_batchVertexLayout.Bind();
-		m_batchVertexLayout.DrawIndexed(m_batchIndexBuffer, m_quadsDrawnThisFrame * 6u);
+		m_batchVertexLayout.DrawIndexed(m_batchIndexBuffer, m_indexCount);
 		m_batchVertexLayout.Unbind();
 
 		m_batchShader.Disuse();
 
-		left.Unbind();
-		right.Unbind();
+		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		{
+			if (m_textureSlots[i] != nullptr)
+			{
+				m_textureSlots[i]->Unbind();
+			}
+		}
+
+		m_indexCount = 0u;
+		m_textureSlotIndex = 1u;
+	}
+
+	void Renderer::BatchRect(const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera)
+	{
+		if (m_indexCount >= s_IndicesPerBatch) [[unlikely]]
+		{
+			EndBatch();
+			Flush(camera);
+			BeginBatch();
+		}
+
+		const Vec4 colourVector = ColourToVec4(colour);
+		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
+
+		m_quadBufferPtr->position = (Vec2{ -0.5f, -0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_quadBufferPtr->position = (Vec2{ -0.5f, 0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_quadBufferPtr->position = (Vec2{ 0.5f, 0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_quadBufferPtr->position = (Vec2{ 0.5f, -0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_indexCount += 6u;
+	}
+
+	void Renderer::BatchRect(const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera)
+	{
+		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		{
+			EndBatch();
+			Flush(camera);
+			BeginBatch();
+		}
+
+		const Vec4 colourVector = ColourToVec4(colour);
+		f32 textureIndex = 0.0f;
+
+		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		{
+			if (m_textureSlots[i] == &texture)
+			{
+				textureIndex = static_cast<f32>(i);
+			}
+		}
+
+		if (textureIndex == 0.0f)
+		{
+			textureIndex = static_cast<f32>(m_textureSlotIndex);
+			m_textureSlots[m_textureSlotIndex] = &texture;
+
+			++m_textureSlotIndex;
+		}
+
+		m_quadBufferPtr->position = (Vec2{ -0.5f, -0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_quadBufferPtr->position = (Vec2{ -0.5f, 0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_quadBufferPtr->position = (Vec2{ 0.5f, 0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_quadBufferPtr->position = (Vec2{ 0.5f, -0.5f } + position) * size;
+		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		m_quadBufferPtr->textureIndex = textureIndex;
+		++m_quadBufferPtr;
+
+		m_indexCount += 6u;
 	}
 
 	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const

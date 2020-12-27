@@ -109,7 +109,9 @@ namespace stardust
 		Vector<BatchVertex> m_quadBuffer{ };
 		BatchVertex* m_quadBufferPtr = nullptr;
 
-		Array<u32, s_MaxTextures> m_textureSlots{ 0u };
+		u32 m_indexCount = 0u;
+
+		Array<ObserverPtr<const Texture>, s_MaxTextures> m_textureSlots{ nullptr };
 		usize m_textureSlotIndex = 1u;
 
 		u32 m_quadsDrawnThisFrame = 0u;
@@ -144,13 +146,17 @@ namespace stardust
 		void DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt, const Colour& colour = colours::White) const;
 		void DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip = FlipType::None, const Colour& colour = colours::White) const;
 
+		// TODO: Make this more useful when there are both screen and world batches.
 		void BeginFrame();
 
-		[[nodiscard]] BatchVertex* GenerateQuad(BatchVertex* target, const Vec2& position, const Vec4& colour, const float textureIndex);
-		void BatchWorldRect();
+		void BeginBatch();
+		void EndBatch();
+		void Flush(const Camera2D& camera);
 
-		void SubmitWorldBatch(const Camera2D& camera, const Texture& left, const Texture& right) const;
-		// SubmitScreenBatch
+		void BatchRect(const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera);
+		void BatchRect(const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera);
+
+		// TODO: Add destroy functions to destroy method.
 
 		void SetAntiAliasing(const bool enableAntiAliasing) const;
 

@@ -54,10 +54,10 @@ namespace stardust
 		void Unbind() const;
 
 		template <typename T = f32>
-		void SetSubData(const Vector<T>& data, const uptr offset = 0u) const
+		void SetSubData(const Vector<T>& data, const usize count, const uptr offset = 0u) const
 		{
 			Bind();
-			glBufferSubData(GL_ARRAY_BUFFER, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(data.size() * sizeof(T)), data.data());
+			glBufferSubData(GL_ARRAY_BUFFER, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(count * sizeof(T)), data.data());
 			Unbind();
 		}
 

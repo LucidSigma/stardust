@@ -91,6 +91,7 @@ namespace stardust
 		SetupParameters(internalFormat, format, data.data(), sampler);
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
+		m_isValid = true;
 	}
 
 	void Texture::Initialise(const Vec2& size, const Sampler& sampler)
