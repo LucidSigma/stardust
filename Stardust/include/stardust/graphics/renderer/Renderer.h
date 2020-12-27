@@ -141,19 +141,18 @@ namespace stardust
 		
 		// TODO: Implement scaling and rotation for these functions.
 		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
-		void DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt, const Colour& colour = colours::White) const;
 		void DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip = FlipType::None, const Colour& colour = colours::White) const;
 
 		void BeginFrame();
 		void EndFrame(const Camera2D& camera);
 
 		void DrawWorldRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
-		void DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Optional<Pair<Vec2, Vec2>>& textureCoordinates = NullOpt, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt, const Colour& colourMod = colours::White);
 
 		// Note: These functions only work properly when the points are centred around (0.0, 0.0).
 		// Point [0] should be lower left; point [1] should be upper left; point [2] should be upper right; point [3] should be lower right.
 		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& position, const Vec2& scale, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
-		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Texture& texture, const Vec2& position, const Vec2& scale, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Texture& texture, const Vec2& position, const Vec2& scale, const Optional<Pair<Vec2, Vec2>>& textureCoordinates = NullOpt, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
 
 		// TODO: Add destroy functions to destroy method.
 

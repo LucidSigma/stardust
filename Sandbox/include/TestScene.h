@@ -96,14 +96,20 @@ public:
 		{
 			for (sd::i32 y = -3; y <= 3; ++y)
 			{
-				renderer.DrawWorldRect(GetCamera(), (x + y) % 2u == 0u ? m_crateTexture : m_crumbleTexture, sd::Vec2{ x, y }, { 1.0f, 1.0f }, sd::colours::Azure, 45.0f);
+				renderer.DrawWorldRect(
+					GetCamera(),
+					(x + y) % 2u == 0u ? m_crateTexture : m_crumbleTexture,
+					sd::Vec2{ x, y }, { 1.0f, 1.0f },
+					sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } },
+					45.0f, sd::NullOpt, sd::colours::Azure
+				);
 			}
 		}
 
 		renderer.DrawWorldRect(GetCamera(), sd::CreateColour(1.0f, 1.0f, 0.0f, 0.5f), { 0.0f, 0.0f }, { 2.0f, 2.0f }, GetElapsedTime() * 50.0f);
 
 		renderer.DrawWorldQuad(GetCamera(), { sd::Vec2{ -0.5f, -0.5f }, sd::Vec2{ -0.25f, 0.4f }, sd::Vec2{ 0.5f, 0.5f }, sd::Vec2{ 0.4f, -0.5f } }, sd::colours::Blue, sd::Vec2{ -6.0f, 0.0f }, sd::Vec2{ 2.0f, 2.0f }, 15.0f);
-		renderer.DrawWorldQuad(GetCamera(), { sd::Vec2{ -0.4f, -0.5f }, sd::Vec2{ -0.5f, 0.5f }, sd::Vec2{ 0.25f, 0.4f }, sd::Vec2{ 0.5f, -0.5f } }, m_crumbleTexture, sd::Vec2{ 6.0f, 0.0f }, sd::Vec2{ 2.0f, 2.0f }, sd::colours::Lime, -15.0f);
+		renderer.DrawWorldQuad(GetCamera(), { sd::Vec2{ -0.4f, -0.5f }, sd::Vec2{ -0.5f, 0.5f }, sd::Vec2{ 0.25f, 0.4f }, sd::Vec2{ 0.5f, -0.5f } }, m_crateTexture, sd::Vec2{ 6.0f, 0.0f }, sd::Vec2{ 2.0f, 2.0f }, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, sd::colours::Lime, -15.0f);
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

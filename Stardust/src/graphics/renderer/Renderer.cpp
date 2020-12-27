@@ -138,8 +138,6 @@ namespace stardust
 		std::iota(std::begin(textureIndices), std::end(textureIndices), 0);
 
 		m_batchShader.Use();
-		//m_batchShader.SetTextureUniform("u_Textures[0]", 0);
-		//m_batchShader.SetTextureUniform("u_Textures[1]", 1);
 		m_batchShader.SetUniformVector("u_Textures", textureIndices);
 		m_batchShader.Disuse();
 
@@ -148,11 +146,16 @@ namespace stardust
 
 	void Renderer::Destroy() noexcept
 	{
-		m_shaderPrograms.clear();
+		if (m_isValid)
+		{
+			m_shaderPrograms.clear();
 
-		m_quadVertexLayout.Destroy();
-		m_quadVBO.Destroy();
-		m_quadIBO.Destroy();
+			m_quadVertexLayout.Destroy();
+			m_quadVBO.Destroy();
+			m_quadIBO.Destroy();
+
+			m_isValid = false;
+		}
 	}
 
 	void Renderer::ProcessResize()
@@ -272,51 +275,6 @@ namespace stardust
 		texture.Unbind();
 	}
 
-	void Renderer::DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation, const f32 rotation, const Optional<Vec2>& pivot, const Colour& colour) const
-	{
-		const Vector<f32> quadVertices{
-			points[0].x, points[0].y, 0.0f, 0.0f,
-			points[1].x, points[1].y, 0.0f, 1.0f,
-			points[2].x, points[2].y, 1.0f, 1.0f,
-			points[3].x, points[3].y, 1.0f, 0.0f,
-		};
-
-		VertexBuffer quadBuffer(quadVertices);
-		VertexLayout quadVertexLayout;
-
-		quadVertexLayout
-			.AddAttribute({
-				// Position.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddAttribute({
-				// Texture coordinate.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddVertexBuffer(quadBuffer)
-			.Initialise();
-
-		const Mat4 modelMatrix = CreateWorldModelMatrix(translation, Vec2{ 1.0f, 1.0f }, rotation, pivot);
-
-		texture.Bind();
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_ColourMod", ColourToVec4(colour));
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetTextureUniform("u_TextureSampler", 0);
-
-		quadVertexLayout.Bind();
-		quadVertexLayout.DrawIndexed(m_quadIBO);
-		quadVertexLayout.Unbind();
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Disuse();
-		texture.Unbind();
-	}
-
 	void Renderer::DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip, const Colour& colour) const
 	{
 		const Vector<f32> quadVertices{
@@ -411,7 +369,7 @@ namespace stardust
 		m_indexCount += 6u;
 	}
 
-	void Renderer::DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Optional<Pair<Vec2, Vec2>>& textureCoordinates, const f32 rotation, const Optional<Vec2>& pivot, const Colour& colourMod)
 	{
 		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
@@ -440,27 +398,30 @@ namespace stardust
 			++m_textureSlotIndex;
 		}
 
+		const Vec2 bottomLeftTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().first : Vec2{ 0.0f, 0.0f };
+		const Vec2 topRightTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().second : Vec2{ 1.0f, 1.0f };
+
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
@@ -507,7 +468,7 @@ namespace stardust
 		m_indexCount += 6u;
 	}
 
-	void Renderer::DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Texture& texture, const Vec2& position, const Vec2& scale, const Colour& colourMod, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Texture& texture, const Vec2& position, const Vec2& scale, const Optional<Pair<Vec2, Vec2>>& textureCoordinates, const Colour& colourMod, const f32 rotation, const Optional<Vec2>& pivot)
 	{
 		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
@@ -536,27 +497,30 @@ namespace stardust
 			++m_textureSlotIndex;
 		}
 
+		const Vec2 bottomLeftTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().first : Vec2{ 0.0f, 0.0f };
+		const Vec2 topRightTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().second : Vec2{ 1.0f, 1.0f };
+
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
