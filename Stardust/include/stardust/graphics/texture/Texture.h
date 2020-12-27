@@ -38,6 +38,7 @@ namespace stardust
 
 		Texture() = default;
 		Texture(const StringView& filepath, const Sampler& sampler = Sampler{ });
+		Texture(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler = Sampler{ });
 		Texture(const Vec2& size, const Sampler& sampler = Sampler{ });
 
 		Texture(Texture&& other) noexcept;
@@ -46,6 +47,7 @@ namespace stardust
 		~Texture() noexcept;
 
 		void Initialise(const StringView& filepath, const Sampler& sampler = Sampler{ });
+		void Initialise(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler = Sampler{ });
 		void Initialise(const Vec2& size, const Sampler& sampler = Sampler{ });
 		void Destroy() noexcept;
 

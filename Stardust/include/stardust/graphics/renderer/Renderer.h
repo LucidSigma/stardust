@@ -95,12 +95,22 @@ namespace stardust
 		static constexpr usize s_MaxQuadsPerBatch = 4'000u;
 		static constexpr usize s_VerticesPerBatch = s_MaxQuadsPerBatch * 4u;
 		static constexpr usize s_IndicesPerBatch = s_MaxQuadsPerBatch * 6u;
+		static constexpr usize s_MaxTextures = 32u;
+
+		static constexpr u32 s_BlankTextureSlot = 0u;
 
 		VertexLayout m_batchVertexLayout;
 		VertexBuffer m_batchVertexBuffer;
 		IndexBuffer m_batchIndexBuffer;
 
 		ShaderProgram m_batchShader;
+		Texture m_blankTexture;
+
+		Vector<BatchVertex> m_quadBuffer{ };
+		BatchVertex* m_quadBufferPtr = nullptr;
+
+		Array<u32, s_MaxTextures> m_textureSlots{ 0u };
+		usize m_textureSlotIndex = 1u;
 
 		u32 m_quadsDrawnThisFrame = 0u;
 

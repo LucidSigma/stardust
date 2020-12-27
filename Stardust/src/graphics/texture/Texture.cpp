@@ -21,6 +21,11 @@ namespace stardust
 		Initialise(filepath, sampler);
 	}
 
+	Texture::Texture(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
+	{
+		Initialise(data, extent, channelCount, sampler);
+	}
+
 	Texture::Texture(const Vec2& size, const Sampler& sampler)
 	{
 		Initialise(size, sampler);
@@ -60,6 +65,32 @@ namespace stardust
 
 		glGenTextures(1, &m_id);
 		m_isValid = LoadFromImageFile(filepath, sampler) == Status::Success;
+	}
+
+	void Texture::Initialise(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
+	{
+		if (s_maxTextureUnits == 0)
+		{
+			glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &s_maxTextureUnits);
+		}
+
+		glGenTextures(1, &m_id);
+
+		constexpr i32 DefaultPixelAlignment = 4;
+
+		if (const i32 imageMemorySize = static_cast<i32>(extent.x * channelCount * extent.y);
+			imageMemorySize % DefaultPixelAlignment != 0)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
+		}
+
+		m_size.x = extent.x;
+		m_size.y = extent.y;
+		const auto [internalFormat, format] = s_componentMap.at(static_cast<i32>(channelCount));
+
+		SetupParameters(internalFormat, format, data.data(), sampler);
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
 	}
 
 	void Texture::Initialise(const Vec2& size, const Sampler& sampler)
@@ -133,9 +164,9 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		constexpr int DefaultPixelAlignment = 4;
+		constexpr i32 DefaultPixelAlignment = 4;
 
-		if (const int imageMemorySize = width * componentCount * height;
+		if (const i32 imageMemorySize = width * componentCount * height;
 			imageMemorySize % DefaultPixelAlignment != 0)
 		{
 			glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
