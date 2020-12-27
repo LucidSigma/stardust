@@ -538,6 +538,28 @@ namespace stardust
 		};
 	}
 
+	Pair<UVec2, UVec2> Renderer::GetViewportRect() const
+	{
+		const UVec2 windowSize = m_window->GetDrawableSize();
+
+		u32 width = windowSize.x;
+		u32 height = static_cast<u32>(width / m_virtualAspectRatio + 0.5f);
+
+		if (height > static_cast<u32>(windowSize.y))
+		{
+			height = windowSize.y;
+			width = static_cast<u32>(height * m_virtualAspectRatio + 0.5f);
+		}
+
+		const i32 viewportX = (windowSize.x / 2) - (width / 2);
+		const i32 viewportY = (windowSize.y / 2) - (height / 2);
+
+		return {
+			Vec2{ viewportX, viewportY },
+			Vec2{ width, height },
+		};
+	}
+
 	void Renderer::InitialiseVertexObjects()
 	{
 		m_quadVBO.Initialise(s_quadVertices);

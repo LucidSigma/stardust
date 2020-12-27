@@ -152,6 +152,9 @@ namespace stardust
 
 		inline const Mat4& GetScreenProjectionMatrix() const noexcept { return m_screenProjectionMatrix; }
 
+		[[nodiscard]] Pair<UVec2, UVec2> GetViewportRect() const;
+		inline const Window& GetWindow() const noexcept { return *m_window; }
+
 		inline bool IsValid() const noexcept { return m_isValid; }
 
 	private:

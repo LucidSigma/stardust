@@ -2,6 +2,26 @@
 
 namespace stardust
 {
+	[[nodiscard]] Vec2 Mouse::GetProportionalCoordinates(const Renderer& renderer) const noexcept
+	{
+		const auto [topLeft, size] = renderer.GetViewportRect();
+
+		return Vec2{
+			(m_x / size.x) * renderer.GetVirtualSize().x - topLeft.x / renderer.GetVirtualScale().y,
+			(m_y / size.y) * renderer.GetVirtualSize().y - topLeft.y / renderer.GetVirtualScale().x,
+		};
+	}
+
+	[[nodiscard]] Vec2 Mouse::GetProportionalRelativeCoordinates(const Renderer& renderer) const noexcept
+	{
+		const auto [topLeft, size] = renderer.GetViewportRect();
+
+		return Vec2{
+			(m_relativeX / size.x) * renderer.GetVirtualSize().x - topLeft.x / renderer.GetVirtualScale().y,
+			(m_relativeY / size.y) * renderer.GetVirtualSize().y - topLeft.y / renderer.GetVirtualScale().x,
+		};
+	}
+
 	[[nodiscard]] bool Mouse::IsButtonDown(const MouseButton button) const
 	{
 		const auto buttonValue = static_cast<std::underlying_type_t<MouseButton>>(button);
