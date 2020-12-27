@@ -86,12 +86,10 @@ public:
 		//
 		//GetRenderer().DrawScreenRect({ 1, 1 }, { 2u, 2u }, sd::colours::Red);
 		//
-		//GetRenderer().DrawWorldQuad(GetCamera(), { sd::Vec2{ 5.0f, 4.0f }, sd::Vec2{ 4.5f, -3.0f }, sd::Vec2{ 6.5f, -2.5f }, sd::Vec2{ 5.5f, 3.5f } }, sd::colours::Blue);
 		//GetRenderer().DrawScreenQuad({ sd::IVec2{ 500, 50 }, sd::IVec2{ 600, 250 }, sd::IVec2{ 700, 200 }, sd::IVec2{ 800, 100 } }, sd::colours::Beige);
 		//
 		//GetRenderer().DrawTexturedScreenRect(m_crateTexture, { 400, 400 }, { 3.0f, 2.0f }, sd::FlipType::None, sd::colours::Green, GetElapsedTime() * 50.0f, sd::IVec2{ 250, 10 });
 		//
-		//GetRenderer().DrawTexturedWorldQuad(GetCamera(), m_crateTexture, { sd::Vec2{ 2.5f, 2.0f }, sd::Vec2{ 2.25f, -1.5f }, sd::Vec2{ 3.25f, -1.25f }, sd::Vec2{ 2.75f, 1.75f } }, sd::Vec2{ 0.0f, 0.0f }, 30.0f);
 		//GetRenderer().DrawTexturedScreenQuad(m_crateTexture, { sd::IVec2{ 250, 25 }, sd::IVec2{ 300, 125 }, sd::IVec2{ 350, 100 }, sd::IVec2{ 400, 50 } });
 
 		for (sd::i32 x = -3; x <= 3; ++x)
@@ -103,6 +101,9 @@ public:
 		}
 
 		renderer.DrawWorldRect(GetCamera(), sd::CreateColour(1.0f, 1.0f, 0.0f, 0.5f), { 0.0f, 0.0f }, { 2.0f, 2.0f }, GetElapsedTime() * 50.0f);
+
+		renderer.DrawWorldQuad(GetCamera(), { sd::Vec2{ -0.5f, -0.5f }, sd::Vec2{ -0.25f, 0.4f }, sd::Vec2{ 0.5f, 0.5f }, sd::Vec2{ 0.4f, -0.5f } }, sd::colours::Blue, sd::Vec2{ -6.0f, 0.0f }, sd::Vec2{ 2.0f, 2.0f }, 15.0f);
+		renderer.DrawWorldQuad(GetCamera(), { sd::Vec2{ -0.4f, -0.5f }, sd::Vec2{ -0.5f, 0.5f }, sd::Vec2{ 0.25f, 0.4f }, sd::Vec2{ 0.5f, -0.5f } }, m_crumbleTexture, sd::Vec2{ 6.0f, 0.0f }, sd::Vec2{ 2.0f, 2.0f }, sd::colours::Lime, -15.0f);
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

@@ -135,7 +135,6 @@ namespace stardust
 		void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
 		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
-		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 
 		void DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const FlipType flip = FlipType::None, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
@@ -145,13 +144,16 @@ namespace stardust
 		void DrawTexturedWorldQuad(const Camera2D& camera, const Texture& texture, const Array<Vec2, 4u>& points, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt, const Colour& colour = colours::White) const;
 		void DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip = FlipType::None, const Colour& colour = colours::White) const;
 
-		// TODO: Make this more useful when there are both screen and world batches.
 		void BeginFrame();
 		void EndFrame(const Camera2D& camera);
 
-		// TODO: Rename "Batch" to "Draw" when the above functions are removed.
 		void DrawWorldRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
 		void DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+
+		// Note: These functions only work properly when the points are centred around (0.0, 0.0).
+		// Point [0] should be lower left; point [1] should be upper left; point [2] should be upper right; point [3] should be lower right.
+		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& position, const Vec2& scale, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Texture& texture, const Vec2& position, const Vec2& scale, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
 
 		// TODO: Add destroy functions to destroy method.
 
