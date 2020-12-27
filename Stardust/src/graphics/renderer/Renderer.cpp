@@ -132,20 +132,10 @@ namespace stardust
 			static_cast<f32>(windowSize.y) / static_cast<f32>(m_virtualSize.y),
 		};
 
-		u32 width = windowSize.x;
-		u32 height = static_cast<u32>(width / m_virtualAspectRatio + 0.5f);
+		const auto [viewportTopLeft, viewportSize] = GetViewportRect();
 
-		if (height > static_cast<u32>(windowSize.y))
-		{
-			height = windowSize.y;
-			width = static_cast<u32>(height * m_virtualAspectRatio + 0.5f);
-		}
-
-		const i32 viewportX = (windowSize.x / 2) - (width / 2);
-		const i32 viewportY = (windowSize.y / 2) - (height / 2);
-
-		glViewport(viewportX, viewportY, width, height);
-		glScissor(viewportX, viewportY, width, height);
+		glViewport(viewportTopLeft.x, viewportTopLeft.y, viewportSize.x, viewportSize.y);
+		glScissor(viewportTopLeft.x, viewportTopLeft.y, viewportSize.x, viewportSize.y);
 	}
 
 	void Renderer::SetVirtualSize(const UVec2& virtualSize)
@@ -507,33 +497,21 @@ namespace stardust
 
 	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
 	{
-		const UVec2 windowSize = m_window->GetDrawableSize();
-
-		u32 pixelsWidth = windowSize.x;
-		u32 pixelsHeight = static_cast<u32>(pixelsWidth / m_virtualAspectRatio + 0.5f);
-
-		if (pixelsHeight > static_cast<u32>(windowSize.y))
-		{
-			pixelsHeight = windowSize.y;
-			pixelsWidth = static_cast<u32>(pixelsHeight * m_virtualAspectRatio + 0.5f);
-		}
-
-		const i32 pixelReadX = (windowSize.x / 2) - (pixelsWidth / 2);
-		const i32 pixelReadY = (windowSize.y / 2) - (pixelsHeight / 2);
+		const auto [viewportTopLeft, viewportSize] = GetViewportRect();
 
 		constexpr usize PixelChannelCount = 4u;
-		Vector<ubyte> imageData(PixelChannelCount * pixelsWidth * pixelsHeight);
+		Vector<ubyte> imageData(PixelChannelCount * viewportSize.x * viewportSize.y);
 
 		glReadPixels(
-			pixelReadX, pixelReadY,
-			pixelsWidth, pixelsHeight,
+			viewportTopLeft.x, viewportTopLeft.y,
+			viewportSize.x, viewportSize.y,
 			GL_RGBA, GL_UNSIGNED_BYTE,
 			imageData.data()
 		);
 
 		return PixelReadData{
 			.pixels = std::move(imageData),
-			.extent = UVec2{ pixelsWidth, pixelsHeight },
+			.extent = UVec2{ viewportSize.x, viewportSize.y },
 			.channelCount = PixelChannelCount,
 		};
 	}
