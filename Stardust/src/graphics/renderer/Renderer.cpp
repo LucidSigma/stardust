@@ -329,7 +329,7 @@ namespace stardust
 		FlushAndDraw(camera);
 	}
 
-	void Renderer::DrawWorldRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera)
 	{
 		if (m_indexCount >= s_IndicesPerBatch) [[unlikely]]
 		{
@@ -338,7 +338,7 @@ namespace stardust
 			BeginBatch();
 		}
 
-		const Mat4 modelMatrix = CreateWorldModelMatrix(position, size, rotation, pivot);
+		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const Vec4 colourVector = ColourToVec4(colour);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
@@ -369,7 +369,7 @@ namespace stardust
 		m_indexCount += 6u;
 	}
 
-	void Renderer::DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Optional<Pair<Vec2, Vec2>>& textureCoordinates, const f32 rotation, const Optional<Vec2>& pivot, const Colour& colourMod)
+	void Renderer::DrawWorldRect(const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
 		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
@@ -378,13 +378,13 @@ namespace stardust
 			BeginBatch();
 		}
 
-		const Mat4 modelMatrix = CreateWorldModelMatrix(position, size, rotation, pivot);
-		const Vec4 colourModVector = ColourToVec4(colourMod);
+		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
+		const Vec4 colourModVector = ColourToVec4(sprite.colourMod);
 		f32 textureIndex = 0.0f;
 
 		for (usize i = 0u; i < m_textureSlotIndex; ++i)
 		{
-			if (m_textureSlots[i] == &texture)
+			if (m_textureSlots[i] == sprite.texture)
 			{
 				textureIndex = static_cast<f32>(i);
 			}
@@ -393,13 +393,13 @@ namespace stardust
 		if (textureIndex == 0.0f)
 		{
 			textureIndex = static_cast<f32>(m_textureSlotIndex);
-			m_textureSlots[m_textureSlotIndex] = &texture;
+			m_textureSlots[m_textureSlotIndex] = sprite.texture;
 
 			++m_textureSlotIndex;
 		}
 
-		const Vec2 bottomLeftTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().first : Vec2{ 0.0f, 0.0f };
-		const Vec2 topRightTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().second : Vec2{ 1.0f, 1.0f };
+		const Vec2 bottomLeftTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f };
+		const Vec2 topRightTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f };
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
@@ -428,7 +428,7 @@ namespace stardust
 		m_indexCount += 6u;
 	}
 
-	void Renderer::DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const Colour& colour, const Camera2D& camera)
 	{
 		if (m_indexCount >= s_IndicesPerBatch) [[unlikely]]
 		{
@@ -437,7 +437,7 @@ namespace stardust
 			BeginBatch();
 		}
 
-		const Mat4 modelMatrix = CreateWorldModelMatrix(position, scale, rotation, pivot);
+		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const Vec4 colourVector = ColourToVec4(colour);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
@@ -468,7 +468,7 @@ namespace stardust
 		m_indexCount += 6u;
 	}
 
-	void Renderer::DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Texture& texture, const Vec2& position, const Vec2& scale, const Optional<Pair<Vec2, Vec2>>& textureCoordinates, const Colour& colourMod, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
 		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
@@ -477,13 +477,13 @@ namespace stardust
 		BeginBatch();
 		}
 
-		const Mat4 modelMatrix = CreateWorldModelMatrix(position, scale, rotation, pivot);
-		const Vec4 colourModVector = ColourToVec4(colourMod);
+		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
+		const Vec4 colourModVector = ColourToVec4(sprite.colourMod);
 		f32 textureIndex = 0.0f;
 
 		for (usize i = 0u; i < m_textureSlotIndex; ++i)
 		{
-			if (m_textureSlots[i] == &texture)
+			if (m_textureSlots[i] == sprite.texture)
 			{
 				textureIndex = static_cast<f32>(i);
 			}
@@ -492,13 +492,13 @@ namespace stardust
 		if (textureIndex == 0.0f)
 		{
 			textureIndex = static_cast<f32>(m_textureSlotIndex);
-			m_textureSlots[m_textureSlotIndex] = &texture;
+			m_textureSlots[m_textureSlotIndex] = sprite.texture;
 
 			++m_textureSlotIndex;
 		}
 
-		const Vec2 bottomLeftTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().first : Vec2{ 0.0f, 0.0f };
-		const Vec2 topRightTextureCoordinate = textureCoordinates.has_value() ? textureCoordinates.value().second : Vec2{ 1.0f, 1.0f };
+		const Vec2 bottomLeftTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f };
+		const Vec2 topRightTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f };
 
 		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourModVector;
