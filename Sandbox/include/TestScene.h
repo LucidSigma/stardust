@@ -99,7 +99,7 @@ public:
 				renderer.DrawWorldRect(
 					sd::comp::Transform(
 						sd::Vec2{ x, y },
-						45.0f,
+						30.0f,
 						sd::NullOpt,
 						sd::Vec2{ 1.0f, 1.0f }
 					),
@@ -111,9 +111,9 @@ public:
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(
-				sd::Vec2{ 0.0f, 0.0f },
-				GetElapsedTime() * 50.0f,
-				sd::NullOpt,
+				sd::Vec2{ 1.0f, 1.0f },
+				GetElapsedTime() * 100.0f,
+				sd::Vec2{ -1.0f, -1.0f },
 				sd::Vec2{ 2.0f, 2.0f }
 			),
 			sd::CreateColour(1.0f, 1.0f, 0.0f, 0.5f),
@@ -144,6 +144,11 @@ public:
 				m_crateTexture, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, 0.0f, sd::colours::Lime
 			),
 			GetCamera()
+		);
+
+		GetRenderer().DrawScreenRect(
+			sd::comp::ScreenTransform(sd::IVec2{ 50, 50 }, sd::UVec2{ 100u, 200u }, sd::FlipType::None, 30.0f),
+			sd::colours::Lime
 		);
 	}
 

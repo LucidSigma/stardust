@@ -48,12 +48,16 @@ namespace stardust
 		}
 
 		// BATCHING.
-		m_quadBuffer.resize(s_VerticesPerBatch);
-		m_quadBufferPtr = m_quadBuffer.data();
+		m_worldQuadBuffer.resize(s_MaxVerticesPerBatch);
+		m_worldQuadBufferPtr = m_worldQuadBuffer.data();
 
-		m_batchVertexBuffer.Initialise(s_VerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
+		m_screenQuadBuffer.resize(s_MaxVerticesPerBatch);
+		m_screenQuadBufferPtr = m_screenQuadBuffer.data();
 
-		m_batchVertexLayout.AddAttribute({
+		m_worldVertexBuffer.Initialise(s_MaxVerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
+		m_screenVertexBuffer.Initialise(s_MaxVerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
+
+		m_worldVertexLayout.AddAttribute({
 			// Position.
 			.elementCount = 2u,
 			.dataType = GL_FLOAT,
@@ -77,13 +81,40 @@ namespace stardust
 			.dataType = GL_FLOAT,
 			.isNormalised = true,
 		})
-		.AddVertexBuffer(m_batchVertexBuffer)
+		.AddVertexBuffer(m_worldVertexBuffer)
 		.Initialise();
 
-		Vector<u32> indices(s_IndicesPerBatch);
+		m_screenVertexLayout.AddAttribute({
+			// Position.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Colour.
+			.elementCount = 4u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture coordinates.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture unit index.
+			.elementCount = 1u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddVertexBuffer(m_screenVertexBuffer)
+		.Initialise();
+
+		Vector<u32> indices(s_MaxIndicesPerBatch);
 		u32 offset = 0u;
 
-		for (usize i = 0u; i < s_IndicesPerBatch; i += 6u)
+		for (usize i = 0u; i < s_MaxIndicesPerBatch; i += 6u)
 		{
 			indices[i + 0u] = 0u + offset;
 			indices[i + 1u] = 1u + offset;
@@ -96,9 +127,11 @@ namespace stardust
 			offset += 4u;
 		}
 
-		m_batchIndexBuffer.Initialise(indices);
+		m_worldIndexBuffer.Initialise(indices);
+		m_screenIndexBuffer.Initialise(indices);
 
-		if (!m_batchVertexBuffer.IsValid() || !m_batchVertexLayout.IsValid() || !m_batchIndexBuffer.IsValid())
+		if (!m_worldVertexBuffer.IsValid() || !m_worldVertexLayout.IsValid() || !m_worldIndexBuffer.IsValid() ||
+			!m_screenVertexBuffer.IsValid() || !m_screenVertexLayout.IsValid() || !m_screenIndexBuffer.IsValid())
 		{
 			return;
 		}
@@ -127,11 +160,13 @@ namespace stardust
 			return;
 		}
 
-		m_textureSlots[s_BlankTextureSlot] = &m_blankTexture;
+		m_worldTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
+		m_screenTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
 
 		for (usize i = 1u; i < s_MaxTextures; ++i)
 		{
-			m_textureSlots[i] = 0u;
+			m_worldTextureSlots[i] = 0u;
+			m_screenTextureSlots[i] = 0u;
 		}
 
 		Vector<i32> textureIndices(s_MaxTextures);
@@ -202,20 +237,20 @@ namespace stardust
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
-	{
-		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(position), size, FlipType::None, rotation, pivot);
-
-		m_shaderPrograms.at(ShaderName::Quad).Use();
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
-
-		m_quadVertexLayout.Bind();
-		m_quadVertexLayout.DrawIndexed(m_quadIBO);
-		m_quadVertexLayout.Unbind();
-
-		m_shaderPrograms.at(ShaderName::Quad).Disuse();
-	}
+	//void Renderer::DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
+	//{
+	//	const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(position), size, FlipType::None, rotation, pivot);
+	//
+	//	m_shaderPrograms.at(ShaderName::Quad).Use();
+	//	m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
+	//	m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
+	//
+	//	m_quadVertexLayout.Bind();
+	//	m_quadVertexLayout.DrawIndexed(m_quadIBO);
+	//	m_quadVertexLayout.Unbind();
+	//
+	//	m_shaderPrograms.at(ShaderName::Quad).Disuse();
+	//}
 
 	void Renderer::DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const
 	{
@@ -320,71 +355,75 @@ namespace stardust
 
 	void Renderer::BeginFrame()
 	{
-		BeginBatch();
+		BeginWorldBatch();
+		BeginScreenBatch();
 	}
 
 	void Renderer::EndFrame(const Camera2D& camera)
 	{
-		EndBatch();
-		FlushAndDraw(camera);
+		EndWorldBatch();
+		FlushWorldBatch(camera);
+
+		EndScreenBatch();
+		FlushScreenBatch();
 	}
 
 	void Renderer::DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera)
 	{
-		if (m_indexCount >= s_IndicesPerBatch) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]
 		{
-			EndBatch();
-			FlushAndDraw(camera);
-			BeginBatch();
+			EndWorldBatch();
+			FlushWorldBatch(camera);
+			BeginWorldBatch();
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const Vec4 colourVector = ColourToVec4(colour);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_indexCount += 6u;
+		m_worldIndexCount += 6u;
 	}
 
 	void Renderer::DrawWorldRect(const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
-		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
-			EndBatch();
-			FlushAndDraw(camera);
-			BeginBatch();
+			EndWorldBatch();
+			FlushWorldBatch(camera);
+			BeginWorldBatch();
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const Vec4 colourModVector = ColourToVec4(sprite.colourMod);
 		f32 textureIndex = 0.0f;
 
-		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
 		{
-			if (m_textureSlots[i] == sprite.texture)
+			if (m_worldTextureSlots[i] == sprite.texture)
 			{
 				textureIndex = static_cast<f32>(i);
 			}
@@ -392,98 +431,98 @@ namespace stardust
 
 		if (textureIndex == 0.0f)
 		{
-			textureIndex = static_cast<f32>(m_textureSlotIndex);
-			m_textureSlots[m_textureSlotIndex] = sprite.texture;
+			textureIndex = static_cast<f32>(m_worldTextureSlotIndex);
+			m_worldTextureSlots[m_worldTextureSlotIndex] = sprite.texture;
 
-			++m_textureSlotIndex;
+			++m_worldTextureSlotIndex;
 		}
 
 		const Vec2 bottomLeftTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f };
 		const Vec2 topRightTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f };
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_indexCount += 6u;
+		m_worldIndexCount += 6u;
 	}
 
 	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const Colour& colour, const Camera2D& camera)
 	{
-		if (m_indexCount >= s_IndicesPerBatch) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]
 		{
-			EndBatch();
-			FlushAndDraw(camera);
-			BeginBatch();
+			EndWorldBatch();
+			FlushWorldBatch(camera);
+			BeginWorldBatch();
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const Vec4 colourVector = ColourToVec4(colour);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_indexCount += 6u;
+		m_worldIndexCount += 6u;
 	}
 
 	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
-		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
-			EndBatch();
-		FlushAndDraw(camera);
-		BeginBatch();
+			EndWorldBatch();
+			FlushWorldBatch(camera);
+			BeginWorldBatch();
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const Vec4 colourModVector = ColourToVec4(sprite.colourMod);
 		f32 textureIndex = 0.0f;
 
-		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
 		{
-			if (m_textureSlots[i] == sprite.texture)
+			if (m_worldTextureSlots[i] == sprite.texture)
 			{
 				textureIndex = static_cast<f32>(i);
 			}
@@ -491,40 +530,80 @@ namespace stardust
 
 		if (textureIndex == 0.0f)
 		{
-			textureIndex = static_cast<f32>(m_textureSlotIndex);
-			m_textureSlots[m_textureSlotIndex] = sprite.texture;
+			textureIndex = static_cast<f32>(m_worldTextureSlotIndex);
+			m_worldTextureSlots[m_worldTextureSlotIndex] = sprite.texture;
 
-			++m_textureSlotIndex;
+			++m_worldTextureSlotIndex;
 		}
 
 		const Vec2 bottomLeftTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f };
 		const Vec2 topRightTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f };
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
-		m_quadBufferPtr->colour = colourModVector;
-		m_quadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_quadBufferPtr->textureIndex = textureIndex;
-		++m_quadBufferPtr;
+		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
+		m_worldQuadBufferPtr->colour = colourModVector;
+		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
+		m_worldQuadBufferPtr->textureIndex = textureIndex;
+		++m_worldQuadBufferPtr;
 
-		m_indexCount += 6u;
+		m_worldIndexCount += 6u;
+	}
+
+	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour)
+	{
+		if (m_screenIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]
+		{
+			EndScreenBatch();
+			FlushScreenBatch();
+			BeginScreenBatch();
+		}
+
+		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot);
+		const Vec4 colourVector = ColourToVec4(colour);
+		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
+
+		m_screenQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
+		m_screenQuadBufferPtr->colour = colourVector;
+		m_screenQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
+		m_screenQuadBufferPtr->textureIndex = textureIndex;
+		++m_screenQuadBufferPtr;
+
+		m_screenQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
+		m_screenQuadBufferPtr->colour = colourVector;
+		m_screenQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
+		m_screenQuadBufferPtr->textureIndex = textureIndex;
+		++m_screenQuadBufferPtr;
+
+		m_screenQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
+		m_screenQuadBufferPtr->colour = colourVector;
+		m_screenQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
+		m_screenQuadBufferPtr->textureIndex = textureIndex;
+		++m_screenQuadBufferPtr;
+
+		m_screenQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
+		m_screenQuadBufferPtr->colour = colourVector;
+		m_screenQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
+		m_screenQuadBufferPtr->textureIndex = textureIndex;
+		++m_screenQuadBufferPtr;
+
+		m_screenIndexCount += 6u;
 	}
 
 	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const
@@ -623,47 +702,90 @@ namespace stardust
 		});
 	}
 
-	void Renderer::BeginBatch()
+	void Renderer::BeginWorldBatch()
 	{
-		m_quadBufferPtr = m_quadBuffer.data();
+		m_worldQuadBufferPtr = m_worldQuadBuffer.data();
 	}
 
-	void Renderer::EndBatch()
+	void Renderer::EndWorldBatch()
 	{
-		const isize batchSize = m_quadBufferPtr - m_quadBuffer.data();
+		const isize batchSize = m_worldQuadBufferPtr - m_worldQuadBuffer.data();
 
-		m_batchVertexBuffer.SetSubData(m_quadBuffer, static_cast<usize>(batchSize));
+		m_worldVertexBuffer.SetSubData(m_worldQuadBuffer, static_cast<usize>(batchSize));
 	}
 
-	void Renderer::FlushAndDraw(const Camera2D& camera)
+	void Renderer::FlushWorldBatch(const Camera2D& camera)
 	{
-		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
 		{
-			if (m_textureSlots[i] != nullptr)
+			if (m_worldTextureSlots[i] != nullptr)
 			{
-				m_textureSlots[i]->Bind(static_cast<i32>(i));
+				m_worldTextureSlots[i]->Bind(static_cast<i32>(i));
 			}
 		}
 
 		m_batchShader.Use();
 		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
 
-		m_batchVertexLayout.Bind();
-		m_batchVertexLayout.DrawIndexed(m_batchIndexBuffer, m_indexCount);
-		m_batchVertexLayout.Unbind();
+		m_worldVertexLayout.Bind();
+		m_worldVertexLayout.DrawIndexed(m_worldIndexBuffer, m_worldIndexCount);
+		m_worldVertexLayout.Unbind();
 
 		m_batchShader.Disuse();
 
-		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
 		{
-			if (m_textureSlots[i] != nullptr)
+			if (m_worldTextureSlots[i] != nullptr)
 			{
-				m_textureSlots[i]->Unbind();
+				m_worldTextureSlots[i]->Unbind();
 			}
 		}
 
-		m_indexCount = 0u;
-		m_textureSlotIndex = 1u;
+		m_worldIndexCount = 0u;
+		m_worldTextureSlotIndex = 1u;
+	}
+
+	void Renderer::BeginScreenBatch()
+	{
+		m_screenQuadBufferPtr = m_screenQuadBuffer.data();
+	}
+
+	void Renderer::EndScreenBatch()
+	{
+		const isize batchSize = m_screenQuadBufferPtr - m_screenQuadBuffer.data();
+
+		m_screenVertexBuffer.SetSubData(m_screenQuadBuffer, static_cast<usize>(batchSize));
+	}
+
+	void Renderer::FlushScreenBatch()
+	{
+		for (usize i = 0u; i < m_screenTextureSlotIndex; ++i)
+		{
+			if (m_screenTextureSlots[i] != nullptr)
+			{
+				m_screenTextureSlots[i]->Bind(static_cast<i32>(i));
+			}
+		}
+
+		m_batchShader.Use();
+		m_batchShader.SetUniform("u_ViewProjection", m_screenProjectionMatrix);
+
+		m_screenVertexLayout.Bind();
+		m_screenVertexLayout.DrawIndexed(m_screenIndexBuffer, m_screenIndexCount);
+		m_screenVertexLayout.Unbind();
+
+		m_batchShader.Disuse();
+
+		for (usize i = 0u; i < m_screenTextureSlotIndex; ++i)
+		{
+			if (m_screenTextureSlots[i] != nullptr)
+			{
+				m_screenTextureSlots[i]->Unbind();
+			}
+		}
+
+		m_screenIndexCount = 0u;
+		m_screenTextureSlotIndex = 1u;
 	}
 
 	[[nodiscard]] Mat4 Renderer::CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot) const
@@ -703,7 +825,7 @@ namespace stardust
 			modelMatrix = glm::translate(modelMatrix, Vec3{ pivotValue.x, -pivotValue.y, 0.0f });
 		}
 
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+		modelMatrix = glm::rotate(modelMatrix, -glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
 
 		if (pivot.has_value())
 		{
@@ -715,35 +837,6 @@ namespace stardust
 		modelMatrix = glm::scale(modelMatrix, Vec3{ static_cast<f32>(size.x) * flipScale.x, static_cast<f32>(size.y) * flipScale.y, 1.0f });
 
 		return modelMatrix;
-	}
-
-	[[nodiscard]] Vec2 Renderer::GetScaleFromFlipType(const FlipType flipType) const noexcept
-	{
-		Vec2 flipScale{ 1.0f, 1.0f };
-
-		switch (flipType)
-		{
-		case FlipType::Horizontal:
-			flipScale.x *= -1.0f;
-
-			break;
-
-		case FlipType::Vertical:
-			flipScale.y *= -1.0f;
-
-			break;
-
-		case FlipType::Both:
-			flipScale *= -1.0f;
-
-			break;
-
-		case FlipType::None:
-		default:
-			break;
-		}
-
-		return flipScale;
 	}
 
 	void Renderer::UpdateScreenProjectionMatrix()

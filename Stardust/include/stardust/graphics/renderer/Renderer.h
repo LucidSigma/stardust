@@ -19,6 +19,7 @@
 #include "stardust/graphics/shaders/ShaderProgram.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/Colour.h"
+#include "stardust/scene/components/ScreenTransformComponent.h"
 #include "stardust/scene/components/SpriteRenderComponent.h"
 #include "stardust/scene/components/TransformComponent.h"
 #include "stardust/window/Window.h"
@@ -95,29 +96,38 @@ namespace stardust
 		};
 
 		static constexpr usize s_MaxQuadsPerBatch = 4'000u;
-		static constexpr usize s_VerticesPerBatch = s_MaxQuadsPerBatch * 4u;
-		static constexpr usize s_IndicesPerBatch = s_MaxQuadsPerBatch * 6u;
+		static constexpr usize s_MaxVerticesPerBatch = s_MaxQuadsPerBatch * 4u;
+		static constexpr usize s_MaxIndicesPerBatch = s_MaxQuadsPerBatch * 6u;
 
 		// TODO: Query from GPU instead of hard code.
 		static constexpr usize s_MaxTextures = 32u;
 		static constexpr u32 s_BlankTextureSlot = 0u;
 
-		VertexLayout m_batchVertexLayout;
-		VertexBuffer m_batchVertexBuffer;
-		IndexBuffer m_batchIndexBuffer;
-
 		ShaderProgram m_batchShader;
 		Texture m_blankTexture;
 
-		Vector<BatchVertex> m_quadBuffer{ };
-		BatchVertex* m_quadBufferPtr = nullptr;
+		VertexLayout m_worldVertexLayout;
+		VertexBuffer m_worldVertexBuffer;
+		IndexBuffer m_worldIndexBuffer;
 
-		u32 m_indexCount = 0u;
+		VertexLayout m_screenVertexLayout;
+		VertexBuffer m_screenVertexBuffer;
+		IndexBuffer m_screenIndexBuffer;
 
-		Array<ObserverPtr<const Texture>, s_MaxTextures> m_textureSlots{ nullptr };
-		usize m_textureSlotIndex = 1u;
+		Vector<BatchVertex> m_worldQuadBuffer{ };
+		BatchVertex* m_worldQuadBufferPtr = nullptr;
 
-		u32 m_quadsDrawnThisFrame = 0u;
+		Vector<BatchVertex> m_screenQuadBuffer{ };
+		BatchVertex* m_screenQuadBufferPtr = nullptr;
+
+		u32 m_worldIndexCount = 0u;
+		u32 m_screenIndexCount = 0u;
+
+		Array<ObserverPtr<const Texture>, s_MaxTextures> m_worldTextureSlots{ nullptr };
+		usize m_worldTextureSlotIndex = 1u;
+
+		Array<ObserverPtr<const Texture>, s_MaxTextures> m_screenTextureSlots{ nullptr };
+		usize m_screenTextureSlotIndex = 1u;
 
 	public:
 		Renderer() = default;
@@ -134,7 +144,7 @@ namespace stardust
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;
 
-		void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
+		//void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
 		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
@@ -156,7 +166,13 @@ namespace stardust
 		void DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const Colour& colour, const Camera2D& camera);
 		void DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera);
 
-		// Use ScreenTransform component for screen quads.
+		void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
+		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
+
+		// Note: These functions only work properly when the points are centred around (0.0, 0.0).
+		// Point [0] should be lower left; point [1] should be upper left; point [2] should be upper right; point [3] should be lower right.
+		void DrawScreenQuad(const Array<Vec2, 4u>& points, const components::ScreenTransform& transform, const Colour& colour);
+		void DrawScreenQuad(const Array<Vec2, 4u>& points, const components::ScreenTransform& transform, const components::SpriteRender& sprite);
 
 		// TODO: Add destroy functions to destroy method.
 
@@ -179,14 +195,17 @@ namespace stardust
 		void InitialiseVertexObjects();
 		void InitialiseShaders();
 
-		void BeginBatch();
-		void EndBatch();
-		void FlushAndDraw(const Camera2D& camera);
+		void BeginWorldBatch();
+		void EndWorldBatch();
+		void FlushWorldBatch(const Camera2D& camera);
+
+		// TODO: Add to end frame.
+		void BeginScreenBatch();
+		void EndScreenBatch();
+		void FlushScreenBatch();
 
 		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot) const;
 		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot) const;
-
-		[[nodiscard]] Vec2 GetScaleFromFlipType(const FlipType flipType) const noexcept;
 
 		void UpdateScreenProjectionMatrix();
 	};

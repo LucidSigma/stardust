@@ -19,7 +19,7 @@ namespace stardust
 	{
 	private:
 		GLuint m_id = 0u;
-		u32 m_indexCount = 0u;
+		u32 m_worldIndexCount = 0u;
 
 		GLenum m_dataType = GL_UNSIGNED_INT;
 
@@ -47,7 +47,7 @@ namespace stardust
 			
 			Unbind();
 
-			m_indexCount = static_cast<u32>(indices.size());
+			m_worldIndexCount = static_cast<u32>(indices.size());
 			m_dataType = GetGLType<T>();
 		}
 
@@ -60,7 +60,7 @@ namespace stardust
 
 		inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 
-		inline unsigned int GetIndexCount() const noexcept { return m_indexCount; }
+		inline unsigned int GetIndexCount() const noexcept { return m_worldIndexCount; }
 		inline u32 GetDataType() const noexcept { return static_cast<u32>(m_dataType); }
 
 	private:
