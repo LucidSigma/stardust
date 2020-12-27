@@ -14,6 +14,11 @@ namespace stardust
 		Initialise(createInfo);
 	}
 
+	Renderer::~Renderer() noexcept
+	{
+		Destroy();
+	}
+
 	void Renderer::Initialise(const CreateInfo& createInfo)
 	{
 		m_window = createInfo.window;
@@ -194,21 +199,6 @@ namespace stardust
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::DrawWorldRect(const Camera2D& camera, const Vec2& position, const Vec2& size, const Colour& colour, const f32 rotation, const Optional<Vec2>& pivot) const
-	{
-		const Mat4 modelMatrix = CreateWorldModelMatrix(position, size, rotation, pivot);
-
-		m_shaderPrograms.at(ShaderName::Quad).Use();
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
-
-		m_quadVertexLayout.Bind();
-		m_quadVertexLayout.DrawIndexed(m_quadIBO);
-		m_quadVertexLayout.Unbind();
-
-		m_shaderPrograms.at(ShaderName::Quad).Disuse();
-	}
-
 	void Renderer::DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
 	{
 		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(position), size, FlipType::None, rotation, pivot);
@@ -302,29 +292,6 @@ namespace stardust
 		quadVertexLayout.Unbind();
 
 		m_shaderPrograms.at(ShaderName::Quad).Disuse();
-	}
-
-	void Renderer::DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale, const Colour& colour, const f32 rotation, const Optional<Vec2>& pivot) const
-	{
-		const Vec2 pixelScale = Vec2(texture.GetSize()) / camera.GetPixelsPerUnit();
-		// TODO: Subtextures (texture coordinates/snippets) pixelScale.
-
-		const Mat4 modelMatrix = CreateWorldModelMatrix(position, pixelScale * scale, rotation, pivot);
-
-		texture.Bind();
-		// TODO: Subtextures (texture coordinates/snippets) vertex buffer.
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", camera.GetProjectionMatrix() * camera.GetViewMatrix() * modelMatrix);
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_ColourMod", ColourToVec4(colour));
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetTextureUniform("u_TextureSampler", 0);
-
-		m_quadVertexLayout.Bind();
-		m_quadVertexLayout.DrawIndexed(m_quadIBO);
-		m_quadVertexLayout.Unbind();
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Disuse();
-		texture.Unbind();
 	}
 
 	void Renderer::DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale, const FlipType flip, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
@@ -442,58 +409,15 @@ namespace stardust
 	void Renderer::EndFrame(const Camera2D& camera)
 	{
 		EndBatch();
-		Flush(camera);
+		FlushAndDraw(camera);
 	}
 
-	void Renderer::BeginBatch()
-	{
-		m_quadBufferPtr = m_quadBuffer.data();
-	}
-
-	void Renderer::EndBatch()
-	{
-		const isize batchSize = m_quadBufferPtr - m_quadBuffer.data();
-
-		m_batchVertexBuffer.SetSubData(m_quadBuffer, static_cast<usize>(batchSize));
-	}
-
-	void Renderer::Flush(const Camera2D& camera)
-	{
-		for (usize i = 0u; i < m_textureSlotIndex; ++i)
-		{
-			if (m_textureSlots[i] != nullptr)
-			{
-				m_textureSlots[i]->Bind(static_cast<i32>(i));
-			}
-		}
-
-		m_batchShader.Use();
-		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
-
-		m_batchVertexLayout.Bind();
-		m_batchVertexLayout.DrawIndexed(m_batchIndexBuffer, m_indexCount);
-		m_batchVertexLayout.Unbind();
-
-		m_batchShader.Disuse();
-
-		for (usize i = 0u; i < m_textureSlotIndex; ++i)
-		{
-			if (m_textureSlots[i] != nullptr)
-			{
-				m_textureSlots[i]->Unbind();
-			}
-		}
-
-		m_indexCount = 0u;
-		m_textureSlotIndex = 1u;
-	}
-
-	void Renderer::BatchRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
 	{
 		if (m_indexCount >= s_IndicesPerBatch) [[unlikely]]
 		{
 			EndBatch();
-			Flush(camera);
+			FlushAndDraw(camera);
 			BeginBatch();
 		}
 
@@ -528,12 +452,12 @@ namespace stardust
 		m_indexCount += 6u;
 	}
 
-	void Renderer::BatchRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod, const f32 rotation, const Optional<Vec2>& pivot)
+	void Renderer::DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod, const f32 rotation, const Optional<Vec2>& pivot)
 	{
 		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
 			EndBatch();
-			Flush(camera);
+			FlushAndDraw(camera);
 			BeginBatch();
 		}
 
@@ -678,6 +602,49 @@ namespace stardust
 			&texturedQuadVertexShader,
 			&texturedQuadFragmentShader,
 		});
+	}
+
+	void Renderer::BeginBatch()
+	{
+		m_quadBufferPtr = m_quadBuffer.data();
+	}
+
+	void Renderer::EndBatch()
+	{
+		const isize batchSize = m_quadBufferPtr - m_quadBuffer.data();
+
+		m_batchVertexBuffer.SetSubData(m_quadBuffer, static_cast<usize>(batchSize));
+	}
+
+	void Renderer::FlushAndDraw(const Camera2D& camera)
+	{
+		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		{
+			if (m_textureSlots[i] != nullptr)
+			{
+				m_textureSlots[i]->Bind(static_cast<i32>(i));
+			}
+		}
+
+		m_batchShader.Use();
+		m_batchShader.SetUniform("u_ViewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+
+		m_batchVertexLayout.Bind();
+		m_batchVertexLayout.DrawIndexed(m_batchIndexBuffer, m_indexCount);
+		m_batchVertexLayout.Unbind();
+
+		m_batchShader.Disuse();
+
+		for (usize i = 0u; i < m_textureSlotIndex; ++i)
+		{
+			if (m_textureSlots[i] != nullptr)
+			{
+				m_textureSlots[i]->Unbind();
+			}
+		}
+
+		m_indexCount = 0u;
+		m_textureSlotIndex = 1u;
 	}
 
 	[[nodiscard]] Mat4 Renderer::CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot) const

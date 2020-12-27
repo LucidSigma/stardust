@@ -95,8 +95,9 @@ namespace stardust
 		static constexpr usize s_MaxQuadsPerBatch = 4'000u;
 		static constexpr usize s_VerticesPerBatch = s_MaxQuadsPerBatch * 4u;
 		static constexpr usize s_IndicesPerBatch = s_MaxQuadsPerBatch * 6u;
-		static constexpr usize s_MaxTextures = 32u;
 
+		// TODO: Query from GPU instead of hard code.
+		static constexpr usize s_MaxTextures = 32u;
 		static constexpr u32 s_BlankTextureSlot = 0u;
 
 		VertexLayout m_batchVertexLayout;
@@ -119,7 +120,7 @@ namespace stardust
 	public:
 		Renderer() = default;
 		Renderer(const CreateInfo& createInfo);
-		~Renderer() noexcept = default;
+		~Renderer() noexcept;
 
 		void Initialise(const CreateInfo& createInfo);
 		void Destroy() noexcept;
@@ -131,14 +132,12 @@ namespace stardust
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;
 
-		void DrawWorldRect(const Camera2D& camera, const Vec2& position, const Vec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
 		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
 		void DrawWorldQuad(const Camera2D& camera, const Array<Vec2, 4u>& points, const Colour& colour, const Vec2& translation = Vec2{ 0.0f, 0.0f }, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
 
-		void DrawTexturedWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt) const;
 		void DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const FlipType flip = FlipType::None, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
 		// TODO: Implement scaling and rotation for these functions.
@@ -150,13 +149,9 @@ namespace stardust
 		void BeginFrame();
 		void EndFrame(const Camera2D& camera);
 
-		void BeginBatch();
-		void EndBatch();
-		void Flush(const Camera2D& camera);
-
 		// TODO: Rename "Batch" to "Draw" when the above functions are removed.
-		void BatchRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
-		void BatchRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void DrawWorldRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void DrawWorldRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
 
 		// TODO: Add destroy functions to destroy method.
 
@@ -178,6 +173,10 @@ namespace stardust
 	private:
 		void InitialiseVertexObjects();
 		void InitialiseShaders();
+
+		void BeginBatch();
+		void EndBatch();
+		void FlushAndDraw(const Camera2D& camera);
 
 		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot) const;
 		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot) const;
