@@ -2,8 +2,9 @@
 #ifndef STARDUST_COMPONENTS_H
 #define STARDUST_COMPONENTS_H
 
-#include "TagComponent.h"
-#include "TransformComponent.h"
+#include "stardust/scene/components/SpriteRenderComponent.h"
+#include "stardust/scene/components/TagComponent.h"
+#include "stardust/scene/components/TransformComponent.h"
 
 namespace stardust
 {
