@@ -436,7 +436,13 @@ namespace stardust
 
 	void Renderer::BeginFrame()
 	{
-		m_quadsDrawnThisFrame = 0u;
+		BeginBatch();
+	}
+
+	void Renderer::EndFrame(const Camera2D& camera)
+	{
+		EndBatch();
+		Flush(camera);
 	}
 
 	void Renderer::BeginBatch()
@@ -482,7 +488,7 @@ namespace stardust
 		m_textureSlotIndex = 1u;
 	}
 
-	void Renderer::BatchRect(const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera)
+	void Renderer::BatchRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation, const Optional<Vec2>& pivot)
 	{
 		if (m_indexCount >= s_IndicesPerBatch) [[unlikely]]
 		{
@@ -491,28 +497,29 @@ namespace stardust
 			BeginBatch();
 		}
 
+		const Mat4 modelMatrix = CreateWorldModelMatrix(position, size, rotation, pivot);
 		const Vec4 colourVector = ColourToVec4(colour);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		m_quadBufferPtr->position = (Vec2{ -0.5f, -0.5f } + position) * size;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
-		m_quadBufferPtr->position = (Vec2{ -0.5f, 0.5f } + position) * size;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
-		m_quadBufferPtr->position = (Vec2{ 0.5f, 0.5f } + position) * size;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
-		m_quadBufferPtr->position = (Vec2{ 0.5f, -0.5f } + position) * size;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
 		m_quadBufferPtr->colour = colourVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
@@ -521,7 +528,7 @@ namespace stardust
 		m_indexCount += 6u;
 	}
 
-	void Renderer::BatchRect(const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera)
+	void Renderer::BatchRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod, const f32 rotation, const Optional<Vec2>& pivot)
 	{
 		if (m_indexCount >= s_IndicesPerBatch || m_textureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
@@ -530,7 +537,8 @@ namespace stardust
 			BeginBatch();
 		}
 
-		const Vec4 colourVector = ColourToVec4(colour);
+		const Mat4 modelMatrix = CreateWorldModelMatrix(position, size, rotation, pivot);
+		const Vec4 colourModVector = ColourToVec4(colourMod);
 		f32 textureIndex = 0.0f;
 
 		for (usize i = 0u; i < m_textureSlotIndex; ++i)
@@ -549,26 +557,26 @@ namespace stardust
 			++m_textureSlotIndex;
 		}
 
-		m_quadBufferPtr->position = (Vec2{ -0.5f, -0.5f } + position) * size;
-		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
+		m_quadBufferPtr->colour = colourModVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
-		m_quadBufferPtr->position = (Vec2{ -0.5f, 0.5f } + position) * size;
-		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, 0.5f, 0.0f, 1.0f });
+		m_quadBufferPtr->colour = colourModVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
-		m_quadBufferPtr->position = (Vec2{ 0.5f, 0.5f } + position) * size;
-		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, 0.5f, 0.0f, 1.0f });
+		m_quadBufferPtr->colour = colourModVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
 
-		m_quadBufferPtr->position = (Vec2{ 0.5f, -0.5f } + position) * size;
-		m_quadBufferPtr->colour = colourVector;
+		m_quadBufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
+		m_quadBufferPtr->colour = colourModVector;
 		m_quadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
 		m_quadBufferPtr->textureIndex = textureIndex;
 		++m_quadBufferPtr;
@@ -682,7 +690,7 @@ namespace stardust
 			modelMatrix = glm::translate(modelMatrix, Vec3{ pivot.value(), 0.0f });
 		}
 
-		modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+		modelMatrix = glm::rotate(modelMatrix, -glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
 
 		if (pivot.has_value())
 		{

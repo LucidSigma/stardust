@@ -148,13 +148,15 @@ namespace stardust
 
 		// TODO: Make this more useful when there are both screen and world batches.
 		void BeginFrame();
+		void EndFrame(const Camera2D& camera);
 
 		void BeginBatch();
 		void EndBatch();
 		void Flush(const Camera2D& camera);
 
-		void BatchRect(const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera);
-		void BatchRect(const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colour, const Camera2D& camera);
+		// TODO: Rename "Batch" to "Draw" when the above functions are removed.
+		void BatchRect(const Camera2D& camera, const Colour& colour, const Vec2& position, const Vec2& size, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
+		void BatchRect(const Camera2D& camera, const Texture& texture, const Vec2& position, const Vec2& size, const Colour& colourMod = colours::White, const f32 rotation = 0.0f, const Optional<Vec2>& pivot = NullOpt);
 
 		// TODO: Add destroy functions to destroy method.
 

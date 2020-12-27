@@ -561,7 +561,11 @@ namespace stardust
 	void Application::Render()
 	{
 		m_renderer.Clear();
+		m_renderer.BeginFrame();
+
 		m_sceneManager.CurrentScene()->Render(m_renderer);
+
+		m_renderer.EndFrame(m_camera);
 		m_window.Present();
 	}
 
