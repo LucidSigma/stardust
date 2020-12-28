@@ -237,107 +237,6 @@ namespace stardust
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const
-	{
-		const Vector<f32> quadVertices{
-			static_cast<f32>(points[0].x), static_cast<f32>(m_virtualSize.y - points[0].y), 0.0f, 0.0f,
-			static_cast<f32>(points[1].x), static_cast<f32>(m_virtualSize.y - points[1].y), 0.0f, 0.0f,
-			static_cast<f32>(points[2].x), static_cast<f32>(m_virtualSize.y - points[2].y), 0.0f, 0.0f,
-			static_cast<f32>(points[3].x), static_cast<f32>(m_virtualSize.y - points[3].y), 0.0f, 0.0f,
-		};
-
-		VertexBuffer quadBuffer(quadVertices);
-		VertexLayout quadVertexLayout;
-
-		quadVertexLayout
-			.AddAttribute({
-				// Position.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddAttribute({
-				// Texture coordinate.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddVertexBuffer(quadBuffer)
-			.Initialise();
-
-		m_shaderPrograms.at(ShaderName::Quad).Use();
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix);
-		m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
-
-		quadVertexLayout.Bind();
-		quadVertexLayout.DrawIndexed(m_quadIBO);
-		quadVertexLayout.Unbind();
-
-		m_shaderPrograms.at(ShaderName::Quad).Disuse();
-	}
-
-	void Renderer::DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale, const FlipType flip, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
-	{
-		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(position), scale * Vec2(texture.GetSize()), flip, rotation, pivot);
-
-		texture.Bind();
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_ColourMod", ColourToVec4(colour));
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetTextureUniform("u_TextureSampler", 0);
-
-		m_quadVertexLayout.Bind();
-		m_quadVertexLayout.DrawIndexed(m_quadIBO);
-		m_quadVertexLayout.Unbind();
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Disuse();
-		texture.Unbind();
-	}
-
-	void Renderer::DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip, const Colour& colour) const
-	{
-		const Vector<f32> quadVertices{
-			static_cast<f32>(points[0].x), static_cast<f32>(m_virtualSize.y - points[0].y), 0.0f, 0.0f,
-			static_cast<f32>(points[1].x), static_cast<f32>(m_virtualSize.y - points[1].y), 0.0f, 1.0f,
-			static_cast<f32>(points[2].x), static_cast<f32>(m_virtualSize.y - points[2].y), 1.0f, 1.0f,
-			static_cast<f32>(points[3].x), static_cast<f32>(m_virtualSize.y - points[3].y), 1.0f, 0.0f,
-		};
-
-		VertexBuffer quadBuffer(quadVertices);
-		VertexLayout quadVertexLayout;
-
-		quadVertexLayout
-			.AddAttribute({
-				// Position.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddAttribute({
-				// Texture coordinate.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddVertexBuffer(quadBuffer)
-			.Initialise();
-
-		texture.Bind();
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Use();
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_MVP", m_screenProjectionMatrix);
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetUniform("u_ColourMod", ColourToVec4(colour));
-		m_shaderPrograms.at(ShaderName::TexturedQuad).SetTextureUniform("u_TextureSampler", 0);
-
-		quadVertexLayout.Bind();
-		quadVertexLayout.DrawIndexed(m_quadIBO);
-		quadVertexLayout.Unbind();
-
-		m_shaderPrograms.at(ShaderName::TexturedQuad).Disuse();
-		texture.Unbind();
-	}
-
 	void Renderer::BeginFrame()
 	{
 		BeginWorldBatch();
@@ -628,8 +527,8 @@ namespace stardust
 		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
 			EndScreenBatch();
-			FlushScreenBatch();
-			BeginScreenBatch();
+		FlushScreenBatch();
+		BeginScreenBatch();
 		}
 
 		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });

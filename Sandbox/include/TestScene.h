@@ -82,14 +82,6 @@ public:
 
 	virtual void Render(sd::Renderer& renderer) override
 	{
-		//GetRenderer().DrawScreenRect({ 1, 1 }, { 2u, 2u }, sd::colours::Red);
-		//
-		//GetRenderer().DrawScreenQuad({ sd::IVec2{ 500, 50 }, sd::IVec2{ 600, 250 }, sd::IVec2{ 700, 200 }, sd::IVec2{ 800, 100 } }, sd::colours::Beige);
-		//
-		//GetRenderer().DrawTexturedScreenRect(m_crateTexture, { 400, 400 }, { 3.0f, 2.0f }, sd::FlipType::None, sd::colours::Green, GetElapsedTime() * 50.0f, sd::IVec2{ 250, 10 });
-		//
-		//GetRenderer().DrawTexturedScreenQuad(m_crateTexture, { sd::IVec2{ 250, 25 }, sd::IVec2{ 300, 125 }, sd::IVec2{ 350, 100 }, sd::IVec2{ 400, 50 } });
-
 		for (sd::i32 x = -3; x <= 3; ++x)
 		{
 			for (sd::i32 y = -3; y <= 3; ++y)
@@ -156,7 +148,7 @@ public:
 		GetRenderer().DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 150, 50 }, sd::UVec2{ 100u, 200u }),
 			sd::comp::ShearTransform(0.0f, -5.0f),
-			sd::colours::Azure
+			sd::comp::SpriteRender(m_crateTexture)
 		);
 	}
 

@@ -144,15 +144,6 @@ namespace stardust
 		void SetPolygonMode(const PolygonMode polygonMode) const;
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;
-		
-		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
-		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
-
-		void DrawTexturedScreenRect(const Texture& texture, const IVec2& position, const Vec2& scale = Vec2{ 1.0f, 1.0f }, const FlipType flip = FlipType::None, const Colour& colour = colours::White, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
-		
-		// TODO: Implement scaling and rotation for these functions.
-		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
-		void DrawTexturedScreenQuad(const Texture& texture, const Array<IVec2, 4u>& points, const FlipType flip = FlipType::None, const Colour& colour = colours::White) const;
 
 		void BeginFrame();
 		void EndFrame(const Camera2D& camera);
@@ -173,11 +164,6 @@ namespace stardust
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
-
-		// Note: These functions only work properly when the points are centred around (0.0, 0.0).
-		// Point [0] should be lower left; point [1] should be upper left; point [2] should be upper right; point [3] should be lower right.
-		void DrawScreenQuad(const Array<Vec2, 4u>& points, const components::ScreenTransform& transform, const Colour& colour);
-		void DrawScreenQuad(const Array<Vec2, 4u>& points, const components::ScreenTransform& transform, const components::SpriteRender& sprite);
 
 		// TODO: Add destroy functions to destroy method.
 
