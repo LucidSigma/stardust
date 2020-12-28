@@ -17,6 +17,7 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 
 ### Assets
 * [PhysFS](https://icculus.org/physfs/)
+* [SDL_ttf](https://www.libsdl.org/projects/SDL_ttf/)
 * [stb_image and stb_image_write](https://github.com/nothings/stb)
 
 ### Mathematics
