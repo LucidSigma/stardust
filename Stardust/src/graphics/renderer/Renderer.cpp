@@ -237,21 +237,6 @@ namespace stardust
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	//void Renderer::DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation, const Optional<IVec2>& pivot) const
-	//{
-	//	const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(position), size, FlipType::None, rotation, pivot);
-	//
-	//	m_shaderPrograms.at(ShaderName::Quad).Use();
-	//	m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_MVP", m_screenProjectionMatrix * modelMatrix);
-	//	m_shaderPrograms.at(ShaderName::Quad).SetUniform("u_Colour", ColourToVec4(colour));
-	//
-	//	m_quadVertexLayout.Bind();
-	//	m_quadVertexLayout.DrawIndexed(m_quadIBO);
-	//	m_quadVertexLayout.Unbind();
-	//
-	//	m_shaderPrograms.at(ShaderName::Quad).Disuse();
-	//}
-
 	void Renderer::DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const
 	{
 		const Vector<f32> quadVertices{
@@ -480,34 +465,9 @@ namespace stardust
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
-		const Vec4 colourVector = ColourToVec4(colour);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldIndexCount += 6u;
+		GenerateQuad(points, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera)
@@ -520,34 +480,9 @@ namespace stardust
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
-		const Vec4 colourVector = ColourToVec4(colour);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 0.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 0.0f, 1.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 1.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ 1.0f, 0.0f };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldIndexCount += 6u;
+		GenerateQuad(points, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
@@ -560,7 +495,6 @@ namespace stardust
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
-		const Vec4 colourModVector = ColourToVec4(sprite.colourMod);
 		f32 textureIndex = 0.0f;
 
 		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
@@ -579,34 +513,12 @@ namespace stardust
 			++m_worldTextureSlotIndex;
 		}
 
-		const Vec2 bottomLeftTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f };
-		const Vec2 topRightTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f };
+		const Pair<Vec2, Vec2> textureCoordinates{
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+		};
 
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldIndexCount += 6u;
+		GenerateQuad(points, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera)
@@ -619,7 +531,6 @@ namespace stardust
 		}
 
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
-		const Vec4 colourModVector = ColourToVec4(sprite.colourMod);
 		f32 textureIndex = 0.0f;
 
 		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
@@ -638,34 +549,12 @@ namespace stardust
 			++m_worldTextureSlotIndex;
 		}
 
-		const Vec2 bottomLeftTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f };
-		const Vec2 topRightTextureCoordinate = sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f };
+		const Pair<Vec2, Vec2> textureCoordinates{
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+		};
 
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldQuadBufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
-		m_worldQuadBufferPtr->colour = colourModVector;
-		m_worldQuadBufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
-		m_worldQuadBufferPtr->textureIndex = textureIndex;
-		++m_worldQuadBufferPtr;
-
-		m_worldIndexCount += 6u;
+		GenerateQuad(points, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour)
@@ -952,6 +841,38 @@ namespace stardust
 		++bufferPtr;
 
 		bufferPtr->position = Vec2(modelMatrix * Vec4{ 0.5f, -0.5f, 0.0f, 1.0f });
+		bufferPtr->colour = colourVector;
+		bufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
+		bufferPtr->textureIndex = textureIndex;
+		++bufferPtr;
+
+		indexCount += 6u;
+	}
+
+	void Renderer::GenerateQuad(const Array<Vec2, 4u>& points, const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
+	{
+		const auto& [bottomLeftTextureCoordinate, topRightTextureCoordinate] = textureCoordinates;
+		const Vec4 colourVector = ColourToVec4(colour);
+
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
+		bufferPtr->colour = colourVector;
+		bufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
+		bufferPtr->textureIndex = textureIndex;
+		++bufferPtr;
+
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
+		bufferPtr->colour = colourVector;
+		bufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
+		bufferPtr->textureIndex = textureIndex;
+		++bufferPtr;
+
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
+		bufferPtr->colour = colourVector;
+		bufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
+		bufferPtr->textureIndex = textureIndex;
+		++bufferPtr;
+
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
 		bufferPtr->colour = colourVector;
 		bufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
 		bufferPtr->textureIndex = textureIndex;

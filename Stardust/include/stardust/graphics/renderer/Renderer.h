@@ -172,6 +172,7 @@ namespace stardust
 		void DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera);
 
 		void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
+		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
 
 		// Note: These functions only work properly when the points are centred around (0.0, 0.0).
@@ -213,6 +214,7 @@ namespace stardust
 		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
 
 		void GenerateRect(const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
+		void GenerateQuad(const Array<Vec2, 4u>& points, const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
 
 		void UpdateScreenProjectionMatrix();
 	};
