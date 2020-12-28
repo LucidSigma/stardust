@@ -15,6 +15,7 @@ target_include_directories(Stardust PUBLIC
 	${NLOHMANN_JSON_INCLUDE_DIRS}
 	${PHYSFS_INCLUDE_DIRS}
 	${SDL2_INCLUDE_DIRS}
+	${SDL2_TTF_INCLUDE_DIRS}
 	${SPDLOG_INCLUDE_DIRS}
 	${STB_IMAGE_INCLUDE_DIRS}
 	${TINY_UTF8_INCLUDE_DIRS}
@@ -23,10 +24,12 @@ target_include_directories(Stardust PUBLIC
 
 target_link_directories(Stardust PUBLIC
 	${SDL2_LIBS_DIR}
+	${SDL2_TTF_LIBS_DIR}
 )
 
 target_link_libraries(Stardust PUBLIC
 	${SDL2_LIBS}
+	${SDL2_TTF_LIBS}
 	OpenGL::GL
 	glad
 	physfs
@@ -38,6 +41,12 @@ source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/include/stardust" FILES ${STARDUST_
 
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
+		add_custom_command(TARGET Stardust POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
+		)
+	endforeach()
+	
+	foreach(DLL ${SDL2_TTF_DLLS})
 		add_custom_command(TARGET Stardust POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
 		)

@@ -26,4 +26,10 @@ if(WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Sandbox>
         )
     endforeach()
+
+    foreach(DLL ${SDL2_TTF_DLLS})
+		add_custom_command(TARGET Stardust POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
+		)
+    endforeach()
 endif()

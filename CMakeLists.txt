@@ -15,9 +15,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # External CMake modules.
 if(WIN32)
 	set(SDL2_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2-2.0.14/cmake")
+	set(SDL2_TTF_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2_ttf-2.0.15/cmake")
 endif()
 
 find_package(SDL2 REQUIRED)
+find_package(SDL2_TTF REQUIRED)
 
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/dep/glm-0.9.9.8/cmake/glm")
 find_package(GLM REQUIRED)
