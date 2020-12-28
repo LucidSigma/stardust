@@ -20,6 +20,7 @@
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/Colour.h"
 #include "stardust/scene/components/ScreenTransformComponent.h"
+#include "stardust/scene/components/ShearTransformComponent.h"
 #include "stardust/scene/components/SpriteRenderComponent.h"
 #include "stardust/scene/components/TransformComponent.h"
 #include "stardust/window/Window.h"
@@ -159,12 +160,16 @@ namespace stardust
 		void EndFrame(const Camera2D& camera);
 
 		void DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera);
+		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
 		void DrawWorldRect(const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera);
+		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera);
 
 		// Note: These functions only work properly when the points are centred around (0.0, 0.0).
 		// Point [0] should be lower left; point [1] should be upper left; point [2] should be upper right; point [3] should be lower right.
 		void DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const Colour& colour, const Camera2D& camera);
+		void DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
 		void DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera);
+		void DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera);
 
 		void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
@@ -204,8 +209,10 @@ namespace stardust
 		void EndScreenBatch();
 		void FlushScreenBatch();
 
-		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot) const;
-		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot) const;
+		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
+		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
+
+		void GenerateRect(const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
 
 		void UpdateScreenProjectionMatrix();
 	};

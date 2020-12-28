@@ -659,7 +659,6 @@ namespace stardust
 	void Application::CalculateDeltaTime()
 	{
 		static const bool capFramerate = m_config["frame-rate"]["cap-fps"];
-		static const f32 fpsLimit = m_config["frame-rate"]["fps-limit"];
 
 		const u64 newTicks = SDL_GetPerformanceCounter();
 		const u64 frameTicks = newTicks - m_ticksCount;
@@ -667,6 +666,7 @@ namespace stardust
 
 		if (capFramerate)
 		{
+			static const f32 fpsLimit = m_config["frame-rate"]["fps-limit"];
 			static const f32 timeToWait = 1.0f / fpsLimit;
 		
 			if (m_deltaTime < timeToWait)

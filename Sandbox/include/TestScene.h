@@ -82,8 +82,6 @@ public:
 
 	virtual void Render(sd::Renderer& renderer) override
 	{
-		//GetRenderer().DrawScreenRect({ 50, 50 }, { 100u, 200u }, sd::colours::Lime);
-		//
 		//GetRenderer().DrawScreenRect({ 1, 1 }, { 2u, 2u }, sd::colours::Red);
 		//
 		//GetRenderer().DrawScreenQuad({ sd::IVec2{ 500, 50 }, sd::IVec2{ 600, 250 }, sd::IVec2{ 700, 200 }, sd::IVec2{ 800, 100 } }, sd::colours::Beige);
@@ -99,10 +97,11 @@ public:
 				renderer.DrawWorldRect(
 					sd::comp::Transform(
 						sd::Vec2{ x, y },
-						30.0f,
+						1.0f,
 						sd::NullOpt,
 						sd::Vec2{ 1.0f, 1.0f }
 					),
+					sd::comp::ShearTransform(10.0f),
 					sd::comp::SpriteRender((x + y) % 2 == 0 ? m_crateTexture : m_crumbleTexture),
 					GetCamera()
 				);
@@ -128,6 +127,7 @@ public:
 				sd::NullOpt,
 				sd::Vec2{ 2.0f, 2.0f }
 			),
+			sd::comp::ShearTransform(30.0f),
 			sd::colours::Blue,
 			GetCamera()
 		);
@@ -140,6 +140,7 @@ public:
 				sd::NullOpt,
 				sd::Vec2{ 2.0f, 2.0f }
 			),
+			sd::comp::ShearTransform(-30.0f),
 			sd::comp::SpriteRender(
 				m_crateTexture, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, 0.0f, sd::colours::Lime
 			),
@@ -147,7 +148,7 @@ public:
 		);
 
 		GetRenderer().DrawScreenRect(
-			sd::comp::ScreenTransform(sd::IVec2{ 50, 50 }, sd::UVec2{ 100u, 200u }, sd::FlipType::None, 30.0f),
+			sd::comp::ScreenTransform(sd::IVec2{ 50, 50 }, sd::UVec2{ 100u, 200u }),
 			sd::colours::Lime
 		);
 	}
