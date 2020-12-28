@@ -10,6 +10,8 @@ class TestScene final
 	: public sd::Scene
 {
 private:
+	sd::SortingLayer m_defaultSortingLayer{ "default" };
+
 	sd::Texture m_crateTexture;
 	sd::Texture m_crumbleTexture;
 
@@ -94,7 +96,7 @@ public:
 						sd::Vec2{ 1.0f, 1.0f }
 					),
 					sd::comp::ShearTransform(10.0f),
-					sd::comp::SpriteRender((x + y) % 2 == 0 ? m_crateTexture : m_crumbleTexture),
+					sd::comp::SpriteRender((x + y) % 2 == 0 ? m_crateTexture : m_crumbleTexture, m_defaultSortingLayer),
 					GetCamera()
 				);
 			}
@@ -134,7 +136,7 @@ public:
 			),
 			sd::comp::ShearTransform(-30.0f),
 			sd::comp::SpriteRender(
-				m_crateTexture, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, 0.0f, sd::colours::Lime
+				m_crateTexture, m_defaultSortingLayer, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, sd::colours::Lime
 			),
 			GetCamera()
 		);
@@ -148,7 +150,7 @@ public:
 		GetRenderer().DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 150, 50 }, sd::UVec2{ 100u, 200u }),
 			sd::comp::ShearTransform(0.0f, -5.0f),
-			sd::comp::SpriteRender(m_crateTexture)
+			sd::comp::SpriteRender(m_crateTexture, m_defaultSortingLayer)
 		);
 	}
 

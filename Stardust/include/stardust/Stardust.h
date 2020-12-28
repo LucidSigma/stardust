@@ -39,6 +39,7 @@
 #include "graphics/texture/Sampler.h"
 #include "graphics/texture/Texture.h"
 #include "graphics/Colour.h"
+#include "graphics/SortingLayer.h"
 
 #include "stardust/input/keyboard/Keyboard.h"
 #include "stardust/input/keyboard/KeyCodes.h"

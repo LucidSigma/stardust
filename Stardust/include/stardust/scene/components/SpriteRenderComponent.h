@@ -7,6 +7,7 @@
 #include "stardust/data/Types.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/Colour.h"
+#include "stardust/graphics/SortingLayer.h"
 
 namespace stardust
 {
@@ -15,18 +16,17 @@ namespace stardust
 		struct SpriteRender
 		{
 			ObserverPtr<const Texture> texture;
+			ObserverPtr<const SortingLayer> sortingLayer;
+
 			Optional<Pair<Vec2, Vec2>> subTextureArea;
-
-			f32 z;
-
 			Colour colourMod;
 
 			SpriteRender()
-				: texture(nullptr), subTextureArea(NullOpt), z(0.0f), colourMod(colours::White)
+				: texture(nullptr), sortingLayer(nullptr), subTextureArea(NullOpt), colourMod(colours::White)
 			{ }
 
-			explicit SpriteRender(const Texture& texture, const Optional<Pair<Vec2, Vec2>>& subtextureArea = NullOpt, const f32 z = 0.0f, const Colour colourMod = colours::White)
-				: texture(&texture), subTextureArea(subtextureArea), z(z), colourMod(colourMod)
+			explicit SpriteRender(const Texture& texture, const SortingLayer& sortingLayer, const Optional<Pair<Vec2, Vec2>>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
+				: texture(&texture), sortingLayer(&sortingLayer), subTextureArea(subtextureArea), colourMod(colourMod)
 			{ }
 
 			~SpriteRender() noexcept = default;

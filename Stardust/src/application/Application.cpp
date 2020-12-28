@@ -678,7 +678,6 @@ namespace stardust
 		}
 
 		m_ticksCount = newTicks;
-
 		m_elapsedTime += preciseDeltaTime;
 		timeAccumulator += preciseDeltaTime;
 	}
