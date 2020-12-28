@@ -485,7 +485,7 @@ namespace stardust
 		};
 	}
 
-	Pair<UVec2, UVec2> Renderer::GetViewportRect() const
+	[[nodiscard]] Pair<UVec2, UVec2> Renderer::GetViewportRect() const
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();
 

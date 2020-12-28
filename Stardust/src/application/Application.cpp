@@ -43,14 +43,11 @@ namespace stardust
 		InitialiseScenes();
 
 		SDL_Event event{ };
-		f32 timeAccumulator = 0.0f;
+		f64 timeAccumulator = 0.0f;
 
 		while (m_isRunning)
 		{
-			CalculateDeltaTime();
-			m_elapsedTime += m_deltaTime;
-			timeAccumulator += m_deltaTime;
-
+			UpdateTime(timeAccumulator);
 			// m_soundSystem.Update();
 
 			while (timeAccumulator >= m_fixedTimestep)
@@ -533,7 +530,7 @@ namespace stardust
 
 	void Application::FixedUpdate()
 	{
-		m_sceneManager.CurrentScene()->FixedUpdate(m_fixedTimestep);
+		m_sceneManager.CurrentScene()->FixedUpdate(static_cast<f32>(m_fixedTimestep));
 	}
 
 	void Application::ProcessInput()
@@ -656,13 +653,14 @@ namespace stardust
 		}
 	}
 
-	void Application::CalculateDeltaTime()
+	void Application::UpdateTime(f64& timeAccumulator)
 	{
 		static const bool capFramerate = m_config["frame-rate"]["cap-fps"];
 
 		const u64 newTicks = SDL_GetPerformanceCounter();
 		const u64 frameTicks = newTicks - m_ticksCount;
-		m_deltaTime = static_cast<f32>(frameTicks) / static_cast<f32>(SDL_GetPerformanceFrequency());
+		const f64 preciseDeltaTime = static_cast<f64>(frameTicks) / static_cast<f64>(SDL_GetPerformanceFrequency());
+		m_deltaTime = static_cast<f32>(preciseDeltaTime);
 
 		if (capFramerate)
 		{
@@ -680,6 +678,9 @@ namespace stardust
 		}
 
 		m_ticksCount = newTicks;
+
+		m_elapsedTime += preciseDeltaTime;
+		timeAccumulator += preciseDeltaTime;
 	}
 
 	void Application::UpdateSceneQueue()

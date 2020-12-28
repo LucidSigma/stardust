@@ -54,7 +54,7 @@ namespace stardust
 			FilesystemInfo filesystem;
 			FilepathsInfo filepaths;
 
-			f32 fixedTimestep;
+			f64 fixedTimestep;
 
 			Optional<InitialiseCallback> initialiseCallback;
 			Optional<ExitCallback> exitCallback;
@@ -75,10 +75,10 @@ namespace stardust
 
 		Camera2D m_camera;
 
-		f32 m_fixedTimestep = 0.0f;
+		f64 m_fixedTimestep = 0.0f;
 		f32 m_deltaTime = 0.0f;
 		u64 m_ticksCount = 0u;
-		f32 m_elapsedTime = 0.0f;
+		f64 m_elapsedTime = 0.0;
 
 		SceneManager m_sceneManager;
 		bool m_isCurrentSceneFinished = false;
@@ -117,7 +117,7 @@ namespace stardust
 
 		inline bool IsRunning() const noexcept { return m_isRunning; }
 		inline u64 GetTicksCount() const noexcept { return m_ticksCount; }
-		inline f32 GetElapsedTime() const noexcept { return m_elapsedTime; }
+		inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
 		inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
 
 		void CaptureScreenshot() const;
@@ -156,7 +156,7 @@ namespace stardust
 		void PollEvents(SDL_Event& event);
 		void ProcessWindowEvents(const SDL_WindowEvent& windowEvent);
 
-		void CalculateDeltaTime();
+		void UpdateTime(f64& timeAccumulator);
 		void UpdateSceneQueue();
 	};
 }

@@ -21,7 +21,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
 			.defaultConfigFilepath = "assets/defaults/config.json",
 			.windowIconFile = "assets/icon/icon.png",
 		},
-		.fixedTimestep = 0.01f,
+		.fixedTimestep = 0.01,
 
 		.initialiseCallback = sd::Application::InitialiseCallback([](const auto& application) -> sd::Status { sd::Log::Debug("Application initialised."); return sd::Status::Success; }),
 		.exitCallback = sd::NullOpt,

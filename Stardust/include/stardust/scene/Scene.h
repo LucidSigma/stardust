@@ -65,7 +65,7 @@ namespace stardust
 		inline const Keyboard& GetKeyboardState() const noexcept { return Input::GetKeyboardState(); }
 		inline const Mouse& GetMouseState() const noexcept { return Input::GetMouseState(); }
 
-		f32 GetElapsedTime() const noexcept;
+		f64 GetElapsedTime() const noexcept;
 	};
 }
 
