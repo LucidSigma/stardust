@@ -53,41 +53,6 @@ namespace stardust
 		};
 
 	private:
-		enum class ShaderName
-		{
-			Quad,
-			TexturedQuad,
-		};
-
-		inline static const Vector<f32> s_quadVertices{
-			-0.5f, -0.5f, 0.0f, 0.0f,
-			-0.5f, 0.5f, 0.0f, 1.0f,
-			0.5f, 0.5f, 1.0f, 1.0f,
-			0.5f, -0.5f, 1.0f, 0.0f,
-		};
-
-		inline static const Vector<u32> s_quadIndices{
-			0u, 1u, 2u,
-			2u, 3u, 0u,
-		};
-
-		ObserverPtr<Window> m_window = nullptr;
-
-		UVec2 m_virtualSize{ 0u, 0u };
-		Vec2 m_virtualScale{ 1.0f, 1.0f };
-		f32 m_virtualAspectRatio = 0.0f;
-
-		HashMap<ShaderName, ShaderProgram> m_shaderPrograms{ };
-
-		VertexLayout m_quadVertexLayout;
-		VertexBuffer m_quadVBO;
-		IndexBuffer m_quadIBO;
-
-		Mat4 m_screenProjectionMatrix{ 1.0f };
-
-		bool m_isValid = false;
-
-		// Batching (will replace non-batched rendering when it is finished).
 		struct BatchVertex
 		{
 			Vec2 position;
@@ -103,6 +68,12 @@ namespace stardust
 		// TODO: Query from GPU instead of hard code.
 		static constexpr usize s_MaxTextures = 32u;
 		static constexpr u32 s_BlankTextureSlot = 0u;
+
+		ObserverPtr<Window> m_window = nullptr;
+
+		UVec2 m_virtualSize{ 0u, 0u };
+		Vec2 m_virtualScale{ 1.0f, 1.0f };
+		f32 m_virtualAspectRatio = 0.0f;
 
 		ShaderProgram m_batchShader;
 		Texture m_blankTexture;
@@ -129,6 +100,10 @@ namespace stardust
 
 		Array<ObserverPtr<const Texture>, s_MaxTextures> m_screenTextureSlots{ nullptr };
 		usize m_screenTextureSlotIndex = 1u;
+
+		Mat4 m_screenProjectionMatrix{ 1.0f };
+
+		bool m_isValid = false;
 
 	public:
 		Renderer() = default;
@@ -185,6 +160,7 @@ namespace stardust
 	private:
 		void InitialiseVertexObjects();
 		void InitialiseShaders();
+		void InitialiseTextureIndices();
 
 		void BeginWorldBatch();
 		void EndWorldBatch();

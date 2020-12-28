@@ -29,109 +29,24 @@ namespace stardust
 
 		SetClearColour(colours::Black);
 		SetPolygonMode(PolygonMode::Filled);
+
+		m_worldQuadBuffer.resize(s_MaxVerticesPerBatch);
+		m_worldQuadBufferPtr = m_worldQuadBuffer.data();
+
+		m_screenQuadBuffer.resize(s_MaxVerticesPerBatch);
+		m_screenQuadBufferPtr = m_screenQuadBuffer.data();
 		
 		InitialiseVertexObjects();
 
-		if (!m_quadVertexLayout.IsValid() || !m_quadVBO.IsValid() || !m_quadIBO.IsValid())
+		if (!m_worldVertexBuffer.IsValid() || !m_worldVertexLayout.IsValid() || !m_worldIndexBuffer.IsValid() ||
+			!m_screenVertexBuffer.IsValid() || !m_screenVertexLayout.IsValid() || !m_screenIndexBuffer.IsValid())
 		{
 			return;
 		}
 
 		InitialiseShaders();
 
-		for (const auto& [shaderName, shaderProgram] : m_shaderPrograms)
-		{
-			if (!shaderProgram.IsValid())
-			{
-				return;
-			}
-		}
-
-		// BATCHING.
-		m_worldQuadBuffer.resize(s_MaxVerticesPerBatch);
-		m_worldQuadBufferPtr = m_worldQuadBuffer.data();
-
-		m_screenQuadBuffer.resize(s_MaxVerticesPerBatch);
-		m_screenQuadBufferPtr = m_screenQuadBuffer.data();
-
-		m_worldVertexBuffer.Initialise(s_MaxVerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
-		m_screenVertexBuffer.Initialise(s_MaxVerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
-
-		m_worldVertexLayout.AddAttribute({
-			// Position.
-			.elementCount = 2u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Colour.
-			.elementCount = 4u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Texture coordinates.
-			.elementCount = 2u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Texture unit index.
-			.elementCount = 1u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddVertexBuffer(m_worldVertexBuffer)
-		.Initialise();
-
-		m_screenVertexLayout.AddAttribute({
-			// Position.
-			.elementCount = 2u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Colour.
-			.elementCount = 4u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Texture coordinates.
-			.elementCount = 2u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddAttribute({
-			// Texture unit index.
-			.elementCount = 1u,
-			.dataType = GL_FLOAT,
-			.isNormalised = true,
-		})
-		.AddVertexBuffer(m_screenVertexBuffer)
-		.Initialise();
-
-		Vector<u32> indices(s_MaxIndicesPerBatch);
-		u32 offset = 0u;
-
-		for (usize i = 0u; i < s_MaxIndicesPerBatch; i += 6u)
-		{
-			indices[i + 0u] = 0u + offset;
-			indices[i + 1u] = 1u + offset;
-			indices[i + 2u] = 2u + offset;
-
-			indices[i + 3u] = 2u + offset;
-			indices[i + 4u] = 3u + offset;
-			indices[i + 5u] = 0u + offset;
-
-			offset += 4u;
-		}
-
-		m_worldIndexBuffer.Initialise(indices);
-		m_screenIndexBuffer.Initialise(indices);
-
-		if (!m_worldVertexBuffer.IsValid() || !m_worldVertexLayout.IsValid() || !m_worldIndexBuffer.IsValid() ||
-			!m_screenVertexBuffer.IsValid() || !m_screenVertexLayout.IsValid() || !m_screenIndexBuffer.IsValid())
+		if (!m_batchShader.IsValid())
 		{
 			return;
 		}
@@ -147,34 +62,7 @@ namespace stardust
 			return;
 		}
 
-		const Shader batchVertexShader(Shader::Type::Vertex, "assets/shaders/quad_batch.vert");
-		const Shader batchFragmentShader(Shader::Type::Fragment, "assets/shaders/quad_batch.frag");
-
-		m_batchShader.Initialise({
-			&batchVertexShader,
-			&batchFragmentShader,
-		});
-
-		if (!m_batchShader.IsValid())
-		{
-			return;
-		}
-
-		m_worldTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
-		m_screenTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
-
-		for (usize i = 1u; i < s_MaxTextures; ++i)
-		{
-			m_worldTextureSlots[i] = 0u;
-			m_screenTextureSlots[i] = 0u;
-		}
-
-		Vector<i32> textureIndices(s_MaxTextures);
-		std::iota(std::begin(textureIndices), std::end(textureIndices), 0);
-
-		m_batchShader.Use();
-		m_batchShader.SetUniformVector("u_Textures", textureIndices);
-		m_batchShader.Disuse();
+		InitialiseTextureIndices();
 
 		m_isValid = true;
 	}
@@ -183,11 +71,6 @@ namespace stardust
 	{
 		if (m_isValid)
 		{
-			m_shaderPrograms.clear();
-
-			m_quadVertexLayout.Destroy();
-			m_quadVBO.Destroy();
-			m_quadIBO.Destroy();
 
 			m_isValid = false;
 		}
@@ -615,43 +498,111 @@ namespace stardust
 
 	void Renderer::InitialiseVertexObjects()
 	{
-		m_quadVBO.Initialise(s_quadVertices);
-		m_quadIBO.Initialise(s_quadIndices);
+		m_worldVertexBuffer.Initialise(s_MaxVerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
+		m_screenVertexBuffer.Initialise(s_MaxVerticesPerBatch * sizeof(BatchVertex), BufferUsage::Dynamic);
 
-		m_quadVertexLayout
-			.AddAttribute({
-				// Position.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddAttribute({
-				// Texture coordinate.
-				.elementCount = 2u,
-				.dataType = GL_FLOAT,
-				.isNormalised = true,
-			})
-			.AddVertexBuffer(m_quadVBO)
-			.Initialise();
+		m_worldVertexLayout.AddAttribute({
+			// Position.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Colour.
+			.elementCount = 4u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture coordinates.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture unit index.
+			.elementCount = 1u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddVertexBuffer(m_worldVertexBuffer)
+		.Initialise();
+
+		m_screenVertexLayout.AddAttribute({
+			// Position.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Colour.
+			.elementCount = 4u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture coordinates.
+			.elementCount = 2u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddAttribute({
+			// Texture unit index.
+			.elementCount = 1u,
+			.dataType = GL_FLOAT,
+			.isNormalised = true,
+		})
+		.AddVertexBuffer(m_screenVertexBuffer)
+		.Initialise();
+
+		Vector<u32> indices(s_MaxIndicesPerBatch);
+		u32 offset = 0u;
+
+		for (usize i = 0u; i < s_MaxIndicesPerBatch; i += 6u)
+		{
+			indices[i + 0u] = 0u + offset;
+			indices[i + 1u] = 1u + offset;
+			indices[i + 2u] = 2u + offset;
+
+			indices[i + 3u] = 2u + offset;
+			indices[i + 4u] = 3u + offset;
+			indices[i + 5u] = 0u + offset;
+
+			offset += 4u;
+		}
+
+		m_worldIndexBuffer.Initialise(indices);
+		m_screenIndexBuffer.Initialise(indices);
 	}
 
 	void Renderer::InitialiseShaders()
 	{
-		const Shader quadVertexShader(Shader::Type::Vertex, "assets/shaders/quad.vert");
-		const Shader quadFragmentShader(Shader::Type::Fragment, "assets/shaders/quad.frag");
+		const Shader batchVertexShader(Shader::Type::Vertex, "assets/shaders/quad_batch.vert");
+		const Shader batchFragmentShader(Shader::Type::Fragment, "assets/shaders/quad_batch.frag");
 
-		m_shaderPrograms.emplace(ShaderName::Quad, Vector<ObserverPtr<const Shader>>{
-			&quadVertexShader,
-			&quadFragmentShader,
+		m_batchShader.Initialise({
+			&batchVertexShader,
+			&batchFragmentShader,
 		});
+	}
 
-		const Shader texturedQuadVertexShader(Shader::Type::Vertex, "assets/shaders/textured_quad.vert");
-		const Shader texturedQuadFragmentShader(Shader::Type::Fragment, "assets/shaders/textured_quad.frag");
+	void Renderer::InitialiseTextureIndices()
+	{
+		m_worldTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
+		m_screenTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
 
-		m_shaderPrograms.emplace(ShaderName::TexturedQuad, Vector<ObserverPtr<const Shader>>{
-			&texturedQuadVertexShader,
-			&texturedQuadFragmentShader,
-		});
+		for (usize i = 1u; i < s_MaxTextures; ++i)
+		{
+			m_worldTextureSlots[i] = 0u;
+			m_screenTextureSlots[i] = 0u;
+		}
+
+		Vector<i32> textureIndices(s_MaxTextures);
+		std::iota(std::begin(textureIndices), std::end(textureIndices), 0);
+
+		m_batchShader.Use();
+		m_batchShader.SetUniformVector("u_Textures", textureIndices);
+		m_batchShader.Disuse();
 	}
 
 	void Renderer::BeginWorldBatch()
