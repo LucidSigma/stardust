@@ -572,6 +572,93 @@ namespace stardust
 		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
 	}
 
+	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour)
+	{
+		if (m_screenIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]
+		{
+			EndScreenBatch();
+			FlushScreenBatch();
+			BeginScreenBatch();
+		}
+
+		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
+		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
+
+		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
+	}
+
+	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite)
+	{
+		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		{
+			EndScreenBatch();
+			FlushScreenBatch();
+			BeginScreenBatch();
+		}
+
+		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot);
+		f32 textureIndex = 0.0f;
+
+		for (usize i = 0u; i < m_screenTextureSlotIndex; ++i)
+		{
+			if (m_screenTextureSlots[i] == sprite.texture)
+			{
+				textureIndex = static_cast<f32>(i);
+			}
+		}
+
+		if (textureIndex == 0.0f)
+		{
+			textureIndex = static_cast<f32>(m_screenTextureSlotIndex);
+			m_screenTextureSlots[m_screenTextureSlotIndex] = sprite.texture;
+
+			++m_screenTextureSlotIndex;
+		}
+
+		const Pair<Vec2, Vec2> textureCoordinates{
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+		};
+
+		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
+	}
+
+	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite)
+	{
+		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		{
+			EndScreenBatch();
+			FlushScreenBatch();
+			BeginScreenBatch();
+		}
+
+		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
+		f32 textureIndex = 0.0f;
+
+		for (usize i = 0u; i < m_screenTextureSlotIndex; ++i)
+		{
+			if (m_screenTextureSlots[i] == sprite.texture)
+			{
+				textureIndex = static_cast<f32>(i);
+			}
+		}
+
+		if (textureIndex == 0.0f)
+		{
+			textureIndex = static_cast<f32>(m_screenTextureSlotIndex);
+			m_screenTextureSlots[m_screenTextureSlotIndex] = sprite.texture;
+
+			++m_screenTextureSlotIndex;
+		}
+
+		const Pair<Vec2, Vec2> textureCoordinates{
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+		};
+
+		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
+	}
+
 	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const
 	{
 		if (enableAntiAliasing)
@@ -684,7 +771,7 @@ namespace stardust
 	{
 		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
 		{
-			if (m_worldTextureSlots[i] != nullptr)
+			if (m_worldTextureSlots[i] != nullptr) [[likely]]
 			{
 				m_worldTextureSlots[i]->Bind(static_cast<i32>(i));
 			}
@@ -701,7 +788,7 @@ namespace stardust
 
 		for (usize i = 0u; i < m_worldTextureSlotIndex; ++i)
 		{
-			if (m_worldTextureSlots[i] != nullptr)
+			if (m_worldTextureSlots[i] != nullptr) [[likely]]
 			{
 				m_worldTextureSlots[i]->Unbind();
 			}
@@ -727,7 +814,7 @@ namespace stardust
 	{
 		for (usize i = 0u; i < m_screenTextureSlotIndex; ++i)
 		{
-			if (m_screenTextureSlots[i] != nullptr)
+			if (m_screenTextureSlots[i] != nullptr) [[likely]]
 			{
 				m_screenTextureSlots[i]->Bind(static_cast<i32>(i));
 			}
@@ -744,7 +831,7 @@ namespace stardust
 
 		for (usize i = 0u; i < m_screenTextureSlotIndex; ++i)
 		{
-			if (m_screenTextureSlots[i] != nullptr)
+			if (m_screenTextureSlots[i] != nullptr) [[likely]]
 			{
 				m_screenTextureSlots[i]->Unbind();
 			}

@@ -97,7 +97,7 @@ public:
 				renderer.DrawWorldRect(
 					sd::comp::Transform(
 						sd::Vec2{ x, y },
-						1.0f,
+						2.5f,
 						sd::NullOpt,
 						sd::Vec2{ 1.0f, 1.0f }
 					),
@@ -149,7 +149,14 @@ public:
 
 		GetRenderer().DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 50, 50 }, sd::UVec2{ 100u, 200u }),
+			sd::comp::ShearTransform(0.0f, 5.0f),
 			sd::colours::Lime
+		);
+
+		GetRenderer().DrawScreenRect(
+			sd::comp::ScreenTransform(sd::IVec2{ 150, 50 }, sd::UVec2{ 100u, 200u }),
+			sd::comp::ShearTransform(0.0f, -5.0f),
+			sd::colours::Azure
 		);
 	}
 

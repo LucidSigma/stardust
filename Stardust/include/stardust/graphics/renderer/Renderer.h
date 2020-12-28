@@ -144,8 +144,6 @@ namespace stardust
 		void SetPolygonMode(const PolygonMode polygonMode) const;
 		void SetClearColour(const Colour& colour) const;
 		void Clear() const;
-
-		//void DrawScreenRect(const IVec2& position, const UVec2& size, const Colour& colour, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt) const;
 		
 		// Note: These functions only work properly when the points are specified in a clockwise or counter-clockwise order and centred around (0.0, 0.0).
 		void DrawScreenQuad(const Array<IVec2, 4u>& points, const Colour& colour) const;
@@ -174,6 +172,7 @@ namespace stardust
 		void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
+		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
 
 		// Note: These functions only work properly when the points are centred around (0.0, 0.0).
 		// Point [0] should be lower left; point [1] should be upper left; point [2] should be upper right; point [3] should be lower right.
