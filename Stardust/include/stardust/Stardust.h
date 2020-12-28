@@ -64,6 +64,7 @@
 #include "utility/interfaces/INonmovable.h"
 #include "utility/random/Random.h"
 #include "utility/status/Status.h"
+#include "utility/Utility.h"
 
 #include "window/Window.h"
 

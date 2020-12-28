@@ -25,7 +25,7 @@ namespace stardust
 				: texture(nullptr), sortingLayer(nullptr), subTextureArea(NullOpt), colourMod(colours::White)
 			{ }
 
-			explicit SpriteRender(const Texture& texture, const SortingLayer& sortingLayer, const Optional<Pair<Vec2, Vec2>>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
+			SpriteRender(const Texture& texture, const SortingLayer& sortingLayer, const Optional<Pair<Vec2, Vec2>>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
 				: texture(&texture), sortingLayer(&sortingLayer), subTextureArea(subtextureArea), colourMod(colourMod)
 			{ }
 
