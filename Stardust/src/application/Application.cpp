@@ -4,6 +4,7 @@
 #include <utility>
 
 #include <glad/glad.h>
+#include <SDL2/SDL_ttf.h>
 #include <stb_image/stb_image.h>
 #include <stb_image/stb_image_write.h>
 
@@ -35,6 +36,7 @@ namespace stardust
 
 		vfs::Quit();
 
+		TTF_Quit();
 		SDL_Quit();
 	}
 
@@ -158,7 +160,7 @@ namespace stardust
 			&Application::InitialiseWindow,
 			&Application::InitialiseOpenGL,
 			&Application::InitialiseRenderer,
-			//&Application::InitialiseTextSystem,
+			&Application::InitialiseTextSystem,
 		};
 
 		for (const auto& initialisationFunction : initialisationFunctions)
@@ -485,6 +487,25 @@ namespace stardust
 
 		m_camera.Initialise(8.0f, m_renderer);
 		Log::EngineInfo("Renderer and camera created. Camera pixels per unit is {}.", m_camera.GetPixelsPerUnit());
+
+		return Status::Success;
+	}
+
+	[[nodiscard]] Status Application::InitialiseTextSystem(const CreateInfo&)
+	{
+		if (TTF_Init() != 0)
+		{
+			message_box::Show(
+				m_locale["engine"]["errors"]["titles"]["ttf"],
+				m_locale["engine"]["errors"]["bodies"]["ttf"],
+				message_box::Type::Error
+			);
+			Log::EngineCritical("Failed to initialise SDL_TTF: {}.", TTF_GetError());
+
+			return Status::Fail;
+		}
+
+		Log::EngineInfo("Text subsystem initialised.");
 
 		return Status::Success;
 	}

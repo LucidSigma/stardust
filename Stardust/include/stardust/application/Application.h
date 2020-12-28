@@ -145,6 +145,7 @@ namespace stardust
 		[[nodiscard]] Status InitialiseWindow(const CreateInfo& createInfo);
 		[[nodiscard]] Status InitialiseOpenGL(const CreateInfo&);
 		[[nodiscard]] Status InitialiseRenderer(const CreateInfo&);
+		[[nodiscard]] Status InitialiseTextSystem(const CreateInfo&);
 		void InitialiseScenes();
 
 		void FixedUpdate();
