@@ -1,5 +1,6 @@
 #include "stardust/graphics/renderer/Renderer.h"
 
+#include <algorithm>
 #include <numeric>
 #include <utility>
 
@@ -177,7 +178,7 @@ namespace stardust
 
 	void Renderer::DrawWorldRect(const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
-		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
 			EndWorldBatch();
 			FlushWorldBatch(camera);
@@ -213,7 +214,7 @@ namespace stardust
 
 	void Renderer::DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
-		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
 			EndWorldBatch();
 			FlushWorldBatch(camera);
@@ -279,7 +280,7 @@ namespace stardust
 
 	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
-		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
 			EndWorldBatch();
 			FlushWorldBatch(camera);
@@ -315,7 +316,7 @@ namespace stardust
 
 	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
-		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
 			EndWorldBatch();
 			FlushWorldBatch(camera);
@@ -381,7 +382,7 @@ namespace stardust
 
 	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite)
 	{
-		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
 			EndScreenBatch();
 			FlushScreenBatch();
@@ -417,7 +418,7 @@ namespace stardust
 
 	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite)
 	{
-		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
+		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
 			EndScreenBatch();
 			FlushScreenBatch();
@@ -598,16 +599,25 @@ namespace stardust
 
 	void Renderer::InitialiseTextureIndices()
 	{
+		constexpr usize MaxSupportedTextureUnits = 32u;
+
+		i32 maxTextureUnits = 0;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+		m_maxTextureUnits = std::min(static_cast<usize>(maxTextureUnits), MaxSupportedTextureUnits);
+
+		m_worldTextureSlots.resize(m_maxTextureUnits);
+		m_screenTextureSlots.resize(m_maxTextureUnits);
+
 		m_worldTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
 		m_screenTextureSlots[s_BlankTextureSlot] = &m_blankTexture;
 
-		for (usize i = 1u; i < s_MaxTextures; ++i)
+		for (usize i = 1u; i < m_maxTextureUnits; ++i)
 		{
 			m_worldTextureSlots[i] = 0u;
 			m_screenTextureSlots[i] = 0u;
 		}
 
-		Vector<i32> textureIndices(s_MaxTextures);
+		Vector<i32> textureIndices(m_maxTextureUnits);
 		std::iota(std::begin(textureIndices), std::end(textureIndices), 0);
 
 		m_batchShader.Use();

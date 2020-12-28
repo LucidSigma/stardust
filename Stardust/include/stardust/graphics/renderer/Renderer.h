@@ -65,8 +65,6 @@ namespace stardust
 		static constexpr usize s_MaxVerticesPerBatch = s_MaxQuadsPerBatch * 4u;
 		static constexpr usize s_MaxIndicesPerBatch = s_MaxQuadsPerBatch * 6u;
 
-		// TODO: Query from GPU instead of hard code.
-		static constexpr usize s_MaxTextures = 32u;
 		static constexpr u32 s_BlankTextureSlot = 0u;
 
 		ObserverPtr<Window> m_window = nullptr;
@@ -95,10 +93,12 @@ namespace stardust
 		u32 m_worldIndexCount = 0u;
 		u32 m_screenIndexCount = 0u;
 
-		Array<ObserverPtr<const Texture>, s_MaxTextures> m_worldTextureSlots{ nullptr };
+		usize m_maxTextureUnits = 32u;
+
+		Vector<ObserverPtr<const Texture>> m_worldTextureSlots{ nullptr };
 		usize m_worldTextureSlotIndex = 1u;
 
-		Array<ObserverPtr<const Texture>, s_MaxTextures> m_screenTextureSlots{ nullptr };
+		Vector<ObserverPtr<const Texture>> m_screenTextureSlots{ nullptr };
 		usize m_screenTextureSlotIndex = 1u;
 
 		Mat4 m_screenProjectionMatrix{ 1.0f };

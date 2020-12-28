@@ -25,8 +25,6 @@ namespace stardust
 			{ 4u, { GL_RGBA8, GL_RGBA } },
 		};
 
-		inline static GLint s_maxTextureUnits = 0;
-
 		GLuint m_id = 0u;
 		UVec2 m_size{ 0u, 0u };
 
@@ -34,7 +32,6 @@ namespace stardust
 
 	public:
 		static void ResetActiveTexture();
-		inline static u32 GetMaxTextureUnits() { return static_cast<u32>(s_maxTextureUnits); }
 
 		Texture() = default;
 		Texture(const StringView& filepath, const Sampler& sampler = Sampler{ });

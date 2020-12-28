@@ -58,22 +58,12 @@ namespace stardust
 
 	void Texture::Initialise(const StringView& filepath, const Sampler& sampler)
 	{
-		if (s_maxTextureUnits == 0)
-		{
-			glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &s_maxTextureUnits);
-		}
-
 		glGenTextures(1, &m_id);
 		m_isValid = LoadFromImageFile(filepath, sampler) == Status::Success;
 	}
 
 	void Texture::Initialise(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
 	{
-		if (s_maxTextureUnits == 0)
-		{
-			glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &s_maxTextureUnits);
-		}
-
 		glGenTextures(1, &m_id);
 
 		constexpr i32 DefaultPixelAlignment = 4;
@@ -96,11 +86,6 @@ namespace stardust
 
 	void Texture::Initialise(const Vec2& size, const Sampler& sampler)
 	{
-		if (s_maxTextureUnits == 0)
-		{
-			glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &s_maxTextureUnits);
-		}
-
 		glGenTextures(1, &m_id);
 		m_size = size;
 
@@ -124,13 +109,6 @@ namespace stardust
 
 	void Texture::Bind(const i32 index) const
 	{
-	#ifndef NDEBUG
-		if (index >= s_maxTextureUnits)
-		{
-			Log::EngineWarn("Texture {} is bound to index {} - exceeding max supported texture units.", m_id, index);
-		}
-	#endif
-
 		glActiveTexture(GL_TEXTURE0 + index);
 		glBindTexture(GL_TEXTURE_2D, m_id);
 	}
