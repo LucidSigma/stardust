@@ -75,9 +75,6 @@ namespace stardust
 		Vec2 m_virtualScale{ 1.0f, 1.0f };
 		f32 m_virtualAspectRatio = 0.0f;
 
-		ShaderProgram m_batchShader;
-		Texture m_blankTexture;
-
 		VertexLayout m_worldVertexLayout;
 		VertexBuffer m_worldVertexBuffer;
 		IndexBuffer m_worldIndexBuffer;
@@ -85,6 +82,9 @@ namespace stardust
 		VertexLayout m_screenVertexLayout;
 		VertexBuffer m_screenVertexBuffer;
 		IndexBuffer m_screenIndexBuffer;
+
+		ShaderProgram m_batchShader;
+		Texture m_blankTexture;
 
 		Vector<BatchVertex> m_worldQuadBuffer{ };
 		BatchVertex* m_worldQuadBufferPtr = nullptr;
@@ -137,10 +137,8 @@ namespace stardust
 
 		void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
-		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
-		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite); // REMEMBER TO CHANGE ALL WORLD TO SCREEN.
-
-		// TODO: Add destroy functions to destroy method.
+		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite);
+		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite);
 
 		void SetAntiAliasing(const bool enableAntiAliasing) const;
 
@@ -166,7 +164,6 @@ namespace stardust
 		void EndWorldBatch();
 		void FlushWorldBatch(const Camera2D& camera);
 
-		// TODO: Add to end frame.
 		void BeginScreenBatch();
 		void EndScreenBatch();
 		void FlushScreenBatch();

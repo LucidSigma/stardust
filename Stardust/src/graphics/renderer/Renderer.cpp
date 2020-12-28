@@ -71,6 +71,16 @@ namespace stardust
 	{
 		if (m_isValid)
 		{
+			m_worldIndexBuffer.Destroy();
+			m_worldVertexBuffer.Destroy();
+			m_worldVertexLayout.Destroy();
+
+			m_screenIndexBuffer.Destroy();
+			m_screenVertexBuffer.Destroy();
+			m_screenVertexLayout.Destroy();
+
+			m_batchShader.Destroy();
+			m_blankTexture.Destroy();
 
 			m_isValid = false;
 		}
@@ -410,8 +420,8 @@ namespace stardust
 		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > s_MaxTextures - 1u) [[unlikely]]
 		{
 			EndScreenBatch();
-		FlushScreenBatch();
-		BeginScreenBatch();
+			FlushScreenBatch();
+			BeginScreenBatch();
 		}
 
 		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
