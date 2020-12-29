@@ -162,6 +162,12 @@ namespace stardust
 		case GameControllerButton::RightShoulder:
 			return buttonState.rightShoulder;
 
+		case GameControllerButton::Misc:
+			return buttonState.misc;
+
+		case GameControllerButton::TouchPad:
+			return buttonState.touchPad;
+
 		case GameControllerButton::Paddle1:
 			return buttonState.paddles[0];
 
@@ -173,12 +179,6 @@ namespace stardust
 
 		case GameControllerButton::Paddle4:
 			return buttonState.paddles[3];
-
-		case GameControllerButton::Misc:
-			return buttonState.misc;
-
-		case GameControllerButton::TouchPad:
-			return buttonState.touchPad;
 
 		default:
 			return false;

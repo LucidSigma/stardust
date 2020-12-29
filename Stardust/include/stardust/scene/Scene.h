@@ -11,6 +11,7 @@
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/Renderer.h"
+#include "stardust/input/controller/GameController.h"
 #include "stardust/input/keyboard/Keyboard.h"
 #include "stardust/input/mouse/Mouse.h"
 #include "stardust/input/Input.h"
@@ -43,6 +44,8 @@ namespace stardust
 		virtual void Render(Renderer& renderer) = 0;
 
 		inline virtual void PollEvent(const SDL_Event& event) { }
+		inline virtual void OnGameControllerAdded(const GameController& gameController) { }
+		inline virtual void OnGameControllerRemoved(const GameController& gameController) { }
 
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 		inline const String& GetName() const noexcept { return m_name; }

@@ -94,7 +94,8 @@ public:
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
-		GetRenderer().BeginFrame();
+		GetCamera().SetRotation(GetElapsedTime() * 45.0f);
+		GetCamera().SetZoom((glm::sin(GetElapsedTime()) + 2.0f) * 0.5f);
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }

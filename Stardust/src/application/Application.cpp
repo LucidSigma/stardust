@@ -15,6 +15,7 @@
 #include "stardust/filesystem/Filesystem.h"
 #include "stardust/graphics/Colour.h"
 #include "stardust/graphics/backend/OpenGL.h"
+#include "stardust/input/controller/GameController.h"
 #include "stardust/input/Input.h"
 
 namespace stardust
@@ -28,7 +29,7 @@ namespace stardust
 	{
 		m_entityRegistry.clear();
 
-		// Input::RemoveAllGameControllers();
+		Input::RemoveAllGameControllers();
 
 		m_renderer.Destroy();
 		m_openGLContext.Destroy();
@@ -170,6 +171,8 @@ namespace stardust
 				return;
 			}
 		}
+
+		Input::SetGameControllerDeadzone(m_config["input"]["controller-deadzone"]);
 
 		m_onInitialise = createInfo.initialiseCallback;
 		m_onExit = createInfo.exitCallback;
@@ -560,7 +563,7 @@ namespace stardust
 		{
 			Input::UpdateKeyboardState();
 			Input::UpdateMouseState();
-			// Input::UpdateGameControllers();
+			Input::UpdateGameControllers();
 		}
 
 		m_sceneManager.CurrentScene()->ProcessInput();
@@ -606,12 +609,22 @@ namespace stardust
 				break;
 
 			case SDL_CONTROLLERDEVICEADDED:
-				Log::EngineTrace("Game controller {} added.", event.cdevice.which);
+				if (GameController* const gameController = Input::AddGameController(event.cdevice.which, m_locale);
+					gameController != nullptr)
+				{
+					m_sceneManager.CurrentScene()->OnGameControllerAdded(*gameController);
+				}
 				
 				break;
 
 			case SDL_CONTROLLERDEVICEREMOVED:
-				Log::EngineTrace("Game controller {} removed.", event.cdevice.which);
+				if (GameController* const gameController = Input::GetGameController(event.cdevice.which);
+					gameController != nullptr)
+				{
+					m_sceneManager.CurrentScene()->OnGameControllerRemoved(*gameController);
+				}
+
+				Input::RemoveGameController(event.cdevice.which);
 
 				break;
 
