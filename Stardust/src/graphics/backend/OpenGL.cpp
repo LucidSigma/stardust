@@ -21,7 +21,10 @@ namespace stardust
 {
 	namespace opengl
 	{
-		static bool isNvidiaGPU = false;
+		namespace
+		{
+			bool isNvidiaGPU = false;
+		}
 
 		[[nodiscard]] Status InitialiseLoader()
 		{

@@ -4,6 +4,45 @@
 
 namespace stardust
 {
+	namespace
+	{
+		[[nodiscard]] Texture CreateTextTexture(SDL_Surface*& textSurface, const Sampler& sampler)
+		{
+			Texture textTexture(textSurface, true, sampler);
+			SDL_FreeSurface(textSurface);
+			textSurface = nullptr;
+
+			return textTexture;
+		}
+
+		[[nodiscard]] Texture CreateOutlinedTextTexture(SDL_Surface*& innerTextSurface, SDL_Surface*& textSurface, const u32 outlineSize, const Sampler& sampler)
+		{
+			SDL_Rect blitArea{
+				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
+				innerTextSurface->w, innerTextSurface->h
+			};
+
+			if (SDL_BlitSurface(innerTextSurface, nullptr, textSurface, &blitArea) != 0)
+			{
+				SDL_FreeSurface(textSurface);
+				SDL_FreeSurface(innerTextSurface);
+				textSurface = nullptr;
+				innerTextSurface = nullptr;
+
+				return Texture();
+			}
+
+			Texture textTexture(textSurface, true, sampler);
+
+			SDL_FreeSurface(textSurface);
+			SDL_FreeSurface(innerTextSurface);
+			textSurface = nullptr;
+			innerTextSurface = nullptr;
+
+			return textTexture;
+		}
+	}
+
 	namespace text
 	{
 		[[nodiscard]] Texture RenderGlyph(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler)
@@ -20,11 +59,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 
 		[[nodiscard]] Texture RenderText(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
@@ -36,11 +71,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 
 		[[nodiscard]] Texture RenderText(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler)
@@ -52,11 +83,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 
 		[[nodiscard]] Texture RenderWrappedText(const Font& font, const String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
@@ -68,11 +95,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 
 		[[nodiscard]] Texture RenderWrappedText(const Font& font, const UTF16String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
@@ -84,11 +107,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 
 		[[nodiscard]] Texture RenderGlyphQuick(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler)
@@ -105,11 +124,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 
 		[[nodiscard]] Texture RenderTextQuick(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
@@ -121,11 +136,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 
 		[[nodiscard]] Texture RenderTextQuick(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler)
@@ -137,11 +148,7 @@ namespace stardust
 				return Texture();
 			}
 
-			Texture textTexture(renderedTextSurface, true, sampler);
-			SDL_FreeSurface(renderedTextSurface);
-			renderedTextSurface = nullptr;
-
-			return textTexture;
+			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 		
 		[[nodiscard]] Texture RenderGlyphWithOutline(const Font& font, const char glyph, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
@@ -167,29 +174,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 
 		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
@@ -210,29 +195,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 
 		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const UTF16String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
@@ -253,29 +216,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 
 		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const u32 wrapLength, const Sampler& sampler)
@@ -296,29 +237,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 
 		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const UTF16String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const u32 wrapLength, const Sampler& sampler)
@@ -339,29 +258,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 
 		[[nodiscard]] Texture RenderGlyphQuickWithOutline(const Font& font, const char glyph, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
@@ -387,29 +284,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 
 		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
@@ -430,29 +305,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 
 		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const UTF16String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
@@ -473,29 +326,7 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Rect blitArea{
-				static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-				innerTextSurface->w, innerTextSurface->h
-			};
-
-			if (SDL_BlitSurface(innerTextSurface, nullptr, renderedTextSurface, &blitArea) != 0)
-			{
-				SDL_FreeSurface(renderedTextSurface);
-				SDL_FreeSurface(innerTextSurface);
-				renderedTextSurface = nullptr;
-				innerTextSurface = nullptr;
-
-				return Texture();
-			}
-
-			Texture textTexture(renderedTextSurface, true, sampler);
-
-			SDL_FreeSurface(renderedTextSurface);
-			SDL_FreeSurface(innerTextSurface);
-			renderedTextSurface = nullptr;
-			innerTextSurface = nullptr;
-
-			return textTexture;
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
 		}
 	}
 }

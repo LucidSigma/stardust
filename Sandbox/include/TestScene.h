@@ -47,7 +47,7 @@ public:
 			return sd::Status::Fail;
 		}
 
-		m_glyphTexture = sd::text::RenderGlyphWithOutline(m_font, 'A', sd::colours::White, 10u, sd::colours::Black);
+		m_glyphTexture = sd::text::RenderGlyph(m_font, 'A', sd::colours::White);
 		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
 
 		return sd::Status::Success;
