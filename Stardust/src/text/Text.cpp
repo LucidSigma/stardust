@@ -29,7 +29,7 @@ namespace stardust
 
 		[[nodiscard]] Texture RenderText(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
 		{
-			SDL_Surface* renderedTextSurface = TTF_RenderText_Blended(font.GetRawHandle(), text.c_str(), colour);
+			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), colour);
 
 			if (renderedTextSurface == nullptr)
 			{
@@ -59,9 +59,9 @@ namespace stardust
 			return textTexture;
 		}
 
-		[[nodiscard]] Texture RenderTextWrapped(const Font& font, const String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
+		[[nodiscard]] Texture RenderWrappedText(const Font& font, const String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
 		{
-			SDL_Surface* renderedTextSurface = TTF_RenderText_Blended_Wrapped(font.GetRawHandle(), text.c_str(), colour, wrapLength);
+			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), colour, wrapLength);
 
 			if (renderedTextSurface == nullptr)
 			{
@@ -75,7 +75,7 @@ namespace stardust
 			return textTexture;
 		}
 
-		[[nodiscard]] Texture RenderTextWrapped(const Font& font, const UTF16String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
+		[[nodiscard]] Texture RenderWrappedText(const Font& font, const UTF16String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
 		{
 			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour, wrapLength);
 
@@ -114,7 +114,7 @@ namespace stardust
 
 		[[nodiscard]] Texture RenderTextQuick(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
 		{
-			SDL_Surface* renderedTextSurface = TTF_RenderText_Solid(font.GetRawHandle(), text.c_str(), colour);
+			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Solid(font.GetRawHandle(), text.c_str(), colour);
 
 			if (renderedTextSurface == nullptr)
 			{

@@ -94,7 +94,19 @@ namespace stardust
 
 		m_size.x = targetSurface->w;
 		m_size.y = targetSurface->h;
-		const auto [internalFormat, format] = s_componentMap.at(targetSurface->pitch / targetSurface->w);
+		auto [internalFormat, format] = s_componentMap.at(targetSurface->format->BytesPerPixel);
+
+		if constexpr (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+		{
+			if (targetSurface->format->format == SDL_PIXELFORMAT_RGB888)
+			{
+				format = GL_BGR;
+			}
+			else if (targetSurface->format->format == SDL_PIXELFORMAT_ARGB8888)
+			{
+				format = GL_BGRA;
+			}
+		}
 
 		SetupParameters(internalFormat, format, reinterpret_cast<const ubyte*>(targetSurface->pixels), sampler);
 
