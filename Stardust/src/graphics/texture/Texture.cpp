@@ -71,53 +71,7 @@ namespace stardust
 	void Texture::Initialise(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
 	{
 		glGenTextures(1, &m_id);
-
-		SDL_Surface* targetSurface = surface;
-
-		if (flipVertically)
-		{
-			targetSurface = FlipSurface(surface);
-
-			if (targetSurface == nullptr)
-			{
-				return;
-			}
-		}
-
-		constexpr i32 DefaultPixelAlignment = 4;
-
-		if (const i32 imageMemorySize = static_cast<i32>(targetSurface->pitch * targetSurface->h);
-			imageMemorySize % DefaultPixelAlignment != 0)
-		{
-			glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
-		}
-
-		m_size.x = targetSurface->w;
-		m_size.y = targetSurface->h;
-		auto [internalFormat, format] = s_componentMap.at(targetSurface->format->BytesPerPixel);
-
-		if constexpr (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-		{
-			if (targetSurface->format->format == SDL_PIXELFORMAT_RGB888)
-			{
-				format = GL_BGR;
-			}
-			else if (targetSurface->format->format == SDL_PIXELFORMAT_ARGB8888)
-			{
-				format = GL_BGRA;
-			}
-		}
-
-		SetupParameters(internalFormat, format, reinterpret_cast<const ubyte*>(targetSurface->pixels), sampler);
-
-		if (flipVertically)
-		{
-			SDL_FreeSurface(targetSurface);
-			targetSurface = nullptr;
-		}
-
-		glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
-		m_isValid = true;
+		m_isValid = LoadFromSDLSurface(surface, flipVertically, sampler) == Status::Success;
 	}
 
 	void Texture::Initialise(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
@@ -244,6 +198,57 @@ namespace stardust
 
 		stbi_image_free(data);
 		data = nullptr;
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
+
+		return Status::Success;
+	}
+
+	Status Texture::LoadFromSDLSurface(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
+	{
+		SDL_Surface* targetSurface = surface;
+
+		if (flipVertically)
+		{
+			targetSurface = FlipSurface(surface);
+
+			if (targetSurface == nullptr)
+			{
+				return Status::Fail;
+			}
+		}
+
+		constexpr i32 DefaultPixelAlignment = 4;
+
+		if (const i32 imageMemorySize = static_cast<i32>(targetSurface->pitch * targetSurface->h);
+			imageMemorySize % DefaultPixelAlignment != 0)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
+		}
+
+		m_size.x = targetSurface->w;
+		m_size.y = targetSurface->h;
+		auto [internalFormat, format] = s_componentMap.at(targetSurface->format->BytesPerPixel);
+
+		if constexpr (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+		{
+			if (targetSurface->format->format == SDL_PIXELFORMAT_RGB888)
+			{
+				format = GL_BGR;
+			}
+			else if (targetSurface->format->format == SDL_PIXELFORMAT_ARGB8888)
+			{
+				format = GL_BGRA;
+			}
+		}
+
+		SetupParameters(internalFormat, format, reinterpret_cast<const ubyte*>(targetSurface->pixels), sampler);
+
+		if (flipVertically)
+		{
+			SDL_FreeSurface(targetSurface);
+			targetSurface = nullptr;
+		}
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
 

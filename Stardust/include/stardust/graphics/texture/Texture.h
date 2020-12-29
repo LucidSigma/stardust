@@ -63,6 +63,7 @@ namespace stardust
 		[[nodiscard]] static SDL_Surface* FlipSurface(const SDL_Surface* const surface);
 
 		[[nodiscard]] Status LoadFromImageFile(const StringView& filepath, const Sampler& sampler);
+		[[nodiscard]] Status LoadFromSDLSurface(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler);
 		void SetupParameters(const GLint internalFormat, const GLenum format, const ubyte* data, const Sampler& sampler);
 	};
 }

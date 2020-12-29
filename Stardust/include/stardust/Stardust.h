@@ -41,11 +41,13 @@
 #include "graphics/Colour.h"
 #include "graphics/SortingLayer.h"
 
-#include "stardust/input/keyboard/Keyboard.h"
-#include "stardust/input/keyboard/KeyCodes.h"
-#include "stardust/input/mouse/Mouse.h"	
-#include "stardust/input/mouse/MouseButtonCodes.h"	
-#include "stardust/input/Input.h"
+#include "input/controller/GameController.h"
+#include "input/controller/GameControllerCodes.h"
+#include "input/keyboard/Keyboard.h"
+#include "input/keyboard/KeyCodes.h"
+#include "input/mouse/Mouse.h"	
+#include "input/mouse/MouseButtonCodes.h"	
+#include "input/Input.h"
 
 #include "locale/Locale.h"
 
