@@ -82,9 +82,11 @@ namespace stardust
 	public:
 		friend class Input;
 
-		explicit GameController(const int id);
+		explicit GameController(const i32 id);
+
 		GameController(GameController&& other) noexcept;
 		GameController& operator =(GameController&& other) noexcept;
+
 		~GameController() noexcept = default;
 
 		[[nodiscard]] bool IsButtonDown(const GameControllerButton button) const;

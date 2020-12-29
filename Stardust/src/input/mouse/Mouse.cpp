@@ -1,5 +1,9 @@
 #include "stardust/input/mouse/Mouse.h"
 
+#include <algorithm>
+
+#include <SDL2/SDL.h>
+
 namespace stardust
 {
 	[[nodiscard]] Vec2 Mouse::GetProportionalCoordinates(const Renderer& renderer) const noexcept

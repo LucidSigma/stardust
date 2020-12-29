@@ -1,5 +1,7 @@
 #include "stardust/input/keyboard/Keyboard.h"
 
+#include <algorithm>
+
 #include <SDL2/SDL.h>
 
 namespace stardust
