@@ -21,10 +21,10 @@ namespace stardust
 		[[nodiscard]] extern Texture RenderTextWrapped(const Font& font, const String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler = Sampler{ });
 		[[nodiscard]] extern Texture RenderTextWrapped(const Font& font, const UTF16String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler = Sampler{ });
 
-		[[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char glyph, const Colour& colour);
-		[[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char16_t glyph, const Colour& colour);
-		[[nodiscard]] extern Texture RenderTextQuick(const Font& font, const String& text, const Colour& colour);
-		[[nodiscard]] extern Texture RenderTextQuick(const Font& font, const UTF16String& text, const Colour& colour);
+		[[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler = Sampler{ });
+		[[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char16_t glyph, const Colour& colour, const Sampler& sampler = Sampler{ });
+		[[nodiscard]] extern Texture RenderTextQuick(const Font& font, const String& text, const Colour& colour, const Sampler& sampler = Sampler{ });
+		[[nodiscard]] extern Texture RenderTextQuick(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler = Sampler{ });
 
 		[[nodiscard]] extern Texture RenderShadedGlyph(const Font& font, const char glyph, const Colour& colour, const Colour& backgroundColour);
 		[[nodiscard]] extern Texture RenderShadedGlyph(const Font& font, const char16_t glyph, const Colour& colour, const Colour& backgroundColour);

@@ -90,5 +90,58 @@ namespace stardust
 
 			return textTexture;
 		}
+
+		[[nodiscard]] Texture RenderGlyphQuick(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler)
+		{
+			return RenderGlyphQuick(font, static_cast<char16_t>(glyph), colour, sampler);
+		}
+
+		[[nodiscard]] Texture RenderGlyphQuick(const Font& font, const char16_t glyph, const Colour& colour, const Sampler& sampler)
+		{
+			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Solid(font.GetRawHandle(), static_cast<u16>(glyph), colour);
+
+			if (renderedTextSurface == nullptr)
+			{
+				return Texture();
+			}
+
+			Texture textTexture(renderedTextSurface, true, sampler);
+			SDL_FreeSurface(renderedTextSurface);
+			renderedTextSurface = nullptr;
+
+			return textTexture;
+		}
+
+		[[nodiscard]] Texture RenderTextQuick(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
+		{
+			SDL_Surface* renderedTextSurface = TTF_RenderText_Solid(font.GetRawHandle(), text.c_str(), colour);
+
+			if (renderedTextSurface == nullptr)
+			{
+				return Texture();
+			}
+
+			Texture textTexture(renderedTextSurface, true, sampler);
+			SDL_FreeSurface(renderedTextSurface);
+			renderedTextSurface = nullptr;
+
+			return textTexture;
+		}
+
+		[[nodiscard]] Texture RenderTextQuick(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler)
+		{
+			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Solid(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour);
+
+			if (renderedTextSurface == nullptr)
+			{
+				return Texture();
+			}
+
+			Texture textTexture(renderedTextSurface, true, sampler);
+			SDL_FreeSurface(renderedTextSurface);
+			renderedTextSurface = nullptr;
+
+			return textTexture;
+		}
 	}
 }
