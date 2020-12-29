@@ -1,5 +1,7 @@
 #include "stardust/text/Text.h"
 
+#include <SDL2/SDL.h>
+
 namespace stardust
 {
 	namespace text
@@ -25,7 +27,7 @@ namespace stardust
 			return textTexture;
 		}
 
-		Texture RenderText(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderText(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
 		{
 			SDL_Surface* renderedTextSurface = TTF_RenderText_Blended(font.GetRawHandle(), text.c_str(), colour);
 
@@ -44,6 +46,38 @@ namespace stardust
 		[[nodiscard]] Texture RenderText(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler)
 		{
 			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour);
+
+			if (renderedTextSurface == nullptr)
+			{
+				return Texture();
+			}
+
+			Texture textTexture(renderedTextSurface, true, sampler);
+			SDL_FreeSurface(renderedTextSurface);
+			renderedTextSurface = nullptr;
+
+			return textTexture;
+		}
+
+		[[nodiscard]] Texture RenderTextWrapped(const Font& font, const String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
+		{
+			SDL_Surface* renderedTextSurface = TTF_RenderText_Blended_Wrapped(font.GetRawHandle(), text.c_str(), colour, wrapLength);
+
+			if (renderedTextSurface == nullptr)
+			{
+				return Texture();
+			}
+
+			Texture textTexture(renderedTextSurface, true, sampler);
+			SDL_FreeSurface(renderedTextSurface);
+			renderedTextSurface = nullptr;
+
+			return textTexture;
+		}
+
+		[[nodiscard]] Texture RenderTextWrapped(const Font& font, const UTF16String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
+		{
+			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour, wrapLength);
 
 			if (renderedTextSurface == nullptr)
 			{

@@ -48,7 +48,7 @@ public:
 		}
 
 		m_glyphTexture = sd::text::RenderGlyph(m_font, 'A', sd::colours::White);
-		m_textTexture = sd::text::RenderText(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Lavender);
+		m_textTexture = sd::text::RenderTextWrapped(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Lavender, 800u);
 
 		return sd::Status::Success;
 	}
