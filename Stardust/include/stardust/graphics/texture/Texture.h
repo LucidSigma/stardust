@@ -5,6 +5,7 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 
 #include <glad/glad.h>
+#include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
@@ -34,9 +35,10 @@ namespace stardust
 		static void ResetActiveTexture();
 
 		Texture() = default;
-		Texture(const StringView& filepath, const Sampler& sampler = Sampler{ });
+		explicit Texture(const StringView& filepath, const Sampler& sampler = Sampler{ });
+		Texture(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler = Sampler{ });
 		Texture(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler = Sampler{ });
-		Texture(const Vec2& size, const Sampler& sampler = Sampler{ });
+		explicit Texture(const Vec2& size, const Sampler& sampler = Sampler{ });
 
 		Texture(Texture&& other) noexcept;
 		Texture& operator =(Texture&& other) noexcept;
@@ -44,19 +46,22 @@ namespace stardust
 		~Texture() noexcept;
 
 		void Initialise(const StringView& filepath, const Sampler& sampler = Sampler{ });
+		void Initialise(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler = Sampler{ });
 		void Initialise(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler = Sampler{ });
 		void Initialise(const Vec2& size, const Sampler& sampler = Sampler{ });
 		void Destroy() noexcept;
-
+		
 		void Bind(const i32 index = 0) const;
 		void Unbind() const;
 
-		inline bool IsValid() const noexcept { return m_id != 0 && m_isValid; }
+		inline bool IsValid() const noexcept { return m_id != 0u && m_isValid; }
 
 		inline GLuint GetID() const noexcept { return m_id; }
 		inline const UVec2& GetSize() const noexcept { return m_size; }
 
 	private:
+		[[nodiscard]] static SDL_Surface* FlipSurface(const SDL_Surface* const surface);
+
 		[[nodiscard]] Status LoadFromImageFile(const StringView& filepath, const Sampler& sampler);
 		void SetupParameters(const GLint internalFormat, const GLenum format, const ubyte* data, const Sampler& sampler);
 	};

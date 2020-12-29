@@ -16,6 +16,7 @@ private:
 	sd::Texture m_crumbleTexture;
 
 	sd::Font m_font;
+	sd::Texture m_glyphTexture;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -38,12 +39,14 @@ public:
 			return sd::Status::Fail;
 		}
 
-		m_font.Initialise("assets/fonts/TheanoModern.ttf", 28u);
+		m_font.Initialise("assets/fonts/TheanoModern.ttf", 128u);
 
 		if (!m_font.IsValid())
 		{
 			return sd::Status::Fail;
 		}
+
+		m_glyphTexture = sd::text::RenderGlyph(m_font, 'A', sd::colours::White);
 
 		return sd::Status::Success;
 	}
@@ -51,6 +54,9 @@ public:
 	virtual void OnUnload() noexcept
 	{
 		m_crateTexture.Destroy();
+		m_crumbleTexture.Destroy();
+
+		m_font.Destroy();
 	}
 
 	virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override { }
@@ -159,7 +165,12 @@ public:
 		GetRenderer().DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 150, 50 }, sd::UVec2{ 100u, 200u }),
 			sd::comp::ShearTransform(0.0f, -5.0f),
-			sd::comp::SpriteRender(m_crateTexture, m_defaultSortingLayer)
+			sd::comp::SpriteRender(m_crumbleTexture, m_defaultSortingLayer)
+		);
+
+		GetRenderer().DrawScreenRect(
+			sd::comp::ScreenTransform(sd::IVec2{ 200, 200 }, m_glyphTexture.GetSize()),
+			sd::comp::SpriteRender(m_glyphTexture, m_defaultSortingLayer)
 		);
 	}
 

@@ -1,5 +1,6 @@
 #include "stardust/graphics/texture/Texture.h"
 
+#include <cstring>
 #include <utility>
 
 #include <stb_image/stb_image.h>
@@ -21,6 +22,11 @@ namespace stardust
 		Initialise(filepath, sampler);
 	}
 
+	Texture::Texture(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
+	{
+		Initialise(surface, flipVertically, sampler);
+	}
+	
 	Texture::Texture(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
 	{
 		Initialise(data, extent, channelCount, sampler);
@@ -60,6 +66,46 @@ namespace stardust
 	{
 		glGenTextures(1, &m_id);
 		m_isValid = LoadFromImageFile(filepath, sampler) == Status::Success;
+	}
+
+	void Texture::Initialise(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
+	{
+		glGenTextures(1, &m_id);
+
+		SDL_Surface* targetSurface = surface;
+
+		if (flipVertically)
+		{
+			targetSurface = FlipSurface(surface);
+
+			if (targetSurface == nullptr)
+			{
+				return;
+			}
+		}
+
+		constexpr i32 DefaultPixelAlignment = 4;
+
+		if (const i32 imageMemorySize = static_cast<i32>(targetSurface->pitch * targetSurface->h);
+			imageMemorySize % DefaultPixelAlignment != 0)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
+		}
+
+		m_size.x = targetSurface->w;
+		m_size.y = targetSurface->h;
+		auto [internalFormat, format] = s_componentMap.at(targetSurface->pitch / targetSurface->w);
+
+		SetupParameters(internalFormat, format, reinterpret_cast<const ubyte*>(targetSurface->pixels), sampler);
+
+		if (flipVertically)
+		{
+			SDL_FreeSurface(targetSurface);
+			targetSurface = nullptr;
+		}
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
+		m_isValid = true;
 	}
 
 	void Texture::Initialise(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
@@ -116,6 +162,33 @@ namespace stardust
 	void Texture::Unbind() const
 	{
 		glBindTexture(GL_TEXTURE_2D, 0u);
+	}
+
+	[[nodiscard]] SDL_Surface* Texture::FlipSurface(const SDL_Surface* const surface)
+	{
+		SDL_Surface* flippedSurface = SDL_CreateRGBSurface(
+			surface->flags, surface->w, surface->h, static_cast<i32>(surface->format->BytesPerPixel * 8u),
+			surface->format->Rmask, surface->format->Gmask, surface->format->Bmask, surface->format->Amask
+		);
+
+		if (flippedSurface == nullptr)
+		{
+			return nullptr;
+		}
+
+		const i32 distanceToLastRow = surface->pitch * (surface->h - 1);
+		ubyte* currentDestinationRow = static_cast<ubyte*>(surface->pixels) + distanceToLastRow;
+		ubyte* currentSourceRow = static_cast<ubyte*>(flippedSurface->pixels);
+
+		for (u32 line = 0u; line < static_cast<u32>(surface->h); ++line)
+		{
+			std::memcpy(currentSourceRow, currentDestinationRow, surface->pitch);
+
+			currentDestinationRow -= surface->pitch;
+			currentSourceRow += surface->pitch;
+		}
+
+		return flippedSurface;
 	}
 
 	[[nodiscard]] Status Texture::LoadFromImageFile(const StringView& filepath, const Sampler& sampler)
