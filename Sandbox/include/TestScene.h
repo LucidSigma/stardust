@@ -15,6 +15,8 @@ private:
 	sd::Texture m_crateTexture;
 	sd::Texture m_crumbleTexture;
 
+	sd::Font m_font;
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -32,6 +34,13 @@ public:
 		m_crumbleTexture.Initialise("assets/textures/crumble.png");
 
 		if (!m_crateTexture.IsValid() || !m_crumbleTexture.IsValid())
+		{
+			return sd::Status::Fail;
+		}
+
+		m_font.Initialise("assets/fonts/TheanoModern.ttf", 28u);
+
+		if (!m_font.IsValid())
 		{
 			return sd::Status::Fail;
 		}
