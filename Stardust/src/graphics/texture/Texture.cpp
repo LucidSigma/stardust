@@ -94,7 +94,7 @@ namespace stardust
 
 		m_size.x = targetSurface->w;
 		m_size.y = targetSurface->h;
-		auto [internalFormat, format] = s_componentMap.at(targetSurface->pitch / targetSurface->w);
+		const auto [internalFormat, format] = s_componentMap.at(targetSurface->pitch / targetSurface->w);
 
 		SetupParameters(internalFormat, format, reinterpret_cast<const ubyte*>(targetSurface->pixels), sampler);
 

@@ -17,6 +17,7 @@ private:
 
 	sd::Font m_font;
 	sd::Texture m_glyphTexture;
+	sd::Texture m_textTexture;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -47,6 +48,7 @@ public:
 		}
 
 		m_glyphTexture = sd::text::RenderGlyph(m_font, 'A', sd::colours::White);
+		m_textTexture = sd::text::RenderText(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Lavender);
 
 		return sd::Status::Success;
 	}
@@ -169,8 +171,8 @@ public:
 		);
 
 		GetRenderer().DrawScreenRect(
-			sd::comp::ScreenTransform(sd::IVec2{ 200, 200 }, m_glyphTexture.GetSize()),
-			sd::comp::SpriteRender(m_glyphTexture, m_defaultSortingLayer)
+			sd::comp::ScreenTransform(sd::IVec2{ 200, 200 }, m_textTexture.GetSize()),
+			sd::comp::SpriteRender(m_textTexture, m_defaultSortingLayer)
 		);
 	}
 
