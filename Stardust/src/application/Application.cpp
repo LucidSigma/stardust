@@ -296,7 +296,7 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		// m_volumeManager.AddVolume(VolumeManager::GetMasterVolumeName(), m_config["audio"]["volumes"]["master"]);
+		m_volumeManager.AddVolume(VolumeManager::GetMasterVolumeName(), m_config["audio"]["volumes"]["master"]);
 		Log::EngineInfo("Sound system initialised.");
 
 		return Status::Success;

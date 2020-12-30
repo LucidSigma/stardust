@@ -11,6 +11,7 @@
 #include "audio/sounds/SoundBase.h"
 #include "audio/sounds/SoundEnums.h"
 #include "audio/sounds/Sounds.h"
+#include "audio/volume/VolumeManager.h"
 #include "audio/Listener.h"
 #include "audio/SoundSource.h"
 #include "audio/SoundSystem.h"

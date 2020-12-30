@@ -11,6 +11,7 @@
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
+#include "stardust/audio/volume/VolumeManager.h"
 #include "stardust/audio/SoundSystem.h"
 #include "stardust/camera/Camera2D.h"
 #include "stardust/config/Config.h"
@@ -86,6 +87,8 @@ namespace stardust
 
 		entt::registry m_entityRegistry{ };
 		SoundSystem m_soundSystem;
+		VolumeManager m_volumeManager;
+
 		HashMap<String, Any> m_globalSceneData{ };
 
 		String m_baseDirectory;
@@ -116,6 +119,7 @@ namespace stardust
 
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 		inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
+		inline VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
 
 		[[nodiscard]] String GetPlatformName() const;
 
