@@ -51,7 +51,7 @@ namespace stardust
 		while (m_isRunning)
 		{
 			UpdateTime(timeAccumulator);
-			// m_soundSystem.Update();
+			m_soundSystem.Update();
 
 			while (timeAccumulator >= m_fixedTimestep)
 			{
@@ -156,7 +156,7 @@ namespace stardust
 			&Application::InitialiseFilesystem,
 			&Application::InitialiseConfig,
 			&Application::InitialiseLocale,
-			//&Application::InitialiseSoundSystem,
+			&Application::InitialiseSoundSystem,
 			&Application::InitialiseSDL,
 			&Application::InitialiseWindow,
 			&Application::InitialiseOpenGL,
@@ -278,6 +278,26 @@ namespace stardust
 		}
 
 		Log::EngineInfo("Locale \"{}\" loaded.", m_locale.GetCurrentLocaleName());
+
+		return Status::Success;
+	}
+
+	[[nodiscard]] Status Application::InitialiseSoundSystem(const CreateInfo&)
+	{
+		if (!m_soundSystem.DidInitialiseSuccessfully())
+		{
+			message_box::Show(
+				m_locale["engine"]["errors"]["titles"]["sound"],
+				m_locale["engine"]["errors"]["bodies"]["sound"],
+				message_box::Type::Error
+			);
+			Log::EngineCritical("Failed to initialise sound system.");
+
+			return Status::Fail;
+		}
+
+		// m_volumeManager.AddVolume(VolumeManager::GetMasterVolumeName(), m_config["audio"]["volumes"]["master"]);
+		Log::EngineInfo("Sound system initialised.");
 
 		return Status::Success;
 	}
@@ -725,7 +745,7 @@ namespace stardust
 			m_renderer.SetClearColour(colours::Black);
 			m_camera.ResetTransform();
 			m_entityRegistry.clear();
-			// m_soundSystem.GetListener().Reset();
+			m_soundSystem.GetListener().Reset();
 
 			if (!m_sceneManager.IsEmpty())
 			{

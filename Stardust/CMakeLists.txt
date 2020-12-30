@@ -35,6 +35,7 @@ target_link_libraries(Stardust PUBLIC
 	OpenGL::GL
 	glad
 	physfs
+	soloud
 	stb_image
 )
 

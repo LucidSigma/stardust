@@ -11,6 +11,7 @@
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
+#include "stardust/audio/SoundSystem.h"
 #include "stardust/camera/Camera2D.h"
 #include "stardust/config/Config.h"
 #include "stardust/data/Containers.h"
@@ -84,6 +85,7 @@ namespace stardust
 		bool m_isCurrentSceneFinished = false;
 
 		entt::registry m_entityRegistry{ };
+		SoundSystem m_soundSystem;
 		HashMap<String, Any> m_globalSceneData{ };
 
 		String m_baseDirectory;
@@ -111,7 +113,9 @@ namespace stardust
 		inline Renderer& GetRenderer() noexcept { return m_renderer; }
 		inline Camera2D& GetCamera() noexcept { return m_camera; }
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
+
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+		inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
 
 		[[nodiscard]] String GetPlatformName() const;
 
@@ -141,6 +145,7 @@ namespace stardust
 		[[nodiscard]] Status InitialiseFilesystem(const CreateInfo& createInfo);
 		[[nodiscard]] Status InitialiseConfig(const CreateInfo& createInfo);
 		[[nodiscard]] Status InitialiseLocale(const CreateInfo&);
+		[[nodiscard]] Status InitialiseSoundSystem(const CreateInfo&);
 		[[nodiscard]] Status InitialiseSDL(const CreateInfo&);
 		[[nodiscard]] Status InitialiseWindow(const CreateInfo& createInfo);
 		[[nodiscard]] Status InitialiseOpenGL(const CreateInfo&);
