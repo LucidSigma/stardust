@@ -42,6 +42,7 @@ add_subdirectory("dep/spdlog-1.8.2")
 # Other dependencies.
 add_subdirectory("dep/Glad-0.1.34")
 add_subdirectory("dep/physfs-3.0.2")
+add_subdirectory("dep/SoLoud-2020.02.07")
 add_subdirectory("dep/stb_image-2.26")
 
 # Projects in workspace.

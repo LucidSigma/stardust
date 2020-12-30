@@ -9,6 +9,9 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * [Glad](https://glad.dav1d.de/)
 * [OpenGL](https://www.opengl.org/)
 
+### Audio
+* [SoLoud](https://sol.gfxile.net/soloud/)
+
 ### Data
 * [concurrentqueue](https://github.com/cameron314/concurrentqueue)
 * [EnTT](https://github.com/skypjack/entt)

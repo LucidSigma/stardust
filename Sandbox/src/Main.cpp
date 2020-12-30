@@ -17,7 +17,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
 			.assetsArchive = "assets.pak",
 			.localesArchive = "locales.pak",
 		},
-		.filepaths = {
+		.filepaths = sd::Application::FilepathsInfo{
 			.defaultConfigFilepath = "assets/defaults/config.json",
 			.windowIconFile = "assets/icon/icon.png",
 		},
