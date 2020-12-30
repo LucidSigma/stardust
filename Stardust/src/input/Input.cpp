@@ -171,58 +171,12 @@ namespace stardust
 	{
 		for (auto& [id, gameController] : s_gameControllers)
 		{
-			gameController.m_previousButtons = gameController.m_currentButtons;
+			gameController.UpdateButtons();
+			gameController.UpdateAxes();
 
-			gameController.m_currentButtons.dPad.up = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_UP) == 1u;
-			gameController.m_currentButtons.dPad.down = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_DOWN) == 1u;
-			gameController.m_currentButtons.dPad.left = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_LEFT) == 1u;
-			gameController.m_currentButtons.dPad.right = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_RIGHT) == 1u;
-
-			gameController.m_currentButtons.a = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_A) == 1u;
-			gameController.m_currentButtons.b = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_B) == 1u;
-			gameController.m_currentButtons.x = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_X) == 1u;
-			gameController.m_currentButtons.y = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_Y) == 1u;
-
-			gameController.m_currentButtons.back = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_BACK) == 1u;
-			gameController.m_currentButtons.guide = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_GUIDE) == 1u;
-			gameController.m_currentButtons.start = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_START) == 1u;
-
-			gameController.m_currentButtons.leftStick = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSTICK) == 1u;
-			gameController.m_currentButtons.rightStick = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSTICK) == 1u;
-			gameController.m_currentButtons.leftShoulder = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSHOULDER) == 1u;
-			gameController.m_currentButtons.rightShoulder = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == 1u;
-
-			gameController.m_currentButtons.misc = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_MISC1) == 1u;
-			gameController.m_currentButtons.touchPad = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_TOUCHPAD) == 1u;
-
-			gameController.m_currentButtons.paddles[0] = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE1) == 1u;
-			gameController.m_currentButtons.paddles[1] = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE2) == 1u;
-			gameController.m_currentButtons.paddles[2] = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE3) == 1u;
-			gameController.m_currentButtons.paddles[3] = SDL_GameControllerGetButton(gameController.GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE4) == 1u;
-
-			gameController.m_axes.left.x = SDL_GameControllerGetAxis(gameController.GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTX);
-			gameController.m_axes.left.y = SDL_GameControllerGetAxis(gameController.GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTY);
-			gameController.m_axes.right.x = SDL_GameControllerGetAxis(gameController.GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTX);
-			gameController.m_axes.right.y = SDL_GameControllerGetAxis(gameController.GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTY);
-
-			gameController.m_axes.leftTrigger = SDL_GameControllerGetAxis(gameController.GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-			gameController.m_axes.rightTrigger = SDL_GameControllerGetAxis(gameController.GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-
-			const Vector<ReferenceWrapper<i16>> axes{
-				std::ref(gameController.m_axes.left.x),
-				std::ref(gameController.m_axes.left.y),
-				std::ref(gameController.m_axes.right.x),
-				std::ref(gameController.m_axes.right.y),
-				std::ref(gameController.m_axes.leftTrigger),
-				std::ref(gameController.m_axes.rightTrigger),
-			};
-
-			for (auto& axis : axes)
+			if (gameController.HasTouchpad())
 			{
-				if (static_cast<u16>(std::abs(axis.get())) < s_gameControllerDeadzone)
-				{
-					axis.get() = 0;
-				}
+				gameController.UpdateTouchpadFingers();
 			}
 		}
 	}

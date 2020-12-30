@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "stardust/input/Input.h"
+
 namespace stardust
 {
 	void GameController::GameControllerDestroyer::operator ()(SDL_GameController* const gameController) const noexcept
@@ -18,18 +20,39 @@ namespace stardust
 		m_axes = Axes{ };
 
 		m_handle = UniquePtr<SDL_GameController, GameControllerDestroyer>(SDL_GameControllerOpen(id));
+
+		if (m_handle != nullptr)
+		{
+			m_hasLED = SDL_GameControllerHasLED(GetRawHandle());
+			m_hasTouchpad = SDL_GameControllerGetNumTouchpads(GetRawHandle()) > 0;
+			
+			if (m_hasTouchpad)
+			{
+				m_touchpadFingers.resize(GetSupportedTouchpadFingerCount());
+			}
+
+			m_canRumble = SDL_GameControllerRumble(GetRawHandle(), 1u, 1u, 0u) == 0;
+			m_canRumbleTriggers = SDL_GameControllerRumbleTriggers(GetRawHandle(), 1u, 1u, 0u) == 0;
+		}
 	}
 
 	GameController::GameController(GameController&& other) noexcept
-		: m_id(0), m_currentButtons(ButtonState{ }), m_previousButtons(ButtonState{ }), m_axes(Axes{ }), m_handle(nullptr)
+		: m_id(0), m_currentButtons(ButtonState{ }), m_previousButtons(ButtonState{ }), m_axes(Axes{ }), m_touchpadFingers({ }), m_handle(nullptr),
+		  m_hasLED(false), m_hasTouchpad(false), m_canRumble(false), m_canRumbleTriggers(false)
 	{
 		std::swap(m_id, other.m_id);
 
 		std::swap(m_currentButtons, other.m_currentButtons);
 		std::swap(m_previousButtons, other.m_previousButtons);
 		std::swap(m_axes, other.m_axes);
+		std::swap(m_touchpadFingers, other.m_touchpadFingers);
 
 		std::swap(m_handle, other.m_handle);
+
+		std::swap(m_hasLED, other.m_hasLED);
+		std::swap(m_hasTouchpad, other.m_hasTouchpad);
+		std::swap(m_canRumble, other.m_canRumble);
+		std::swap(m_canRumbleTriggers, other.m_canRumbleTriggers);
 	}
 
 	GameController& GameController::operator =(GameController&& other) noexcept
@@ -39,8 +62,14 @@ namespace stardust
 		m_currentButtons = std::exchange(other.m_currentButtons, ButtonState{ });
 		m_previousButtons = std::exchange(other.m_previousButtons, ButtonState{ });
 		m_axes = std::exchange(other.m_axes, Axes{ });
+		m_touchpadFingers = std::exchange(other.m_touchpadFingers, { });
 
 		m_handle = std::exchange(other.m_handle, nullptr);
+
+		m_hasLED = std::exchange(other.m_hasLED, false);
+		m_hasTouchpad = std::exchange(other.m_hasTouchpad, false);
+		m_canRumble = std::exchange(other.m_canRumble, false);
+		m_canRumbleTriggers = std::exchange(other.m_canRumbleTriggers, false);
 
 		return *this;
 	}
@@ -108,6 +137,36 @@ namespace stardust
 		});
 	}
 
+	void GameController::Rumble(const u16 lowFrequency, const u16 highFrequency, const u32 milliseconds) const
+	{
+		SDL_GameControllerRumble(GetRawHandle(), lowFrequency, highFrequency, milliseconds);
+	}
+
+	void GameController::StopRumbling() const
+	{
+		SDL_GameControllerRumble(GetRawHandle(), 0u, 0u, 0u);
+	}
+
+	void GameController::RumbleTriggers(const u16 leftIntensity, const u16 rightIntensity, const u32 milliseconds) const
+	{
+		SDL_GameControllerRumbleTriggers(GetRawHandle(), leftIntensity, rightIntensity, milliseconds);
+	}
+
+	void GameController::StopRumblingTriggers() const
+	{
+		SDL_GameControllerRumbleTriggers(GetRawHandle(), 0u, 0u, 0u);
+	}
+
+	void GameController::SetLED(const Colour& colour) const
+	{
+		SDL_GameControllerSetLED(GetRawHandle(), colour.r, colour.g, colour.b);
+	}
+
+	[[nodiscard]] u32 GameController::GetSupportedTouchpadFingerCount() const
+	{
+		return static_cast<u32>(SDL_GameControllerGetNumTouchpadFingers(GetRawHandle(), 0));
+	}
+
 	[[nodiscard]] SDL_Joystick* const GameController::GetRawJoystickHandle() const
 	{
 		return SDL_GameControllerGetJoystick(GetRawHandle());
@@ -165,8 +224,8 @@ namespace stardust
 		case GameControllerButton::Misc:
 			return buttonState.misc;
 
-		case GameControllerButton::TouchPad:
-			return buttonState.touchPad;
+		case GameControllerButton::Touchpad:
+			return buttonState.touchpad;
 
 		case GameControllerButton::Paddle1:
 			return buttonState.paddles[0];
@@ -182,6 +241,81 @@ namespace stardust
 
 		default:
 			return false;
+		}
+	}
+
+	void GameController::UpdateButtons()
+	{
+		m_previousButtons = m_currentButtons;
+
+		m_currentButtons.dPad.up = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_UP) == 1u;
+		m_currentButtons.dPad.down = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_DOWN) == 1u;
+		m_currentButtons.dPad.left = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_LEFT) == 1u;
+		m_currentButtons.dPad.right = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_RIGHT) == 1u;
+
+		m_currentButtons.a = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_A) == 1u;
+		m_currentButtons.b = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_B) == 1u;
+		m_currentButtons.x = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_X) == 1u;
+		m_currentButtons.y = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_Y) == 1u;
+
+		m_currentButtons.back = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_BACK) == 1u;
+		m_currentButtons.guide = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_GUIDE) == 1u;
+		m_currentButtons.start = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_START) == 1u;
+
+		m_currentButtons.leftStick = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSTICK) == 1u;
+		m_currentButtons.rightStick = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSTICK) == 1u;
+		m_currentButtons.leftShoulder = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSHOULDER) == 1u;
+		m_currentButtons.rightShoulder = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == 1u;
+
+		m_currentButtons.misc = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_MISC1) == 1u;
+		m_currentButtons.touchpad = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_TOUCHPAD) == 1u;
+
+		m_currentButtons.paddles[0] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE1) == 1u;
+		m_currentButtons.paddles[1] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE2) == 1u;
+		m_currentButtons.paddles[2] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE3) == 1u;
+		m_currentButtons.paddles[3] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE4) == 1u;
+	}
+
+	void GameController::UpdateAxes()
+	{
+		m_axes.left.x = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTX);
+		m_axes.left.y = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTY);
+		m_axes.right.x = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTX);
+		m_axes.right.y = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTY);
+
+		m_axes.leftTrigger = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+		m_axes.rightTrigger = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+
+		const Vector<ReferenceWrapper<i16>> axes{
+			std::ref(m_axes.left.x),
+			std::ref(m_axes.left.y),
+			std::ref(m_axes.right.x),
+			std::ref(m_axes.right.y),
+			std::ref(m_axes.leftTrigger),
+			std::ref(m_axes.rightTrigger),
+		};
+
+		for (auto& axis : axes)
+		{
+			if (static_cast<u16>(std::abs(axis.get())) < Input::GetGameControllerDeadzone())
+			{
+				axis.get() = 0;
+			}
+		}
+	}
+
+	void GameController::UpdateTouchpadFingers()
+	{
+		for (u32 i = 0u; i < m_touchpadFingers.size(); ++i)
+		{
+			u8 fingerState = 0u;;
+
+			SDL_GameControllerGetTouchpadFinger(
+				GetRawHandle(), 0, i,
+				&fingerState, &m_touchpadFingers[i].position.x, &m_touchpadFingers[i].position.y, &m_touchpadFingers[i].pressure
+			);
+
+			m_touchpadFingers[i].isTouching = fingerState != 0u;
 		}
 	}
 }

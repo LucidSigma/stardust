@@ -19,6 +19,8 @@ private:
 	sd::Texture m_glyphTexture;
 	sd::Texture m_textTexture;
 
+	sd::GameController* m_controller = nullptr;
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -89,6 +91,16 @@ public:
 		if (GetMouseState().GetScrollAmount() != 0)
 		{
 			sd::Log::Trace("{}", GetMouseState().GetScrollAmount());
+		}
+
+		if (m_controller != nullptr)
+		{
+			const auto& touchpadFingers = m_controller->GetTouchpadFingers();
+
+			if (touchpadFingers[0].isTouching && m_controller->IsButtonDown(sd::GameControllerButton::A))
+			{
+				sd::Log::Trace("{}, {}: {}", touchpadFingers[0].position.x, touchpadFingers[0].position.y, touchpadFingers[0].pressure);
+			}
 		}
 	}
 
@@ -193,6 +205,21 @@ public:
 				GetWindow().SetBorderless(false);
 			}
 		}
+	}
+
+	virtual void OnGameControllerAdded(sd::GameController& gameController) override
+	{
+		if (m_controller == nullptr)
+		{
+			m_controller = &gameController;
+			m_controller->SetPlayerIndex(0u);
+			m_controller->SetLED(sd::colours::Purple);
+		}
+	}
+
+	virtual void OnGameControllerRemoved(const sd::GameController& gameController) override
+	{
+		m_controller = nullptr;
 	}
 };
 

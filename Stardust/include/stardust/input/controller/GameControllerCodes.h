@@ -39,7 +39,7 @@ namespace stardust
 		Paddle4 = SDL_CONTROLLER_BUTTON_PADDLE4,
 
 		Misc = SDL_CONTROLLER_BUTTON_MISC1,
-		TouchPad = SDL_CONTROLLER_BUTTON_TOUCHPAD,
+		Touchpad = SDL_CONTROLLER_BUTTON_TOUCHPAD,
 	};
 
 	constexpr usize GameControllerButtonCount = magic_enum::enum_count<GameControllerButton>();

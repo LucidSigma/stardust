@@ -44,7 +44,7 @@ namespace stardust
 		virtual void Render(Renderer& renderer) = 0;
 
 		inline virtual void PollEvent(const SDL_Event& event) { }
-		inline virtual void OnGameControllerAdded(const GameController& gameController) { }
+		inline virtual void OnGameControllerAdded(GameController& gameController) { }
 		inline virtual void OnGameControllerRemoved(const GameController& gameController) { }
 
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }

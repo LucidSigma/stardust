@@ -7,9 +7,11 @@
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
+#include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 #include "stardust/input/controller/GameControllerCodes.h"
+#include "stardust/graphics/Colour.h"
 
 namespace stardust
 {
@@ -44,7 +46,7 @@ namespace stardust
 			bool rightShoulder;
 
 			bool misc;
-			bool touchPad;
+			bool touchpad;
 
 			Array<bool, 4u> paddles;
 		};
@@ -64,6 +66,14 @@ namespace stardust
 			i16 rightTrigger;
 		};
 
+		struct TouchpadFingerInfo
+		{
+			Vec2 position;
+			f32 pressure;
+
+			bool isTouching;
+		};
+
 	private:
 		struct GameControllerDestroyer
 		{
@@ -76,8 +86,15 @@ namespace stardust
 		ButtonState m_currentButtons;
 		ButtonState m_previousButtons;
 		Axes m_axes;
+		Vector<TouchpadFingerInfo> m_touchpadFingers;
 
 		UniquePtr<SDL_GameController, GameControllerDestroyer> m_handle = nullptr;
+
+		bool m_hasLED = false;
+		bool m_hasTouchpad = false;
+
+		bool m_canRumble = false;
+		bool m_canRumbleTriggers = false;
 
 	public:
 		friend class Input;
@@ -101,8 +118,23 @@ namespace stardust
 		[[nodiscard]] bool AreAllButtonsPressed(const Vector<GameControllerButton>& buttons) const;
 		[[nodiscard]] bool AreAllButtonsUp(const Vector<GameControllerButton>& buttons) const;
 
+		inline bool CanRumble() const noexcept { return m_canRumble; }
+		void Rumble(const u16 lowFrequency, const u16 highFrequency, const u32 milliseconds) const;
+		void StopRumbling() const;
+
+		inline bool CanRumbleTriggers() const noexcept { return m_canRumbleTriggers; }
+		void RumbleTriggers(const u16 leftIntensity, const u16 rightIntensity, const u32 milliseconds) const;
+		void StopRumblingTriggers() const;
+
+		inline bool HasLED() const noexcept { return m_hasLED; }
+		void SetLED(const Colour& colour) const;
+
+		inline bool HasTouchpad() const noexcept { return m_hasTouchpad; }
+		[[nodiscard]] u32 GetSupportedTouchpadFingerCount() const;
+
 		inline i32 GetID() const noexcept { return m_id; }
 		inline const Axes& GetAxes() const noexcept { return m_axes; }
+		inline const Vector<TouchpadFingerInfo>& GetTouchpadFingers() const noexcept { return m_touchpadFingers; }
 
 		inline u32 GetPlayerIndex() const noexcept { return m_playerIndex; }
 		inline void SetPlayerIndex(const u32 playerIndex) noexcept { m_playerIndex = playerIndex; }
@@ -112,6 +144,10 @@ namespace stardust
 
 	private:
 		static bool GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept;
+	
+		void UpdateButtons();
+		void UpdateAxes();
+		void UpdateTouchpadFingers();
 	};
 }
 
