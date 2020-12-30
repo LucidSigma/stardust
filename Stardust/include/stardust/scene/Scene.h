@@ -65,6 +65,9 @@ namespace stardust
 		class SceneManager& GetSceneManager() noexcept;
 		const class SceneManager& GetSceneManager() const noexcept;
 
+		class SoundSystem& GetSoundSystem() noexcept;
+		const class SoundSystem& GetSoundSystem() const noexcept;
+
 		inline const Keyboard& GetKeyboardState() const noexcept { return Input::GetKeyboardState(); }
 		inline const Mouse& GetMouseState() const noexcept { return Input::GetMouseState(); }
 

@@ -1,6 +1,7 @@
 #include "stardust/scene/Scene.h"
 
 #include "stardust/application/Application.h"
+#include "stardust/audio/SoundSystem.h"
 #include "stardust/camera/Camera2D.h"
 #include "stardust/scene/entity/Entity.h"
 #include "stardust/scene/SceneManager.h"
@@ -55,6 +56,16 @@ namespace stardust
 	const SceneManager& Scene::GetSceneManager() const noexcept
 	{
 		return m_application.GetSceneManager();
+	}
+
+	SoundSystem& Scene::GetSoundSystem() noexcept
+	{
+		return m_application.GetSoundSystem();
+	}
+
+	const SoundSystem& Scene::GetSoundSystem() const noexcept
+	{
+		return m_application.GetSoundSystem();
 	}
 
 	f64 Scene::GetElapsedTime() const noexcept

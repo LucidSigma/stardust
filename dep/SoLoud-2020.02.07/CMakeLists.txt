@@ -5,9 +5,11 @@ set(SOLOUD_INCLUDE_DIRS "${_IMPORT_PREFIX}/include")
 set(SOLOUD_INCLUDE_DIRS "${SOLOUD_INCLUDE_DIRS}" PARENT_SCOPE)
 
 file(GLOB_RECURSE SOLOUD_SOURCE_FILES
+	"src/audiosource/*.h"
+	"src/audiosource/*.c"
 	"src/audiosource/*.cpp"
-	"src/core/*.cpp"
 	"src/backend/sdl2_static/*.cpp"
+	"src/core/*.cpp"
 	"src/filter/*.cpp"
 )
 

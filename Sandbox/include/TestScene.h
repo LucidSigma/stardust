@@ -21,6 +21,8 @@ private:
 
 	sd::GameController* m_controller = nullptr;
 
+	sd::AssetManager<sd::Sound> m_sounds;
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -51,6 +53,13 @@ public:
 
 		m_glyphTexture = sd::text::RenderGlyph(m_font, 'A', sd::colours::White);
 		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
+
+		m_sounds.Add("blip", "assets/sounds/blip.wav");
+
+		if (!m_sounds["blip"].IsValid())
+		{
+			return sd::Status::Fail;
+		}
 
 		return sd::Status::Success;
 	}
@@ -105,17 +114,22 @@ public:
 				}
 
 				GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.05f));
-				GetCamera().SetPosition(
-					GetCamera().GetPosition().x + m_controller->GetAccelerometerData().x * 0.005f,
-					GetCamera().GetPosition().y + m_controller->GetAccelerometerData().z * 0.005f,
-					GetCamera().GetPosition().z
-				);
+				//GetCamera().SetPosition(
+				//	GetCamera().GetPosition().x + m_controller->GetAccelerometerData().x * 0.005f,
+				//	GetCamera().GetPosition().y + m_controller->GetAccelerometerData().z * 0.005f,
+				//	GetCamera().GetPosition().z
+				//);
 
 				if (m_controller->GetAxes().rightTrigger > 0)
 				{
 					GetCamera().SetRotation(0.0f);
 					GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
 				}
+			}
+
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::P))
+			{
+				GetSoundSystem().PlaySound(m_sounds["blip"]);
 			}
 		}
 	}
