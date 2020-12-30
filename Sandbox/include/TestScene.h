@@ -101,12 +101,18 @@ public:
 			{
 				sd::Log::Trace("{}, {}: {}", touchpadFingers[0].position.x, touchpadFingers[0].position.y, touchpadFingers[0].pressure);
 			}
+
+			GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.05f));
+
+			if (m_controller->GetAxes().rightTrigger > 0)
+			{
+				GetCamera().SetRotation(0.0f);
+			}
 		}
 	}
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
-		GetCamera().SetRotation(GetElapsedTime() * 45.0f);
 		GetCamera().SetZoom((glm::sin(GetElapsedTime()) + 2.0f) * 0.5f);
 	}
 
@@ -184,7 +190,7 @@ public:
 		);
 
 		GetRenderer().DrawScreenRect(
-			sd::comp::ScreenTransform(sd::IVec2{ 200, 200 }, m_textTexture.GetSize()),
+			sd::comp::ScreenTransform(sd::IVec2{ 200, 800 }, m_textTexture.GetSize() / 3u),
 			sd::comp::SpriteRender(m_textTexture, m_defaultSortingLayer)
 		);
 	}

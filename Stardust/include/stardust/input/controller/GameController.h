@@ -83,18 +83,23 @@ namespace stardust
 		i32 m_id = 0;
 		u32 m_playerIndex = 0u;
 
+		UniquePtr<SDL_GameController, GameControllerDestroyer> m_handle = nullptr;
+
 		ButtonState m_currentButtons;
 		ButtonState m_previousButtons;
 		Axes m_axes;
-		Vector<TouchpadFingerInfo> m_touchpadFingers;
-
-		UniquePtr<SDL_GameController, GameControllerDestroyer> m_handle = nullptr;
+		Vector<TouchpadFingerInfo> m_touchpadFingers{ };
+		Vec3 m_accelerometerState{ 0.0f, 0.0f, 0.0f };
+		Vec3 m_gyroscopeState{ 0.0f, 0.0f, 0.0f };
 
 		bool m_hasLED = false;
 		bool m_hasTouchpad = false;
 
 		bool m_canRumble = false;
 		bool m_canRumbleTriggers = false;
+
+		bool m_hasAccelerometer = false;
+		bool m_hasGyroscope = false;
 
 	public:
 		friend class Input;
@@ -132,6 +137,11 @@ namespace stardust
 		inline bool HasTouchpad() const noexcept { return m_hasTouchpad; }
 		[[nodiscard]] u32 GetSupportedTouchpadFingerCount() const;
 
+		inline bool HasAccelerometer() const noexcept { return m_hasAccelerometer; }
+		inline const Vec3& GetAccelerometerData() const noexcept { return m_accelerometerState; }
+		inline bool HasGyroscope() const noexcept { return m_hasGyroscope; }
+		inline const Vec3& GetGyroscopeData() const noexcept { return m_gyroscopeState; }
+
 		inline i32 GetID() const noexcept { return m_id; }
 		inline const Axes& GetAxes() const noexcept { return m_axes; }
 		inline const Vector<TouchpadFingerInfo>& GetTouchpadFingers() const noexcept { return m_touchpadFingers; }
@@ -148,6 +158,7 @@ namespace stardust
 		void UpdateButtons();
 		void UpdateAxes();
 		void UpdateTouchpadFingers();
+		void UpdateSensors();
 	};
 }
 

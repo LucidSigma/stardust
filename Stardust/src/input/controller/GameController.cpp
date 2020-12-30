@@ -33,43 +33,66 @@ namespace stardust
 
 			m_canRumble = SDL_GameControllerRumble(GetRawHandle(), 1u, 1u, 0u) == 0;
 			m_canRumbleTriggers = SDL_GameControllerRumbleTriggers(GetRawHandle(), 1u, 1u, 0u) == 0;
+
+			m_hasAccelerometer = SDL_GameControllerHasSensor(GetRawHandle(), SDL_SENSOR_ACCEL);
+
+			if (m_hasAccelerometer)
+			{
+				SDL_GameControllerSetSensorEnabled(GetRawHandle(), SDL_SENSOR_ACCEL, SDL_TRUE);
+			}
+
+			m_hasGyroscope = SDL_GameControllerHasSensor(GetRawHandle(), SDL_SENSOR_GYRO);
+
+			if (m_hasGyroscope)
+			{
+				SDL_GameControllerSetSensorEnabled(GetRawHandle(), SDL_SENSOR_GYRO, SDL_TRUE);
+			}
 		}
 	}
 
 	GameController::GameController(GameController&& other) noexcept
-		: m_id(0), m_currentButtons(ButtonState{ }), m_previousButtons(ButtonState{ }), m_axes(Axes{ }), m_touchpadFingers({ }), m_handle(nullptr),
-		  m_hasLED(false), m_hasTouchpad(false), m_canRumble(false), m_canRumbleTriggers(false)
+		: m_id(0), m_playerIndex(0u), m_handle(nullptr),
+		  m_currentButtons(ButtonState{ }), m_previousButtons(ButtonState{ }), m_axes(Axes{ }), m_touchpadFingers({ }), m_accelerometerState(Vec3{ 0.0f, 0.0f, 0.0f }), m_gyroscopeState(Vec3{ 0.0f, 0.0f, 0.0f }),
+		  m_hasLED(false), m_hasTouchpad(false), m_canRumble(false), m_canRumbleTriggers(false), m_hasAccelerometer(false), m_hasGyroscope(false)
 	{
 		std::swap(m_id, other.m_id);
+		std::swap(m_playerIndex, other.m_playerIndex);
+		std::swap(m_handle, other.m_handle);
 
 		std::swap(m_currentButtons, other.m_currentButtons);
 		std::swap(m_previousButtons, other.m_previousButtons);
 		std::swap(m_axes, other.m_axes);
 		std::swap(m_touchpadFingers, other.m_touchpadFingers);
-
-		std::swap(m_handle, other.m_handle);
+		std::swap(m_accelerometerState, other.m_accelerometerState);
+		std::swap(m_gyroscopeState, other.m_gyroscopeState);
 
 		std::swap(m_hasLED, other.m_hasLED);
 		std::swap(m_hasTouchpad, other.m_hasTouchpad);
 		std::swap(m_canRumble, other.m_canRumble);
 		std::swap(m_canRumbleTriggers, other.m_canRumbleTriggers);
+		std::swap(m_hasAccelerometer, other.m_hasAccelerometer);
+		std::swap(m_hasGyroscope, other.m_hasGyroscope);
 	}
 
 	GameController& GameController::operator =(GameController&& other) noexcept
 	{
 		m_id = std::exchange(other.m_id, 0);
+		m_playerIndex = std::exchange(other.m_playerIndex, 0u);
+		m_handle = std::exchange(other.m_handle, nullptr);
 
 		m_currentButtons = std::exchange(other.m_currentButtons, ButtonState{ });
 		m_previousButtons = std::exchange(other.m_previousButtons, ButtonState{ });
 		m_axes = std::exchange(other.m_axes, Axes{ });
 		m_touchpadFingers = std::exchange(other.m_touchpadFingers, { });
-
-		m_handle = std::exchange(other.m_handle, nullptr);
+		m_accelerometerState = std::exchange(other.m_accelerometerState, Vec3{ 0.0f, 0.0f, 0.0f });
+		m_gyroscopeState = std::exchange(other.m_gyroscopeState, Vec3{ 0.0f, 0.0f, 0.0f });
 
 		m_hasLED = std::exchange(other.m_hasLED, false);
 		m_hasTouchpad = std::exchange(other.m_hasTouchpad, false);
 		m_canRumble = std::exchange(other.m_canRumble, false);
 		m_canRumbleTriggers = std::exchange(other.m_canRumbleTriggers, false);
+		m_hasAccelerometer = std::exchange(other.m_hasAccelerometer, false);
+		m_hasGyroscope = std::exchange(other.m_hasGyroscope, false);
 
 		return *this;
 	}
@@ -306,16 +329,40 @@ namespace stardust
 
 	void GameController::UpdateTouchpadFingers()
 	{
-		for (u32 i = 0u; i < m_touchpadFingers.size(); ++i)
+		if (m_hasTouchpad)
 		{
-			u8 fingerState = 0u;;
+			for (u32 i = 0u; i < m_touchpadFingers.size(); ++i)
+			{
+				u8 fingerState = 0u;;
 
-			SDL_GameControllerGetTouchpadFinger(
-				GetRawHandle(), 0, i,
-				&fingerState, &m_touchpadFingers[i].position.x, &m_touchpadFingers[i].position.y, &m_touchpadFingers[i].pressure
-			);
+				SDL_GameControllerGetTouchpadFinger(
+					GetRawHandle(), 0, i,
+					&fingerState, &m_touchpadFingers[i].position.x, &m_touchpadFingers[i].position.y, &m_touchpadFingers[i].pressure
+				);
 
-			m_touchpadFingers[i].isTouching = fingerState != 0u;
+				m_touchpadFingers[i].isTouching = fingerState != 0u;
+			}
+		}
+	}
+
+	void GameController::UpdateSensors()
+	{
+		Array<f32, 3u> sensorData{ 0.0f, 0.0f, 0.0f };
+
+		if (m_hasAccelerometer)
+		{
+			SDL_GameControllerGetSensorData(GetRawHandle(), SDL_SENSOR_ACCEL, sensorData.data(), 3);
+			m_accelerometerState.x = sensorData[0];
+			m_accelerometerState.y = sensorData[1];
+			m_accelerometerState.z = sensorData[2];
+		}
+
+		if (m_hasGyroscope)
+		{
+			SDL_GameControllerGetSensorData(GetRawHandle(), SDL_SENSOR_GYRO, sensorData.data(), 3);
+			m_gyroscopeState.x = sensorData[0];
+			m_gyroscopeState.y = sensorData[1];
+			m_gyroscopeState.z = sensorData[2];
 		}
 	}
 }

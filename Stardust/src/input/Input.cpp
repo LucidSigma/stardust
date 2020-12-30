@@ -173,11 +173,8 @@ namespace stardust
 		{
 			gameController.UpdateButtons();
 			gameController.UpdateAxes();
-
-			if (gameController.HasTouchpad())
-			{
-				gameController.UpdateTouchpadFingers();
-			}
+			gameController.UpdateTouchpadFingers();
+			gameController.UpdateSensors();
 		}
 	}
 
