@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <utility>
 
-#include <stb_image/stb_image.h>
+#include <stb/stb_image.h>
 
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"

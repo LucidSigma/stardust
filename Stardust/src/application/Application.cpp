@@ -5,8 +5,8 @@
 
 #include <glad/glad.h>
 #include <SDL2/SDL_ttf.h>
-#include <stb_image/stb_image.h>
-#include <stb_image/stb_image_write.h>
+#include <stb/stb_image.h>
+#include <stb/stb_image_write.h>
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/debug/logging/Log.h"

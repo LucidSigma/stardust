@@ -113,7 +113,7 @@ public:
 					sd::Log::Trace("{}, {}: {}", touchpadFingers[0].position.x, touchpadFingers[0].position.y, touchpadFingers[0].pressure);
 				}
 
-				GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.05f));
+				GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.04f));
 				//GetCamera().SetPosition(
 				//	GetCamera().GetPosition().x + m_controller->GetAccelerometerData().x * 0.005f,
 				//	GetCamera().GetPosition().y + m_controller->GetAccelerometerData().z * 0.005f,

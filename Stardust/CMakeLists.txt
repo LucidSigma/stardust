@@ -20,6 +20,7 @@ target_include_directories(Stardust PUBLIC
 	${SOLOUD_INCLUDE_DIRS}
 	${SPDLOG_INCLUDE_DIRS}
 	${STB_IMAGE_INCLUDE_DIRS}
+	${STB_IMAGE_WRITE_INCLUDE_DIRS}
 	${TINY_UTF8_INCLUDE_DIRS}
 	${TYPE_SAFE_INCLUDE_DIRS}
 )
@@ -37,6 +38,7 @@ target_link_libraries(Stardust PUBLIC
 	physfs
 	soloud
 	stb_image
+	stb_image_write
 )
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${STARDUST_SOURCE_FILES})
