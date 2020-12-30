@@ -103,17 +103,23 @@ public:
 			}
 
 			GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.05f));
+			GetCamera().SetPosition(
+				GetCamera().GetPosition().x + m_controller->GetAccelerometerData().x * 0.005f,
+				GetCamera().GetPosition().y + m_controller->GetAccelerometerData().z * 0.005f,
+				GetCamera().GetPosition().z
+			);
 
 			if (m_controller->GetAxes().rightTrigger > 0)
 			{
 				GetCamera().SetRotation(0.0f);
+				GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
 			}
 		}
 	}
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
-		GetCamera().SetZoom((glm::sin(GetElapsedTime()) + 2.0f) * 0.5f);
+		
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
