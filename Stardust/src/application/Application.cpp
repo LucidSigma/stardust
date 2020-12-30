@@ -559,12 +559,9 @@ namespace stardust
 
 	void Application::ProcessInput()
 	{
-		if (m_hasWindowFocus)
-		{
-			Input::UpdateKeyboardState();
-			Input::UpdateMouseState();
-			Input::UpdateGameControllers();
-		}
+		Input::UpdateKeyboardState();
+		Input::UpdateMouseState();
+		Input::UpdateGameControllers();
 
 		m_sceneManager.CurrentScene()->ProcessInput();
 	}

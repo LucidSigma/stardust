@@ -67,52 +67,55 @@ public:
 
 	virtual void ProcessInput() override
 	{
-		if (GetKeyboardState().IsKeyDown(sd::KeyCode::Escape))
+		if (m_application.HasWindowFocus())
 		{
-			m_application.FinishCurrentScene();
-		}
-
-		if (GetKeyboardState().IsKeyDown(sd::KeyCode::Space))
-		{
-			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Outline);
-		}
-		else if (GetKeyboardState().IsKeyUp(sd::KeyCode::Space))
-		{
-			GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
-		}
-
-		if (GetMouseState().IsButtonDown(sd::MouseButton::Thumb1))
-		{
-			const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace(GetMouseState().GetProportionalCoordinates(GetRenderer()));
-
-			sd::Log::Trace("Screen: {} {}; World: {} {}", GetMouseState().GetProportionalCoordinates(GetRenderer()).x, GetMouseState().GetProportionalCoordinates(GetRenderer()).y, mouseClick.x, mouseClick.y);
-		}
-
-		if (GetMouseState().GetScrollAmount() != 0)
-		{
-			sd::Log::Trace("{}", GetMouseState().GetScrollAmount());
-		}
-
-		if (m_controller != nullptr)
-		{
-			const auto& touchpadFingers = m_controller->GetTouchpadFingers();
-
-			if (touchpadFingers[0].isTouching && m_controller->IsButtonDown(sd::GameControllerButton::A))
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::Escape))
 			{
-				sd::Log::Trace("{}, {}: {}", touchpadFingers[0].position.x, touchpadFingers[0].position.y, touchpadFingers[0].pressure);
+				m_application.FinishCurrentScene();
 			}
 
-			GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.05f));
-			GetCamera().SetPosition(
-				GetCamera().GetPosition().x + m_controller->GetAccelerometerData().x * 0.005f,
-				GetCamera().GetPosition().y + m_controller->GetAccelerometerData().z * 0.005f,
-				GetCamera().GetPosition().z
-			);
-
-			if (m_controller->GetAxes().rightTrigger > 0)
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::Space))
 			{
-				GetCamera().SetRotation(0.0f);
-				GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
+				GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Outline);
+			}
+			else if (GetKeyboardState().IsKeyUp(sd::KeyCode::Space))
+			{
+				GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
+			}
+
+			if (GetMouseState().IsButtonDown(sd::MouseButton::Thumb1))
+			{
+				const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace(GetMouseState().GetProportionalCoordinates(GetRenderer()));
+
+				sd::Log::Trace("Screen: {} {}; World: {} {}", GetMouseState().GetProportionalCoordinates(GetRenderer()).x, GetMouseState().GetProportionalCoordinates(GetRenderer()).y, mouseClick.x, mouseClick.y);
+			}
+
+			if (GetMouseState().GetScrollAmount() != 0)
+			{
+				sd::Log::Trace("{}", GetMouseState().GetScrollAmount());
+			}
+
+			if (m_controller != nullptr)
+			{
+				const auto& touchpadFingers = m_controller->GetTouchpadFingers();
+
+				if (touchpadFingers[0].isTouching && m_controller->IsButtonDown(sd::GameControllerButton::A))
+				{
+					sd::Log::Trace("{}, {}: {}", touchpadFingers[0].position.x, touchpadFingers[0].position.y, touchpadFingers[0].pressure);
+				}
+
+				GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.05f));
+				GetCamera().SetPosition(
+					GetCamera().GetPosition().x + m_controller->GetAccelerometerData().x * 0.005f,
+					GetCamera().GetPosition().y + m_controller->GetAccelerometerData().z * 0.005f,
+					GetCamera().GetPosition().z
+				);
+
+				if (m_controller->GetAxes().rightTrigger > 0)
+				{
+					GetCamera().SetRotation(0.0f);
+					GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
+				}
 			}
 		}
 	}
