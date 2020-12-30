@@ -18,95 +18,95 @@ namespace stardust
 		m_soLoudHandle->update3dAudio();
 	}
 
-	//SoundSource SoundSystem::PlaySound(Sound& sound, const bool startPaused)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->play(sound.GetRawHandle(), -1.0f, 0.0f, startPaused);
-	//
-	//	return SoundSource(soundHandle, *this);
-	//}
-	//
-	//SoundSource SoundSystem::PlaySound(SoundStream& soundStream, const bool startPaused)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->play(soundStream.GetRawHandle(), -1.0f, 0.0f, startPaused);
-	//
-	//	return SoundSource(soundHandle, *this);
-	//}
-	//
-	//SoundSource SoundSystem::Play3DSound(Sound& sound, const Vec3& position, const Vec3& velocity, const bool startPaused)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->play3d(
-	//		sound.GetRawHandle(),
-	//		position.x, position.y, position.z,
-	//		velocity.x, velocity.y, velocity.z,
-	//		1.0f, startPaused
-	//	);
-	//
-	//	return SoundSource(soundHandle, *this, position, velocity);
-	//}
-	//
-	//SoundSource SoundSystem::Play3DSound(SoundStream& soundStream, const Vec3& position, const Vec3& velocity, const bool startPaused)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->play3d(
-	//		soundStream.GetRawHandle(),
-	//		position.x, position.y, position.z,
-	//		velocity.x, velocity.y, velocity.z,
-	//		1.0f, startPaused
-	//	);
-	//
-	//	return SoundSource(soundHandle, *this, position, velocity);
-	//}
-	//
-	//SoundSource SoundSystem::PlaySoundWithDelay(Sound& sound, const f32 secondsDelay)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->playClocked(secondsDelay, sound.GetRawHandle());
-	//
-	//	return SoundSource(soundHandle, *this);
-	//}
-	//
-	//SoundSource SoundSystem::PlaySoundWithDelay(SoundStream& soundStream, const f32 secondsDelay)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->playClocked(secondsDelay, soundStream.GetRawHandle());
-	//
-	//	return SoundSource(soundHandle, *this);
-	//}
-	//
-	//SoundSource SoundSystem::Play3DSoundWithDelay(Sound& sound, const f32 secondsDelay, const Vec3& position, const Vec3& velocity)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->play3dClocked(
-	//		secondsDelay, sound.GetRawHandle(),
-	//		position.x, position.y, position.z,
-	//		velocity.x, velocity.y, velocity.z,
-	//		1.0f
-	//	);
-	//
-	//	return SoundSource(soundHandle, *this, position, velocity);
-	//}
-	//
-	//SoundSource SoundSystem::Play3DSoundWithDelay(SoundStream& soundStream, const f32 secondsDelay, const Vec3& position, const Vec3& velocity)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->play3dClocked(
-	//		secondsDelay, soundStream.GetRawHandle(),
-	//		position.x, position.y, position.z,
-	//		velocity.x, velocity.y, velocity.z,
-	//		1.0f
-	//	);
-	//
-	//	return SoundSource(soundHandle, *this, position, velocity);
-	//}
-	//
-	//SoundSource SoundSystem::PlaySoundInBackground(Sound& sound, const bool startPaused)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->playBackground(sound.GetRawHandle(), -1.0f, 0.0f, startPaused);
-	//
-	//	return SoundSource(soundHandle, *this);
-	//}
-	//
-	//SoundSource SoundSystem::PlaySoundInBackground(SoundStream& soundStream, const bool startPaused)
-	//{
-	//	const SoLoud::handle soundHandle = m_soLoudHandle->playBackground(soundStream.GetRawHandle(), -1.0f, 0.0f, startPaused);
-	//
-	//	return SoundSource(soundHandle, *this);
-	//}
+	SoundSource SoundSystem::PlaySound(Sound& sound, const bool startPaused)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->play(sound.GetRawHandle(), -1.0f, 0.0f, startPaused);
+	
+		return SoundSource(soundHandle, *this);
+	}
+	
+	SoundSource SoundSystem::PlaySound(SoundStream& soundStream, const bool startPaused)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->play(soundStream.GetRawHandle(), -1.0f, 0.0f, startPaused);
+	
+		return SoundSource(soundHandle, *this);
+	}
+	
+	SoundSource SoundSystem::Play3DSound(Sound& sound, const Vec3& position, const Vec3& velocity, const bool startPaused)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->play3d(
+			sound.GetRawHandle(),
+			position.x, position.y, position.z,
+			velocity.x, velocity.y, velocity.z,
+			1.0f, startPaused
+		);
+	
+		return SoundSource(soundHandle, *this, position, velocity);
+	}
+	
+	SoundSource SoundSystem::Play3DSound(SoundStream& soundStream, const Vec3& position, const Vec3& velocity, const bool startPaused)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->play3d(
+			soundStream.GetRawHandle(),
+			position.x, position.y, position.z,
+			velocity.x, velocity.y, velocity.z,
+			1.0f, startPaused
+		);
+	
+		return SoundSource(soundHandle, *this, position, velocity);
+	}
+	
+	SoundSource SoundSystem::PlaySoundWithDelay(Sound& sound, const f32 secondsDelay)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->playClocked(secondsDelay, sound.GetRawHandle());
+	
+		return SoundSource(soundHandle, *this);
+	}
+	
+	SoundSource SoundSystem::PlaySoundWithDelay(SoundStream& soundStream, const f32 secondsDelay)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->playClocked(secondsDelay, soundStream.GetRawHandle());
+	
+		return SoundSource(soundHandle, *this);
+	}
+	
+	SoundSource SoundSystem::Play3DSoundWithDelay(Sound& sound, const f32 secondsDelay, const Vec3& position, const Vec3& velocity)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->play3dClocked(
+			secondsDelay, sound.GetRawHandle(),
+			position.x, position.y, position.z,
+			velocity.x, velocity.y, velocity.z,
+			1.0f
+		);
+	
+		return SoundSource(soundHandle, *this, position, velocity);
+	}
+	
+	SoundSource SoundSystem::Play3DSoundWithDelay(SoundStream& soundStream, const f32 secondsDelay, const Vec3& position, const Vec3& velocity)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->play3dClocked(
+			secondsDelay, soundStream.GetRawHandle(),
+			position.x, position.y, position.z,
+			velocity.x, velocity.y, velocity.z,
+			1.0f
+		);
+	
+		return SoundSource(soundHandle, *this, position, velocity);
+	}
+	
+	SoundSource SoundSystem::PlaySoundInBackground(Sound& sound, const bool startPaused)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->playBackground(sound.GetRawHandle(), -1.0f, 0.0f, startPaused);
+	
+		return SoundSource(soundHandle, *this);
+	}
+	
+	SoundSource SoundSystem::PlaySoundInBackground(SoundStream& soundStream, const bool startPaused)
+	{
+		const SoLoud::handle soundHandle = m_soLoudHandle->playBackground(soundStream.GetRawHandle(), -1.0f, 0.0f, startPaused);
+	
+		return SoundSource(soundHandle, *this);
+	}
 
 	void SoundSystem::StopAllSounds() const
 	{
