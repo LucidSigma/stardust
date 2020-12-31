@@ -190,7 +190,12 @@ public:
 		);
 
 		renderer.DrawWorldQuad(
-			{ sd::Vec2{ -0.5f, -0.5f }, sd::Vec2{ -0.25f, 0.4f }, sd::Vec2{ 0.5f, 0.5f }, sd::Vec2{ 0.4f, -0.5f } },
+			sd::Quad{
+				.lowerLeft = { -0.5f, -0.5f },
+				.upperLeft = { -0.225f, 0.4f },
+				.upperRight = { 0.5f, 0.5f },
+				.lowerRight = { 0.4f, -0.5f }
+			},
 			sd::comp::Transform(
 				sd::Vec2{ -6.0f, 0.0f },
 				15.0f,
@@ -203,7 +208,12 @@ public:
 		);
 
 		renderer.DrawWorldQuad(
-			{ sd::Vec2{ -0.4f, -0.5f }, sd::Vec2{ -0.5f, 0.5f }, sd::Vec2{ 0.25f, 0.4f }, sd::Vec2{ 0.5f, -0.5f } },
+			sd::Quad{
+				.lowerLeft = { -0.4f, -0.5f },
+				.upperLeft = { -0.5f, 0.5f },
+				.upperRight = { 0.25f, 0.4f },
+				.lowerRight = { 0.5f, -0.5f }
+			},
 			sd::comp::Transform(
 				sd::Vec2{ 6.0f, 0.0f },
 				-15.0f,

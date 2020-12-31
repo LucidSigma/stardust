@@ -248,7 +248,7 @@ namespace stardust
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const Colour& colour, const Camera2D& camera)
+	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const Colour& colour, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]
 		{
@@ -260,10 +260,10 @@ namespace stardust
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateQuad(points, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateQuad(quad, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera)
+	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]
 		{
@@ -275,10 +275,10 @@ namespace stardust
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateQuad(points, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateQuad(quad, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
+	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
@@ -311,10 +311,10 @@ namespace stardust
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
 
-		GenerateQuad(points, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateQuad(quad, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldQuad(const Array<Vec2, 4u>& points, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera)
+	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
@@ -347,7 +347,7 @@ namespace stardust
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
 
-		GenerateQuad(points, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateQuad(quad, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour)
@@ -806,30 +806,30 @@ namespace stardust
 		indexCount += 6u;
 	}
 
-	void Renderer::GenerateQuad(const Array<Vec2, 4u>& points, const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
+	void Renderer::GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
 	{
 		const auto& [bottomLeftTextureCoordinate, topRightTextureCoordinate] = textureCoordinates;
 		const Vec4 colourVector = ColourToVec4(colour);
 
-		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[0].x, points[0].y, 0.0f, 1.0f });
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ quad.lowerLeft.x, quad.lowerLeft.y, 0.0f, 1.0f });
 		bufferPtr->colour = colourVector;
 		bufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, bottomLeftTextureCoordinate.y };
 		bufferPtr->textureIndex = textureIndex;
 		++bufferPtr;
 
-		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[1].x, points[1].y, 0.0f, 1.0f });
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ quad.upperLeft.x, quad.upperLeft.y, 0.0f, 1.0f });
 		bufferPtr->colour = colourVector;
 		bufferPtr->textureCoordinates = Vec2{ bottomLeftTextureCoordinate.x, topRightTextureCoordinate.y };
 		bufferPtr->textureIndex = textureIndex;
 		++bufferPtr;
 
-		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[2].x, points[2].y, 0.0f, 1.0f });
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ quad.upperRight.x, quad.upperRight.y, 0.0f, 1.0f });
 		bufferPtr->colour = colourVector;
 		bufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, topRightTextureCoordinate.y };
 		bufferPtr->textureIndex = textureIndex;
 		++bufferPtr;
 
-		bufferPtr->position = Vec2(modelMatrix * Vec4{ points[3].x, points[3].y, 0.0f, 1.0f });
+		bufferPtr->position = Vec2(modelMatrix * Vec4{ quad.lowerRight.x, quad.lowerRight.y, 0.0f, 1.0f });
 		bufferPtr->colour = colourVector;
 		bufferPtr->textureCoordinates = Vec2{ topRightTextureCoordinate.x, bottomLeftTextureCoordinate.y };
 		bufferPtr->textureIndex = textureIndex;
