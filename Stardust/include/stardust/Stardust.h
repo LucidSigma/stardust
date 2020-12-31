@@ -45,6 +45,7 @@
 #include "graphics/shaders/Shader.h"
 #include "graphics/shaders/ShaderProgram.h"
 #include "graphics/surface/PixelSurface.h"
+#include "graphics/texture/texture_atlas/TextureAtlas.h"
 #include "graphics/texture/Sampler.h"
 #include "graphics/texture/Texture.h"
 #include "graphics/Colour.h"
