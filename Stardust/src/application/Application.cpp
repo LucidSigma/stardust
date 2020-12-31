@@ -28,6 +28,7 @@ namespace stardust
 	Application::~Application() noexcept
 	{
 		m_entityRegistry.clear();
+		m_globalSceneData.clear();
 
 		Input::RemoveAllGameControllers();
 

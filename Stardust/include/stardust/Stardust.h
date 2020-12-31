@@ -63,6 +63,8 @@
 
 #include "math/Math.h"
 
+#include "particles/ParticleSystem.h"
+
 #include "scene/components/Components.h"
 #include "scene/entity/Entity.h"
 #include "scene/Scene.h"
