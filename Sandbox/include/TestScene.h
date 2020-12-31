@@ -23,6 +23,9 @@ private:
 	sd::GameController* m_controller = nullptr;
 
 	sd::AssetManager<sd::Sound> m_sounds;
+	
+	sd::ParticleSystem m_particles;
+	sd::f32 m_clickParticleDelay = 0.01f;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -68,6 +71,8 @@ public:
 		{
 			return sd::Status::Fail;
 		}
+
+		m_particles.Initialise(m_defaultSortingLayer);
 
 		return sd::Status::Success;
 	}
@@ -148,12 +153,44 @@ public:
 			{
 				GetSoundSystem().PlaySound(m_sounds["blip"]);
 			}
+
+			if (GetMouseState().IsButtonPressed(sd::MouseButton::Left) && m_clickParticleDelay < 0.0f)
+			{
+				m_clickParticleDelay = 0.01f;
+
+				auto finalColour = sd::colours::Yellow;
+				finalColour.a = 0u;
+
+				m_particles.Emit(sd::ParticleSystem::ParticleData{
+					.initialPosition = GetMouseState().GetProportionalCoordinates(GetRenderer()),
+					.initialRotation = 0.0f,
+					.minVelocity = { -100.0f, -400.0f },
+					.maxVelocity = { 100.0f, -10.0f },
+					.acceleration = 0.4f,
+					.minAngularVelocity = 0.0f,
+					.maxAngularVelocity = 180.0f,
+					.angularAcceleration = -0.1f,
+					.isAffectedByGravity = false,
+					.minSize = { 20.0f, 20.0f },
+					.maxSize = { 40.0f, 40.0f },
+					.sizeUpdateMultipler = -0.2f,
+					.keepAsSquare = true,
+					.shiftToCentre = true,
+					.startColour = sd::colours::Red,
+					.endColour = finalColour,
+					.texture = nullptr,  
+					.textureArea = std::nullopt,
+					.minLifetime = 0.5f,
+					.maxLifetime = 1.0f,
+				});
+			}
 		}
 	}
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
-		
+		m_clickParticleDelay -= deltaTime;
+		m_particles.Update(deltaTime);
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
@@ -255,6 +292,8 @@ public:
 			sd::comp::SpriteRender(m_conveyorTextures.GetTexture(), m_defaultSortingLayer, m_conveyorTextures["right"]),
 			GetCamera()
 		);
+
+		m_particles.RenderOnScreen(renderer);
 	}
 
 	virtual void PollEvent(const SDL_Event& event) override

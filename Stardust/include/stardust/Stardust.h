@@ -59,7 +59,6 @@
 #include "input/mouse/Mouse.h"	
 #include "input/mouse/MouseButtonCodes.h"	
 #include "input/Input.h"
-
 #include "locale/Locale.h"
 
 #include "math/Math.h"
