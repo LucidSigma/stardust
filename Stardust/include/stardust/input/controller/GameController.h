@@ -124,11 +124,11 @@ namespace stardust
 		[[nodiscard]] bool AreAllButtonsUp(const Vector<GameControllerButton>& buttons) const;
 
 		inline bool CanRumble() const noexcept { return m_canRumble; }
-		void Rumble(const u16 lowFrequency, const u16 highFrequency, const u32 milliseconds) const;
+		void Rumble(const f32 lowFrequency, const f32 highFrequency, const u32 milliseconds) const;
 		void StopRumbling() const;
 
 		inline bool CanRumbleTriggers() const noexcept { return m_canRumbleTriggers; }
-		void RumbleTriggers(const u16 leftIntensity, const u16 rightIntensity, const u32 milliseconds) const;
+		void RumbleTriggers(const f32 leftIntensity, const f32 rightIntensity, const u32 milliseconds) const;
 		void StopRumblingTriggers() const;
 
 		inline bool HasLED() const noexcept { return m_hasLED; }

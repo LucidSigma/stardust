@@ -1,9 +1,11 @@
 #include "stardust/input/controller/GameController.h"
 
 #include <algorithm>
+#include <limits>
 #include <utility>
 
 #include "stardust/input/Input.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -160,9 +162,12 @@ namespace stardust
 		});
 	}
 
-	void GameController::Rumble(const u16 lowFrequency, const u16 highFrequency, const u32 milliseconds) const
+	void GameController::Rumble(const f32 lowFrequency, const f32 highFrequency, const u32 milliseconds) const
 	{
-		SDL_GameControllerRumble(GetRawHandle(), lowFrequency, highFrequency, milliseconds);
+		const u16 convertedLowFrequency = static_cast<u16>(lowFrequency * static_cast<f32>(std::numeric_limits<u16>::max()));
+		const u16 convertedHighFrequency = static_cast<u16>(highFrequency * static_cast<f32>(std::numeric_limits<u16>::max()));
+
+		SDL_GameControllerRumble(GetRawHandle(), convertedLowFrequency, convertedHighFrequency, milliseconds);
 	}
 
 	void GameController::StopRumbling() const
@@ -170,9 +175,12 @@ namespace stardust
 		SDL_GameControllerRumble(GetRawHandle(), 0u, 0u, 0u);
 	}
 
-	void GameController::RumbleTriggers(const u16 leftIntensity, const u16 rightIntensity, const u32 milliseconds) const
+	void GameController::RumbleTriggers(const f32 leftIntensity, const f32 rightIntensity, const u32 milliseconds) const
 	{
-		SDL_GameControllerRumbleTriggers(GetRawHandle(), leftIntensity, rightIntensity, milliseconds);
+		const u16 convertedLeftIntensity = static_cast<u16>(leftIntensity * static_cast<f32>(std::numeric_limits<u16>::max()));
+		const u16 convertedRightIntensity = static_cast<u16>(rightIntensity * static_cast<f32>(std::numeric_limits<u16>::max()));
+
+		SDL_GameControllerRumbleTriggers(GetRawHandle(), convertedLeftIntensity, convertedRightIntensity, milliseconds);
 	}
 
 	void GameController::StopRumblingTriggers() const

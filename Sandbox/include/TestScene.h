@@ -125,9 +125,18 @@ public:
 					GetCamera().SetRotation(0.0f);
 					GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
 				}
+
+				if (m_controller->IsButtonDown(sd::GameControllerButton::LeftShoulder))
+				{
+					m_controller->Rumble(0.5f, 0.5f, 1'000u);
+				}
+				else if (m_controller->IsButtonDown(sd::GameControllerButton::RightShoulder))
+				{
+					m_controller->Rumble(1.0f, 1.0f, 1'000u);
+				}
 			}
 
-			if (GetKeyboardState().IsKeyDown(sd::KeyCode::P))
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::P) || (m_controller != nullptr && m_controller->IsButtonDown(sd::GameControllerButton::Y)))
 			{
 				GetSoundSystem().PlaySound(m_sounds["blip"]);
 			}
