@@ -41,7 +41,7 @@ namespace stardust
 			Colour startColour = colours::White;
 			Colour endColour = colours::White;
 			ObserverPtr<const Texture> texture = nullptr;
-			Optional<Pair<Vec2, Vec2>> textureArea = NullOpt;
+			Optional<CoordinatePair> textureArea = NullOpt;
 
 			f32 minLifetime = 0.0f;
 			f32 maxLifetime = 0.0f;
@@ -68,7 +68,7 @@ namespace stardust
 			Colour startColour = colours::White;
 			Colour endColour = colours::White;
 			ObserverPtr<const Texture> texture = nullptr;
-			Optional<Pair<Vec2, Vec2>> textureArea = NullOpt;
+			Optional<CoordinatePair> textureArea = NullOpt;
 
 			f32 lifetime = 0.0f;
 			f32 lifetimeRemaining = 0.0f;

@@ -189,6 +189,8 @@ public:
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
+		GetCamera().SetZoom((glm::sin(GetElapsedTime()) * 0.5f) + 1.0f);
+
 		m_clickParticleDelay -= deltaTime;
 		m_particles.Update(deltaTime);
 	}

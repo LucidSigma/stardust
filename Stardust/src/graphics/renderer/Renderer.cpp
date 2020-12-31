@@ -204,7 +204,7 @@ namespace stardust
 			++m_worldTextureSlotIndex;
 		}
 
-		const Pair<Vec2, Vec2> textureCoordinates{
+		const CoordinatePair textureCoordinates{
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
@@ -240,7 +240,7 @@ namespace stardust
 			++m_worldTextureSlotIndex;
 		}
 
-		const Pair<Vec2, Vec2> textureCoordinates{
+		const CoordinatePair textureCoordinates{
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
@@ -306,7 +306,7 @@ namespace stardust
 			++m_worldTextureSlotIndex;
 		}
 
-		const Pair<Vec2, Vec2> textureCoordinates{
+		const CoordinatePair textureCoordinates{
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
@@ -342,7 +342,7 @@ namespace stardust
 			++m_worldTextureSlotIndex;
 		}
 
-		const Pair<Vec2, Vec2> textureCoordinates{
+		const CoordinatePair textureCoordinates{
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
@@ -408,7 +408,7 @@ namespace stardust
 			++m_screenTextureSlotIndex;
 		}
 
-		const Pair<Vec2, Vec2> textureCoordinates{
+		const CoordinatePair textureCoordinates{
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
@@ -444,7 +444,7 @@ namespace stardust
 			++m_screenTextureSlotIndex;
 		}
 
-		const Pair<Vec2, Vec2> textureCoordinates{
+		const CoordinatePair textureCoordinates{
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
 			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
 		};
@@ -774,7 +774,7 @@ namespace stardust
 		return modelMatrix;
 	}
 
-	void Renderer::GenerateRect(const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
+	void Renderer::GenerateRect(const Mat4& modelMatrix, const Colour& colour, const CoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
 	{
 		const auto& [bottomLeftTextureCoordinate, topRightTextureCoordinate] = textureCoordinates;
 		const Vec4 colourVector = ColourToVec4(colour);
@@ -806,7 +806,7 @@ namespace stardust
 		indexCount += 6u;
 	}
 
-	void Renderer::GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const Pair<Vec2, Vec2>& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
+	void Renderer::GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const CoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
 	{
 		const auto& [bottomLeftTextureCoordinate, topRightTextureCoordinate] = textureCoordinates;
 		const Vec4 colourVector = ColourToVec4(colour);

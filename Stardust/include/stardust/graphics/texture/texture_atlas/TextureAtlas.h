@@ -17,7 +17,7 @@ namespace stardust
 	private:
 		Texture m_texture;
 
-		HashMap<String, Pair<Vec2, Vec2>> m_subtextures{ };
+		HashMap<String, CoordinatePair> m_subtextures{ };
 
 	public:
 		TextureAtlas() = default;
@@ -33,8 +33,8 @@ namespace stardust
 
 		inline bool IsTextureValid() const noexcept { return m_texture.IsValid(); }
 
-		inline const Pair<Vec2, Vec2>& GetSubtexture(const String& name) const { return m_subtextures.at(name); }
-		inline const Pair<Vec2, Vec2>& operator [](const String& name) const { return GetSubtexture(name); }
+		inline const CoordinatePair& GetSubtexture(const String& name) const { return m_subtextures.at(name); }
+		inline const CoordinatePair& operator [](const String& name) const { return GetSubtexture(name); }
 
 		inline Texture& GetTexture() noexcept { return m_texture; }
 		inline const Texture& GetTexture() const noexcept { return m_texture; }

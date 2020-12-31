@@ -18,14 +18,14 @@ namespace stardust
 			ObserverPtr<const Texture> texture;
 			ObserverPtr<const SortingLayer> sortingLayer;
 
-			Optional<Pair<Vec2, Vec2>> subTextureArea;
+			Optional<CoordinatePair> subTextureArea;
 			Colour colourMod;
 
 			SpriteRender()
 				: texture(nullptr), sortingLayer(nullptr), subTextureArea(NullOpt), colourMod(colours::White)
 			{ }
 
-			SpriteRender(const Texture& texture, const SortingLayer& sortingLayer, const Optional<Pair<Vec2, Vec2>>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
+			SpriteRender(const Texture& texture, const SortingLayer& sortingLayer, const Optional<CoordinatePair>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
 				: texture(&texture), sortingLayer(&sortingLayer), subTextureArea(subtextureArea), colourMod(colourMod)
 			{ }
 

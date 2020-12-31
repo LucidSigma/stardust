@@ -66,6 +66,8 @@ namespace stardust
 		[[nodiscard]] Status LoadFromSDLSurface(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler);
 		void SetupParameters(const GLint internalFormat, const GLenum format, const ubyte* data, const Sampler& sampler);
 	};
+
+	using CoordinatePair = Pair<Vec2, Vec2>;
 }
 
 #endif

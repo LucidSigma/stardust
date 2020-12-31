@@ -73,7 +73,7 @@ namespace stardust
 			const f32 width = subtexture["rect"]["width"];
 			const f32 height = subtexture["rect"]["height"];
 
-			const Pair<Vec2, Vec2> normalisedCoordinates{
+			const CoordinatePair normalisedCoordinates{
 				Vec2{
 					x / textureWidth,
 					(textureHeight - (y + height)) / textureHeight,
