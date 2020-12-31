@@ -18,6 +18,7 @@ private:
 	sd::Font m_font;
 	sd::Texture m_glyphTexture;
 	sd::Texture m_textTexture;
+	sd::TextureAtlas m_conveyorTextures;
 
 	sd::GameController* m_controller = nullptr;
 
@@ -53,6 +54,13 @@ public:
 
 		m_glyphTexture = sd::text::RenderGlyph(m_font, 'A', sd::colours::White);
 		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
+
+		m_conveyorTextures.Initialise("assets/textures/texture_atlases/conveyors.taj");
+
+		if (!m_conveyorTextures.IsTextureValid())
+		{
+			return sd::Status::Fail;
+		}
 
 		m_sounds.Add("blip", "assets/sounds/blip.wav");
 
@@ -209,21 +217,33 @@ public:
 			GetCamera()
 		);
 
-		GetRenderer().DrawScreenRect(
+		renderer.DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 50, 50 }, sd::UVec2{ 100u, 200u }),
 			sd::comp::ShearTransform(0.0f, 5.0f),
 			sd::colours::Lime
 		);
 
-		GetRenderer().DrawScreenRect(
+		renderer.DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 150, 50 }, sd::UVec2{ 100u, 200u }),
 			sd::comp::ShearTransform(0.0f, -5.0f),
 			sd::comp::SpriteRender(m_glyphTexture, m_defaultSortingLayer)
 		);
 
-		GetRenderer().DrawScreenRect(
+		renderer.DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 200, 800 }, m_textTexture.GetSize() / 3u),
 			sd::comp::SpriteRender(m_textTexture, m_defaultSortingLayer)
+		);
+
+		renderer.DrawWorldRect(
+			sd::comp::Transform(sd::Vec2(4.5f, -2.0f)),
+			sd::comp::SpriteRender(m_conveyorTextures.GetTexture(), m_defaultSortingLayer, m_conveyorTextures["left"]),
+			GetCamera()
+		);
+
+		renderer.DrawWorldRect(
+			sd::comp::Transform(sd::Vec2(6.5f, -2.0f)),
+			sd::comp::SpriteRender(m_conveyorTextures.GetTexture(), m_defaultSortingLayer, m_conveyorTextures["right"]),
+			GetCamera()
 		);
 	}
 

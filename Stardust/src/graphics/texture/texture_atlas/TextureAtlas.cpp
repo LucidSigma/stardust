@@ -75,12 +75,12 @@ namespace stardust
 
 			const Pair<Vec2, Vec2> normalisedCoordinates{
 				Vec2{
-					(x + height) / textureWidth,
-					y / textureHeight,
+					x / textureWidth,
+					(textureHeight - (y + height)) / textureHeight,
 				},
 				Vec2{
-					x / textureWidth,
-					(y + width) / textureHeight,
+					(x + width) / textureWidth,
+					(textureHeight - y) / textureHeight,
 				},
 			};
 
