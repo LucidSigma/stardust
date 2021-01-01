@@ -74,6 +74,9 @@ public:
 
 		m_particles.Initialise(m_defaultSortingLayer);
 
+		GetInputManager().SetButton("play_sound", sd::KeyCode::P);
+		GetInputManager().SetButton("play_sound", sd::GameControllerButton::Y);
+
 		return sd::Status::Success;
 	}
 
@@ -149,7 +152,7 @@ public:
 				}
 			}
 
-			if (GetKeyboardState().IsKeyDown(sd::KeyCode::P) || (m_controller != nullptr && m_controller->IsButtonDown(sd::GameControllerButton::Y)))
+			if (GetInputManager().IsButtonDown("play_sound", { m_controller }))
 			{
 				GetSoundSystem().PlaySound(m_sounds["blip"]);
 			}
