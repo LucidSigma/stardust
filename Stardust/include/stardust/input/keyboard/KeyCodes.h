@@ -7,6 +7,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include <SDL2/SDL.h>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust
@@ -134,6 +135,7 @@ namespace stardust
 		International7 = SDL_SCANCODE_INTERNATIONAL7,
 		International8 = SDL_SCANCODE_INTERNATIONAL8,
 		International9 = SDL_SCANCODE_INTERNATIONAL9,
+
 		Lang1 = SDL_SCANCODE_LANG1,
 		Lang2 = SDL_SCANCODE_LANG2,
 		Lang3 = SDL_SCANCODE_LANG3,
@@ -157,6 +159,8 @@ namespace stardust
 	};
 
 	constexpr usize KeyCount = magic_enum::enum_count<KeyCode>();
+
+	[[nodiscard]] String KeyCodeToString(const KeyCode key);
 }
 
 #endif
