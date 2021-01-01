@@ -4,6 +4,7 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Pointers.h"
+#include "stardust/data/Types.h"
 #include "stardust/input/controller/GameControllerCodes.h"
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/keyboard/KeyCodes.h"
@@ -25,6 +26,12 @@ namespace stardust
 			ControllerRightY,
 			ControllerLeftTrigger,
 			ControllerRightTrigger,
+			ControllerGyroX,
+			ControllerGyroY,
+			ControllerGyroZ,
+			ControllerAccelX,
+			ControllerAccelY,
+			ControllerAccelZ,
 		};
 
 	private:
@@ -96,6 +103,12 @@ namespace stardust
 		void RemoveFromNegativeAxis(const String& axisName, const KeyCode key);
 		void RemoveFromNegativeAxis(const String& axisName, const MouseButton button);
 		void RemoveFromNegativeAxis(const String& axisName, const GameControllerButton button);
+
+		[[nodiscard]] i32 GetAxis(const String& axisName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
+
+	private:
+		[[nodiscard]] i32 GetAxisValueFromType(const AxisType axisType, const bool isInverted, const Vector<ObserverPtr<const GameController>>& gameControllers) const;
+		[[nodiscard]] i32 GetAxisValueFromButtons(const AxisInput& axisData, const Vector<ObserverPtr<const GameController>>& gameControllers) const;
 	};
 }
 

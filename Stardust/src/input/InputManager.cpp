@@ -1,6 +1,9 @@
 #include "stardust/input/InputManager.h"
 
+#include <algorithm>
+
 #include "stardust/input/Input.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -420,5 +423,243 @@ namespace stardust
 		{
 			m_axes[axisName].negativeControllerButtons.erase(button);
 		}
+	}
+	
+	[[nodiscard]] i32 InputManager::GetAxis(const String& axisName, const Vector<ObserverPtr<const GameController>>& gameControllers) const
+	{
+		if (!m_axes.contains(axisName))
+		{
+			return 0;
+		}
+
+		const auto& axisData = m_axes.at(axisName);
+		i32 axisResult = 0;
+
+		for (const auto [axisType, isInverted] : axisData.axes)
+		{
+			axisResult += GetAxisValueFromType(axisType, isInverted, gameControllers);
+		}
+
+		axisResult = std::clamp(axisResult, -1, 1);
+		axisResult += GetAxisValueFromButtons(axisData, gameControllers);
+		axisResult = std::clamp(axisResult, -1, 1);
+
+		return axisResult;
+	}
+
+	[[nodiscard]] i32 InputManager::GetAxisValueFromType(const AxisType axisType, const bool isInverted, const Vector<ObserverPtr<const GameController>>& gameControllers) const
+	{
+		f32 axisValue = 0.0f;
+
+		switch (axisType)
+		{
+		case AxisType::MouseX:
+			axisValue = Input::IsMouseInRelativeMode() ? Input::GetMouseState().GetRelativeCoordinates().x : 0.0f;
+
+			break;
+
+		case AxisType::MouseY:
+			axisValue = Input::IsMouseInRelativeMode() ? Input::GetMouseState().GetRelativeCoordinates().y : 0.0f;
+
+			break;
+
+		case AxisType::MouseScroll:
+			axisValue = static_cast<f32>(Input::GetMouseState().GetScrollAmount());
+
+			break;
+
+		case AxisType::ControllerLeftX:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->GetAxes().left.x) : 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerLeftY:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->GetAxes().left.y) : 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerRightX:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->GetAxes().right.x) : 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerRightY:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->GetAxes().right.y) : 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerLeftTrigger:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->GetAxes().leftTrigger) : 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerRightTrigger:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->GetAxes().rightTrigger) : 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerGyroX:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr && controller->HasGyroscope()
+					? controller->GetGyroscopeData().x
+					: 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerGyroY:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr && controller->HasGyroscope()
+					? controller->GetGyroscopeData().y
+					: 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerGyroZ:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr && controller->HasGyroscope()
+					? controller->GetGyroscopeData().z
+					: 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerAccelX:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr && controller->HasAccelerometer()
+					? controller->GetAccelerometerData().x
+					: 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerAccelY:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr && controller->HasAccelerometer()
+					? controller->GetAccelerometerData().y
+					: 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerAccelZ:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr && controller->HasAccelerometer()
+					? controller->GetAccelerometerData().z
+					: 0.0f;
+			}
+
+			break;
+
+		default:
+			break;
+		}
+
+		i32 axisResult = static_cast<i32>(glm::sign(axisValue));
+
+		if (isInverted)
+		{
+			axisResult *= -1;
+		}
+
+		return axisResult;
+	}
+
+	i32 InputManager::GetAxisValueFromButtons(const AxisInput& axisData, const Vector<ObserverPtr<const GameController>>& gameControllers) const
+	{
+		i32 axisResult = 0;
+
+		for (const auto key : axisData.positiveKeys)
+		{
+			if (Input::GetKeyboardState().IsKeyPressed(key))
+			{
+				++axisResult;
+
+				break;
+			}
+		}
+
+		for (const auto key : axisData.negativeKeys)
+		{
+			if (Input::GetKeyboardState().IsKeyPressed(key))
+			{
+				--axisResult;
+
+				break;
+			}
+		}
+
+		for (const auto button : axisData.positiveMouseButtons)
+		{
+			if (Input::GetMouseState().IsButtonPressed(button))
+			{
+				++axisResult;
+
+				break;
+			}
+		}
+
+		for (const auto button : axisData.negativeMouseButtons)
+		{
+			if (Input::GetMouseState().IsButtonPressed(button))
+			{
+				--axisResult;
+
+				break;
+			}
+		}
+
+		for (const auto& gameController : gameControllers)
+		{
+			if (gameController != nullptr)
+			{
+				for (const auto button : axisData.positiveControllerButtons)
+				{
+					if (gameController->IsButtonPressed(button))
+					{
+						++axisResult;
+
+						break;
+					}
+				}
+
+				for (const auto button : axisData.negativeControllerButtons)
+				{
+					if (gameController->IsButtonPressed(button))
+					{
+						--axisResult;
+
+						break;
+					}
+				}
+			}
+		}
+
+		return axisResult;
 	}
 }
