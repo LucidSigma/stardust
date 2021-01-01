@@ -211,6 +211,8 @@ public:
 
 		m_clickParticleDelay -= deltaTime;
 		m_particles.Update(deltaTime);
+
+		m_colourAnimation.Step();
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
