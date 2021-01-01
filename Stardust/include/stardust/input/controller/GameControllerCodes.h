@@ -7,6 +7,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include <SDL2/SDL.h>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust
@@ -43,6 +44,8 @@ namespace stardust
 	};
 
 	constexpr usize GameControllerButtonCount = magic_enum::enum_count<GameControllerButton>();
+
+	[[nodiscard]] String GameControllerButtonToString(const GameControllerButton controllerButton, const bool usePSnames = false);
 }
 
 #endif
