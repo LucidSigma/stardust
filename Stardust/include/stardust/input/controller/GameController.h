@@ -149,6 +149,8 @@ namespace stardust
 		inline u32 GetPlayerIndex() const noexcept { return m_playerIndex; }
 		inline void SetPlayerIndex(const u32 playerIndex) noexcept { m_playerIndex = playerIndex; }
 
+		[[nodiscard]] String GetName() const;
+
 		[[nodiscard]] inline SDL_GameController* const GetRawHandle() const noexcept { return m_handle.get(); }
 		[[nodiscard]] SDL_Joystick* const GetRawJoystickHandle() const;
 

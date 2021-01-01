@@ -198,6 +198,11 @@ namespace stardust
 		return static_cast<u32>(SDL_GameControllerGetNumTouchpadFingers(GetRawHandle(), 0));
 	}
 
+	[[nodiscard]] String GameController::GetName() const
+	{
+		return SDL_GameControllerName(GetRawHandle());
+	}
+
 	[[nodiscard]] SDL_Joystick* const GameController::GetRawJoystickHandle() const
 	{
 		return SDL_GameControllerGetJoystick(GetRawHandle());
