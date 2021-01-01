@@ -19,6 +19,7 @@ private:
 	sd::Texture m_glyphTexture;
 	sd::Texture m_textTexture;
 	sd::TextureAtlas m_conveyorTextures;
+	sd::TextureAtlas m_colourTextures;
 
 	sd::GameController* m_controller = nullptr;
 
@@ -59,8 +60,9 @@ public:
 		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
 
 		m_conveyorTextures.Initialise("assets/textures/texture_atlases/conveyors.taj");
+		m_colourTextures.Initialise("assets/textures/texture_atlases/colours.taj");
 
-		if (!m_conveyorTextures.IsTextureValid())
+		if (!m_conveyorTextures.IsTextureValid() || !m_colourTextures.IsTextureValid())
 		{
 			return sd::Status::Fail;
 		}
@@ -74,8 +76,20 @@ public:
 
 		m_particles.Initialise(m_defaultSortingLayer);
 
+		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
+		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
+		GetInputManager().AddToButton("coords", sd::MouseButton::Thumb1);
+
 		GetInputManager().AddToButton("play_sound", sd::KeyCode::P);
 		GetInputManager().AddToButton("play_sound", sd::GameControllerButton::Y);
+
+		GetInputManager().AddToButton("reset", sd::KeyCode::Tab);
+		GetInputManager().AddToButton("reset", sd::GameControllerButton::RightShoulder);
+
+		GetInputManager().AddToButton("particle", sd::MouseButton::Left);
+		GetInputManager().AddToButton("particle", sd::GameControllerButton::A);
+
+		GetInputManager().AddToAxis("scroll", sd::AxisType::MouseScroll);
 
 		GetInputManager().AddToPositiveAxis("x", { sd::KeyCode::A, sd::KeyCode::Left });
 		GetInputManager().AddToNegativeAxis("x", { sd::KeyCode::D, sd::KeyCode::Right });
@@ -102,62 +116,41 @@ public:
 	{
 		if (m_application.HasWindowFocus())
 		{
-			if (GetKeyboardState().IsKeyDown(sd::KeyCode::Escape))
+			if (GetInputManager().IsButtonDown("quit"))
 			{
 				m_application.FinishCurrentScene();
 			}
 
-			if (GetKeyboardState().IsKeyDown(sd::KeyCode::Space))
+			if (GetInputManager().IsButtonDown("outline"))
 			{
 				GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Outline);
 			}
-			else if (GetKeyboardState().IsKeyUp(sd::KeyCode::Space))
+			else if (GetInputManager().IsButtonUp("outline"))
 			{
 				GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
 			}
 
-			if (GetMouseState().IsButtonDown(sd::MouseButton::Thumb1))
+			if (GetInputManager().IsButtonUp("coords"))
 			{
 				const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace(GetMouseState().GetProportionalCoordinates(GetRenderer()));
 
 				sd::Log::Trace("Screen: {} {}; World: {} {}", GetMouseState().GetProportionalCoordinates(GetRenderer()).x, GetMouseState().GetProportionalCoordinates(GetRenderer()).y, mouseClick.x, mouseClick.y);
 			}
 
-			if (GetMouseState().GetScrollAmount() != 0)
+			if (GetInputManager().GetAxis("scroll") != 0)
 			{
 				sd::Log::Trace("{}", GetMouseState().GetScrollAmount());
 			}
 
+			if (GetInputManager().IsButtonDown("reset", { m_controller }))
+			{
+				GetCamera().SetRotation(0.0f);
+				GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
+			}
+
 			if (m_controller != nullptr)
 			{
-				const auto& touchpadFingers = m_controller->GetTouchpadFingers();
-
-				if (touchpadFingers[0].isTouching && m_controller->IsButtonDown(sd::GameControllerButton::A))
-				{
-					sd::Log::Trace("{}, {}: {}", touchpadFingers[0].position.x, touchpadFingers[0].position.y, touchpadFingers[0].pressure);
-				}
-
 				GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.04f));
-				//GetCamera().SetPosition(
-				//	GetCamera().GetPosition().x + m_controller->GetAccelerometerData().x * 0.005f,
-				//	GetCamera().GetPosition().y + m_controller->GetAccelerometerData().z * 0.005f,
-				//	GetCamera().GetPosition().z
-				//);
-
-				if (m_controller->GetAxes().rightTrigger > 0)
-				{
-					GetCamera().SetRotation(0.0f);
-					GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
-				}
-
-				if (m_controller->IsButtonDown(sd::GameControllerButton::LeftShoulder))
-				{
-					m_controller->Rumble(0.5f, 0.5f, 1'000u);
-				}
-				else if (m_controller->IsButtonDown(sd::GameControllerButton::RightShoulder))
-				{
-					m_controller->Rumble(1.0f, 1.0f, 1'000u);
-				}
 			}
 
 			if (GetInputManager().IsButtonDown("play_sound", { m_controller }))
@@ -165,7 +158,7 @@ public:
 				GetSoundSystem().PlaySound(m_sounds["blip"]);
 			}
 
-			if (GetMouseState().IsButtonPressed(sd::MouseButton::Left) && m_clickParticleDelay < 0.0f)
+			if (GetInputManager().IsButtonPressed("particle", { m_controller }) && m_clickParticleDelay < 0.0f)
 			{
 				m_clickParticleDelay = 0.01f;
 
@@ -308,6 +301,30 @@ public:
 		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(6.5f, -2.0f)),
 			sd::comp::SpriteRender(m_conveyorTextures.GetTexture(), m_defaultSortingLayer, m_conveyorTextures["right"]),
+			GetCamera()
+		);
+
+		renderer.DrawWorldRect(
+			sd::comp::Transform(sd::Vec2(-6.5f, 3.0f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
+			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["red"]),
+			GetCamera()
+		);
+
+		renderer.DrawWorldRect(
+			sd::comp::Transform(sd::Vec2(-5.0f, 3.0f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
+			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["green"]),
+			GetCamera()
+		);
+
+		renderer.DrawWorldRect(
+			sd::comp::Transform(sd::Vec2(-6.5f, 1.5f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
+			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["blue"]),
+			GetCamera()
+		);
+
+		renderer.DrawWorldRect(
+			sd::comp::Transform(sd::Vec2(-5.0f, 1.5f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
+			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["yellow"]),
 			GetCamera()
 		);
 

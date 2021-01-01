@@ -43,11 +43,11 @@ namespace stardust
 		Wrap tWrap = Wrap::Repeat;
 		Optional<Colour> borderColour = NullOpt;
 
-		MinFilter minFilter = MinFilter::NearestMipmapNearest;
+		MinFilter minFilter = MinFilter::Nearest;
 		MagFilter magFilter = MagFilter::Nearest;
 
-		bool generateMipmaps = true;
-		bool enableAnisotropicFiltering = true;
+		bool generateMipmaps = false;
+		bool enableAnisotropicFiltering = false;
 	};
 }
 

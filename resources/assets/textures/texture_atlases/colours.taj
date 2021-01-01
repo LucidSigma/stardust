@@ -1,0 +1,41 @@
+{
+	"texture_file": "colours.png",
+	"subtextures": [
+		{
+			"name": "red",
+			"rect": {
+				"x": 0,
+				"y": 0,
+				"width": 32,
+				"height": 32
+			}
+		},
+		{
+			"name": "green",
+			"rect": {
+				"x": 32,
+				"y": 0,
+				"width": 32,
+				"height": 32
+			}
+		},
+		{
+			"name": "blue",
+			"rect": {
+				"x": 0,
+				"y": 32,
+				"width": 32,
+				"height": 32
+			}
+		},
+		{
+			"name": "yellow",
+			"rect": {
+				"x": 32,
+				"y": 32,
+				"width": 32,
+				"height": 32
+			}
+		}
+	]
+}
