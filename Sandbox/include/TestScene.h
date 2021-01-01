@@ -74,8 +74,8 @@ public:
 
 		m_particles.Initialise(m_defaultSortingLayer);
 
-		GetInputManager().SetButton("play_sound", sd::KeyCode::P);
-		GetInputManager().SetButton("play_sound", sd::GameControllerButton::Y);
+		GetInputManager().AddToButton("play_sound", sd::KeyCode::P);
+		GetInputManager().AddToButton("play_sound", sd::GameControllerButton::Y);
 
 		return sd::Status::Success;
 	}

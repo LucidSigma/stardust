@@ -4,7 +4,7 @@
 
 namespace stardust
 {
-	void InputManager::SetButton(const String& buttonName, const KeyCode key)
+	void InputManager::AddToButton(const String& buttonName, const KeyCode key)
 	{
 		if (!m_buttons.contains(buttonName))
 		{
@@ -14,7 +14,7 @@ namespace stardust
 		m_buttons[buttonName].keys.insert(key);
 	}
 
-	void InputManager::SetButton(const String& buttonName, const Vector<KeyCode>& keys)
+	void InputManager::AddToButton(const String& buttonName, const Vector<KeyCode>& keys)
 	{
 		if (!m_buttons.contains(buttonName))
 		{
@@ -27,7 +27,7 @@ namespace stardust
 		}
 	}
 
-	void InputManager::SetButton(const String& buttonName, const MouseButton button)
+	void InputManager::AddToButton(const String& buttonName, const MouseButton button)
 	{
 		if (!m_buttons.contains(buttonName))
 		{
@@ -37,7 +37,7 @@ namespace stardust
 		m_buttons[buttonName].mouseButtons.insert(button);
 	}
 
-	void InputManager::SetButton(const String& buttonName, const Vector<MouseButton>& buttons)
+	void InputManager::AddToButton(const String& buttonName, const Vector<MouseButton>& buttons)
 	{
 		if (!m_buttons.contains(buttonName))
 		{
@@ -50,7 +50,7 @@ namespace stardust
 		}
 	}
 
-	void InputManager::SetButton(const String& buttonName, const GameControllerButton button)
+	void InputManager::AddToButton(const String& buttonName, const GameControllerButton button)
 	{
 		if (!m_buttons.contains(buttonName))
 		{
@@ -60,7 +60,7 @@ namespace stardust
 		m_buttons[buttonName].controllerButtons.insert(button);
 	}
 
-	void InputManager::SetButton(const String& buttonName, const Vector<GameControllerButton>& buttons)
+	void InputManager::AddToButton(const String& buttonName, const Vector<GameControllerButton>& buttons)
 	{
 		if (!m_buttons.contains(buttonName))
 		{
@@ -213,7 +213,7 @@ namespace stardust
 		return false;
 	}
 
-	void InputManager::AddAxis(const String& axisName, const AxisType axisType, const bool inverted)
+	void InputManager::AddToAxis(const String& axisName, const AxisType axisType, const bool inverted)
 	{
 		if (!m_axes.contains(axisName))
 		{
@@ -221,6 +221,144 @@ namespace stardust
 		}
 
 		m_axes[axisName].axes.insert({ axisType, inverted });
+	}
+
+	void InputManager::AddToPositiveAxis(const String& axisName, const KeyCode key)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		m_axes[axisName].positiveKeys.insert(key);
+	}
+
+	void InputManager::AddToPositiveAxis(const String& axisName, const Vector<KeyCode>& keys)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		for (const auto key : keys)
+		{
+			m_axes[axisName].positiveKeys.insert(key);
+		}
+	}
+
+	void InputManager::AddToPositiveAxis(const String& axisName, const MouseButton button)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		m_axes[axisName].positiveMouseButtons.insert(button);
+	}
+
+	void InputManager::AddToPositiveAxis(const String& axisName, const Vector<MouseButton>& buttons)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		for (const auto button : buttons)
+		{
+			m_axes[axisName].positiveMouseButtons.insert(button);
+		}
+	}
+
+	void InputManager::AddToPositiveAxis(const String& axisName, const GameControllerButton button)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		m_axes[axisName].positiveControllerButtons.insert(button);
+	}
+
+	void InputManager::AddToPositiveAxis(const String& axisName, const Vector<GameControllerButton>& buttons)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		for (const auto button : buttons)
+		{
+			m_axes[axisName].positiveControllerButtons.insert(button);
+		}
+	}
+
+	void InputManager::AddToNegativeAxis(const String& axisName, const KeyCode key)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		m_axes[axisName].negativeKeys.insert(key);
+	}
+
+	void InputManager::AddToNegativeAxis(const String& axisName, const Vector<KeyCode>& keys)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		for (const auto key : keys)
+		{
+			m_axes[axisName].negativeKeys.insert(key);
+		}
+	}
+
+	void InputManager::AddToNegativeAxis(const String& axisName, const MouseButton button)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		m_axes[axisName].negativeMouseButtons.insert(button);
+	}
+
+	void InputManager::AddToNegativeAxis(const String& axisName, const Vector<MouseButton>& buttons)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		for (const auto button : buttons)
+		{
+			m_axes[axisName].negativeMouseButtons.insert(button);
+		}
+	}
+
+	void InputManager::AddToNegativeAxis(const String& axisName, const GameControllerButton button)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		m_axes[axisName].negativeControllerButtons.insert(button);
+	}
+
+	void InputManager::AddToNegativeAxis(const String& axisName, const Vector<GameControllerButton>& buttons)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		for (const auto button : buttons)
+		{
+			m_axes[axisName].negativeControllerButtons.insert(button);
+		}
 	}
 
 	void InputManager::RemoveAxis(const String& axisName)
@@ -233,6 +371,54 @@ namespace stardust
 		if (m_axes.contains(axisName))
 		{
 			m_axes[axisName].axes.erase(axisType);
+		}
+	}
+
+	void InputManager::RemoveFromPositiveAxis(const String& axisName, const KeyCode key)
+	{
+		if (m_axes.contains(axisName))
+		{
+			m_axes[axisName].positiveKeys.erase(key);
+		}
+	}
+
+	void InputManager::RemoveFromPositiveAxis(const String& axisName, const MouseButton button)
+	{
+		if (m_axes.contains(axisName))
+		{
+			m_axes[axisName].positiveMouseButtons.erase(button);
+		}
+	}
+
+	void InputManager::RemoveFromPositiveAxis(const String& axisName, const GameControllerButton button)
+	{
+		if (m_axes.contains(axisName))
+		{
+			m_axes[axisName].positiveControllerButtons.erase(button);
+		}
+	}
+
+	void InputManager::RemoveFromNegativeAxis(const String& axisName, const KeyCode key)
+	{
+		if (m_axes.contains(axisName))
+		{
+			m_axes[axisName].negativeKeys.erase(key);
+		}
+	}
+
+	void InputManager::RemoveFromNegativeAxis(const String& axisName, const MouseButton button)
+	{
+		if (m_axes.contains(axisName))
+		{
+			m_axes[axisName].negativeMouseButtons.erase(button);
+		}
+	}
+
+	void InputManager::RemoveFromNegativeAxis(const String& axisName, const GameControllerButton button)
+	{
+		if (m_axes.contains(axisName))
+		{
+			m_axes[axisName].negativeControllerButtons.erase(button);
 		}
 	}
 }
