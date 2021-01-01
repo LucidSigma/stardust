@@ -1,0 +1,47 @@
+{
+	"frames": {
+		"0": {
+			"sprite": "red",
+			"position-offset": {
+				"x": 0,
+				"y": 0
+			},
+			"rotation": 0,
+			"scale": {
+				"x": 0.8,
+				"y": 0.8
+			},
+			"shear": {
+				"x": 0,
+				"y": 0
+			},
+			"colour": {
+				"r": 255,
+				"g": 255,
+				"b": 255,
+				"a": 255
+			}
+		},
+		"4": {
+			"sprite": "green",
+			"position-offset": {
+				"x": 1,
+				"y": 0
+			}
+		},
+		"8": {
+			"sprite": "blue",
+			"position-offset": {
+				"x": 0,
+				"y": 1
+			}
+		},
+		"12": {
+			"sprite": "yellow",
+			"position-offset": {
+				"x": 1,
+				"y": 1
+			}
+		}
+	}
+}

@@ -5,6 +5,8 @@
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 
+#include "animation/Animation.h"
+
 #include "application/Application.h"
 #include "assets/AssetManager.h"
 

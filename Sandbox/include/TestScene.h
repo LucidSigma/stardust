@@ -28,6 +28,8 @@ private:
 	sd::ParticleSystem m_particles;
 	sd::f32 m_clickParticleDelay = 0.01f;
 
+	sd::Animation m_colourAnimation;
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -75,6 +77,13 @@ public:
 		}
 
 		m_particles.Initialise(m_defaultSortingLayer);
+
+		m_colourAnimation.Initialise("assets/animations/colours.anj", m_colourTextures);
+
+		if (!m_colourAnimation.IsValid())
+		{
+			return sd::Status::Fail;
+		}
 
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
