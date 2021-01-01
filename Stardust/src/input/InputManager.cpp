@@ -6,110 +6,100 @@ namespace stardust
 {
 	void InputManager::SetButton(const String& buttonName, const KeyCode key)
 	{
-		if (!m_keys.contains(buttonName))
+		if (!m_buttons.contains(buttonName))
 		{
-			m_keys[buttonName] = { };
+			m_buttons[buttonName].m_keys= { };
 		}
 
-		m_keys[buttonName].insert(key);
+		m_buttons[buttonName].m_keys.insert(key);
 	}
 
 	void InputManager::SetButton(const String& buttonName, const Vector<KeyCode>& keys)
 	{
-		if (!m_keys.contains(buttonName))
+		if (!m_buttons.contains(buttonName))
 		{
-			m_keys[buttonName] = { };
+			m_buttons[buttonName] = { };
 		}
 
 		for (const auto key : keys)
 		{
-			m_keys[buttonName].insert(key);
+			m_buttons[buttonName].m_keys.insert(key);
 		}
 	}
 
 	void InputManager::SetButton(const String& buttonName, const MouseButton button)
 	{
-		if (!m_mouseButtons.contains(buttonName))
+		if (!m_buttons.contains(buttonName))
 		{
-			m_mouseButtons[buttonName] = { };
+			m_buttons[buttonName] = { };
 		}
 
-		m_mouseButtons[buttonName].insert(button);
+		m_buttons[buttonName].m_mouseButtons.insert(button);
 	}
 
 	void InputManager::SetButton(const String& buttonName, const Vector<MouseButton>& buttons)
 	{
-		if (!m_mouseButtons.contains(buttonName))
+		if (!m_buttons.contains(buttonName))
 		{
-			m_mouseButtons[buttonName] = { };
+			m_buttons[buttonName] = { };
 		}
 
 		for (const auto button : buttons)
 		{
-			m_mouseButtons[buttonName].insert(button);
+			m_buttons[buttonName].m_mouseButtons.insert(button);
 		}
 	}
 
 	void InputManager::SetButton(const String& buttonName, const GameControllerButton button)
 	{
-		if (!m_controllerButtons.contains(buttonName))
+		if (!m_buttons.contains(buttonName))
 		{
-			m_controllerButtons[buttonName] = { };
+			m_buttons[buttonName] = { };
 		}
 
-		m_controllerButtons[buttonName].insert(button);
+		m_buttons[buttonName].m_controllerButtons.insert(button);
 	}
 
 	void InputManager::SetButton(const String& buttonName, const Vector<GameControllerButton>& buttons)
 	{
-		if (!m_controllerButtons.contains(buttonName))
+		if (!m_buttons.contains(buttonName))
 		{
-			m_controllerButtons[buttonName] = { };
+			m_buttons[buttonName] = { };
 		}
 
 		for (const auto button : buttons)
 		{
-			m_controllerButtons[buttonName].insert(button);
+			m_buttons[buttonName].m_controllerButtons.insert(button);
 		}
 	}
 
 	[[nodiscard]] bool InputManager::IsButtonDown(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers) const
 	{
-		if (m_keys.contains(buttonName))
+		if (m_buttons.contains(buttonName))
 		{
-			const auto& keys = m_keys.at(buttonName);
+			const auto& buttons = m_buttons.at(buttonName);
 
-			for (const auto key : keys)
+			for (const auto key : buttons.m_keys)
 			{
 				if (Input::GetKeyboardState().IsKeyDown(key))
 				{
 					return true;
 				}
 			}
-		}
 
-		if (m_mouseButtons.contains(buttonName))
-		{
-			const auto& buttons = m_mouseButtons.at(buttonName);
-
-			for (const auto button : buttons)
+			for (const auto mouseButton : buttons.m_mouseButtons)
 			{
-				if (Input::GetMouseState().IsButtonDown(button))
+				if (Input::GetMouseState().IsButtonDown(mouseButton))
 				{
 					return true;
 				}
 			}
-		}
-
-		if (m_controllerButtons.contains(buttonName))
-		{
-			const auto& buttons = m_controllerButtons.at(buttonName);
 
 			for (const auto& gameController : gameControllers)
 			{
-				for (const auto button : buttons)
+				for (const auto controllerButton : buttons.m_controllerButtons)
 				{
-					if (gameController != nullptr && gameController->IsButtonDown(button))
+					if (gameController != nullptr && gameController->IsButtonDown(controllerButton))
 					{
 						return true;
 					}
@@ -122,41 +112,31 @@ namespace stardust
 
 	[[nodiscard]] bool InputManager::IsButtonPressed(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers) const
 	{
-		if (m_keys.contains(buttonName))
+		if (m_buttons.contains(buttonName))
 		{
-			const auto& keys = m_keys.at(buttonName);
+			const auto& buttons = m_buttons.at(buttonName);
 
-			for (const auto key : keys)
+			for (const auto key : buttons.m_keys)
 			{
 				if (Input::GetKeyboardState().IsKeyPressed(key))
 				{
 					return true;
 				}
 			}
-		}
 
-		if (m_mouseButtons.contains(buttonName))
-		{
-			const auto& buttons = m_mouseButtons.at(buttonName);
-
-			for (const auto button : buttons)
+			for (const auto mouseButton : buttons.m_mouseButtons)
 			{
-				if (Input::GetMouseState().IsButtonPressed(button))
+				if (Input::GetMouseState().IsButtonPressed(mouseButton))
 				{
 					return true;
 				}
 			}
-		}
-
-		if (m_controllerButtons.contains(buttonName))
-		{
-			const auto& buttons = m_controllerButtons.at(buttonName);
 
 			for (const auto& gameController : gameControllers)
 			{
-				for (const auto button : buttons)
+				for (const auto controllerButton : buttons.m_controllerButtons)
 				{
-					if (gameController != nullptr && gameController->IsButtonPressed(button))
+					if (gameController != nullptr && gameController->IsButtonPressed(controllerButton))
 					{
 						return true;
 					}
@@ -169,41 +149,31 @@ namespace stardust
 
 	[[nodiscard]] bool InputManager::IsButtonUp(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers) const
 	{
-		if (m_keys.contains(buttonName))
+		if (m_buttons.contains(buttonName))
 		{
-			const auto& keys = m_keys.at(buttonName);
+			const auto& buttons = m_buttons.at(buttonName);
 
-			for (const auto key : keys)
+			for (const auto key : buttons.m_keys)
 			{
 				if (Input::GetKeyboardState().IsKeyUp(key))
 				{
 					return true;
 				}
 			}
-		}
 
-		if (m_mouseButtons.contains(buttonName))
-		{
-			const auto& buttons = m_mouseButtons.at(buttonName);
-
-			for (const auto button : buttons)
+			for (const auto mouseButton : buttons.m_mouseButtons)
 			{
-				if (Input::GetMouseState().IsButtonUp(button))
+				if (Input::GetMouseState().IsButtonUp(mouseButton))
 				{
 					return true;
 				}
 			}
-		}
-
-		if (m_controllerButtons.contains(buttonName))
-		{
-			const auto& buttons = m_controllerButtons.at(buttonName);
 
 			for (const auto& gameController : gameControllers)
 			{
-				for (const auto button : buttons)
+				for (const auto controllerButton : buttons.m_controllerButtons)
 				{
-					if (gameController != nullptr && gameController->IsButtonUp(button))
+					if (gameController != nullptr && gameController->IsButtonUp(controllerButton))
 					{
 						return true;
 					}

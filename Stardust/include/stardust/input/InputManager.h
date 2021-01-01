@@ -14,9 +14,25 @@ namespace stardust
 	class InputManager
 	{
 	private:
-		HashMap<String, HashSet<KeyCode>> m_keys{ };
-		HashMap<String, HashSet<MouseButton>> m_mouseButtons{ };
-		HashMap<String, HashSet<GameControllerButton>> m_controllerButtons{ };
+		class ButtonInput
+		{
+		private:
+			HashSet<KeyCode> m_keys{ };
+			HashSet<MouseButton> m_mouseButtons{ };
+			HashSet<GameControllerButton> m_controllerButtons{ };
+
+		public:
+			friend class InputManager;
+
+			ButtonInput() = default;
+			~ButtonInput() noexcept = default;
+		};
+
+		HashMap<String, ButtonInput> m_buttons{ };
+
+		//HashMap<String, HashSet<KeyCode>> m_keys{ };
+		//HashMap<String, HashSet<MouseButton>> m_mouseButtons{ };
+		//HashMap<String, HashSet<GameControllerButton>> m_controllerButtons{ };
 
 	public:
 		InputManager() = default;
