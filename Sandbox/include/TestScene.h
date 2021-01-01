@@ -77,6 +77,14 @@ public:
 		GetInputManager().AddToButton("play_sound", sd::KeyCode::P);
 		GetInputManager().AddToButton("play_sound", sd::GameControllerButton::Y);
 
+		GetInputManager().AddToPositiveAxis("x", { sd::KeyCode::A, sd::KeyCode::Left });
+		GetInputManager().AddToNegativeAxis("x", { sd::KeyCode::D, sd::KeyCode::Right });
+		GetInputManager().AddToAxis("x", sd::InputManager::AxisType::ControllerRightX, true);
+
+		GetInputManager().AddToPositiveAxis("y", { sd::KeyCode::S, sd::KeyCode::Down });
+		GetInputManager().AddToNegativeAxis("y", { sd::KeyCode::W, sd::KeyCode::Up });
+		GetInputManager().AddToAxis("y", sd::InputManager::AxisType::ControllerRightY, false);
+
 		return sd::Status::Success;
 	}
 
@@ -193,6 +201,11 @@ public:
 	virtual void Update(const sd::f32 deltaTime) override
 	{
 		GetCamera().SetZoom((glm::sin(GetElapsedTime()) * 0.5f) + 1.0f);
+		GetCamera().SetPosition(
+			GetCamera().GetPosition().x + GetInputManager().GetAxis("x", { m_controller }) * 4.0f * deltaTime,
+			GetCamera().GetPosition().y + GetInputManager().GetAxis("y", { m_controller }) * 4.0f * deltaTime,
+			GetCamera().GetPosition().z
+		);
 
 		m_clickParticleDelay -= deltaTime;
 		m_particles.Update(deltaTime);
