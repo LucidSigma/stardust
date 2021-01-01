@@ -3,6 +3,7 @@
 #include "stardust/application/Application.h"
 #include "stardust/audio/SoundSystem.h"
 #include "stardust/camera/Camera2D.h"
+#include "stardust/input/InputManager.h"
 #include "stardust/scene/entity/Entity.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/window/Window.h"
@@ -46,6 +47,16 @@ namespace stardust
 	const Camera2D& Scene::GetCamera() const noexcept
 	{
 		return m_application.GetCamera();
+	}
+
+	InputManager& Scene::GetInputManager() noexcept
+	{
+		return m_application.GetInputManager();
+	}
+
+	const InputManager& Scene::GetInputManager() const noexcept
+	{
+		return m_application.GetInputManager();
 	}
 
 	SceneManager& Scene::GetSceneManager() noexcept

@@ -19,6 +19,7 @@
 #include "stardust/data/Types.h"
 #include "stardust/graphics/backend/OpenGLContext.h"
 #include "stardust/graphics/renderer/Renderer.h"
+#include "stardust/input/InputManager.h"
 #include "stardust/locale/Locale.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/utility/status/Status.h"
@@ -82,6 +83,7 @@ namespace stardust
 		u64 m_ticksCount = 0u;
 		f64 m_elapsedTime = 0.0;
 
+		InputManager m_inputManager;
 		SceneManager m_sceneManager;
 		bool m_isCurrentSceneFinished = false;
 
@@ -115,6 +117,7 @@ namespace stardust
 		inline Window& GetWindow() noexcept { return m_window; }
 		inline Renderer& GetRenderer() noexcept { return m_renderer; }
 		inline Camera2D& GetCamera() noexcept { return m_camera; }
+		inline InputManager& GetInputManager() noexcept { return m_inputManager; }
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }

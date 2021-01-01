@@ -62,6 +62,9 @@ namespace stardust
 		class Camera2D& GetCamera() noexcept;
 		const class Camera2D& GetCamera() const noexcept;
 
+		class InputManager& GetInputManager() noexcept;
+		const class InputManager& GetInputManager() const noexcept;
+
 		class SceneManager& GetSceneManager() noexcept;
 		const class SceneManager& GetSceneManager() const noexcept;
 
