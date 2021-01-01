@@ -12,7 +12,7 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 ### Audio
 * [SoLoud](https://sol.gfxile.net/soloud/)
 	* [dr_libs](https://github.com/mackron/dr_libs)
-	* [stb_vorbis](https://github.com/nothings/stb)
+	* [stb_vorbis](https://github.com/nothings/stb/blob/master/stb_vorbis.c)
 
 ### Data
 * [concurrentqueue](https://github.com/cameron314/concurrentqueue)
@@ -26,7 +26,8 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * [SDL_ttf](https://www.libsdl.org/projects/SDL_ttf/)
 	* [FreeType](https://www.freetype.org/)
 	* [zlib](https://zlib.net/)
-* [stb_image and stb_image_write](https://github.com/nothings/stb)
+* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
+* [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
 
 ### Mathematics
 * [GLM](https://github.com/g-truc/glm)

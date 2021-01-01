@@ -19,7 +19,7 @@
 		}
 	},
 	"graphics": {
-		"anti-aliasing": true,
+		"anti-aliasing": false,
 		"resolution": {
 			"height": 1080,
 			"width": 1920
