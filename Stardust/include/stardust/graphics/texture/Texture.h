@@ -67,7 +67,7 @@ namespace stardust
 		void SetupParameters(const GLint internalFormat, const GLenum format, const ubyte* data, const Sampler& sampler);
 	};
 
-	using CoordinatePair = Pair<Vec2, Vec2>;
+	using TextureCoordinatePair = Pair<Vec2, Vec2>;
 }
 
 #endif

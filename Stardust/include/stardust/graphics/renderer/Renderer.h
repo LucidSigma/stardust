@@ -170,8 +170,8 @@ namespace stardust
 		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
 		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
 
-		void GenerateRect(const Mat4& modelMatrix, const Colour& colour, const CoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
-		void GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const CoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
+		void GenerateRect(const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
+		void GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
 
 		void UpdateScreenProjectionMatrix();
 	};
