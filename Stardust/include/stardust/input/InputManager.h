@@ -9,31 +9,12 @@
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/keyboard/KeyCodes.h"
 #include "stardust/input/mouse/MouseButtonCodes.h"
+#include "stardust/input/AxisType.h"
 
 namespace stardust
 {
 	class InputManager
 	{
-	public:
-		enum class AxisType
-		{
-			MouseX,
-			MouseY,
-			MouseScroll,
-			ControllerLeftX,
-			ControllerLeftY,
-			ControllerRightX,
-			ControllerRightY,
-			ControllerLeftTrigger,
-			ControllerRightTrigger,
-			ControllerGyroX,
-			ControllerGyroY,
-			ControllerGyroZ,
-			ControllerAccelX,
-			ControllerAccelY,
-			ControllerAccelZ,
-		};
-
 	private:
 		struct ButtonInput
 		{
@@ -94,6 +75,8 @@ namespace stardust
 		void AddToNegativeAxis(const String& axisName, const Vector<MouseButton>& buttons);
 		void AddToNegativeAxis(const String& axisName, const GameControllerButton button);
 		void AddToNegativeAxis(const String& axisName, const Vector<GameControllerButton>& buttons);
+
+		void InvertAxis(const String& axisName, const AxisType axisType, const bool isInverted);
 
 		void RemoveAxis(const String& axisName);
 		void RemoveFromAxis(const String& axisName, const AxisType axisType);

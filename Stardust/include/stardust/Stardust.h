@@ -58,6 +58,7 @@
 #include "input/keyboard/KeyCodes.h"
 #include "input/mouse/Mouse.h"	
 #include "input/mouse/MouseButtonCodes.h"	
+#include "input/AxisType.h"
 #include "input/Input.h"
 #include "input/InputManager.h"
 #include "locale/Locale.h"

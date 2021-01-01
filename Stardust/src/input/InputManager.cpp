@@ -364,6 +364,14 @@ namespace stardust
 		}
 	}
 
+	void InputManager::InvertAxis(const String& axisName, const AxisType axisType, const bool isInverted)
+	{
+		if (m_axes.contains(axisName) && m_axes.at(axisName).axes.contains(axisType))
+		{
+			m_axes[axisName].axes[axisType] = isInverted;
+		}
+	}
+
 	void InputManager::RemoveAxis(const String& axisName)
 	{
 		m_axes.erase(axisName);

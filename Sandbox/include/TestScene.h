@@ -79,11 +79,11 @@ public:
 
 		GetInputManager().AddToPositiveAxis("x", { sd::KeyCode::A, sd::KeyCode::Left });
 		GetInputManager().AddToNegativeAxis("x", { sd::KeyCode::D, sd::KeyCode::Right });
-		GetInputManager().AddToAxis("x", sd::InputManager::AxisType::ControllerRightX, true);
+		GetInputManager().AddToAxis("x", sd::AxisType::ControllerRightX, true);
 
 		GetInputManager().AddToPositiveAxis("y", { sd::KeyCode::S, sd::KeyCode::Down });
 		GetInputManager().AddToNegativeAxis("y", { sd::KeyCode::W, sd::KeyCode::Up });
-		GetInputManager().AddToAxis("y", sd::InputManager::AxisType::ControllerRightY, false);
+		GetInputManager().AddToAxis("y", sd::AxisType::ControllerRightY, false);
 
 		return sd::Status::Success;
 	}
