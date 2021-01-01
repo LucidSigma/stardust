@@ -8,10 +8,10 @@ namespace stardust
 	{
 		if (!m_buttons.contains(buttonName))
 		{
-			m_buttons[buttonName].m_keys= { };
+			m_buttons[buttonName].keys= { };
 		}
 
-		m_buttons[buttonName].m_keys.insert(key);
+		m_buttons[buttonName].keys.insert(key);
 	}
 
 	void InputManager::SetButton(const String& buttonName, const Vector<KeyCode>& keys)
@@ -23,7 +23,7 @@ namespace stardust
 
 		for (const auto key : keys)
 		{
-			m_buttons[buttonName].m_keys.insert(key);
+			m_buttons[buttonName].keys.insert(key);
 		}
 	}
 
@@ -34,7 +34,7 @@ namespace stardust
 			m_buttons[buttonName] = { };
 		}
 
-		m_buttons[buttonName].m_mouseButtons.insert(button);
+		m_buttons[buttonName].mouseButtons.insert(button);
 	}
 
 	void InputManager::SetButton(const String& buttonName, const Vector<MouseButton>& buttons)
@@ -46,7 +46,7 @@ namespace stardust
 
 		for (const auto button : buttons)
 		{
-			m_buttons[buttonName].m_mouseButtons.insert(button);
+			m_buttons[buttonName].mouseButtons.insert(button);
 		}
 	}
 
@@ -57,7 +57,7 @@ namespace stardust
 			m_buttons[buttonName] = { };
 		}
 
-		m_buttons[buttonName].m_controllerButtons.insert(button);
+		m_buttons[buttonName].controllerButtons.insert(button);
 	}
 
 	void InputManager::SetButton(const String& buttonName, const Vector<GameControllerButton>& buttons)
@@ -69,7 +69,36 @@ namespace stardust
 
 		for (const auto button : buttons)
 		{
-			m_buttons[buttonName].m_controllerButtons.insert(button);
+			m_buttons[buttonName].controllerButtons.insert(button);
+		}
+	}
+
+	void InputManager::RemoveButton(const String& buttonName)
+	{
+		m_buttons.erase(buttonName);
+	}
+
+	void InputManager::RemoveFromButton(const String& buttonName, const KeyCode key)
+	{
+		if (m_buttons.contains(buttonName))
+		{
+			m_buttons[buttonName].keys.erase(key);
+		}
+	}
+
+	void InputManager::RemoveFromButton(const String& buttonName, const MouseButton button)
+	{
+		if (m_buttons.contains(buttonName))
+		{
+			m_buttons[buttonName].mouseButtons.erase(button);
+		}
+	}
+
+	void InputManager::RemoveFromButton(const String& buttonName, const GameControllerButton button)
+	{
+		if (m_buttons.contains(buttonName))
+		{
+			m_buttons[buttonName].controllerButtons.erase(button);
 		}
 	}
 
@@ -79,7 +108,7 @@ namespace stardust
 		{
 			const auto& buttons = m_buttons.at(buttonName);
 
-			for (const auto key : buttons.m_keys)
+			for (const auto key : buttons.keys)
 			{
 				if (Input::GetKeyboardState().IsKeyDown(key))
 				{
@@ -87,7 +116,7 @@ namespace stardust
 				}
 			}
 
-			for (const auto mouseButton : buttons.m_mouseButtons)
+			for (const auto mouseButton : buttons.mouseButtons)
 			{
 				if (Input::GetMouseState().IsButtonDown(mouseButton))
 				{
@@ -97,7 +126,7 @@ namespace stardust
 
 			for (const auto& gameController : gameControllers)
 			{
-				for (const auto controllerButton : buttons.m_controllerButtons)
+				for (const auto controllerButton : buttons.controllerButtons)
 				{
 					if (gameController != nullptr && gameController->IsButtonDown(controllerButton))
 					{
@@ -116,7 +145,7 @@ namespace stardust
 		{
 			const auto& buttons = m_buttons.at(buttonName);
 
-			for (const auto key : buttons.m_keys)
+			for (const auto key : buttons.keys)
 			{
 				if (Input::GetKeyboardState().IsKeyPressed(key))
 				{
@@ -124,7 +153,7 @@ namespace stardust
 				}
 			}
 
-			for (const auto mouseButton : buttons.m_mouseButtons)
+			for (const auto mouseButton : buttons.mouseButtons)
 			{
 				if (Input::GetMouseState().IsButtonPressed(mouseButton))
 				{
@@ -134,7 +163,7 @@ namespace stardust
 
 			for (const auto& gameController : gameControllers)
 			{
-				for (const auto controllerButton : buttons.m_controllerButtons)
+				for (const auto controllerButton : buttons.controllerButtons)
 				{
 					if (gameController != nullptr && gameController->IsButtonPressed(controllerButton))
 					{
@@ -153,7 +182,7 @@ namespace stardust
 		{
 			const auto& buttons = m_buttons.at(buttonName);
 
-			for (const auto key : buttons.m_keys)
+			for (const auto key : buttons.keys)
 			{
 				if (Input::GetKeyboardState().IsKeyUp(key))
 				{
@@ -161,7 +190,7 @@ namespace stardust
 				}
 			}
 
-			for (const auto mouseButton : buttons.m_mouseButtons)
+			for (const auto mouseButton : buttons.mouseButtons)
 			{
 				if (Input::GetMouseState().IsButtonUp(mouseButton))
 				{
@@ -171,7 +200,7 @@ namespace stardust
 
 			for (const auto& gameController : gameControllers)
 			{
-				for (const auto controllerButton : buttons.m_controllerButtons)
+				for (const auto controllerButton : buttons.controllerButtons)
 				{
 					if (gameController != nullptr && gameController->IsButtonUp(controllerButton))
 					{
@@ -182,5 +211,28 @@ namespace stardust
 		}
 
 		return false;
+	}
+
+	void InputManager::AddAxis(const String& axisName, const AxisType axisType, const bool inverted)
+	{
+		if (!m_axes.contains(axisName))
+		{
+			m_axes[axisName] = { };
+		}
+
+		m_axes[axisName].axes.insert({ axisType, inverted });
+	}
+
+	void InputManager::RemoveAxis(const String& axisName)
+	{
+		m_axes.erase(axisName);
+	}
+
+	void InputManager::RemoveFromAxis(const String& axisName, const AxisType axisType)
+	{
+		if (m_axes.contains(axisName))
+		{
+			m_axes[axisName].axes.erase(axisType);
+		}
 	}
 }

@@ -13,26 +13,35 @@ namespace stardust
 {
 	class InputManager
 	{
-	private:
-		class ButtonInput
+	public:
+		enum class AxisType
 		{
-		private:
-			HashSet<KeyCode> m_keys{ };
-			HashSet<MouseButton> m_mouseButtons{ };
-			HashSet<GameControllerButton> m_controllerButtons{ };
+			MouseX,
+			MouseY,
+			MouseScroll,
+			ControllerLeftX,
+			ControllerLeftY,
+			ControllerRightX,
+			ControllerRightY,
+			ControllerLeftTrigger,
+			ControllerRightTrigger,
+		};
 
-		public:
-			friend class InputManager;
+	private:
+		struct ButtonInput
+		{
+			HashSet<KeyCode> keys{ };
+			HashSet<MouseButton> mouseButtons{ };
+			HashSet<GameControllerButton> controllerButtons{ };
+		};
 
-			ButtonInput() = default;
-			~ButtonInput() noexcept = default;
+		struct AxisInput
+		{
+			HashMap<AxisType, bool> axes{ };
 		};
 
 		HashMap<String, ButtonInput> m_buttons{ };
-
-		//HashMap<String, HashSet<KeyCode>> m_keys{ };
-		//HashMap<String, HashSet<MouseButton>> m_mouseButtons{ };
-		//HashMap<String, HashSet<GameControllerButton>> m_controllerButtons{ };
+		HashMap<String, AxisInput> m_axes{ };
 
 	public:
 		InputManager() = default;
@@ -45,9 +54,19 @@ namespace stardust
 		void SetButton(const String& buttonName, const GameControllerButton button);
 		void SetButton(const String& buttonName, const Vector<GameControllerButton>& buttons);
 
+		void RemoveButton(const String& buttonName);
+		void RemoveFromButton(const String& buttonName, const KeyCode key);
+		void RemoveFromButton(const String& buttonName, const MouseButton button);
+		void RemoveFromButton(const String& buttonName, const GameControllerButton button);
+
 		[[nodiscard]] bool IsButtonDown(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
 		[[nodiscard]] bool IsButtonPressed(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
 		[[nodiscard]] bool IsButtonUp(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
+
+		void AddAxis(const String& axisName, const AxisType axisType, const bool inverted = false);
+
+		void RemoveAxis(const String& axisName);
+		void RemoveFromAxis(const String& axisName, const AxisType axisType);
 	};
 }
 
