@@ -137,6 +137,18 @@ namespace stardust
 		return Vec4ToColour(glm::lerp(ColourToVec4(currentColour), ColourToVec4(nextColour), percentage));
 	}
 
+	void Animation::Reset()
+	{
+		m_currentKeyFrame = 0u;
+		
+		m_currentSpriteIndex = 0u;
+		m_currentPositionOffsetIndex = 0u;
+		m_currentRotationIndex = 0u;
+		m_currentScaleIndex = 0u;
+		m_currentShearIndex = 0u;
+		m_currentColourIndex = 0u;
+	}
+
 	void Animation::LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas)
 	{
 		const Vector<ubyte> animationData = vfs::ReadFileData(filepath);

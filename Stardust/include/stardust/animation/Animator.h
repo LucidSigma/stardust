@@ -20,7 +20,7 @@ namespace stardust
 		ObserverPtr<Animation> m_currentAnimation = nullptr;
 
 		u32 m_fps = 0u;
-		f32 m_millisecondsPerFrame = 0.0f;
+		f32 m_secondsPerFrame = 0.0f;
 		f32 m_currentFrameTimeAccumulator = 0.0f;
 
 	public:

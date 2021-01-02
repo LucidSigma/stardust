@@ -25,14 +25,26 @@ namespace stardust
 		m_animations.erase(animationName);
 	}
 
+	void Animator::Update(const f32 deltaTime)
+	{
+		m_currentFrameTimeAccumulator += deltaTime;
+
+		while (m_currentFrameTimeAccumulator <= m_secondsPerFrame)
+		{
+			m_currentAnimation->Step();
+			m_currentFrameTimeAccumulator -= m_secondsPerFrame;
+		}
+	}
+
 	void Animator::SetCurrentAnimation(const String& animationName)
 	{
+		m_currentAnimation->Reset();
 		m_currentAnimation = m_animations[animationName];
 	}
 
 	void Animator::SetFPS(const u32 frameRate) noexcept
 	{
 		m_fps = frameRate;
-		m_millisecondsPerFrame = 1'000.0f / static_cast<f32>(frameRate);
+		m_secondsPerFrame = 1.0f / static_cast<f32>(frameRate);
 	}
 }

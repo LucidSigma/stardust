@@ -56,6 +56,8 @@ namespace stardust
 		[[nodiscard]] Vec2 GetShear() const;
 		[[nodiscard]] Colour GetColour() const;
 
+		void Reset();
+
 		inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
 
 	private:
