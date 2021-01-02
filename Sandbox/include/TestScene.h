@@ -28,6 +28,7 @@ private:
 	sd::ParticleSystem m_particles;
 	sd::f32 m_clickParticleDelay = 0.01f;
 
+	sd::Animator m_colourAnimator;
 	sd::Animation m_colourAnimation;
 
 public:
@@ -84,6 +85,9 @@ public:
 		{
 			return sd::Status::Fail;
 		}
+
+		m_colourAnimator.AddAnimation("dance", m_colourAnimation, true);
+		m_colourAnimator.SetFPS(8u);
 
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
@@ -208,15 +212,7 @@ public:
 		m_clickParticleDelay -= deltaTime;
 		m_particles.Update(deltaTime);
 
-		// Simulate an animation for now until an animator class is created.
-		static sd::u32 tempTickCounter = 0u;
-
-		if (tempTickCounter % 100u == 0u)
-		{
-			m_colourAnimation.Step();
-		}
-
-		++tempTickCounter;
+		m_colourAnimator.Update(deltaTime);
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
@@ -344,9 +340,9 @@ public:
 		);
 
 		renderer.DrawWorldRect(
-			sd::comp::Transform(m_colourAnimation.GetPositionOffset(), m_colourAnimation.GetRotation(), sd::NullOpt, m_colourAnimation.GetScale()),
-			sd::comp::ShearTransform(m_colourAnimation.GetShear()),
-			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimation.GetSprite(), m_colourAnimation.GetColour()),
+			sd::comp::Transform(m_colourAnimator.GetPositionOffset(), m_colourAnimator.GetRotation(), sd::NullOpt, m_colourAnimator.GetScale()),
+			sd::comp::ShearTransform(m_colourAnimator.GetShear()),
+			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimator.GetSprite(), m_colourAnimator.GetColour()),
 			GetCamera()
 		);
 
