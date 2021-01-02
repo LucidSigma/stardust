@@ -42,7 +42,7 @@ namespace stardust
 	void Animation::Step()
 	{
 		++m_currentKeyFrame;
-		m_currentKeyFrame %= (m_maxKeyFrame + 1u);
+		m_currentKeyFrame %= m_maxKeyFrame;
 
 		StepAttribute(m_spriteFrames, m_currentSpriteIndex);
 		StepAttribute(m_positionOffsetFrames, m_currentPositionOffsetIndex);
@@ -210,7 +210,7 @@ namespace stardust
 		for (const auto& [frameNumber, frameData] : data["frames"].items())
 		{
 			const KeyFrame currentKeyFrame = std::stoi(frameNumber);
-			m_maxKeyFrame = std::max(m_maxKeyFrame, currentKeyFrame);
+			m_maxKeyFrame = std::max(m_maxKeyFrame, currentKeyFrame + 1);
 
 			for (const auto& [attribute, value] : frameData.items())
 			{
@@ -299,7 +299,7 @@ namespace stardust
 
 		if (m_scaleFrames.empty())
 		{
-			m_scaleFrames.push_back({ 0u, Vec2{ 0.0f, 0.0f } });
+			m_scaleFrames.push_back({ 0u, Vec2{ 1.0f, 1.0f } });
 		}
 
 		if (m_shearFrames.empty())
@@ -317,7 +317,7 @@ namespace stardust
 	{
 		if (nextFrame < currentFrame)
 		{
-			nextFrame += m_maxKeyFrame + 1u;
+			nextFrame += m_maxKeyFrame;
 		}
 
 		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);

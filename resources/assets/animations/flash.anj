@@ -1,0 +1,18 @@
+{
+	"fps": 1,
+	"length": 4,
+	"frames": {
+		"0": {
+			"sprite": "red"
+		},
+		"1": {
+			"sprite": "green"
+		},
+		"2": {
+			"sprite": "blue"
+		},
+		"3": {
+			"sprite": "yellow"
+		}
+	}
+}

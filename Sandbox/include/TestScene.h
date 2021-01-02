@@ -30,6 +30,7 @@ private:
 
 	sd::Animator m_colourAnimator;
 	sd::Animation m_colourAnimation;
+	sd::Animation m_flashAnimation;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -80,13 +81,15 @@ public:
 		m_particles.Initialise(m_defaultSortingLayer);
 
 		m_colourAnimation.Initialise("assets/animations/colours.anj", m_colourTextures);
+		m_flashAnimation.Initialise("assets/animations/flash.anj", m_colourTextures);
 
-		if (!m_colourAnimation.IsValid())
+		if (!m_colourAnimation.IsValid() || !m_flashAnimation.IsValid())
 		{
 			return sd::Status::Fail;
 		}
 
 		m_colourAnimator.AddAnimation("dance", m_colourAnimation, true);
+		m_colourAnimator.AddAnimation("flash", m_flashAnimation);
 		m_colourAnimator.SetFPS(8u);
 
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
@@ -207,6 +210,15 @@ public:
 					.minLifetime = 0.5f,
 					.maxLifetime = 1.0f,
 				});
+			}
+
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::V))
+			{
+				m_colourAnimator.SetCurrentAnimation("flash");
+			}
+			else if (GetKeyboardState().IsKeyUp(sd::KeyCode::V))
+			{
+				m_colourAnimator.SetCurrentAnimation("dance");
 			}
 		}
 	}

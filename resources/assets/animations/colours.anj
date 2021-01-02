@@ -1,5 +1,6 @@
 {
-	"length": 31,
+	"fps": 24,
+	"length": 32,
 	"frames": {
 		"0": {
 			"sprite": "red",
