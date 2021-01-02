@@ -212,7 +212,15 @@ public:
 		m_clickParticleDelay -= deltaTime;
 		m_particles.Update(deltaTime);
 
-		m_colourAnimation.Step();
+		// Simulate an animation for now until an animator class is created.
+		static sd::u32 tempTickCounter = 0u;
+
+		if (tempTickCounter % 250u == 0u)
+		{
+			m_colourAnimation.Step();
+		}
+
+		++tempTickCounter;
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
@@ -336,6 +344,12 @@ public:
 		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(-5.0f, 1.5f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
 			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["yellow"]),
+			GetCamera()
+		);
+
+		renderer.DrawWorldRect(
+			sd::comp::Transform(m_colourAnimation.GetPositionOffset()),
+			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimation.GetSprite(), m_colourAnimation.GetColour()),
 			GetCamera()
 		);
 

@@ -5,6 +5,7 @@
 
 #include "stardust/debug/logging/Log.h"
 #include "stardust/filesystem/vfs/VFS.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -31,23 +32,76 @@ namespace stardust
 	void Animation::Step()
 	{
 		++m_currentKeyFrame;
+		m_currentKeyFrame %= (m_maxKeyFrame + 1u);
 
-		if (m_currentKeyFrame % m_maxKeyFrame == 0u) [[unlikely]]
+		StepSprite();
+		StepPositionOffset();
+		StepRotation();
+		StepScale();
+		StepShear();
+		StepColour();
+	}
+
+	[[nodiscard]] const TextureCoordinatePair& Animation::GetSprite() const
+	{
+		return m_spriteFrames[m_currentSpriteIndex].second;
+	}
+
+	[[nodiscard]] Vec2 Animation::GetPositionOffset() const
+	{
+		const Vec2& currentPositionOffset = m_positionOffsetFrames[m_currentPositionOffsetIndex].second;
+		const Vec2& nextPositionOffset = m_positionOffsetFrames[(m_currentPositionOffsetIndex + 1u) % m_positionOffsetFrames.size()].second;
+
+		const KeyFrame currentFrame = m_positionOffsetFrames[m_currentPositionOffsetIndex].first;
+		KeyFrame nextFrame = m_positionOffsetFrames[(m_currentPositionOffsetIndex + 1u) % m_positionOffsetFrames.size()].first;
+
+		if (nextFrame < currentFrame)
 		{
-			m_currentKeyFrame = 0u;
-
-			for (auto& frame : m_currentFrames)
-			{
-				frame = 0u;
-			}
+			nextFrame += m_maxKeyFrame + 1u;
 		}
 
-		StepAttribute(KeyFrameIndex::Sprite, m_spriteFrames);
-		StepAttribute(KeyFrameIndex::PositionOffset, m_positionOffsetFrames);
-		StepAttribute(KeyFrameIndex::Rotation, m_rotationFrames);
-		StepAttribute(KeyFrameIndex::Scale, m_scaleFrames);
-		StepAttribute(KeyFrameIndex::Shear, m_shearFrames);
-		StepAttribute(KeyFrameIndex::Colour, m_colourFrames);
+		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
+		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
+
+		const f32 percentage = shiftedFrame / frameDifference;
+
+		return glm::lerp(currentPositionOffset, nextPositionOffset, percentage);
+	}
+	
+	//[[nodiscard]] f32 Animation::GetRotation() const
+	//{
+	//
+	//}
+	//
+	//[[nodiscard]] Vec2 Animation::GetScale() const
+	//{
+	//
+	//}
+	//
+	//[[nodiscard]] Vec2 Animation::GetShear() const
+	//{
+	//
+	//}
+	
+	[[nodiscard]] Colour Animation::GetColour() const
+	{
+		const Colour& currentColour = m_colourFrames[m_currentColourIndex].second;
+		const Colour& nextColour = m_colourFrames[(m_currentColourIndex + 1u) % m_colourFrames.size()].second;
+
+		const KeyFrame currentFrame = m_colourFrames[m_currentColourIndex].first;
+		KeyFrame nextFrame = m_colourFrames[(m_currentColourIndex + 1u) % m_colourFrames.size()].first;
+
+		if (nextFrame < currentFrame)
+		{
+			nextFrame += m_maxKeyFrame + 1u;
+		}
+
+		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
+		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
+
+		const f32 percentage = shiftedFrame / frameDifference;
+
+		return Vec4ToColour(glm::lerp(ColourToVec4(currentColour), ColourToVec4(nextColour), percentage));
 	}
 
 	void Animation::LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas)
@@ -88,6 +142,8 @@ namespace stardust
 
 	void Animation::LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas)
 	{
+		m_maxKeyFrame = data["length"];
+
 		for (const auto& [frameNumber, frameData] : data["frames"].items())
 		{
 			const KeyFrame currentKeyFrame = std::stoi(frameNumber);
@@ -188,6 +244,114 @@ namespace stardust
 		if (m_colourFrames.empty())
 		{
 			m_colourFrames.push_back({ 0u, colours::White });
+		}
+	}
+
+	void Animation::StepSprite()
+	{
+		if (m_spriteFrames.size() <= 1u)
+		{
+			return;
+		}
+
+		const KeyFrame nextFrame = m_currentSpriteIndex == m_spriteFrames.size() - 1u
+			? 0u
+			: m_spriteFrames[m_currentSpriteIndex + 1u].first;
+
+		if (m_currentKeyFrame == nextFrame)
+		{
+			++m_currentSpriteIndex;
+			m_currentSpriteIndex %= m_spriteFrames.size();
+		}
+	}
+
+	void Animation::StepPositionOffset()
+	{
+		if (m_positionOffsetFrames.size() <= 1u)
+		{
+			return;
+		}
+
+		const KeyFrame nextFrame = m_currentPositionOffsetIndex == m_positionOffsetFrames.size() - 1u
+			? 0u
+			: m_positionOffsetFrames[m_currentPositionOffsetIndex + 1u].first;
+
+		if (m_currentKeyFrame == nextFrame)
+		{
+			++m_currentPositionOffsetIndex;
+			m_currentPositionOffsetIndex %= m_positionOffsetFrames.size();
+		}
+	}
+
+	void Animation::StepRotation()
+	{
+		if (m_rotationFrames.size() <= 1u)
+		{
+			return;
+		}
+
+		const KeyFrame nextFrame = m_currentRotationIndex == m_rotationFrames.size() - 1u
+			? 0u
+			: m_rotationFrames[m_currentRotationIndex + 1u].first;
+
+		if (m_currentKeyFrame == nextFrame)
+		{
+			++m_currentRotationIndex;
+			m_currentRotationIndex %= m_rotationFrames.size();
+		}
+	}
+
+	void Animation::StepScale()
+	{
+		if (m_scaleFrames.size() <= 1u)
+		{
+			return;
+		}
+
+		const KeyFrame nextFrame = m_currentScaleIndex == m_scaleFrames.size() - 1u
+			? 0u
+			: m_scaleFrames[m_currentScaleIndex + 1u].first;
+
+		if (m_currentKeyFrame == nextFrame)
+		{
+			++m_currentScaleIndex;
+			m_currentScaleIndex %= m_scaleFrames.size();
+		}
+	}
+
+	void Animation::StepShear()
+	{
+		if (m_shearFrames.size() <= 1u)
+		{
+			return;
+		}
+
+		const KeyFrame nextFrame = m_currentShearIndex == m_shearFrames.size() - 1u
+			? 0u
+			: m_shearFrames[m_currentShearIndex + 1u].first;
+
+		if (m_currentKeyFrame == nextFrame)
+		{
+			++m_currentShearIndex;
+			m_currentShearIndex %= m_shearFrames.size();
+		}
+	}
+
+	void Animation::StepColour()
+	{
+		if (m_colourFrames.size() <= 1u)
+		{
+			return;
+		}
+
+		const KeyFrame nextFrame = m_currentColourIndex == m_colourFrames.size() - 1u
+			? 0u
+			: m_colourFrames[m_currentColourIndex + 1u].first;
+
+		if (m_currentKeyFrame == nextFrame)
+		{
+			++m_currentColourIndex;
+			m_currentColourIndex %= m_colourFrames.size();
 		}
 	}
 }

@@ -37,9 +37,15 @@ namespace stardust
 		Vector<Pair<KeyFrame, Vec2>> m_shearFrames{ };
 		Vector<Pair<KeyFrame, Colour>> m_colourFrames{ };
 
-		Array<KeyFrame, 6u> m_currentFrames{ 0u };
 		KeyFrame m_currentKeyFrame = 0u;
 		KeyFrame m_maxKeyFrame = 0u;
+
+		usize m_currentSpriteIndex = 0u;
+		usize m_currentPositionOffsetIndex = 0u;
+		usize m_currentRotationIndex = 0u;
+		usize m_currentScaleIndex = 0u;
+		usize m_currentShearIndex = 0u;
+		usize m_currentColourIndex = 0u;
 
 		bool m_didLoadSuccessfully = false;
 
@@ -68,23 +74,12 @@ namespace stardust
 		void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas);
 		void AddDefaultKeyFrames();
 
-		template <typename T>
-		void StepAttribute(const KeyFrameIndex attributeIndex, const Vector<Pair<KeyFrame, T>>& keyFrames)
-		{
-			if (keyFrames.size() <= 1u)
-			{
-				return;
-			}
-
-			const usize currentFrameIndex = m_currentFrames[static_cast<usize>(attributeIndex)];
-			const KeyFrame currentFrame = keyFrames[currentFrameIndex].first;
-			const KeyFrame nextFrame = currentFrame == keyFrames.size() - 1 ? 0u : keyFrames[currentFrameIndex + 1u].first;
-
-			if (m_currentKeyFrame == nextFrame)
-			{
-				++m_currentFrames[currentFrameIndex];
-			}
-		}
+		void StepSprite();
+		void StepPositionOffset();
+		void StepRotation();
+		void StepScale();
+		void StepShear();
+		void StepColour();
 	};
 }
 
