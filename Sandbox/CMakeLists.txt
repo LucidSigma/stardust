@@ -21,15 +21,15 @@ add_custom_command(TARGET Sandbox POST_BUILD
 )
 
 if(WIN32)
-    foreach(DLL ${SDL2_DLLS})
+    foreach(SDL2_DLL ${SDL2_DLLS})
         add_custom_command(TARGET Sandbox POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Sandbox>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_DLL} $<TARGET_FILE_DIR:Sandbox>
         )
     endforeach()
 
-    foreach(DLL ${SDL2_TTF_DLLS})
-		add_custom_command(TARGET Stardust POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
-		)
+    foreach(SDL2_TTF_DLL ${SDL2_TTF_DLLS})
+        add_custom_command(TARGET Sandbox POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:Sandbox>
+        )
     endforeach()
 endif()

@@ -146,10 +146,7 @@ public:
 				sd::Log::Trace("Screen: {} {}; World: {} {}", GetMouseState().GetProportionalCoordinates(GetRenderer()).x, GetMouseState().GetProportionalCoordinates(GetRenderer()).y, mouseClick.x, mouseClick.y);
 			}
 
-			if (GetInputManager().GetAxis("scroll") != 0)
-			{
-				sd::Log::Trace("{}", GetMouseState().GetScrollAmount());
-			}
+			GetCamera().SetZoom(GetCamera().GetZoom() + GetInputManager().GetAxis("scroll") * 0.1f);
 
 			if (GetInputManager().IsButtonDown("reset", { m_controller }))
 			{
@@ -202,7 +199,6 @@ public:
 
 	virtual void Update(const sd::f32 deltaTime) override
 	{
-		GetCamera().SetZoom((glm::sin(GetElapsedTime()) * 0.5f) + 1.0f);
 		GetCamera().SetPosition(
 			GetCamera().GetPosition().x + GetInputManager().GetAxis("x", { m_controller }) * 4.0f * deltaTime,
 			GetCamera().GetPosition().y + GetInputManager().GetAxis("y", { m_controller }) * 4.0f * deltaTime,
@@ -215,7 +211,7 @@ public:
 		// Simulate an animation for now until an animator class is created.
 		static sd::u32 tempTickCounter = 0u;
 
-		if (tempTickCounter % 250u == 0u)
+		if (tempTickCounter % 100u == 0u)
 		{
 			m_colourAnimation.Step();
 		}
@@ -349,6 +345,7 @@ public:
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(m_colourAnimation.GetPositionOffset(), m_colourAnimation.GetRotation(), sd::NullOpt, m_colourAnimation.GetScale()),
+			sd::comp::ShearTransform(m_colourAnimation.GetShear()),
 			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimation.GetSprite(), m_colourAnimation.GetColour()),
 			GetCamera()
 		);

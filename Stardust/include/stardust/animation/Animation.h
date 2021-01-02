@@ -19,17 +19,6 @@ namespace stardust
 	class Animation
 	{
 	private:
-		enum class KeyFrameIndex
-			: usize
-		{
-			Sprite = 0u,
-			PositionOffset = 1u,
-			Rotation = 2u,
-			Scale = 3u,
-			Shear = 4u,
-			Colour = 5u,
-		};
-
 		Vector<Pair<KeyFrame, TextureCoordinatePair>> m_spriteFrames{ };
 		Vector<Pair<KeyFrame, Vec2>> m_positionOffsetFrames{ };
 		Vector<Pair<KeyFrame, Quaternion>> m_rotationFrames{ };

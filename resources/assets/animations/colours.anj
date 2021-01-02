@@ -1,5 +1,5 @@
 {
-	"length": 15,
+	"length": 31,
 	"frames": {
 		"0": {
 			"sprite": "red",
@@ -23,15 +23,19 @@
 				"a": 255
 			}
 		},
-		"4": {
+		"8": {
 			"sprite": "green",
 			"position-offset": {
 				"x": 1,
 				"y": 0
 			},
+			"shear": {
+				"x": 45,
+				"y": 0
+			},
 			"rotation": 90
 		},
-		"8": {
+		"16": {
 			"sprite": "blue",
 			"position-offset": {
 				"x": 0,
@@ -45,7 +49,7 @@
 				"a": 128
 			}
 		},
-		"12": {
+		"24": {
 			"sprite": "yellow",
 			"position-offset": {
 				"x": 1,

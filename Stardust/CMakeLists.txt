@@ -45,15 +45,15 @@ source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${STARDUST_SOURCE_FILES}
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/include/stardust" FILES ${STARDUST_HEADER_FILES})
 
 if(WIN32)
-    foreach(DLL ${SDL2_DLLS})
+    foreach(SDL2_DLL ${SDL2_DLLS})
 		add_custom_command(TARGET Stardust POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_DLL} $<TARGET_FILE_DIR:Stardust>
 		)
 	endforeach()
 	
-	foreach(DLL ${SDL2_TTF_DLLS})
+	foreach(SDL2_TTF_DLL ${SDL2_TTF_DLLS})
 		add_custom_command(TARGET Stardust POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:Stardust>
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:Stardust>
 		)
     endforeach()
 endif()
