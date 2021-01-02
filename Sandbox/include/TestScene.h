@@ -90,7 +90,6 @@ public:
 
 		m_colourAnimator.AddAnimation("dance", m_colourAnimation, true);
 		m_colourAnimator.AddAnimation("flash", m_flashAnimation);
-		m_colourAnimator.SetFPS(8u);
 
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);

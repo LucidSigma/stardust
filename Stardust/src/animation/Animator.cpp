@@ -2,16 +2,6 @@
 
 namespace stardust
 {
-	Animator::Animator()
-	{
-		SetFPS(s_DefaultFrameRate);
-	}
-
-	Animator::Animator(const u32 frameRate)
-	{
-		SetFPS(frameRate);
-	}
-
 	void Animator::AddAnimation(const String& animationName, Animation& animation, const bool setAsCurrent)
 	{
 		m_animations.insert({ animationName, &animation });
@@ -37,15 +27,16 @@ namespace stardust
 
 	void Animator::Update(const f32 deltaTime)
 	{
+		const f32 secondsPerFrame = m_currentAnimation->GetSecondsPerFrame();
 		m_frameTimeAccumulator += deltaTime * m_speed;
 
-		while (m_frameTimeAccumulator >= m_secondsPerFrame)
+		while (m_frameTimeAccumulator >= secondsPerFrame)
 		{
 			m_currentAnimation->Step();
-			m_frameTimeAccumulator -= m_secondsPerFrame;
+			m_frameTimeAccumulator -= secondsPerFrame;
 		}
 
-		m_currentFramePercentage = m_frameTimeAccumulator / m_secondsPerFrame;
+		m_currentFramePercentage = m_frameTimeAccumulator / secondsPerFrame;
 	}
 
 	[[nodiscard]] const TextureCoordinatePair& Animator::GetSprite() const
@@ -86,11 +77,5 @@ namespace stardust
 		}
 
 		m_currentAnimation = m_animations[animationName];
-	}
-
-	void Animator::SetFPS(const u32 frameRate) noexcept
-	{
-		m_fps = frameRate;
-		m_secondsPerFrame = 1.0f / static_cast<f32>(frameRate);
 	}
 }

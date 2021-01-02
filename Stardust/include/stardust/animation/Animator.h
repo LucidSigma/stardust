@@ -16,22 +16,15 @@ namespace stardust
 	class Animator
 	{
 	private:
-		static constexpr u32 s_DefaultFrameRate = 24u;
-
 		HashMap<String, ObserverPtr<Animation>> m_animations{ };
 		ObserverPtr<Animation> m_currentAnimation = nullptr;
 
-		u32 m_fps = 0u;
 		f32 m_speed = 1.0f;
-
-		f32 m_secondsPerFrame = 0.0f;
 		f32 m_frameTimeAccumulator = 0.0f;
-
 		f32 m_currentFramePercentage = 0.0f;
 
 	public:
-		Animator();
-		Animator(const u32 frameRate);
+		Animator() = default;
 		~Animator() noexcept = default;
 
 		void AddAnimation(const String& animationName, Animation& animation, const bool setAsCurrent = false);
@@ -49,9 +42,6 @@ namespace stardust
 
 		inline ObserverPtr<const Animation> GetCurrentAnimation() const noexcept { return m_currentAnimation; }
 		void SetCurrentAnimation(const String& animationName);
-
-		inline f32 GetFPS() const noexcept { return m_fps; }
-		void SetFPS(const u32 frameRate) noexcept;
 
 		inline f32 GetSpeed() const noexcept { return m_speed; }
 		inline void SetSpeed(const f32 speed) noexcept { m_speed = speed; }

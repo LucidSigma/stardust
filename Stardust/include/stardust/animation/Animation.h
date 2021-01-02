@@ -43,6 +43,9 @@ namespace stardust
 		usize m_currentShearIndex = 0u;
 		usize m_currentColourIndex = 0u;
 
+		u32 m_fps = 0u;
+		f32 m_secondsPerFrame = 0.0f;
+
 		bool m_didLoadSuccessfully = false;
 
 	public:
@@ -66,6 +69,9 @@ namespace stardust
 		[[nodiscard]] Colour GetColour(const f32 frameInterpolation) const;
 
 		void Reset();
+
+		u32 GetFPS() const noexcept { return m_fps; }
+		f32 GetSecondsPerFrame() const noexcept { return m_secondsPerFrame; }
 
 		inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
 

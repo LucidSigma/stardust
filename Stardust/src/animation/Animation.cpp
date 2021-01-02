@@ -206,6 +206,8 @@ namespace stardust
 	void Animation::LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas)
 	{
 		m_maxKeyFrame = data["length"];
+		m_fps = data["fps"];
+		m_secondsPerFrame = 1.0f / static_cast<f32>(m_fps);
 
 		for (const auto& [frameNumber, frameData] : data["frames"].items())
 		{
