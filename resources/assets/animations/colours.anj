@@ -28,7 +28,8 @@
 			"position-offset": {
 				"x": 1,
 				"y": 0
-			}
+			},
+			"rotation": 90
 		},
 		"8": {
 			"sprite": "blue",
@@ -36,6 +37,7 @@
 				"x": 0,
 				"y": 1
 			},
+			"rotation": 180,
 			"colour": {
 				"r": 255,
 				"g": 255,
@@ -49,6 +51,7 @@
 				"x": 1,
 				"y": 1
 			},
+			"rotation": 270,
 			"scale": {
 				"x": 0.4,
 				"y": 0.6
