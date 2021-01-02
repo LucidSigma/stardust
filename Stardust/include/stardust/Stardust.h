@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "animation/Animation.h"
+#include "animation/Animator.h"
 
 #include "application/Application.h"
 #include "assets/AssetManager.h"
