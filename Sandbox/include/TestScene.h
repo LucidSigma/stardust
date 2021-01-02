@@ -348,7 +348,7 @@ public:
 		);
 
 		renderer.DrawWorldRect(
-			sd::comp::Transform(m_colourAnimation.GetPositionOffset()),
+			sd::comp::Transform(m_colourAnimation.GetPositionOffset(), 0.0f, sd::NullOpt, m_colourAnimation.GetScale()),
 			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimation.GetSprite(), m_colourAnimation.GetColour()),
 			GetCamera()
 		);

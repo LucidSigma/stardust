@@ -49,6 +49,11 @@ namespace stardust
 
 	[[nodiscard]] Vec2 Animation::GetPositionOffset() const
 	{
+		if (m_positionOffsetFrames.size() == 1u)
+		{
+			return m_positionOffsetFrames.front().second;
+		}
+
 		const Vec2& currentPositionOffset = m_positionOffsetFrames[m_currentPositionOffsetIndex].second;
 		const Vec2& nextPositionOffset = m_positionOffsetFrames[(m_currentPositionOffsetIndex + 1u) % m_positionOffsetFrames.size()].second;
 
@@ -72,19 +77,66 @@ namespace stardust
 	//{
 	//
 	//}
-	//
-	//[[nodiscard]] Vec2 Animation::GetScale() const
-	//{
-	//
-	//}
-	//
-	//[[nodiscard]] Vec2 Animation::GetShear() const
-	//{
-	//
-	//}
+	
+	[[nodiscard]] Vec2 Animation::GetScale() const
+	{
+		if (m_scaleFrames.size() == 1u)
+		{
+			return m_scaleFrames.front().second;
+		}
+
+		const Vec2& currentScale = m_scaleFrames[m_currentScaleIndex].second;
+		const Vec2& nextScale = m_scaleFrames[(m_currentScaleIndex + 1u) % m_scaleFrames.size()].second;
+
+		const KeyFrame currentFrame = m_scaleFrames[m_currentScaleIndex].first;
+		KeyFrame nextFrame = m_scaleFrames[(m_currentScaleIndex + 1u) % m_scaleFrames.size()].first;
+
+		if (nextFrame < currentFrame)
+		{
+			nextFrame += m_maxKeyFrame + 1u;
+		}
+
+		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
+		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
+
+		const f32 percentage = shiftedFrame / frameDifference;
+
+		return glm::lerp(currentScale, nextScale, percentage);
+	}
+	
+	[[nodiscard]] Vec2 Animation::GetShear() const
+	{
+		if (m_shearFrames.size() == 1u)
+		{
+			return m_shearFrames.front().second;
+		}
+
+		const Vec2& currentShear = m_shearFrames[m_currentShearIndex].second;
+		const Vec2& nextShear = m_shearFrames[(m_currentShearIndex + 1u) % m_shearFrames.size()].second;
+
+		const KeyFrame currentFrame = m_shearFrames[m_currentShearIndex].first;
+		KeyFrame nextFrame = m_shearFrames[(m_currentShearIndex + 1u) % m_shearFrames.size()].first;
+
+		if (nextFrame < currentFrame)
+		{
+			nextFrame += m_maxKeyFrame + 1u;
+		}
+
+		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
+		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
+
+		const f32 percentage = shiftedFrame / frameDifference;
+
+		return glm::lerp(currentShear, nextShear, percentage);
+	}
 	
 	[[nodiscard]] Colour Animation::GetColour() const
 	{
+		if (m_colourFrames.size() == 1u)
+		{
+			return m_colourFrames.front().second;
+		}
+
 		const Colour& currentColour = m_colourFrames[m_currentColourIndex].second;
 		const Colour& nextColour = m_colourFrames[(m_currentColourIndex + 1u) % m_colourFrames.size()].second;
 
