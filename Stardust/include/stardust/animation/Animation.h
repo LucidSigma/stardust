@@ -50,11 +50,11 @@ namespace stardust
 		void Step();
 
 		[[nodiscard]] const TextureCoordinatePair& GetSprite() const;
-		[[nodiscard]] Vec2 GetPositionOffset() const;
-		[[nodiscard]] f32 GetRotation() const;
-		[[nodiscard]] Vec2 GetScale() const;
-		[[nodiscard]] Vec2 GetShear() const;
-		[[nodiscard]] Colour GetColour() const;
+		[[nodiscard]] Vec2 GetPositionOffset(const f32 frameInterpolation) const;
+		[[nodiscard]] f32 GetRotation(const f32 frameInterpolation) const;
+		[[nodiscard]] Vec2 GetScale(const f32 frameInterpolation) const;
+		[[nodiscard]] Vec2 GetShear(const f32 frameInterpolation) const;
+		[[nodiscard]] Colour GetColour(const f32 frameInterpolation) const;
 
 		void Reset();
 
@@ -84,7 +84,7 @@ namespace stardust
 			}
 		}
 
-		[[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame) const;
+		[[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation) const;
 	};
 }
 

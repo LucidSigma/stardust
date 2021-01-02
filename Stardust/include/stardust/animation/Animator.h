@@ -23,7 +23,9 @@ namespace stardust
 
 		u32 m_fps = 0u;
 		f32 m_secondsPerFrame = 0.0f;
-		f32 m_currentFrameTimeAccumulator = 0.0f;
+		f32 m_frameTimeAccumulator = 0.0f;
+
+		f32 m_currentFramePercentage = 0.0f;
 
 	public:
 		Animator();

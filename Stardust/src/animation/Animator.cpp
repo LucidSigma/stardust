@@ -32,13 +32,15 @@ namespace stardust
 
 	void Animator::Update(const f32 deltaTime)
 	{
-		m_currentFrameTimeAccumulator += deltaTime;
+		m_frameTimeAccumulator += deltaTime;
 
-		while (m_currentFrameTimeAccumulator >= m_secondsPerFrame)
+		while (m_frameTimeAccumulator >= m_secondsPerFrame)
 		{
 			m_currentAnimation->Step();
-			m_currentFrameTimeAccumulator -= m_secondsPerFrame;
+			m_frameTimeAccumulator -= m_secondsPerFrame;
 		}
+
+		m_currentFramePercentage = m_frameTimeAccumulator / m_secondsPerFrame;
 	}
 
 	[[nodiscard]] const TextureCoordinatePair& Animator::GetSprite() const
@@ -48,27 +50,27 @@ namespace stardust
 
 	[[nodiscard]] Vec2 Animator::GetPositionOffset() const
 	{
-		return m_currentAnimation->GetPositionOffset();
+		return m_currentAnimation->GetPositionOffset(m_currentFramePercentage);
 	}
 
 	[[nodiscard]] f32 Animator::GetRotation() const
 	{
-		return m_currentAnimation->GetRotation();
+		return m_currentAnimation->GetRotation(m_currentFramePercentage);
 	}
 
 	[[nodiscard]] Vec2 Animator::GetScale() const
 	{
-		return m_currentAnimation->GetScale();
+		return m_currentAnimation->GetScale(m_currentFramePercentage);
 	}
 
 	[[nodiscard]] Vec2 Animator::GetShear() const
 	{
-		return m_currentAnimation->GetShear();
+		return m_currentAnimation->GetShear(m_currentFramePercentage);
 	}
 
 	[[nodiscard]] Colour Animator::GetColour() const
 	{
-		return m_currentAnimation->GetColour();
+		return m_currentAnimation->GetColour(m_currentFramePercentage);
 	}
 
 	void Animator::SetCurrentAnimation(const String& animationName)
