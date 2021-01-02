@@ -74,6 +74,7 @@ namespace stardust
 		if (m_currentAnimation != nullptr) [[unlikely]]
 		{
 			m_currentAnimation->Reset();
+			m_frameTimeAccumulator = 0.0f;
 		}
 
 		m_currentAnimation = m_animations[animationName];

@@ -12,12 +12,15 @@ class TestScene final
 private:
 	sd::SortingLayer m_defaultSortingLayer{ "default" };
 
-	sd::Texture m_crateTexture;
-	sd::Texture m_crumbleTexture;
+	sd::ObserverPtr<sd::Texture> m_crateTexture = nullptr;
+	sd::ObserverPtr<sd::Texture> m_crumbleTexture = nullptr;
 
 	sd::Font m_font;
 	sd::Texture m_glyphTexture;
 	sd::Texture m_textTexture;
+
+	sd::AssetManager<sd::Texture> m_textures;
+
 	sd::TextureAtlas m_conveyorTextures;
 	sd::TextureAtlas m_colourTextures;
 
@@ -45,13 +48,21 @@ public:
 	{
 		m_application.GetRenderer().SetClearColour(sd::CreateColour(0.3f, 0.05f, 0.5f, 1.0f));
 
-		m_crateTexture.Initialise("assets/textures/crate.png");
-		m_crumbleTexture.Initialise("assets/textures/crumble.png");
+		const auto textures = sd::vfs::GetAllFilesInDirectory("assets/textures");
 
-		if (!m_crateTexture.IsValid() || !m_crumbleTexture.IsValid())
+		for (const auto& texture : textures)
 		{
-			return sd::Status::Fail;
+			const sd::String textureName = sd::fs::GetFileStem(texture);
+			m_textures.Add(textureName, texture);
+
+			if (!m_textures[textureName].IsValid())
+			{
+				return sd::Status::Fail;
+			}
 		}
+
+		m_crateTexture = &m_textures["crate"];
+		m_crumbleTexture = &m_textures["crumble"];
 
 		m_font.Initialise("assets/fonts/TheanoModern.ttf", 128u);
 
@@ -120,9 +131,6 @@ public:
 
 	virtual void OnUnload() noexcept
 	{
-		m_crateTexture.Destroy();
-		m_crumbleTexture.Destroy();
-
 		m_font.Destroy();
 	}
 
@@ -252,7 +260,7 @@ public:
 						sd::Vec2{ 1.0f, 1.0f }
 					),
 					sd::comp::ShearTransform(10.0f),
-					sd::comp::SpriteRender((x + y) % 2 == 0 ? m_crateTexture : m_crumbleTexture, m_defaultSortingLayer),
+					sd::comp::SpriteRender((x + y) % 2 == 0 ? *m_crateTexture : *m_crumbleTexture, m_defaultSortingLayer),
 					GetCamera()
 				);
 			}
@@ -302,7 +310,7 @@ public:
 			),
 			sd::comp::ShearTransform(-30.0f),
 			sd::comp::SpriteRender(
-				m_crateTexture, m_defaultSortingLayer, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, sd::colours::Lime
+				*m_crateTexture, m_defaultSortingLayer, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, sd::colours::Lime
 			),
 			GetCamera()
 		);
