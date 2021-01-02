@@ -7,6 +7,11 @@ namespace stardust
 		SetFPS(s_DefaultFrameRate);
 	}
 
+	Animator::Animator(const u32 frameRate)
+	{
+		SetFPS(frameRate);
+	}
+
 	void Animator::AddAnimation(const String& animationName, Animation& animation, const bool setAsCurrent)
 	{
 		m_animations.insert({ animationName, &animation });

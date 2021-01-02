@@ -29,6 +29,7 @@ namespace stardust
 
 	public:
 		Animator();
+		Animator(const u32 frameRate);
 		~Animator() noexcept = default;
 
 		void AddAnimation(const String& animationName, Animation& animation, const bool setAsCurrent = false);

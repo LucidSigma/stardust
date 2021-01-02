@@ -2,6 +2,8 @@
 #ifndef STARDUST_ANIMATION_H
 #define STARDUST_ANIMATION_H
 
+#include <functional>
+
 #include <nlohmann/json.hpp>
 
 #include "stardust/data/Containers.h"
@@ -18,6 +20,9 @@ namespace stardust
 
 	class Animation
 	{
+	public:
+		using Event = std::function<void()>;
+
 	private:
 		Vector<Pair<KeyFrame, TextureCoordinatePair>> m_spriteFrames{ };
 		Vector<Pair<KeyFrame, Vec2>> m_positionOffsetFrames{ };
@@ -25,6 +30,8 @@ namespace stardust
 		Vector<Pair<KeyFrame, Vec2>> m_scaleFrames{ };
 		Vector<Pair<KeyFrame, Vec2>> m_shearFrames{ };
 		Vector<Pair<KeyFrame, Colour>> m_colourFrames{ };
+
+		HashMap<KeyFrame, Vector<Event>> m_eventCallbacks{ };
 
 		KeyFrame m_currentKeyFrame = 0u;
 		KeyFrame m_maxKeyFrame = 0u;
@@ -46,6 +53,8 @@ namespace stardust
 
 		void Initialise(const StringView& filepath);
 		void Initialise(const StringView& filepath, const TextureAtlas& textureAtlas);
+
+		void AddEvent(const KeyFrame keyFrame, const Event& event);
 
 		void Step();
 

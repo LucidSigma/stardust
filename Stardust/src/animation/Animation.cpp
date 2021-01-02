@@ -29,6 +29,16 @@ namespace stardust
 		LoadFromFile(filepath, &textureAtlas);
 	}
 
+	void Animation::AddEvent(const KeyFrame keyFrame, const Event& event)
+	{
+		if (!m_eventCallbacks.contains(keyFrame))
+		{
+			m_eventCallbacks[keyFrame] = { };
+		}
+
+		m_eventCallbacks[keyFrame].push_back(event);
+	}
+
 	void Animation::Step()
 	{
 		++m_currentKeyFrame;
@@ -40,6 +50,14 @@ namespace stardust
 		StepAttribute(m_scaleFrames, m_currentScaleIndex);
 		StepAttribute(m_shearFrames, m_currentShearIndex);
 		StepAttribute(m_colourFrames, m_currentColourIndex);
+
+		if (m_eventCallbacks.contains(m_currentKeyFrame))
+		{
+			for (const auto& event : m_eventCallbacks[m_currentKeyFrame])
+			{
+				event();
+			}
+		}
 	}
 
 	[[nodiscard]] const TextureCoordinatePair& Animation::GetSprite() const
