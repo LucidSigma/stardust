@@ -22,6 +22,8 @@ namespace stardust
 		ObserverPtr<Animation> m_currentAnimation = nullptr;
 
 		u32 m_fps = 0u;
+		f32 m_speed = 1.0f;
+
 		f32 m_secondsPerFrame = 0.0f;
 		f32 m_frameTimeAccumulator = 0.0f;
 
@@ -50,6 +52,9 @@ namespace stardust
 
 		inline f32 GetFPS() const noexcept { return m_fps; }
 		void SetFPS(const u32 frameRate) noexcept;
+
+		inline f32 GetSpeed() const noexcept { return m_speed; }
+		inline void SetSpeed(const f32 speed) noexcept { m_speed = speed; }
 	};
 }
 

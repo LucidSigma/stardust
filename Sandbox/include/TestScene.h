@@ -91,6 +91,7 @@ public:
 
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
+		GetInputManager().AddToButton("speed", sd::KeyCode::LeftShift);
 		GetInputManager().AddToButton("coords", sd::MouseButton::Thumb1);
 
 		GetInputManager().AddToButton("play_sound", sd::KeyCode::P);
@@ -141,6 +142,15 @@ public:
 			else if (GetInputManager().IsButtonUp("outline"))
 			{
 				GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
+			}
+
+			if (GetInputManager().IsButtonDown("speed"))
+			{
+				m_colourAnimator.SetSpeed(4.0f);
+			}
+			else if (GetInputManager().IsButtonUp("speed"))
+			{
+				m_colourAnimator.SetSpeed(1.0f);
 			}
 
 			if (GetInputManager().IsButtonUp("coords"))

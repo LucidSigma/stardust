@@ -37,7 +37,7 @@ namespace stardust
 
 	void Animator::Update(const f32 deltaTime)
 	{
-		m_frameTimeAccumulator += deltaTime;
+		m_frameTimeAccumulator += deltaTime * m_speed;
 
 		while (m_frameTimeAccumulator >= m_secondsPerFrame)
 		{
