@@ -92,6 +92,8 @@ namespace stardust
 				currentIndex %= keyFrames.size();
 			}
 		}
+
+		[[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame) const;
 	};
 }
 

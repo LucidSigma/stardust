@@ -58,17 +58,9 @@ namespace stardust
 		const Vec2& nextPositionOffset = m_positionOffsetFrames[(m_currentPositionOffsetIndex + 1u) % m_positionOffsetFrames.size()].second;
 
 		const KeyFrame currentFrame = m_positionOffsetFrames[m_currentPositionOffsetIndex].first;
-		KeyFrame nextFrame = m_positionOffsetFrames[(m_currentPositionOffsetIndex + 1u) % m_positionOffsetFrames.size()].first;
+		const KeyFrame nextFrame = m_positionOffsetFrames[(m_currentPositionOffsetIndex + 1u) % m_positionOffsetFrames.size()].first;
 
-		if (nextFrame < currentFrame)
-		{
-			nextFrame += m_maxKeyFrame + 1u;
-		}
-
-		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
-		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
-
-		const f32 percentage = shiftedFrame / frameDifference;
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame);
 
 		return glm::lerp(currentPositionOffset, nextPositionOffset, percentage);
 	}
@@ -84,17 +76,9 @@ namespace stardust
 		const Quaternion& nextRotation = m_rotationFrames[(m_currentRotationIndex + 1u) % m_rotationFrames.size()].second;
 
 		const KeyFrame currentFrame = m_rotationFrames[m_currentRotationIndex].first;
-		KeyFrame nextFrame = m_rotationFrames[(m_currentRotationIndex + 1u) % m_rotationFrames.size()].first;
+		const KeyFrame nextFrame = m_rotationFrames[(m_currentRotationIndex + 1u) % m_rotationFrames.size()].first;
 
-		if (nextFrame < currentFrame)
-		{
-			nextFrame += m_maxKeyFrame + 1u;
-		}
-
-		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
-		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
-
-		const f32 percentage = shiftedFrame / frameDifference;
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame);
 
 		return glm::degrees(glm::roll(glm::slerp(currentRotation, nextRotation, percentage)));
 	}
@@ -110,17 +94,9 @@ namespace stardust
 		const Vec2& nextScale = m_scaleFrames[(m_currentScaleIndex + 1u) % m_scaleFrames.size()].second;
 
 		const KeyFrame currentFrame = m_scaleFrames[m_currentScaleIndex].first;
-		KeyFrame nextFrame = m_scaleFrames[(m_currentScaleIndex + 1u) % m_scaleFrames.size()].first;
+		const KeyFrame nextFrame = m_scaleFrames[(m_currentScaleIndex + 1u) % m_scaleFrames.size()].first;
 
-		if (nextFrame < currentFrame)
-		{
-			nextFrame += m_maxKeyFrame + 1u;
-		}
-
-		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
-		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
-
-		const f32 percentage = shiftedFrame / frameDifference;
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame);
 
 		return glm::lerp(currentScale, nextScale, percentage);
 	}
@@ -136,17 +112,9 @@ namespace stardust
 		const Vec2& nextShear = m_shearFrames[(m_currentShearIndex + 1u) % m_shearFrames.size()].second;
 
 		const KeyFrame currentFrame = m_shearFrames[m_currentShearIndex].first;
-		KeyFrame nextFrame = m_shearFrames[(m_currentShearIndex + 1u) % m_shearFrames.size()].first;
+		const KeyFrame nextFrame = m_shearFrames[(m_currentShearIndex + 1u) % m_shearFrames.size()].first;
 
-		if (nextFrame < currentFrame)
-		{
-			nextFrame += m_maxKeyFrame + 1u;
-		}
-
-		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
-		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
-
-		const f32 percentage = shiftedFrame / frameDifference;
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame);
 
 		return glm::lerp(currentShear, nextShear, percentage);
 	}
@@ -162,17 +130,9 @@ namespace stardust
 		const Colour& nextColour = m_colourFrames[(m_currentColourIndex + 1u) % m_colourFrames.size()].second;
 
 		const KeyFrame currentFrame = m_colourFrames[m_currentColourIndex].first;
-		KeyFrame nextFrame = m_colourFrames[(m_currentColourIndex + 1u) % m_colourFrames.size()].first;
+		const KeyFrame nextFrame = m_colourFrames[(m_currentColourIndex + 1u) % m_colourFrames.size()].first;
 
-		if (nextFrame < currentFrame)
-		{
-			nextFrame += m_maxKeyFrame + 1u;
-		}
-
-		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
-		const f32 shiftedFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
-
-		const f32 percentage = shiftedFrame / frameDifference;
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame);
 
 		return Vec4ToColour(glm::lerp(ColourToVec4(currentColour), ColourToVec4(nextColour), percentage));
 	}
@@ -321,5 +281,18 @@ namespace stardust
 		{
 			m_colourFrames.push_back({ 0u, colours::White });
 		}
+	}
+
+	[[nodiscard]] f32 Animation::GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame) const
+	{
+		if (nextFrame < currentFrame)
+		{
+			nextFrame += m_maxKeyFrame + 1u;
+		}
+
+		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
+		const f32 shiftedCurrentFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
+
+		return shiftedCurrentFrame / frameDifference;
 	}
 }
