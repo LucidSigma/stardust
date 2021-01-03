@@ -80,6 +80,8 @@
 #include "text/text_input/TextInput.h"
 #include "text/Text.h"
 
+#include "stardust/ui/elements/Image.h"
+#include "stardust/ui/Anchor.h"
 #include "stardust/ui/Canvas.h"
 
 #include "utility/cpu/CPU.h"
