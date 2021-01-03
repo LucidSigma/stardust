@@ -162,6 +162,8 @@ namespace stardust
 		bool IsGrabbed() const noexcept;
 		void SetGrabbed(const bool isGrabbed) const noexcept;
 
+		void Flash() const;
+
 	private:
 		i32 GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const;
 	};

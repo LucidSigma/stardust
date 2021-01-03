@@ -5,6 +5,11 @@
 
 #include <stb/stb_image.h>
 
+#ifdef WIN32
+#include <SDL2/SDL_syswm.h>
+#include <windows.h>
+#endif
+
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/graphics/display/Display.h"
@@ -416,6 +421,27 @@ namespace stardust
 	void Window::SetGrabbed(const bool isGrabbed) const noexcept
 	{
 		SDL_SetWindowGrab(GetRawHandle(), static_cast<SDL_bool>(isGrabbed));
+	}
+
+	void Window::Flash() const
+	{
+	#ifdef WIN32
+		SDL_SysWMinfo systemInfo{ };
+		SDL_VERSION(&systemInfo.version);
+		
+		if (SDL_GetWindowWMInfo(GetRawHandle(), &systemInfo) == SDL_TRUE)
+		{
+			FLASHWINFO flashInfo{
+				.cbSize = sizeof(FLASHWINFO),
+				.hwnd = systemInfo.info.win.window,
+				.dwFlags = FLASHW_TIMERNOFG,
+				.uCount = 1u,
+				.dwTimeout = 100u,
+			};
+
+			FlashWindowEx(&flashInfo);
+		}
+	#endif
 	}
 
 	i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const
