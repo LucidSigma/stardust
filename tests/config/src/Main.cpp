@@ -5,7 +5,7 @@
 TEST_CASE("Config can open, read from, and save to a JSON file", "[config]")
 {
 	sd::Config config;
-	REQUIRE(config.Initialise("./", "config_test.json", "") == sd::Status::Success);
+	REQUIRE(config.Initialise("./", "config_test.json") == sd::Status::Success);
 
 	SECTION("Can read values from a JSON file")
 	{
@@ -33,7 +33,7 @@ TEST_CASE("Config can open, read from, and save to a JSON file", "[config]")
 		REQUIRE(config.Save() == sd::Status::Success);
 
 		sd::Config newConfig;
-		REQUIRE(newConfig.Initialise("./", "config_test.json", "") == sd::Status::Success);
+		REQUIRE(newConfig.Initialise("./", "config_test.json") == sd::Status::Success);
 
 		REQUIRE(newConfig["locale"] == "en_us");
 		REQUIRE(!newConfig["graphics"]["multisample"]);

@@ -30,6 +30,22 @@ TEST_CASE("Query and iterate files in directories", "[filesystem]")
 
 		REQUIRE(sd::fs::GetFileExtension("fs_resources/1.txt") == ".txt");
 	}
+
+	SECTION("Can convert JSON to and from CBOR")
+	{
+		const auto fileData = sd::fs::ReadFileBytes("fs_resources/json/test.json");
+		REQUIRE(!fileData.empty());
+
+		const nlohmann::json json(fileData);
+		REQUIRE(sd::fs::WriteCBOR("fs_resources/json/test.cbor", json) == sd::Status::Success);
+
+		const nlohmann::json fromCBOR = sd::fs::ReadCBOR("fs_resources/json/test.cbor");
+		REQUIRE(!fromCBOR.is_discarded());
+
+		REQUIRE(fromCBOR["number"] == 1);
+		REQUIRE(fromCBOR["string"] == "abc");
+		REQUIRE(fromCBOR["bool"]);
+	}
 }
 
 TEST_CASE("VFS can open and read from zip files", "[vfs]")
