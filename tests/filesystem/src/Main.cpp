@@ -13,7 +13,7 @@ TEST_CASE("Query and iterate files in directories", "[filesystem]")
 	SECTION("Can recursively read files from a directory")
 	{
 		REQUIRE(sd::fs::GetAllFilesInDirectoryRecursive("fs_resources").size() == 4u);
-		REQUIRE(sd::fs::GetAllFileNamesInDirectoryRecursive("fs_resources").size() == 4);
+		REQUIRE(sd::fs::GetAllFileNamesInDirectoryRecursive("fs_resources").size() == 4u);
 	}
 
 	SECTION("Can query for data in a filename/filepath")
@@ -29,22 +29,6 @@ TEST_CASE("Query and iterate files in directories", "[filesystem]")
 		REQUIRE(sd::fs::GetFileStem("fs_resources/a/b/4.txt") == "4");
 
 		REQUIRE(sd::fs::GetFileExtension("fs_resources/1.txt") == ".txt");
-	}
-
-	SECTION("Can convert JSON to and from CBOR")
-	{
-		const auto fileData = sd::fs::ReadFileBytes("fs_resources/json/test.json");
-		REQUIRE(!fileData.empty());
-
-		const nlohmann::json json(fileData);
-		REQUIRE(sd::fs::WriteCBOR("fs_resources/json/test.cbor", json) == sd::Status::Success);
-
-		const nlohmann::json fromCBOR = sd::fs::ReadCBOR("fs_resources/json/test.cbor");
-		REQUIRE(!fromCBOR.is_discarded());
-
-		REQUIRE(fromCBOR["number"] == 1);
-		REQUIRE(fromCBOR["string"] == "abc");
-		REQUIRE(fromCBOR["bool"]);
 	}
 }
 

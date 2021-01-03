@@ -4,6 +4,13 @@
 #include <fstream>
 #include <sstream>
 
+
+
+
+
+
+#include <iostream>
+
 namespace stardust
 {
 	namespace filesystem
@@ -244,25 +251,6 @@ namespace stardust
 			outputFile.close();
 
 			return Status::Success;
-		}
-
-		[[nodiscard]] nlohmann::json ReadCBOR(const StringView& filepath)
-		{
-			const Vector<ubyte> cborData = ReadFileBytes(filepath);
-
-			if (cborData.empty())
-			{
-				return nlohmann::json{ };
-			}
-
-			return nlohmann::json::from_cbor(cborData, true, false);
-		}
-
-		[[nodiscard]] Status WriteCBOR(const StringView& filepath, const nlohmann::json& json)
-		{
-			const Vector<ubyte> cbor = nlohmann::json::to_cbor(json);
-
-			return WriteToFile(filepath, cbor);
 		}
 	}
 }

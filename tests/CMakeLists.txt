@@ -20,7 +20,7 @@ set_target_properties(
 )
 
 add_custom_command(TARGET config_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/config/config_test.json" $<TARGET_FILE_DIR:config_test>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}/config/config.json" $<TARGET_FILE_DIR:config_test>/config
 )
 
 add_custom_command(TARGET fs_test POST_BUILD
