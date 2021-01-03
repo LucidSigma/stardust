@@ -2315,16 +2315,16 @@ namespace sol {
 // beginning of sol/compatibility/lua_version.hpp
 
 #if SOL_IS_ON(SOL_USE_CXX_LUA_I_)
-	#include <lua.h>
-	#include <lualib.h>
-	#include <lauxlib.h>
+	#include <lua/lua.h>
+	#include <lua/lualib.h>
+	#include <lua/lauxlib.h>
 #elif SOL_IS_ON(SOL_USE_LUA_HPP_I_)
-	#include <lua.hpp>
+	#include <lua/lua.hpp>
 #else
 	extern "C" {
-		#include <lua.h>
-		#include <lauxlib.h>
-		#include <lualib.h>
+		#include <lua/lua.h>
+		#include <lua/lauxlib.h>
+		#include <lua/lualib.h>
 	}
 #endif // C++ Mangling for Lua vs. Not
 
@@ -2341,10 +2341,10 @@ namespace sol {
 #endif // luajit
 
 #if SOL_IS_ON(SOL_USE_CXX_LUAJIT_I_)
-	#include <luajit.h>
+	#include <lua/luajit.h>
 #elif SOL_IS_ON(SOL_USE_LUAJIT_I_)
 	extern "C" {
-		#include <luajit.h>
+		#include <lua/luajit.h>
 	}
 #endif // C++ LuaJIT ... whatever that means
 
@@ -2463,9 +2463,9 @@ namespace sol {
 #if defined(__cplusplus) && !defined(COMPAT53_LUA_CPP)
 extern "C" {
 #endif
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
+#include <lua/lua.h>
+#include <lua/lauxlib.h>
+#include <lua/lualib.h>
 #if defined(__cplusplus) && !defined(COMPAT53_LUA_CPP)
 }
 #endif
@@ -3719,9 +3719,9 @@ COMPAT53_API void luaL_requiref(lua_State* L, const char* modname, lua_CFunction
 #if defined(__cplusplus) && !defined(COMPAT53_LUA_CPP)
 extern "C" {
 #endif
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
+#include <lua/lua.h>
+#include <lua/lauxlib.h>
+#include <lua/lualib.h>
 #if defined(__cplusplus) && !defined(COMPAT53_LUA_CPP)
 }
 #endif

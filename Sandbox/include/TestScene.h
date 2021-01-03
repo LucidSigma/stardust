@@ -4,8 +4,6 @@
 
 #include <stardust/Stardust.h>
 
-#include <glad/glad.h>
-
 class TestScene final
 	: public sd::Scene
 {
