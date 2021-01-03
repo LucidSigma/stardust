@@ -11,6 +11,7 @@ target_include_directories(Stardust PUBLIC
 	${ENTT_INCLUDE_DIRS}
 	${GLAD_INCLUDE_DIRS}
 	${GLM_INCLUDE_DIRS}
+	${LUA_INCLUDE_DIRS}
 	${MAGIC_ENUM_INCLUDE_DIRS}
 	${NLOHMANN_JSON_INCLUDE_DIRS}
 	${PHYSFS_INCLUDE_DIRS}
@@ -35,6 +36,7 @@ target_link_libraries(Stardust PUBLIC
 	${SDL2_TTF_LIBS}
 	OpenGL::GL
 	glad
+	lua
 	physfs
 	soloud
 	stb_image
