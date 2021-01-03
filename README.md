@@ -1,6 +1,32 @@
 # Stardust
 A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 
+## Current Functionality
+* Window creation with SDL2.
+* Batch rendering with OpenGL.
+* 2D camera.
+* ECS with EnTT.
+* Full keyboard, mouse, and controller input support.
+* Virtual filesystem with PhysFS.
+* Positional audio with SoLoud.
+* Config loading.
+* Particle system.
+* Support for multiple locales.
+* Timer and timesteps.
+* Scene queue.
+* Animation (sprites and basic tweens).
+* Logging and system modals.
+* Basic parallel task scheduling.
+
+## Functionality to come
+* Basic AI (graphs, pathfinding/searching, boids, minimax, et cetera).
+* Graphical effects (outlines, kernel effects (blur, edge detection), HDR/bloom).
+* Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
+* UI (canvases, basic elements such as buttons/sliders/checkboxes).
+* Networking support.
+* Coloured keyboard lighting support (Corsair, Razer, Logitech).
+* Replace OpenGL renderer with Vulkan (possibly).
+
 ## Dependencies
 ### Window/Input
 * [SDL2](https://www.libsdl.org/)
