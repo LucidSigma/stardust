@@ -124,6 +124,14 @@ public:
 		GetInputManager().AddToNegativeAxis("y", { sd::KeyCode::W, sd::KeyCode::Up });
 		GetInputManager().AddToAxis("y", sd::AxisType::ControllerRightY, false);
 
+		if (GetScriptEngine().LoadScript("assets/scripts/test.lua") != sd::Status::Success)
+		{
+			return sd::Status::Fail;
+		}
+
+		GetScriptEngine().Set("a", 13);
+		sd::Log::Trace("{} {} {}", GetScriptEngine().Get<sd::i32>("a"), GetScriptEngine().Get<sd::i32>("b"), GetScriptEngine().Get<sd::i32>("c"));
+
 		return sd::Status::Success;
 	}
 
