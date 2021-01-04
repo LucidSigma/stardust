@@ -25,6 +25,7 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
 * UI (canvases, basic elements such as buttons/sliders/checkboxes).
 * Networking support.
+* Converting JSON to MessagePack and saving MessagePack binary files.
 * Coloured keyboard lighting support (Corsair, Razer, Logitech).
 * Replace OpenGL renderer with Vulkan (possibly).
 
