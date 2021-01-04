@@ -1,6 +1,7 @@
 #include "stardust/scripting/ScriptEngine.h"
 
 #include "stardust/application/Application.h"
+#include "stardust/data/Types.h"
 #include "stardust/debug/logging/Log.h"
 #include "stardust/filesystem/vfs/VFS.h"
 
@@ -20,14 +21,14 @@ namespace stardust
 	{
 		m_luaState.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package, sol::lib::table);
 
-		m_luaState.set_function("get_elapsed_time", &ApplicationWrapper::GetElapsedTime, ApplicationWrapper{ &application });
+		SetFunction("get_elapsed_time", &ApplicationWrapper::GetElapsedTime, ApplicationWrapper{ &application });
 
-		m_luaState.set_function("log_info", &Log::Info<>);
-		m_luaState.set_function("log_debug", &Log::Debug<>);
-		m_luaState.set_function("log_trace", &Log::Trace<>);
-		m_luaState.set_function("log_warn", &Log::Warn<>);
-		m_luaState.set_function("log_error", &Log::Error<>);
-		m_luaState.set_function("log_critical", &Log::Critical<>);
+		SetFunction("log_info", &Log::Info<>);
+		SetFunction("log_debug", &Log::Debug<>);
+		SetFunction("log_trace", &Log::Trace<>);
+		SetFunction("log_warn", &Log::Warn<>);
+		SetFunction("log_error", &Log::Error<>);
+		SetFunction("log_critical", &Log::Critical<>);
 	}
 
 	[[nodiscard]] Status ScriptEngine::LoadScript(const StringView& filename)

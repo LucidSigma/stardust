@@ -8,7 +8,6 @@
 #include <sol/sol.hpp>
 
 #include "stardust/data/Containers.h"
-#include "stardust/data/Types.h"
 #include "stardust/utility/status/Status.h"
 
 namespace stardust
@@ -41,13 +40,19 @@ namespace stardust
 		template <typename... Args>
 		inline void CreateTable(const StringView& name, Args&&... values)
 		{
-			m_luaState.create_named_table(name, values);
+			m_luaState.create_named_table(name, values...);
 		}
 
 		template <typename T>
-		[[nodiscard]] inline std::function<T> GetFunction(const StringView& functionName)
+		[[nodiscard]] inline std::function<T> GetFunction(const StringView& functionName) const
 		{
-			return sol::function(m_luaState[functionName]);
+			return static_cast<std::function<T>>(sol::function(m_luaState[functionName]));
+		}
+
+		template <typename... Args>
+		void SetFunction(const StringView& functionName, Args&&... values)
+		{
+			m_luaState.set_function(functionName, values...);
 		}
 
 		inline decltype(auto) operator [](const StringView& variableName) { return m_luaState[variableName]; }
