@@ -233,6 +233,12 @@ public:
 			{
 				m_colourAnimator.SetCurrentAnimation("dance");
 			}
+
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::RightShift))
+			{
+				const sd::f64 elapsedTime = GetScriptEngine().GetFunction<sd::f64()>("get_time")();
+				sd::Log::Trace("Elapsed time: {}", elapsedTime);
+			}
 		}
 	}
 

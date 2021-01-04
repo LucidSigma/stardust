@@ -306,7 +306,7 @@ namespace stardust
 
 	[[nodiscard]] Status Application::InitialiseSDL(const CreateInfo&)
 	{
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO /* SDL_INIT_EVERYTHING*/) != 0)
+		if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		{
 			message_box::Show(
 				m_locale["engine"]["errors"]["titles"]["initialise"],
@@ -537,7 +537,7 @@ namespace stardust
 
 	[[nodiscard]] Status Application::InitialiseScriptEngine(const CreateInfo&)
 	{
-		m_scriptEngine.Initialise();
+		m_scriptEngine.Initialise(*this);
 		Log::EngineInfo("Lua script engine initialised.");
 
 		return Status::Success;

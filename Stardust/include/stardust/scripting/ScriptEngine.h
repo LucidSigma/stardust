@@ -2,7 +2,7 @@
 #ifndef STARDUST_SCRIPT_ENGINE_H
 #define STARDUST_SCRIPT_ENGINE_H
 
-#include <type_traits>
+#include <functional>
 #include <utility>
 
 #include <sol/sol.hpp>
@@ -22,7 +22,7 @@ namespace stardust
 		ScriptEngine() = default;
 		~ScriptEngine() noexcept = default;
 
-		void Initialise();
+		void Initialise(const class Application& application);
 
 		[[nodiscard]] Status LoadScript(const StringView& filename);
 
@@ -42,6 +42,12 @@ namespace stardust
 		inline void CreateTable(const StringView& name, Args&&... values)
 		{
 			m_luaState.create_named_table(name, values);
+		}
+
+		template <typename T>
+		[[nodiscard]] inline std::function<T> GetFunction(const StringView& functionName)
+		{
+			return sol::function(m_luaState[functionName]);
 		}
 
 		inline decltype(auto) operator [](const StringView& variableName) { return m_luaState[variableName]; }
