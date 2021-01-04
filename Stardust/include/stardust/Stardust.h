@@ -75,6 +75,8 @@
 #include "scene/Scene.h"
 #include "scene/SceneManager.h"
 
+#include "scripting/ScriptEngine.h"
+
 #include "text/clipboard/Clipboard.h"
 #include "text/font/Font.h"
 #include "text/text_input/TextInput.h"

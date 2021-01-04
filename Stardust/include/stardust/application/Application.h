@@ -22,6 +22,7 @@
 #include "stardust/input/InputManager.h"
 #include "stardust/locale/Locale.h"
 #include "stardust/scene/SceneManager.h"
+#include "stardust/scripting/ScriptEngine.h"
 #include "stardust/utility/status/Status.h"
 #include "stardust/window/Window.h"
 
@@ -88,6 +89,7 @@ namespace stardust
 		bool m_isCurrentSceneFinished = false;
 
 		entt::registry m_entityRegistry{ };
+		ScriptEngine m_scriptEngine;
 		SoundSystem m_soundSystem;
 		VolumeManager m_volumeManager;
 
@@ -121,6 +123,7 @@ namespace stardust
 		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+		inline ScriptEngine& GetScriptEngine() noexcept { return m_scriptEngine; }
 		inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
 		inline VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
 
@@ -158,6 +161,7 @@ namespace stardust
 		[[nodiscard]] Status InitialiseOpenGL(const CreateInfo&);
 		[[nodiscard]] Status InitialiseRenderer(const CreateInfo&);
 		[[nodiscard]] Status InitialiseTextSystem(const CreateInfo&);
+		[[nodiscard]] Status InitialiseScriptEngine(const CreateInfo&);
 		void InitialiseScenes();
 
 		void FixedUpdate();

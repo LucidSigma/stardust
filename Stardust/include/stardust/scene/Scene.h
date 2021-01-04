@@ -68,6 +68,9 @@ namespace stardust
 		class SceneManager& GetSceneManager() noexcept;
 		const class SceneManager& GetSceneManager() const noexcept;
 
+		class ScriptEngine& GetScriptEngine() noexcept;
+		const class ScriptEngine& GetScriptEngine() const noexcept;
+
 		class SoundSystem& GetSoundSystem() noexcept;
 		const class SoundSystem& GetSoundSystem() const noexcept;
 

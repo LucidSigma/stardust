@@ -6,6 +6,7 @@
 #include "stardust/input/InputManager.h"
 #include "stardust/scene/entity/Entity.h"
 #include "stardust/scene/SceneManager.h"
+#include "stardust/scripting/ScriptEngine.h"
 #include "stardust/window/Window.h"
 
 namespace stardust
@@ -67,6 +68,16 @@ namespace stardust
 	const SceneManager& Scene::GetSceneManager() const noexcept
 	{
 		return m_application.GetSceneManager();
+	}
+
+	ScriptEngine& Scene::GetScriptEngine() noexcept
+	{
+		return m_application.GetScriptEngine();
+	}
+
+	const ScriptEngine& Scene::GetScriptEngine() const noexcept
+	{
+		return m_application.GetScriptEngine();
 	}
 
 	SoundSystem& Scene::GetSoundSystem() noexcept

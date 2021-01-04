@@ -163,6 +163,7 @@ namespace stardust
 			&Application::InitialiseOpenGL,
 			&Application::InitialiseRenderer,
 			&Application::InitialiseTextSystem,
+			&Application::InitialiseScriptEngine,
 		};
 
 		for (const auto& initialisationFunction : initialisationFunctions)
@@ -530,6 +531,14 @@ namespace stardust
 		}
 
 		Log::EngineInfo("Text subsystem initialised.");
+
+		return Status::Success;
+	}
+
+	[[nodiscard]] Status Application::InitialiseScriptEngine(const CreateInfo&)
+	{
+		m_scriptEngine.Initialise();
+		Log::EngineInfo("Lua script engine initialised.");
 
 		return Status::Success;
 	}
