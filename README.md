@@ -11,6 +11,7 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * Positional audio with SoLoud.
 * Config loading.
 * Particle system.
+* Lua scripting (using Sol2).
 * Support for multiple locales.
 * Timer and timesteps.
 * Scene queue.

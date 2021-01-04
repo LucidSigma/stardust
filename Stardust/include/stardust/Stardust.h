@@ -4,6 +4,7 @@
 
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
+#include <sol/sol.hpp>
 
 #include "animation/Animation.h"
 #include "animation/Animator.h"

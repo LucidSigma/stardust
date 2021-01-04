@@ -130,7 +130,7 @@ public:
 		}
 
 		GetScriptEngine().Set("a", 13);
-		sd::Log::Trace("{} {} {}", GetScriptEngine().Get<sd::i32>("a"), GetScriptEngine().Get<sd::i32>("b"), GetScriptEngine().Get<sd::i32>("c"));
+		sd::Log::Trace("{} {} {}", (sd::i32)GetScriptEngine()["a"], GetScriptEngine().Get<sd::i32>("b"), GetScriptEngine().Get<sd::i32>("c"));
 
 		return sd::Status::Success;
 	}

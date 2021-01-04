@@ -2,6 +2,9 @@
 #ifndef STARDUST_SCRIPT_ENGINE_H
 #define STARDUST_SCRIPT_ENGINE_H
 
+#include <type_traits>
+#include <utility>
+
 #include <sol/sol.hpp>
 
 #include "stardust/data/Containers.h"
@@ -24,16 +27,27 @@ namespace stardust
 		[[nodiscard]] Status LoadScript(const StringView& filename);
 
 		template <typename T>
-		[[nodiscard]] T Get(const StringView& variableName)
+		[[nodiscard]] inline T Get(const StringView& variableName)
 		{
-			return m_luaState[variableName];
+			return m_luaState.get<T>(variableName);
 		}
 
 		template <typename T>
-		void Set(const StringView& variableName, const T& value)
+		inline void Set(const StringView& variableName, const T& value)
 		{
 			m_luaState[variableName] = value;
 		}
+
+		template <typename... Args>
+		inline void CreateTable(const StringView& name, Args&&... values)
+		{
+			m_luaState.create_named_table(name, values);
+		}
+
+		inline decltype(auto) operator [](const StringView& variableName) { return m_luaState[variableName]; }
+
+		inline sol::state& GetState() noexcept { return m_luaState; }
+		inline const sol::state& GetState() const noexcept { return m_luaState; }
 	};
 }
 
