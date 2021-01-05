@@ -1,6 +1,9 @@
 # Stardust
 A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 
+This project is currently for personal use while I keep tweaking the API and features.  
+Once I create a few demo games and solidified the API enough, I will begin work on documentation.  
+
 ## Current Functionality
 * Window creation with SDL2.
 * Batch rendering with OpenGL.
@@ -15,6 +18,7 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * Support for multiple locales.
 * Timer and timesteps.
 * Scene queue.
+* Converting JSON to and from MessagePack (for binary storage).
 * Animation (sprites and basic tweens).
 * Logging and system modals.
 * Basic parallel task scheduling.
@@ -26,7 +30,6 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
 * UI (canvases, basic elements such as buttons/sliders/checkboxes).
 * Networking support.
-* Converting JSON to MessagePack and saving MessagePack binary files.
 * Coloured keyboard lighting support (Corsair, Razer, Logitech).
 * Replace OpenGL renderer with Vulkan (possibly).
 
