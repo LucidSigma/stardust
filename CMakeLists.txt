@@ -39,6 +39,7 @@ add_subdirectory("dep/magic_enum-0.7.2")
 add_subdirectory("dep/psched-1.9.0")
 add_subdirectory("dep/spdlog-1.8.2")
 add_subdirectory("dep/sol2-3.2.2")
+add_subdirectory("dep/tileson-1.2.0")
 
 # Other dependencies.
 add_subdirectory("dep/Glad-0.1.34")
@@ -47,7 +48,6 @@ add_subdirectory("dep/physfs-3.0.2")
 add_subdirectory("dep/SoLoud-2020.02.07")
 add_subdirectory("dep/stb_image-2.26")
 add_subdirectory("dep/stb_image_write-1.15")
-add_subdirectory("dep/tmxlite-1.2.1")
 
 # Projects in workspace.
 add_subdirectory("Stardust")

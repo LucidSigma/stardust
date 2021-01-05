@@ -23,7 +23,7 @@ target_include_directories(Stardust PUBLIC
 	${SPDLOG_INCLUDE_DIRS}
 	${STB_IMAGE_INCLUDE_DIRS}
 	${STB_IMAGE_WRITE_INCLUDE_DIRS}
-	${TYPE_SAFE_INCLUDE_DIRS}
+	${TILESON_INCLUDE_DIRS}
 )
 
 target_link_directories(Stardust PUBLIC
