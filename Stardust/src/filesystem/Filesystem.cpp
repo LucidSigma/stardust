@@ -4,13 +4,6 @@
 #include <fstream>
 #include <sstream>
 
-
-
-
-
-
-#include <iostream>
-
 namespace stardust
 {
 	namespace filesystem
@@ -251,6 +244,25 @@ namespace stardust
 			outputFile.close();
 
 			return Status::Success;
+		}
+
+		[[nodiscard]] Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data)
+		{
+			const Vector<ubyte> messagePackData = nlohmann::json::to_msgpack(data);
+			
+			return WriteToFile(filepath, messagePackData);
+		}
+
+		[[nodiscard]] nlohmann::json ReadMessagePack(const StringView& filepath)
+		{
+			const Vector<ubyte> messagePackData = ReadFileBytes(filepath);
+
+			if (messagePackData.empty())
+			{
+				return nlohmann::json{ };
+			}
+
+			return nlohmann::json::from_msgpack(messagePackData, false, false);
 		}
 	}
 }

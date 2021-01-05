@@ -1,6 +1,7 @@
 #include "stardust/application/Application.h"
 
 #include <chrono>
+#include <string>
 #include <utility>
 
 #include <glad/glad.h>

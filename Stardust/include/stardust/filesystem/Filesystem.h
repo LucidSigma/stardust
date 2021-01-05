@@ -40,6 +40,9 @@ namespace stardust
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
 		[[nodiscard]] extern Status AppendToFile(const StringView& filepath, const nlohmann::json& data);
+
+		[[nodiscard]] extern Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data);
+		[[nodiscard]] extern nlohmann::json ReadMessagePack(const StringView& filepath);
 	}
 
 	namespace fs = filesystem;

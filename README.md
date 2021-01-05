@@ -20,6 +20,7 @@ A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 * Basic parallel task scheduling.
 
 ## Functionality to come
+* Creating tilemaps (reading TMX files from Tiled).
 * Basic AI (graphs, pathfinding/searching, boids, minimax, et cetera).
 * Graphical effects (outlines, kernel effects (blur, edge detection), HDR/bloom).
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
