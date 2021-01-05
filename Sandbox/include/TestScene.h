@@ -34,6 +34,8 @@ private:
 	sd::Animation m_colourAnimation;
 	sd::Animation m_flashAnimation;
 
+	sd::Tilemap m_tilemap;
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -101,6 +103,8 @@ public:
 
 		m_colourAnimator.AddAnimation("dance", m_colourAnimation, true);
 		m_colourAnimator.AddAnimation("flash", m_flashAnimation);
+
+		//m_tilemap.Initialise("assets/tilemaps/test.tmx");
 
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
