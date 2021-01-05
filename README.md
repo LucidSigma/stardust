@@ -1,8 +1,8 @@
 # Stardust
 A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 
-This project is currently for personal use while I keep tweaking the API and features.  
-Once I create a few demo games and solidified the API enough, I will begin work on documentation.  
+This project is currently for personal use while I keep tweaking the API and features (although you're more than welcome to use it).  
+Once I have created a few demo games and solidified the API enough, I will begin work on proper documentation.  
 
 ## Current Functionality
 * Window creation with SDL2.
