@@ -23,6 +23,7 @@ namespace stardust
 		SetOpacity(createInfo.opacity);
 
 		m_tileData = createInfo.tiles;
+		m_isVisible = createInfo.isVisible;
 	}
 
 	void Tilemap::Layer::SetOpacity(const f32 opacity) noexcept
@@ -80,6 +81,7 @@ namespace stardust
 					.size = Vec2{ layer["width"], layer["height"] },
 					.opacity = layer["opacity"],
 					.tiles = layer["data"],
+					.isVisible = layer["visible"],
 				});
 			}
 
@@ -98,13 +100,18 @@ namespace stardust
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
 	{
 		const f32 scaledCameraHalfSize = camera.GetHalfSize() / camera.GetZoom();
-		const f32 tilesWidth = 2.0f * (scaledCameraHalfSize / glm::cos(glm::radians(camera.GetRotation())) + 1.0f);
+		const f32 tilesWidth = 2.0f * (scaledCameraHalfSize / glm::cos(glm::radians(camera.GetRotation())) + 2.0f);
 		const f32 leftmostTile = ((camera.GetPosition().x - m_position.x) - tilesWidth / 2.0f) / m_tileSize.x;
 
 		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
 
 		for (const auto& layer : m_layers)
 		{
+			if (!layer.IsVisible())
+			{
+				continue;
+			}
+
 			const i32 leftX = static_cast<i32>(glm::floor(glm::max(leftmostTile, 0.0f)));
 			const i32 rightX = static_cast<i32>(glm::ceil(glm::min(leftmostTile + tilesWidth, static_cast<f32>(layer.GetSize().x))));
 

@@ -35,6 +35,7 @@ namespace stardust
 				f32 opacity = 1.0f;
 
 				Vector<Tile> tiles;
+				bool isVisible;
 			};
 
 		private:
@@ -45,6 +46,7 @@ namespace stardust
 			f32 m_opacity = 0.0f;
 
 			Vector<Tile> m_tileData{ };
+			bool m_isVisible = true;
 
 		public:
 			Layer() = default;
@@ -63,6 +65,9 @@ namespace stardust
 
 			[[nodiscard]] Tile GetTile(const u32 x, const u32 y) const;
 			void SetTile(const u32 x, const u32 y, const Tile tile);
+
+			[[nodiscard]] inline bool IsVisible() const noexcept { return m_isVisible; }
+			inline void SetVisibility(const bool isVisible) noexcept { m_isVisible = isVisible; }
 
 			bool operator ==(const Layer&) const noexcept = default;
 			bool operator !=(const Layer&) const noexcept = default;
