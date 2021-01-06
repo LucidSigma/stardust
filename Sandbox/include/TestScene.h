@@ -111,6 +111,7 @@ public:
 			return sd::Status::Fail;
 		}
 
+		m_tilemap.SetPosition(sd::Vec2{ -10.0f, 5.0f });
 		m_tilemap.AddTiles(m_groundTiles);
 		m_tilemap.AddTiles(m_conveyorTextures);
 
@@ -274,6 +275,8 @@ public:
 
 	virtual void Render(sd::Renderer& renderer) override
 	{
+		m_tilemap.Render(renderer, GetCamera(), m_defaultSortingLayer);
+
 		for (sd::i32 x = -3; x <= 3; ++x)
 		{
 			for (sd::i32 y = -3; y <= 3; ++y)
@@ -359,18 +362,6 @@ public:
 		);
 
 		renderer.DrawWorldRect(
-			sd::comp::Transform(sd::Vec2(5.5f, -2.0f)),
-			sd::comp::SpriteRender(m_conveyorTextures.GetTexture(), m_defaultSortingLayer, m_conveyorTextures["left"]),
-			GetCamera()
-		);
-
-		renderer.DrawWorldRect(
-			sd::comp::Transform(sd::Vec2(6.5f, -2.0f)),
-			sd::comp::SpriteRender(m_conveyorTextures.GetTexture(), m_defaultSortingLayer, m_conveyorTextures["right"]),
-			GetCamera()
-		);
-
-		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(-6.5f, 3.0f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
 			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["red"]),
 			GetCamera()
@@ -400,45 +391,6 @@ public:
 			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimator.GetSprite(), m_colourAnimator.GetColour()),
 			GetCamera()
 		);
-
-		for (sd::f32 i = 2.5f; i < 5.0f; i += 1.0f)
-		{
-			renderer.DrawWorldRect(
-				sd::comp::Transform(sd::Vec2(i, -3.0f)),
-				sd::comp::SpriteRender(m_groundTiles.GetTexture(), m_defaultSortingLayer, m_groundTiles.GetSubtexture("bedrock")),
-				GetCamera()
-			);
-
-			renderer.DrawWorldRect(
-				sd::comp::Transform(sd::Vec2(i, -2.0f)),
-				sd::comp::SpriteRender(m_groundTiles.GetTexture(), m_defaultSortingLayer, m_groundTiles.GetSubtexture("gravel")),
-				GetCamera()
-			);
-
-			renderer.DrawWorldRect(
-				sd::comp::Transform(sd::Vec2(i, -1.0f)),
-				sd::comp::SpriteRender(m_groundTiles.GetTexture(), m_defaultSortingLayer, m_groundTiles.GetSubtexture("stone")),
-				GetCamera()
-			);
-
-			renderer.DrawWorldRect(
-				sd::comp::Transform(sd::Vec2(i, 0.0f)),
-				sd::comp::SpriteRender(m_groundTiles.GetTexture(), m_defaultSortingLayer, m_groundTiles.GetSubtexture("stone-dirt")),
-				GetCamera()
-			);
-
-			renderer.DrawWorldRect(
-				sd::comp::Transform(sd::Vec2(i, 1.0f)),
-				sd::comp::SpriteRender(m_groundTiles.GetTexture(), m_defaultSortingLayer, m_groundTiles.GetSubtexture("dirt")),
-				GetCamera()
-			);
-
-			renderer.DrawWorldRect(
-				sd::comp::Transform(sd::Vec2(i, 2.0f)),
-				sd::comp::SpriteRender(m_groundTiles.GetTexture(), m_defaultSortingLayer, m_groundTiles.GetSubtexture("grass")),
-				GetCamera()
-			);
-		}
 
 		m_particles.RenderOnScreen(renderer);
 	}

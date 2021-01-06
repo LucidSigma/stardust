@@ -6,12 +6,15 @@
 
 #include <nlohmann/json.hpp>
 
+#include "stardust//camera/Camera2D.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
+#include "stardust/graphics/SortingLayer.h"
 
 namespace stardust
 {
@@ -73,6 +76,8 @@ namespace stardust
 		};
 
 	private:
+		static constexpr Tile s_EmptyTile = 0u;
+
 		Vec2 m_position{ 0.0f, 0.0f };
 
 		UVec2 m_size{ 0u, 0u };
@@ -81,6 +86,7 @@ namespace stardust
 		Vector<Layer> m_layers{ };
 
 		HashMap<Tile, TextureCoordinatePair> m_tiles{ };
+		HashMap<Tile, ObserverPtr<const Texture>> m_tileTextureLookup{ };
 		HashMap<String, Tile> m_tileNameLookup{ };
 
 		bool m_isValid = false;
@@ -92,7 +98,7 @@ namespace stardust
 
 		void Initialise(const StringView& filepath);
 
-		void Render() const;
+		void Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const;
 
 		void AddTiles(const TextureAtlas& textureAtlas);
 		[[nodiscard]] Optional<Tile> GetTileID(const String& name) const;

@@ -4,6 +4,7 @@
 
 #include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/debug/logging/Log.h"
+#include "stardust/scene/components/Components.h"
 
 namespace stardust
 {
@@ -93,17 +94,53 @@ namespace stardust
 		m_isValid = true;
 	}
 
+	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
+	{
+		for (const auto& layer : m_layers)
+		{
+			Vec2 tileOffset{ 0.0f, 0.0f };
+
+			for (u32 x = 0u; x < layer.GetSize().x; ++x)
+			{
+				tileOffset.y = 0.0f;
+
+				for (u32 y = 0u; y < layer.GetSize().y; ++y)
+				{
+					const Tile tile = layer.GetTile(x, y);
+
+					if (tile != s_EmptyTile)
+					{
+						renderer.DrawWorldRect(
+							components::Transform(m_position + tileOffset, 0.0f, NullOpt, m_tileSize),
+							components::SpriteRender(*m_tileTextureLookup.at(tile), sortingLayer, m_tiles.at(tile)),
+							camera
+						);
+					}
+
+					tileOffset.y -= m_tileSize.y;
+				}
+
+				tileOffset.x += m_tileSize.x;
+			}
+		}
+	}
+
 	void Tilemap::AddTiles(const TextureAtlas& textureAtlas)
 	{
 		const usize originalSize = m_tiles.size();
 
 		for (const auto& [name, textureCoordinates] : textureAtlas.GetSubtextures())
 		{
-			const Tile tileID = textureAtlas.GetSubtextureID(name) + originalSize;
+			const Tile tileID = textureAtlas.GetSubtextureID(name) + originalSize + 1u;
 
 			m_tiles.insert({
 				tileID,
 				textureCoordinates,
+			});
+
+			m_tileTextureLookup.insert({
+				tileID,
+				&textureAtlas.GetTexture(),
 			});
 
 		#ifndef NDEBUG
