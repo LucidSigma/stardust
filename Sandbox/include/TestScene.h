@@ -79,7 +79,7 @@ public:
 		m_colourTextures.Initialise("assets/textures/texture_atlases/colours.taj");
 		m_tiles.Initialise("assets/textures/texture_atlases/tiles.taj");
 
-		if (!m_conveyorTextures.IsTextureValid() || !m_colourTextures.IsTextureValid() || !m_tiles.IsTextureValid())
+		if (!m_conveyorTextures.IsValid() || !m_colourTextures.IsValid() || !m_tiles.IsValid())
 		{
 			return sd::Status::Fail;
 		}
@@ -103,8 +103,6 @@ public:
 
 		m_colourAnimator.AddAnimation("dance", m_colourAnimation, true);
 		m_colourAnimator.AddAnimation("flash", m_flashAnimation);
-
-		//m_tilemap.Initialise("assets/tilemaps/test.tmx");
 
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
@@ -351,7 +349,7 @@ public:
 		);
 
 		renderer.DrawWorldRect(
-			sd::comp::Transform(sd::Vec2(4.5f, -2.0f)),
+			sd::comp::Transform(sd::Vec2(5.5f, -2.0f)),
 			sd::comp::SpriteRender(m_conveyorTextures.GetTexture(), m_defaultSortingLayer, m_conveyorTextures["left"]),
 			GetCamera()
 		);

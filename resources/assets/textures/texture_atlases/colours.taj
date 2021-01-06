@@ -2,6 +2,7 @@
 	"texture_file": "colours.png",
 	"subtextures": [
 		{
+			"id": 0,
 			"name": "red",
 			"rect": {
 				"x": 0,
@@ -11,6 +12,7 @@
 			}
 		},
 		{
+			"id": 1,
 			"name": "green",
 			"rect": {
 				"x": 32,
@@ -20,6 +22,7 @@
 			}
 		},
 		{
+			"id": 2,
 			"name": "blue",
 			"rect": {
 				"x": 0,
@@ -29,6 +32,7 @@
 			}
 		},
 		{
+			"id": 3,
 			"name": "yellow",
 			"rect": {
 				"x": 32,

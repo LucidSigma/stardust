@@ -2,6 +2,7 @@
 	"texture_file": "conveyors.png",
 	"subtextures": [
 		{
+			"id": 0,
 			"name": "left",
 			"rect": {
 				"x": 0,
@@ -11,6 +12,7 @@
 			}
 		},
 		{
+			"id": 1,
 			"name": "right",
 			"rect": {
 				"x": 16,
