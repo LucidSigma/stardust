@@ -4,6 +4,7 @@
 
 #include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/debug/logging/Log.h"
+#include "stardust/math/Math.h"
 #include "stardust/scene/components/Components.h"
 
 namespace stardust
@@ -96,23 +97,26 @@ namespace stardust
 
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
 	{
+		const f32 scaledCameraHalfSize = camera.GetHalfSize() / camera.GetZoom();
+		const f32 tilesWidth = 2.0f * (scaledCameraHalfSize / glm::cos(glm::radians(camera.GetRotation())) + 1.0f);
+		const f32 leftmostTile = ((camera.GetPosition().x - m_position.x) - tilesWidth / 2.0f) / m_tileSize.x;
+
 		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
 
 		for (const auto& layer : m_layers)
 		{
-			Vec2 tileOffset{ 0.0f, 0.0f };
+			const i32 leftX = static_cast<i32>(glm::floor(glm::max(leftmostTile, 0.0f)));
+			const i32 rightX = static_cast<i32>(glm::ceil(glm::min(leftmostTile + tilesWidth, static_cast<f32>(layer.GetSize().x))));
 
-			for (u32 y = 0u; y < layer.GetSize().y; ++y)
+			for (i32 y = 0u; y < layer.GetSize().y; ++y)
 			{
-				tileOffset.x = 0.0f;
-
-				for (u32 x = 0u; x < layer.GetSize().x; ++x)
+				for (i32 x = leftX; x < rightX; ++x)
 				{
 					const Tile tile = layer.GetTile(x, y);
 
 					if (tile != s_EmptyTile)
 					{
-						tileTransform.position = m_position + tileOffset;
+						tileTransform.position = m_position + Vec2{ x, -y } * m_tileSize;
 
 						renderer.DrawWorldRect(
 							tileTransform,
@@ -120,11 +124,7 @@ namespace stardust
 							camera
 						);
 					}
-
-					tileOffset.x += m_tileSize.x;
 				}
-
-				tileOffset.y -= m_tileSize.y;
 			}
 		}
 	}
