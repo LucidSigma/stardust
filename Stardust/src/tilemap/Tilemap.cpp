@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include <debug_assert/debug_assert.hpp>
-
 namespace stardust
 {
 	Tilemap::Layer::Layer(const CreateInfo& createInfo)
