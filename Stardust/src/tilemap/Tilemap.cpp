@@ -28,12 +28,12 @@ namespace stardust
 		m_opacity = std::clamp(opacity, 0.0f, 1.0f);
 	}
 
-	[[nodiscard]] u32 Tilemap::Layer::GetTile(const u32 x, const u32 y) const
+	[[nodiscard]] Tile Tilemap::Layer::GetTile(const u32 x, const u32 y) const
 	{
 		return m_tileData[static_cast<usize>(m_size.x) * y + x];
 	}
 
-	void Tilemap::Layer::SetTile(const u32 x, const u32 y, const u32 tile)
+	void Tilemap::Layer::SetTile(const u32 x, const u32 y, const Tile tile)
 	{
 		m_tileData[static_cast<usize>(m_size.x) * y + x] = tile;
 	}
@@ -91,6 +91,47 @@ namespace stardust
 		}
 
 		m_isValid = true;
+	}
+
+	void Tilemap::AddTiles(const TextureAtlas& textureAtlas)
+	{
+		const usize originalSize = m_tiles.size();
+
+		for (const auto& [name, textureCoordinates] : textureAtlas.GetSubtextures())
+		{
+			const Tile tileID = textureAtlas.GetSubtextureID(name) + originalSize;
+
+			m_tiles.insert({
+				tileID,
+				textureCoordinates,
+			});
+
+		#ifndef NDEBUG
+			if (m_tileNameLookup.contains(name))
+			{
+				Log::EngineWarn("Tilemap contains two tiles with the name {}. Consider renaming one in the texture atlas file.", name);
+			}
+		#endif
+
+			m_tileNameLookup.insert({
+				name,
+				tileID,
+			});
+		}
+	}
+
+	[[nodiscard]] Optional<Tile> Tilemap::GetTileID(const String& name) const
+	{
+		const auto tileIDLocation = m_tileNameLookup.find(name);
+
+		if (tileIDLocation != std::cend(m_tileNameLookup))
+		{
+			return tileIDLocation->second;
+		}
+		else
+		{
+			return NullOpt;
+		}
 	}
 
 	[[nodiscard]] ObserverPtr<Tilemap::Layer> Tilemap::GetLayerByID(const u32 layerID) noexcept

@@ -10,9 +10,13 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/graphics/texture/Texture.h"
+#include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
 
 namespace stardust
 {
+	using Tile = u32;
+
 	class Tilemap
 	{
 	public:
@@ -27,7 +31,7 @@ namespace stardust
 				UVec2 size;
 				f32 opacity = 1.0f;
 
-				Vector<u32> tiles;
+				Vector<Tile> tiles;
 			};
 
 		private:
@@ -37,7 +41,7 @@ namespace stardust
 			UVec2 m_size{ 0u, 0u };
 			f32 m_opacity = 0.0f;
 
-			Vector<u32> m_tileData{ };
+			Vector<Tile> m_tileData{ };
 
 		public:
 			Layer() = default;
@@ -54,8 +58,8 @@ namespace stardust
 			inline f32 GetOpacity() const noexcept { return m_opacity; }
 			void SetOpacity(const f32 opacity) noexcept;
 
-			[[nodiscard]] u32 GetTile(const u32 x, const u32 y) const;
-			void SetTile(const u32 x, const u32 y, const u32 tile);
+			[[nodiscard]] Tile GetTile(const u32 x, const u32 y) const;
+			void SetTile(const u32 x, const u32 y, const Tile tile);
 
 			bool operator ==(const Layer&) const noexcept = default;
 			bool operator !=(const Layer&) const noexcept = default;
@@ -76,6 +80,9 @@ namespace stardust
 
 		Vector<Layer> m_layers{ };
 
+		HashMap<Tile, TextureCoordinatePair> m_tiles{ };
+		HashMap<String, Tile> m_tileNameLookup{ };
+
 		bool m_isValid = false;
 
 	public:
@@ -84,6 +91,11 @@ namespace stardust
 		~Tilemap() noexcept = default;
 
 		void Initialise(const StringView& filepath);
+
+		void Render() const;
+
+		void AddTiles(const TextureAtlas& textureAtlas);
+		[[nodiscard]] Optional<Tile> GetTileID(const String& name) const;
 
 		inline const Vec2& GetPosition() const noexcept { return m_position; }
 		inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
