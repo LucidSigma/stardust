@@ -28,8 +28,9 @@
 #include "data/Pointers.h"
 #include "data/Types.h"
 
-#include "debug/message_box/MessageBox.h"
 #include "debug/logging/Log.h"
+#include "debug/message_box/MessageBox.h"
+#include "debug/AssertHandler.h"
 
 #include "filesystem/Filesystem.h"
 #include "filesystem/vfs/VFS.h"
