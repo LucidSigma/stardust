@@ -100,7 +100,7 @@ namespace stardust
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
 	{
 		const f32 scaledCameraHalfSize = camera.GetHalfSize() / camera.GetZoom();
-		const f32 tilesWidth = 2.0f * (scaledCameraHalfSize / glm::cos(glm::radians(camera.GetRotation())) + 2.0f);
+		const f32 tilesWidth = 2.0f * (scaledCameraHalfSize / glm::cos(glm::radians(camera.GetRotation())) + (1.0f / camera.GetZoom()));
 		const f32 leftmostTile = ((camera.GetPosition().x - m_position.x) - tilesWidth / 2.0f) / m_tileSize.x;
 
 		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
