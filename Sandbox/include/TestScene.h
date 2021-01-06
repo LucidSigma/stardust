@@ -195,13 +195,12 @@ public:
 
 			if (GetInputManager().IsButtonDown("reset", { m_controller }))
 			{
-				GetCamera().SetRotation(0.0f);
-				GetCamera().SetPosition(sd::Vec3{ 0.0f, 0.0f, 0.0f });
+				GetCamera().ResetTransform();
 			}
 
 			if (m_controller != nullptr)
 			{
-				GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.04f));
+				//GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.04f));
 			}
 
 			if (GetInputManager().IsButtonDown("play_sound", { m_controller }))
@@ -260,8 +259,8 @@ public:
 	virtual void Update(const sd::f32 deltaTime) override
 	{
 		GetCamera().SetPosition(
-			GetCamera().GetPosition().x + GetInputManager().GetAxis("x", { m_controller }) * 4.0f * deltaTime,
-			GetCamera().GetPosition().y + GetInputManager().GetAxis("y", { m_controller }) * 4.0f * deltaTime,
+			GetCamera().GetPosition().x + GetInputManager().GetAxis("x", { m_controller }) * 10.0f * deltaTime,
+			GetCamera().GetPosition().y + GetInputManager().GetAxis("y", { m_controller }) * 10.0f * deltaTime,
 			GetCamera().GetPosition().z
 		);
 

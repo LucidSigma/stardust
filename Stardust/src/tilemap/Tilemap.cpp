@@ -96,31 +96,35 @@ namespace stardust
 
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
 	{
+		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
+
 		for (const auto& layer : m_layers)
 		{
 			Vec2 tileOffset{ 0.0f, 0.0f };
 
-			for (u32 x = 0u; x < layer.GetSize().x; ++x)
+			for (u32 y = 0u; y < layer.GetSize().y; ++y)
 			{
-				tileOffset.y = 0.0f;
+				tileOffset.x = 0.0f;
 
-				for (u32 y = 0u; y < layer.GetSize().y; ++y)
+				for (u32 x = 0u; x < layer.GetSize().x; ++x)
 				{
 					const Tile tile = layer.GetTile(x, y);
 
 					if (tile != s_EmptyTile)
 					{
+						tileTransform.position = m_position + tileOffset;
+
 						renderer.DrawWorldRect(
-							components::Transform(m_position + tileOffset, 0.0f, NullOpt, m_tileSize),
+							tileTransform,
 							components::SpriteRender(*m_tileTextureLookup.at(tile), sortingLayer, m_tiles.at(tile)),
 							camera
 						);
 					}
 
-					tileOffset.y -= m_tileSize.y;
+					tileOffset.x += m_tileSize.x;
 				}
 
-				tileOffset.x += m_tileSize.x;
+				tileOffset.y -= m_tileSize.y;
 			}
 		}
 	}
