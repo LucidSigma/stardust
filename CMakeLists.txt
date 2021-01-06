@@ -33,6 +33,7 @@ endif()
 # Header-only dependencies.
 add_subdirectory("dep/Catch2-2.13.3")
 add_subdirectory("dep/concurrentqueue-1.0.2")
+add_subdirectory("dep/debug_assert-1.3.3")
 add_subdirectory("dep/entt-3.5.2")
 add_subdirectory("dep/nlohmann_json-3.9.1")
 add_subdirectory("dep/magic_enum-0.7.2")
