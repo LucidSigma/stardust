@@ -268,12 +268,12 @@ namespace stardust
 			return lhs.first < rhs.first;
 		};
 
-		std::sort(std::begin(m_spriteFrames), std::end(m_spriteFrames), SortingPredicate);
-		std::sort(std::begin(m_positionOffsetFrames), std::end(m_positionOffsetFrames), SortingPredicate);
-		std::sort(std::begin(m_rotationFrames), std::end(m_rotationFrames), SortingPredicate);
-		std::sort(std::begin(m_scaleFrames), std::end(m_scaleFrames), SortingPredicate);
-		std::sort(std::begin(m_shearFrames), std::end(m_shearFrames), SortingPredicate);
-		std::sort(std::begin(m_colourFrames), std::end(m_colourFrames), SortingPredicate);
+		std::ranges::sort(m_spriteFrames, SortingPredicate);
+		std::ranges::sort(m_positionOffsetFrames, SortingPredicate);
+		std::ranges::sort(m_rotationFrames, SortingPredicate);
+		std::ranges::sort(m_scaleFrames, SortingPredicate);
+		std::ranges::sort(m_shearFrames, SortingPredicate);
+		std::ranges::sort(m_colourFrames, SortingPredicate);
 	}
 
 	void Animation::AddDefaultKeyFrames()

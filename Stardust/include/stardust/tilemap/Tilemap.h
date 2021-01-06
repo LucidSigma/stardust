@@ -4,6 +4,8 @@
 
 #include <compare>
 
+#include <nlohmann/json.hpp>
+
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
@@ -23,8 +25,6 @@ namespace stardust
 				StringView name;
 
 				UVec2 size;
-				IVec2 offset;
-
 				f32 opacity = 1.0f;
 
 				Vector<u32> tiles;
@@ -35,8 +35,6 @@ namespace stardust
 			String m_name;
 
 			UVec2 m_size{ 0u, 0u };
-			IVec2 m_offset{ 0, 0 };
-
 			f32 m_opacity = 0.0f;
 
 			Vector<u32> m_tileData{ };
@@ -52,8 +50,6 @@ namespace stardust
 			inline const String& GetName() const noexcept { return m_name; }
 
 			inline const UVec2& GetSize() const noexcept { return m_size; }
-			inline const IVec2& GetOffset() const noexcept { return m_offset; }
-			inline void SetOffset(const IVec2& offset) noexcept { m_offset = offset; }
 
 			inline f32 GetOpacity() const noexcept { return m_opacity; }
 			void SetOpacity(const f32 opacity) noexcept;
@@ -103,6 +99,9 @@ namespace stardust
 		[[nodiscard]] ObserverPtr<const Layer> GetLayerByName(const String layerName) const noexcept;
 
 		inline bool IsValid() const noexcept { return m_isValid; }
+
+	private:
+		[[nodiscard]] nlohmann::json ReadTilemapFile(const StringView& filepath) const;
 	};
 }
 

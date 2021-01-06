@@ -104,6 +104,13 @@ public:
 		m_colourAnimator.AddAnimation("dance", m_colourAnimation, true);
 		m_colourAnimator.AddAnimation("flash", m_flashAnimation);
 
+		m_tilemap.Initialise("assets/tilemaps/ground.json");
+
+		if (!m_tilemap.IsValid())
+		{
+			return sd::Status::Fail;
+		}
+
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
 		GetInputManager().AddToButton("speed", sd::KeyCode::LeftShift);
