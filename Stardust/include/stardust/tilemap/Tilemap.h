@@ -6,6 +6,7 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
+#include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust
@@ -72,7 +73,12 @@ namespace stardust
 		};
 
 	private:
+		Vec2 m_position{ 0.0f, 0.0f };
+
 		UVec2 m_size{ 0u, 0u };
+		Vec2 m_tileSize{ 1.0f, 1.0f };
+
+		Vector<Layer> m_layers{ };
 
 		bool m_isValid = false;
 
@@ -82,6 +88,19 @@ namespace stardust
 		~Tilemap() noexcept = default;
 
 		void Initialise(const StringView& filepath);
+
+		inline const Vec2& GetPosition() const noexcept { return m_position; }
+		inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
+
+		inline const UVec2& GetSize() const noexcept { return m_size; }
+		inline void SetSize(const UVec2& size) noexcept { m_size = size; }
+		inline const Vec2& GetTileSize() const noexcept { return m_tileSize; }
+		inline void SetTileSize(const Vec2& tileSize) noexcept { m_tileSize = tileSize; }
+
+		[[nodiscard]] ObserverPtr<Layer> GetLayerByID(const u32 layerID) noexcept;
+		[[nodiscard]] ObserverPtr<const Layer> GetLayerByID(const u32 layerID) const noexcept;
+		[[nodiscard]] ObserverPtr<Layer> GetLayerByName(const String layerName) noexcept;
+		[[nodiscard]] ObserverPtr<const Layer> GetLayerByName(const String layerName) const noexcept;
 
 		inline bool IsValid() const noexcept { return m_isValid; }
 	};

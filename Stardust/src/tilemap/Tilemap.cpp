@@ -45,4 +45,56 @@ namespace stardust
 	{
 		
 	}
+
+	[[nodiscard]] ObserverPtr<Tilemap::Layer> Tilemap::GetLayerByID(const u32 layerID) noexcept
+	{
+		for (auto& layer : m_layers)
+		{
+			if (layer.GetID() == layerID)
+			{
+				return &layer;
+			}
+		}
+
+		return nullptr;
+	}
+
+	[[nodiscard]] ObserverPtr<const Tilemap::Layer> Tilemap::GetLayerByID(const u32 layerID) const noexcept
+	{
+		for (const auto& layer : m_layers)
+		{
+			if (layer.GetID() == layerID)
+			{
+				return &layer;
+			}
+		}
+
+		return nullptr;
+	}
+
+	[[nodiscard]] ObserverPtr<Tilemap::Layer> Tilemap::GetLayerByName(const String layerName) noexcept
+	{
+		for (auto& layer : m_layers)
+		{
+			if (layer.GetName() == layerName)
+			{
+				return &layer;
+			}
+		}
+
+		return nullptr;
+	}
+
+	[[nodiscard]] ObserverPtr<const Tilemap::Layer> Tilemap::GetLayerByName(const String layerName) const noexcept
+	{
+		for (const auto& layer : m_layers)
+		{
+			if (layer.GetName() == layerName)
+			{
+				return &layer;
+			}
+		}
+
+		return nullptr;
+	}
 }
