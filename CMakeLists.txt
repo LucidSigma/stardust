@@ -39,7 +39,6 @@ add_subdirectory("dep/magic_enum-0.7.2")
 add_subdirectory("dep/psched-1.9.0")
 add_subdirectory("dep/spdlog-1.8.2")
 add_subdirectory("dep/sol2-3.2.2")
-add_subdirectory("dep/tileson-1.2.0")
 
 # Other dependencies.
 add_subdirectory("dep/Glad-0.1.34")
