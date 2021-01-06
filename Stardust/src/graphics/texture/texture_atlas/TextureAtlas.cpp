@@ -84,11 +84,11 @@ namespace stardust
 					Vec2{
 						x / textureWidth,
 						(textureHeight - (y + height)) / textureHeight,
-				},
-				Vec2{
+					},
+					Vec2{
 						(x + width) / textureWidth,
 						(textureHeight - y) / textureHeight,
-				},
+					},
 				};
 
 				m_subtextures[subtexture["name"]] = normalisedCoordinates;
