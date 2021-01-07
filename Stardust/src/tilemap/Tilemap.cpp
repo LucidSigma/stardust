@@ -99,14 +99,21 @@ namespace stardust
 
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
 	{
+		// TODO: Make this camera detection algorithm work properly with a rotated camera.
+		// Some tiles around the edges do not render if the camera is rotated and the zoom is around 1.0.
 		const f32 scaledCameraHalfWidth = camera.GetHalfSize() / glm::abs(camera.GetZoom());
 		const f32 scaledCameraHalfHeight = camera.GetHalfSize() / camera.GetAspectRatio() / glm::abs(camera.GetZoom());
 		const f32 zoomFactor = std::max(1.0f, 1.0f / glm::abs(camera.GetZoom()));
 
-		const f32 tilesWidth = 2.0f * (scaledCameraHalfWidth / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) + zoomFactor);
-		const f32 tilesHeight = 2.0f * (scaledCameraHalfHeight / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) + zoomFactor);
+		const f32 tilesWidth = 2.0f * (scaledCameraHalfWidth / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) * zoomFactor + 1.0f);
+		const f32 tilesHeight = 2.0f * (scaledCameraHalfHeight / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) * zoomFactor + 1.0f);
 		const f32 leftmostPossibleTile = ((camera.GetPosition().x - m_position.x) - (tilesWidth / 2.0f)) / m_tileSize.x;
-		const f32 topmostPossibleTile = ((m_position.y - camera.GetPosition().y) - (tilesHeight / 2.0f)) / m_tileSize.y;
+		const f32 bottommostPossibleTile = ((camera.GetPosition().y - m_position.y) - (tilesHeight / 2.0f)) / m_tileSize.y;
+
+		if (bottommostPossibleTile > 0.0f)
+		{
+			return;
+		}
 
 		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
 
@@ -117,8 +124,8 @@ namespace stardust
 				continue;
 			}
 
-			const i32 topY = static_cast<i32>(glm::floor(std::max(topmostPossibleTile, 0.0f)));
-			const i32 bottomY = layer.GetSize().y;
+			const i32 topY = static_cast<i32>(glm::floor(std::max(-bottommostPossibleTile - tilesHeight, 0.0f)));
+			const i32 bottomY = static_cast<i32>(glm::ceil(std::min(-bottommostPossibleTile, static_cast<f32>(layer.GetSize().y))));
 
 			const i32 leftX = static_cast<i32>(glm::floor(std::max(leftmostPossibleTile, 0.0f)));
 			const i32 rightX = static_cast<i32>(glm::ceil(std::min(leftmostPossibleTile + tilesWidth, static_cast<f32>(layer.GetSize().x))));

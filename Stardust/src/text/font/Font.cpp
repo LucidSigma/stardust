@@ -8,7 +8,7 @@ namespace stardust
 {
 	void Font::FontDestroyer::operator()(TTF_Font* const font) const noexcept
 	{
-		if (TTF_WasInit())
+		if (TTF_WasInit() != 0)
 		{
 			TTF_CloseFont(font);
 		}
