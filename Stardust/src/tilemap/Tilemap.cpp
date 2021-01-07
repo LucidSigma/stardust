@@ -100,10 +100,13 @@ namespace stardust
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
 	{
 		const f32 scaledCameraHalfWidth = camera.GetHalfSize() / glm::abs(camera.GetZoom());
-		const f32 scaledCameraHalfHeight = camera.GetHalfSize() / camera.GetAspectRatio() / camera.GetZoom();
+		const f32 scaledCameraHalfHeight = camera.GetHalfSize() / camera.GetAspectRatio() / glm::abs(camera.GetZoom());
+		const f32 zoomFactor = std::max(1.0f, 1.0f / glm::abs(camera.GetZoom()));
 
-		const f32 tilesWidth = 2.0f * (scaledCameraHalfWidth / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) + std::max(1.0f, 1.0f / glm::abs(camera.GetZoom())));
-		const f32 leftmostTile = ((camera.GetPosition().x - m_position.x) - tilesWidth / 2.0f) / m_tileSize.x;
+		const f32 tilesWidth = 2.0f * (scaledCameraHalfWidth / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) + zoomFactor);
+		const f32 tilesHeight = 2.0f * (scaledCameraHalfHeight / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) + zoomFactor);
+		const f32 leftmostPossibleTile = ((camera.GetPosition().x - m_position.x) - (tilesWidth / 2.0f)) / m_tileSize.x;
+		const f32 topmostPossibleTile = ((m_position.y - camera.GetPosition().y) - (tilesHeight / 2.0f)) / m_tileSize.y;
 
 		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
 
@@ -114,10 +117,13 @@ namespace stardust
 				continue;
 			}
 
-			const i32 leftX = static_cast<i32>(glm::floor(std::max(leftmostTile, 0.0f)));
-			const i32 rightX = static_cast<i32>(glm::ceil(std::min(leftmostTile + tilesWidth, static_cast<f32>(layer.GetSize().x))));
+			const i32 topY = static_cast<i32>(glm::floor(std::max(topmostPossibleTile, 0.0f)));
+			const i32 bottomY = layer.GetSize().y;
 
-			for (i32 y = 0; y < layer.GetSize().y; ++y)
+			const i32 leftX = static_cast<i32>(glm::floor(std::max(leftmostPossibleTile, 0.0f)));
+			const i32 rightX = static_cast<i32>(glm::ceil(std::min(leftmostPossibleTile + tilesWidth, static_cast<f32>(layer.GetSize().x))));
+
+			for (i32 y = topY; y < bottomY; ++y)
 			{
 				for (i32 x = leftX; x < rightX; ++x)
 				{

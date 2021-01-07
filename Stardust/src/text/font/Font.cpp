@@ -8,7 +8,10 @@ namespace stardust
 {
 	void Font::FontDestroyer::operator()(TTF_Font* const font) const noexcept
 	{
-		TTF_CloseFont(font);
+		if (TTF_WasInit())
+		{
+			TTF_CloseFont(font);
+		}
 	}
 
 	Font::Font(const StringView& fontFilepath, const u32 pointSize)
