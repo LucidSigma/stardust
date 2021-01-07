@@ -274,6 +274,8 @@ public:
 
 	virtual void Render(sd::Renderer& renderer) override
 	{
+		m_tilemap.Render(renderer, GetCamera(), m_defaultSortingLayer);
+
 		for (sd::i32 x = -3; x <= 3; ++x)
 		{
 			for (sd::i32 y = -3; y <= 3; ++y)
@@ -388,8 +390,6 @@ public:
 			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimator.GetSprite(), m_colourAnimator.GetColour()),
 			GetCamera()
 		);
-
-		m_tilemap.Render(renderer, GetCamera(), m_defaultSortingLayer);
 
 		m_particles.RenderOnScreen(renderer);
 	}

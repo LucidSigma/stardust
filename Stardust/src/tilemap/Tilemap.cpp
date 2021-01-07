@@ -99,8 +99,10 @@ namespace stardust
 
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
 	{
-		const f32 scaledCameraHalfSize = camera.GetHalfSize() / camera.GetZoom();
-		const f32 tilesWidth = 2.0f * (scaledCameraHalfSize / glm::cos(glm::radians(camera.GetRotation())) + (1.0f / camera.GetZoom()));
+		const f32 scaledCameraHalfWidth = camera.GetHalfSize() / glm::abs(camera.GetZoom());
+		const f32 scaledCameraHalfHeight = camera.GetHalfSize() / camera.GetAspectRatio() / camera.GetZoom();
+
+		const f32 tilesWidth = 2.0f * (scaledCameraHalfWidth / glm::abs(glm::cos(glm::radians(camera.GetRotation()))) + std::max(1.0f, 1.0f / glm::abs(camera.GetZoom())));
 		const f32 leftmostTile = ((camera.GetPosition().x - m_position.x) - tilesWidth / 2.0f) / m_tileSize.x;
 
 		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
@@ -112,14 +114,14 @@ namespace stardust
 				continue;
 			}
 
-			const i32 leftX = static_cast<i32>(glm::floor(glm::max(leftmostTile, 0.0f)));
-			const i32 rightX = static_cast<i32>(glm::ceil(glm::min(leftmostTile + tilesWidth, static_cast<f32>(layer.GetSize().x))));
+			const i32 leftX = static_cast<i32>(glm::floor(std::max(leftmostTile, 0.0f)));
+			const i32 rightX = static_cast<i32>(glm::ceil(std::min(leftmostTile + tilesWidth, static_cast<f32>(layer.GetSize().x))));
 
-			for (i32 y = 0u; y < layer.GetSize().y; ++y)
+			for (i32 y = 0; y < layer.GetSize().y; ++y)
 			{
 				for (i32 x = leftX; x < rightX; ++x)
 				{
-					const Tile tile = layer.GetTile(x, y);
+					const Tile tile = layer.GetTile(static_cast<u32>(x), static_cast<u32>(y));
 
 					if (tile != s_EmptyTile)
 					{

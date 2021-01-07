@@ -17,6 +17,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Lua scripting (using Sol2).
 * Support for multiple locales.
 * Timer and timesteps.
+* Tilemaps (using Tiled JSON files).
 * Scene queue.
 * Converting JSON to and from MessagePack (for binary storage).
 * Animation (sprites and basic tweens).
@@ -24,14 +25,14 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Basic parallel task scheduling.
 
 ## Functionality to come
-* Creating tilemaps (reading TMX files from Tiled).
 * Basic AI (graphs, pathfinding/searching, boids, minimax, et cetera).
 * Graphical effects (outlines, kernel effects (blur, edge detection), HDR/bloom).
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
 * UI (canvases, basic elements such as buttons/sliders/checkboxes).
-* Networking support.
-* Coloured keyboard lighting support (Corsair, Razer, Logitech).
+* Networking support (using ENet).
+* RGB keyboard lighting support (Corsair, Razer, Logitech).
 * Replace OpenGL renderer with Vulkan (possibly).
+* Integration with Discord Rich Presence.
 
 ## Dependencies
 ### Window/Input
