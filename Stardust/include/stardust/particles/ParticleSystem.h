@@ -10,7 +10,6 @@
 #include "stardust/graphics/Colour.h"
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/texture/Texture.h"
-#include "stardust/graphics/SortingLayer.h"
 
 namespace stardust
 {
@@ -82,18 +81,13 @@ namespace stardust
 		usize m_particlePoolIndex = s_ParticleCount - 1u;
 		HashMap<usize, ObserverPtr<Particle>> m_activeParticles{ };
 
-		ObserverPtr<const SortingLayer> m_sortingLayer = nullptr;
-
 		Vec2 m_gravity = Vec2{ 0.0f, 0.0f };
 
 	public:
 		static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }
 
-		ParticleSystem() = default;
-		ParticleSystem(const SortingLayer& sortingLayer);
+		ParticleSystem();
 		~ParticleSystem() noexcept = default;
-
-		void Initialise(const SortingLayer& sortingLayer);
 
 		void Update(const f32 deltaTime);
 		void RenderInWorld(Renderer& renderer, const Camera2D& camera) const;

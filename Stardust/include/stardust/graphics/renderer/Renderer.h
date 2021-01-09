@@ -22,7 +22,7 @@
 #include "stardust/graphics/Colour.h"
 #include "stardust/scene/components/ScreenTransformComponent.h"
 #include "stardust/scene/components/ShearTransformComponent.h"
-#include "stardust/scene/components/SpriteRenderComponent.h"
+#include "stardust/scene/components/SpriteComponent.h"
 #include "stardust/scene/components/TransformComponent.h"
 #include "stardust/window/Window.h"
 
@@ -126,18 +126,18 @@ namespace stardust
 
 		void DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera);
 		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
-		void DrawWorldRect(const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera);
-		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera);
+		void DrawWorldRect(const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
+		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera);
 
 		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const Colour& colour, const Camera2D& camera);
 		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
-		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera);
-		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera);
+		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
+		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera);
 
 		void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
-		void DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite);
-		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite);
+		void DrawScreenRect(const components::ScreenTransform& transform, const components::Sprite& sprite);
+		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::Sprite& sprite);
 
 		void SetAntiAliasing(const bool enableAntiAliasing) const;
 

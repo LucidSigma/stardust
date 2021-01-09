@@ -176,7 +176,7 @@ namespace stardust
 		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldRect(const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
+	void Renderer::DrawWorldRect(const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
@@ -212,7 +212,7 @@ namespace stardust
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera)
+	void Renderer::DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
@@ -278,7 +278,7 @@ namespace stardust
 		GenerateQuad(quad, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::SpriteRender& sprite, const Camera2D& camera)
+	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
@@ -314,7 +314,7 @@ namespace stardust
 		GenerateQuad(quad, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
-	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite, const Camera2D& camera)
+	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch || m_worldTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
@@ -380,7 +380,7 @@ namespace stardust
 		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
 	}
 
-	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::SpriteRender& sprite)
+	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::Sprite& sprite)
 	{
 		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{
@@ -416,7 +416,7 @@ namespace stardust
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
 	}
 
-	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::SpriteRender& sprite)
+	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::Sprite& sprite)
 	{
 		if (m_screenIndexCount >= s_MaxIndicesPerBatch || m_screenTextureSlotIndex > m_maxTextureUnits - 1u) [[unlikely]]
 		{

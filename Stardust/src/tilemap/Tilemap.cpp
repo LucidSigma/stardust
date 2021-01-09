@@ -96,7 +96,7 @@ namespace stardust
 		m_isValid = true;
 	}
 
-	void Tilemap::Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const
+	void Tilemap::Render(Renderer& renderer, const Camera2D& camera) const
 	{
 		const f32 longestScaledDimension = camera.GetAspectRatio() >= 1.0f
 			? camera.GetHalfSize() / glm::abs(camera.GetZoom())
@@ -137,7 +137,7 @@ namespace stardust
 
 						renderer.DrawWorldRect(
 							tileTransform,
-							components::SpriteRender(*m_tileTextureLookup.at(tile), sortingLayer, m_tiles.at(tile)),
+							components::Sprite(*m_tileTextureLookup.at(tile),  m_tiles.at(tile)),
 							camera
 						);
 					}

@@ -7,15 +7,9 @@
 
 namespace stardust
 {
-	ParticleSystem::ParticleSystem(const SortingLayer& sortingLayer)
-	{
-		Initialise(sortingLayer);
-	}
-
-	void ParticleSystem::Initialise(const SortingLayer& sortingLayer)
+	ParticleSystem::ParticleSystem()
 	{
 		m_particlePool.resize(s_ParticleCount);
-		m_sortingLayer = &sortingLayer;
 	}
 
 	void ParticleSystem::Update(const f32 deltaTime)
@@ -85,7 +79,7 @@ namespace stardust
 			{
 				renderer.DrawWorldRect(
 					components::Transform(particle->position, particle->rotation, NullOpt, particle->size),
-					components::SpriteRender(*particle->texture, *m_sortingLayer, particle->textureArea, particle->currentColour),
+					components::Sprite(*particle->texture, particle->textureArea, particle->currentColour),
 					camera
 				);
 			}
@@ -112,7 +106,7 @@ namespace stardust
 			{
 				renderer.DrawScreenRect(
 					components::ScreenTransform(IVec2(particle->position), IVec2(particle->size), FlipType::None, particle->rotation, NullOpt),
-					components::SpriteRender(*particle->texture, *m_sortingLayer, particle->textureArea, particle->currentColour)
+					components::Sprite(*particle->texture, particle->textureArea, particle->currentColour)
 				);
 			}
 		}

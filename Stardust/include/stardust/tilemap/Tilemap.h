@@ -14,7 +14,6 @@
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
-#include "stardust/graphics/SortingLayer.h"
 
 namespace stardust
 {
@@ -103,7 +102,7 @@ namespace stardust
 
 		void Initialise(const StringView& filepath);
 
-		void Render(Renderer& renderer, const Camera2D& camera, const SortingLayer& sortingLayer) const;
+		void Render(Renderer& renderer, const Camera2D& camera) const;
 
 		void AddTiles(const TextureAtlas& textureAtlas);
 		[[nodiscard]] Optional<Tile> GetTileID(const String& name) const;

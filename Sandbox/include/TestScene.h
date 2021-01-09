@@ -91,8 +91,6 @@ public:
 			return sd::Status::Fail;
 		}
 
-		m_particles.Initialise(m_defaultSortingLayer);
-
 		m_colourAnimation.Initialise("assets/animations/colours.anj", m_colourTextures);
 		m_flashAnimation.Initialise("assets/animations/flash.anj", m_colourTextures);
 
@@ -274,7 +272,7 @@ public:
 
 	virtual void Render(sd::Renderer& renderer) override
 	{
-		m_tilemap.Render(renderer, GetCamera(), m_defaultSortingLayer);
+		m_tilemap.Render(renderer, GetCamera());
 
 		for (sd::i32 x = -3; x <= 3; ++x)
 		{
@@ -288,7 +286,7 @@ public:
 						sd::Vec2{ 1.0f, 1.0f }
 					),
 					sd::comp::ShearTransform(10.0f),
-					sd::comp::SpriteRender((x + y) % 2 == 0 ? *m_crateTexture : *m_crumbleTexture, m_defaultSortingLayer),
+					sd::comp::Sprite((x + y) % 2 == 0 ? *m_crateTexture : *m_crumbleTexture),
 					GetCamera()
 				);
 			}
@@ -337,8 +335,8 @@ public:
 				sd::Vec2{ 2.0f, 2.0f }
 			),
 			sd::comp::ShearTransform(-30.0f),
-			sd::comp::SpriteRender(
-				*m_crateTexture, m_defaultSortingLayer, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, sd::colours::Lime
+			sd::comp::Sprite(
+				*m_crateTexture, sd::Pair<sd::Vec2, sd::Vec2>{ { 0.25f, 0.25f }, { 1.0f, 1.0f } }, sd::colours::Lime
 			),
 			GetCamera()
 		);
@@ -352,42 +350,42 @@ public:
 		renderer.DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 150, 50 }, sd::UVec2{ 100u, 200u }),
 			sd::comp::ShearTransform(0.0f, -5.0f),
-			sd::comp::SpriteRender(m_glyphTexture, m_defaultSortingLayer)
+			sd::comp::Sprite(m_glyphTexture)
 		);
 
 		renderer.DrawScreenRect(
 			sd::comp::ScreenTransform(sd::IVec2{ 200, 800 }, m_textTexture.GetSize() / 3u),
-			sd::comp::SpriteRender(m_textTexture, m_defaultSortingLayer)
+			sd::comp::Sprite(m_textTexture)
 		);
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(-6.5f, 3.0f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
-			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["red"]),
+			sd::comp::Sprite(m_colourTextures.GetTexture(), m_colourTextures["red"]),
 			GetCamera()
 		);
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(-5.0f, 3.0f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
-			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["green"]),
+			sd::comp::Sprite(m_colourTextures.GetTexture(), m_colourTextures["green"]),
 			GetCamera()
 		);
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(-6.5f, 1.5f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
-			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["blue"]),
+			sd::comp::Sprite(m_colourTextures.GetTexture(), m_colourTextures["blue"]),
 			GetCamera()
 		);
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(-5.0f, 1.5f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),
-			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourTextures["yellow"]),
+			sd::comp::Sprite(m_colourTextures.GetTexture(), m_colourTextures["yellow"]),
 			GetCamera()
 		);
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(m_colourAnimator.GetPositionOffset(), m_colourAnimator.GetRotation(), sd::NullOpt, m_colourAnimator.GetScale()),
 			sd::comp::ShearTransform(m_colourAnimator.GetShear()),
-			sd::comp::SpriteRender(m_colourTextures.GetTexture(), m_defaultSortingLayer, m_colourAnimator.GetSprite(), m_colourAnimator.GetColour()),
+			sd::comp::Sprite(m_colourTextures.GetTexture(), m_colourAnimator.GetSprite(), m_colourAnimator.GetColour()),
 			GetCamera()
 		);
 
