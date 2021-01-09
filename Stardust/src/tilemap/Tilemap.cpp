@@ -16,6 +16,8 @@ namespace stardust
 
 	void Tilemap::Layer::Initialise(const CreateInfo& createInfo)
 	{
+		m_ownerTilemap = createInfo.owner;
+
 		m_id = createInfo.id;
 		m_name = createInfo.name;
 
@@ -24,6 +26,56 @@ namespace stardust
 
 		m_tileData = createInfo.tiles;
 		m_isVisible = createInfo.isVisible;
+	}
+
+	void Tilemap::Layer::Render(Renderer& renderer, const Camera2D& camera) const
+	{
+		if (!m_isVisible)
+		{
+			return;
+		}
+
+		const auto& tilemapPosition = m_ownerTilemap->GetPosition();
+		const auto& tilemapTileSize = m_ownerTilemap->GetTileSize();
+
+		const f32 longestScaledDimension = camera.GetAspectRatio() >= 1.0f
+			? camera.GetHalfSize() / glm::abs(camera.GetZoom())
+			: camera.GetHalfSize() / camera.GetAspectRatio() / glm::abs(camera.GetZoom());
+
+		const f32 zoomFactor = std::max(1.0f, 1.0f / glm::abs(camera.GetZoom()));
+		const f32 cameraRotationCosine = glm::abs(glm::cos(glm::radians(camera.GetRotation())));
+
+		const f32 tilesWidth = 2.0f * (longestScaledDimension / cameraRotationCosine * zoomFactor);
+		const f32 tilesHeight = 2.0f * (longestScaledDimension / cameraRotationCosine * zoomFactor);
+		const f32 leftmostPossibleTile = ((camera.GetPosition().x - tilemapPosition.x) - (tilesWidth / 2.0f)) / tilemapTileSize.x;
+		const f32 bottommostPossibleTile = ((tilemapPosition.y - camera.GetPosition().y) + (tilesHeight / 2.0f)) / tilemapTileSize.y;
+
+		components::Transform tileTransform(tilemapPosition, 0.0f, NullOpt, tilemapTileSize);
+
+		const i32 topY = static_cast<f32>(glm::floor(std::max(bottommostPossibleTile - tilesHeight, 0.0f)));
+		const i32 bottomY = static_cast<f32>(glm::ceil(std::min(bottommostPossibleTile + 1.0f, static_cast<f32>(m_size.y))));
+
+		const i32 leftX = static_cast<i32>(glm::floor(std::max(leftmostPossibleTile, 0.0f)));
+		const i32 rightX = static_cast<i32>(glm::ceil(std::min(leftmostPossibleTile + tilesWidth + 1.0f, static_cast<f32>(m_size.x))));
+
+		for (i32 y = topY; y < bottomY; ++y)
+		{
+			for (i32 x = leftX; x < rightX; ++x)
+			{
+				const Tile tile = GetTile(static_cast<u32>(x), static_cast<u32>(y));
+
+				if (tile != s_EmptyTile)
+				{
+					tileTransform.position = tilemapPosition + Vec2{ x, -y } * tilemapTileSize;
+
+					renderer.DrawWorldRect(
+						tileTransform,
+						components::Sprite(*m_ownerTilemap->m_tileTextureLookup.at(tile), m_ownerTilemap->m_tiles.at(tile)),
+						camera
+					);
+				}
+			}
+		}
 	}
 
 	void Tilemap::Layer::SetOpacity(const f32 opacity) noexcept
@@ -76,6 +128,7 @@ namespace stardust
 			for (const auto& layer : tilemapData["layers"])
 			{
 				m_layers.emplace_back(Layer::CreateInfo{
+					.owner = this,
 					.id = layer["id"],
 					.name = layer["name"],
 					.size = Vec2{ layer["width"], layer["height"] },
@@ -98,51 +151,9 @@ namespace stardust
 
 	void Tilemap::Render(Renderer& renderer, const Camera2D& camera) const
 	{
-		const f32 longestScaledDimension = camera.GetAspectRatio() >= 1.0f
-			? camera.GetHalfSize() / glm::abs(camera.GetZoom())
-			: camera.GetHalfSize() / camera.GetAspectRatio() / glm::abs(camera.GetZoom());
-
-		const f32 zoomFactor = std::max(1.0f, 1.0f / glm::abs(camera.GetZoom()));
-		const f32 cameraRotationCosine = glm::abs(glm::cos(glm::radians(camera.GetRotation())));
-
-		const f32 tilesWidth = 2.0f * (longestScaledDimension / cameraRotationCosine * zoomFactor);
-		const f32 tilesHeight = 2.0f * (longestScaledDimension / cameraRotationCosine * zoomFactor);
-		const f32 leftmostPossibleTile = ((camera.GetPosition().x - m_position.x) - (tilesWidth / 2.0f)) / m_tileSize.x;
-		const f32 bottommostPossibleTile = ((m_position.y - camera.GetPosition().y) + (tilesHeight / 2.0f)) / m_tileSize.y;
-
-		components::Transform tileTransform(m_position, 0.0f, NullOpt, m_tileSize);
-
 		for (const auto& layer : m_layers)
 		{
-			if (!layer.IsVisible())
-			{
-				continue;
-			}
-
-			const i32 topY = static_cast<f32>(glm::floor(std::max(bottommostPossibleTile - tilesHeight, 0.0f)));
-			const i32 bottomY = static_cast<f32>(glm::ceil(std::min(bottommostPossibleTile + 1.0f, static_cast<f32>(layer.GetSize().y))));
-
-			const i32 leftX = static_cast<i32>(glm::floor(std::max(leftmostPossibleTile, 0.0f)));
-			const i32 rightX = static_cast<i32>(glm::ceil(std::min(leftmostPossibleTile + tilesWidth + 1.0f, static_cast<f32>(layer.GetSize().x))));
-
-			for (i32 y = topY; y < bottomY; ++y)
-			{
-				for (i32 x = leftX; x < rightX; ++x)
-				{
-					const Tile tile = layer.GetTile(static_cast<u32>(x), static_cast<u32>(y));
-
-					if (tile != s_EmptyTile)
-					{
-						tileTransform.position = m_position + Vec2{ x, -y } * m_tileSize;
-
-						renderer.DrawWorldRect(
-							tileTransform,
-							components::Sprite(*m_tileTextureLookup.at(tile),  m_tiles.at(tile)),
-							camera
-						);
-					}
-				}
-			}
+			layer.Render(renderer, camera);
 		}
 	}
 

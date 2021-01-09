@@ -27,6 +27,8 @@ namespace stardust
 		public:
 			struct CreateInfo
 			{
+				ObserverPtr<const Tilemap> owner;
+
 				u32 id;
 				StringView name;
 
@@ -38,6 +40,8 @@ namespace stardust
 			};
 
 		private:
+			ObserverPtr<const Tilemap> m_ownerTilemap = nullptr;
+
 			u32 m_id = 0u;
 			String m_name;
 
@@ -53,6 +57,8 @@ namespace stardust
 			~Layer() noexcept = default;
 
 			void Initialise(const CreateInfo& createInfo);
+
+			void Render(Renderer& renderer, const Camera2D& camera) const;
 
 			inline u32 GetID() const noexcept { return m_id; }
 			inline const String& GetName() const noexcept { return m_name; }
@@ -96,6 +102,8 @@ namespace stardust
 		bool m_isValid = false;
 
 	public:
+		friend class Layer;
+
 		Tilemap() = default;
 		Tilemap(const StringView& filepath);
 		~Tilemap() noexcept = default;
@@ -115,6 +123,8 @@ namespace stardust
 		inline const Vec2& GetTileSize() const noexcept { return m_tileSize; }
 		inline void SetTileSize(const Vec2& tileSize) noexcept { m_tileSize = tileSize; }
 
+		inline Vector<Layer>& GetLayers() noexcept { return m_layers; }
+		inline const Vector<Layer>& GetLayers() const noexcept { return m_layers; }
 		[[nodiscard]] ObserverPtr<Layer> GetLayerByID(const u32 layerID) noexcept;
 		[[nodiscard]] ObserverPtr<const Layer> GetLayerByID(const u32 layerID) const noexcept;
 		[[nodiscard]] ObserverPtr<Layer> GetLayerByName(const String layerName) noexcept;

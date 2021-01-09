@@ -272,7 +272,10 @@ public:
 
 	virtual void Render(sd::Renderer& renderer) override
 	{
-		m_tilemap.Render(renderer, GetCamera());
+		for (const auto& layer : m_tilemap.GetLayers())
+		{
+			layer.Render(renderer, GetCamera());
+		}
 
 		for (sd::i32 x = -3; x <= 3; ++x)
 		{
