@@ -115,8 +115,6 @@ public:
 		m_tilemap.AddTiles(m_groundTiles);
 		m_tilemap.AddTiles(m_conveyorTextures);
 
-		GetCamera().SetRotation(45.0f);
-
 		GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
 		GetInputManager().AddToButton("outline", sd::KeyCode::Space);
 		GetInputManager().AddToButton("speed", sd::KeyCode::LeftShift);
@@ -202,7 +200,7 @@ public:
 
 			if (m_controller != nullptr)
 			{
-				//GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.04f));
+				GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.04f));
 			}
 
 			if (GetInputManager().IsButtonDown("play_sound", { m_controller }))
