@@ -1,6 +1,6 @@
 #pragma once
-#ifndef STARDUST_PARTICLE_CONTROLLER_COMPONENT_H
-#define STARDUST_PARTICLE_CONTROLLER_COMPONENT_H
+#ifndef STARDUST_PARTICLE_GENERATOR_COMPONENT_H
+#define STARDUST_PARTICLE_GENERATOR_COMPONENT_H
 
 #include "stardust/data/Pointers.h"
 #include "stardust/particles/ParticleSystem.h"
@@ -9,19 +9,19 @@ namespace stardust
 {
 	namespace components
 	{
-		struct ParticleController
+		struct ParticleGenerator
 		{
 			ObserverPtr<ParticleSystem> particleSystem;
 
-			ParticleController()
+			ParticleGenerator()
 				: particleSystem(nullptr)
 			{ }
 
-			explicit ParticleController(ParticleSystem& particleSystem)
+			explicit ParticleGenerator(ParticleSystem& particleSystem)
 				: particleSystem(&particleSystem)
 			{ }
 
-			~ParticleController() noexcept = default;
+			~ParticleGenerator() noexcept = default;
 		};
 	}
 }

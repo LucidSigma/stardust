@@ -2,7 +2,7 @@
 #ifndef STARDUST_COMPONENTS_H
 #define STARDUST_COMPONENTS_H
 
-#include "ParticleControllerComponent.h"
+#include "ParticleGeneratorComponent.h"
 #include "RenderableComponent.h"
 #include "ScreenTransformComponent.h"
 #include "ShearTransformComponent.h"
