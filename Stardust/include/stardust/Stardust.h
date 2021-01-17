@@ -12,6 +12,7 @@
 #include "application/Application.h"
 #include "assets/AssetManager.h"
 
+#include "audio/device/AudioDevice.h"
 #include "audio/sounds/SoundBase.h"
 #include "audio/sounds/SoundEnums.h"
 #include "audio/sounds/Sounds.h"
