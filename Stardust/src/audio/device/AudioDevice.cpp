@@ -1,6 +1,6 @@
 #include "stardust/audio/device/AudioDevice.h"
 
-#include <SDL2/SDL.h>
+#include <cstring>
 
 namespace stardust
 {
@@ -32,7 +32,47 @@ namespace stardust
 		return audioRecordingDevices;
 	}
 
-	AudioDevice::AudioDevice(const i32 id, const bool isRecording)
-		: m_id(id), m_name(SDL_GetAudioDeviceName(id, static_cast<SDL_bool>(isRecording))), m_isRecordingDevice(isRecording)
+	AudioDevice::AudioDevice(const i32 index, const bool isRecording)
+		: m_index(index), m_name(SDL_GetAudioDeviceName(index, static_cast<SDL_bool>(isRecording))), m_isRecordingDevice(isRecording)
+	{ }
+
+	AudioDevice::~AudioDevice() noexcept
+	{
+		if (!IsOpen())
+		{
+			Close();
+		}
+	}
+
+	void AudioDevice::Open()
+	{
+		const SDL_AudioSpec desiredAudioSpec{
+			.freq = 44'100,
+			.format = AUDIO_F32,
+			.channels = 2u,
+			.silence = 0u,
+			.samples = 4'096u,
+			.size = 0u,
+			.callback = m_isRecordingDevice ? AudioRecordingCallback : AudioPlaybackCallback,
+			.userdata = nullptr,
+		};
+
+		m_internalID = SDL_OpenAudioDevice(
+			m_name.c_str(), static_cast<SDL_bool>(m_isRecordingDevice),
+			&desiredAudioSpec, nullptr,
+			SDL_AUDIO_ALLOW_FORMAT_CHANGE
+		);
+	}
+
+	void AudioDevice::Close() noexcept
+	{
+		SDL_CloseAudioDevice(m_internalID);
+		m_internalID = s_InvalidDeviceID;
+	}
+
+	void AudioDevice::AudioPlaybackCallback(void* const userData, u8* const stream, const i32 length)
+	{ }
+
+	void AudioDevice::AudioRecordingCallback(void* const userData, u8* const stream, const i32 length)
 	{ }
 }
