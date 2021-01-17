@@ -145,22 +145,6 @@ public:
 		GetScriptEngine().Set("a", 13);
 		sd::Log::Trace("{} {} {}", (sd::i32)GetScriptEngine()["a"], GetScriptEngine().Get<sd::i32>("b"), GetScriptEngine().Get<sd::i32>("c"));
 
-		const auto playbackDevices = sd::AudioDevice::GetPlaybackDevices();
-		sd::Log::Debug("Audio playback devices:");
-
-		for (const auto& playbackDevice : playbackDevices)
-		{
-			sd::Log::Trace("\t{}: {}", playbackDevice.GetID(), playbackDevice.GetName());
-		}
-
-		const auto recordingDevices = sd::AudioDevice::GetRecordingDevices();
-		sd::Log::Debug("Audio recording devices:");
-
-		for (const auto& recordingDevice : recordingDevices)
-		{
-			sd::Log::Trace("\t{}: {}", recordingDevice.GetID(), recordingDevice.GetName());
-		}
-
 		return sd::Status::Success;
 	}
 
