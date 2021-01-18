@@ -142,7 +142,12 @@ namespace stardust
 			m_globalSceneData[dataName] = data;
 		}
 
-		Any& GetFromGlobalSceneData(const String& dataName);
+		template <typename T>
+		[[nodiscard]] T GetFromGlobalSceneData(const String& dataName)
+		{
+			return std::any_cast<T>(m_globalSceneData[dataName]);
+		}
+
 		void RemoveFromGlobalSceneData(const String& dataName);
 
 		inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }

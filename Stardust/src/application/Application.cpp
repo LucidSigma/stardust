@@ -121,11 +121,6 @@ namespace stardust
 		}
 	}
 
-	Any& Application::GetFromGlobalSceneData(const String& dataName)
-	{
-		return m_globalSceneData[dataName];
-	}
-
 	void Application::RemoveFromGlobalSceneData(const String& dataName)
 	{
 		m_globalSceneData.erase(dataName);
