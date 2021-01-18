@@ -35,6 +35,39 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Replace OpenGL renderer with Vulkan (possibly).
 * Integration with Discord Rich Presence.
 
+## Scene Template
+```cpp
+#pragma once
+#ifndef EXAMPLE_SCENE_H
+#define EXAMPLE_SCENE_H
+
+#include <stardust/Stardust.h>
+
+class ExampleScene final
+	: public sd::Scene
+{
+public:
+	ExampleScene(sd::Application& application, const sd::String& name);
+	virtual ~ExampleScene() noexcept = default;
+
+	[[nodiscard]] virtual sd::Status OnLoad();
+	virtual void OnUnload() noexcept;
+
+	virtual void FixedUpdate(const sd::f32 fixedDeltaTime);
+	virtual void ProcessInput();
+	virtual void Update(const sd::f32 deltaTime);
+	virtual void LateUpdate(const sd::f32 deltaTime);
+
+	virtual void Render(sd::Renderer& renderer);
+
+	virtual void PollEvent(const SDL_Event& event);
+	virtual void OnGameControllerAdded(sd::GameController& gameController);
+	virtual void OnGameControllerRemoved(const sd::GameController& gameController);
+};
+
+#endif
+```
+
 ## Dependencies
 ### Window/Input
 * [SDL2](https://www.libsdl.org/)
