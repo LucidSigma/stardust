@@ -500,6 +500,24 @@ namespace stardust
 
 			break;
 
+		case AxisType::ControllerDPadX:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadRight)) : 0.0f;
+				axisValue -= controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadLeft)) : 0.0f;
+			}
+
+			break;
+
+		case AxisType::ControllerDPadY:
+			for (const auto& controller : gameControllers)
+			{
+				axisValue += controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadUp)) : 0.0f;
+				axisValue -= controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadDown)) : 0.0f;
+			}
+
+			break;
+
 		case AxisType::ControllerLeftX:
 			for (const auto& controller : gameControllers)
 			{

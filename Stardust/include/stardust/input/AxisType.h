@@ -13,6 +13,8 @@ namespace stardust
 		MouseX,
 		MouseY,
 		MouseScroll,
+		ControllerDPadX,
+		ControllerDPadY,
 		ControllerLeftX,
 		ControllerLeftY,
 		ControllerRightX,
