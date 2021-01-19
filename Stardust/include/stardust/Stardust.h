@@ -71,6 +71,8 @@
 
 #include "particles/ParticleSystem.h"
 
+#include "physics/world/World.h"
+
 #include "scene/components/Components.h"
 #include "scene/entity/Entity.h"
 #include "scene/Scene.h"
@@ -95,5 +97,10 @@
 #include "window/Window.h"
 
 namespace sd = stardust;
+
+namespace stardust
+{
+	namespace phys = physics;
+}
 
 #endif
