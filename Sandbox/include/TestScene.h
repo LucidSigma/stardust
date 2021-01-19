@@ -129,12 +129,12 @@ public:
 
 		GetInputManager().AddToAxis("scroll", sd::AxisType::MouseScroll);
 
-		GetInputManager().AddToPositiveAxis("x", { sd::KeyCode::A, sd::KeyCode::Left });
-		GetInputManager().AddToNegativeAxis("x", { sd::KeyCode::D, sd::KeyCode::Right });
+		GetInputManager().AddToAxis("x", sd::AxisType::ADKeys, true);
+		GetInputManager().AddToAxis("x", sd::AxisType::LeftRightKeys, true);
 		GetInputManager().AddToAxis("x", sd::AxisType::ControllerRightX, true);
 
-		GetInputManager().AddToPositiveAxis("y", { sd::KeyCode::S, sd::KeyCode::Down });
-		GetInputManager().AddToNegativeAxis("y", { sd::KeyCode::W, sd::KeyCode::Up });
+		GetInputManager().AddToAxis("y", sd::AxisType::WSKeys, true);
+		GetInputManager().AddToAxis("y", sd::AxisType::UpDownKeys, true);
 		GetInputManager().AddToAxis("y", sd::AxisType::ControllerRightY, false);
 
 		if (GetScriptEngine().LoadScript("assets/scripts/test.lua") != sd::Status::Success)

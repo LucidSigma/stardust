@@ -461,6 +461,30 @@ namespace stardust
 
 		switch (axisType)
 		{
+		case AxisType::ADKeys:
+			axisValue += Input::GetKeyboardState().IsKeyPressed(KeyCode::D) ? 1.0f : 0.0f;
+			axisValue -= Input::GetKeyboardState().IsKeyPressed(KeyCode::A) ? 1.0f : 0.0f;
+
+			break;
+
+		case AxisType::WSKeys:
+			axisValue += Input::GetKeyboardState().IsKeyPressed(KeyCode::W) ? 1.0f : 0.0f;
+			axisValue -= Input::GetKeyboardState().IsKeyPressed(KeyCode::S) ? 1.0f : 0.0f;
+
+			break;
+
+		case AxisType::UpDownKeys:
+			axisValue += Input::GetKeyboardState().IsKeyPressed(KeyCode::Up) ? 1.0f : 0.0f;
+			axisValue -= Input::GetKeyboardState().IsKeyPressed(KeyCode::Down) ? 1.0f : 0.0f;
+
+			break;
+
+		case AxisType::LeftRightKeys:
+			axisValue += Input::GetKeyboardState().IsKeyPressed(KeyCode::Right) ? 1.0f : 0.0f;
+			axisValue -= Input::GetKeyboardState().IsKeyPressed(KeyCode::Left) ? 1.0f : 0.0f;
+
+			break;
+
 		case AxisType::MouseX:
 			axisValue = Input::IsMouseInRelativeMode() ? Input::GetMouseState().GetRelativeCoordinates().x : 0.0f;
 

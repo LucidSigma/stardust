@@ -6,6 +6,10 @@ namespace stardust
 {
 	enum class AxisType
 	{
+		WSKeys,
+		ADKeys,
+		UpDownKeys,
+		LeftRightKeys,
 		MouseX,
 		MouseY,
 		MouseScroll,
