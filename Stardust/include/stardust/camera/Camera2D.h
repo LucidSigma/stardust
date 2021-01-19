@@ -36,6 +36,7 @@ namespace stardust
 
 		inline Vec3& GetPosition() noexcept { return m_position; }
 		inline const Vec3& GetPosition() const noexcept { return m_position; }
+		inline void SetPosition(const Vec2& position) noexcept { m_position = Vec3{ position, m_position.z }; }
 		inline void SetPosition(const Vec3& position) noexcept { m_position = position; }
 		inline void SetPosition(const f32 x, const f32 y, const f32 z) noexcept { m_position = Vec3{ x, y, z }; }
 
