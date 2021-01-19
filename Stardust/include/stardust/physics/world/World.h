@@ -40,6 +40,9 @@ namespace stardust
 			[[nodiscard]] Vec2 GetGravity() const;
 			void SetGravity(const Vec2& gravity) const;
 
+			[[nodiscard]] bool AllowsSleeping() const;
+			void AllowSleeping(const bool allowSleeping) const;
+
 			inline bool IsValid() const noexcept { return m_handle != nullptr; }
 			[[nodiscard]] inline b2World* const GetRawHandle() const noexcept { return m_handle.get(); }
 		};

@@ -38,5 +38,15 @@ namespace stardust
 		{
 			m_handle->SetGravity(b2Vec2{ gravity.x, gravity.y });
 		}
+
+		bool World::AllowsSleeping() const
+		{
+			return m_handle->GetAllowSleeping();
+		}
+
+		void World::AllowSleeping(const bool allowSleeping) const
+		{
+			return m_handle->SetAllowSleeping(allowSleeping);
+		}
 	}
 }
