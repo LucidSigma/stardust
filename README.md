@@ -99,6 +99,9 @@ public:
 ### Mathematics
 * [GLM](https://github.com/g-truc/glm)
 
+### Physics
+* [Box2D](https://box2d.org/)
+
 ### Scripting
 * [Lua](http://www.lua.org/)
 * [Sol2](https://github.com/ThePhD/sol2)
