@@ -18,6 +18,7 @@
 #include "stardust/graphics/backend/OpenGL.h"
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/Input.h"
+#include "stardust/physics/world/World.h"
 
 namespace stardust
 {
@@ -170,6 +171,11 @@ namespace stardust
 			}
 		}
 
+		m_fixedTimestep = createInfo.physicsInfo.fixedTimestep;
+		physics::World::SetVelocityIterations(createInfo.physicsInfo.velocityIterations);
+		physics::World::SetPositionIterations(createInfo.physicsInfo.positionIterations);
+		Log::EngineInfo("Physics subsystem initialised.");
+
 		Input::SetGameControllerDeadzone(m_config["input"]["controller-deadzone"]);
 
 		m_onInitialise = createInfo.initialiseCallback;
@@ -185,8 +191,7 @@ namespace stardust
 
 		stbi_set_flip_vertically_on_load(true);
 		stbi_flip_vertically_on_write(true);
-		
-		m_fixedTimestep = createInfo.fixedTimestep;
+
 		m_ticksCount = SDL_GetPerformanceCounter();
 
 		m_didInitialiseSuccessfully = true;

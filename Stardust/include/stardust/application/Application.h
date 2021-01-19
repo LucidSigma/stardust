@@ -49,6 +49,14 @@ namespace stardust
 			StringView windowIconFile;
 		};
 
+		struct PhysicsInfo
+		{
+			f64 fixedTimestep;
+
+			u32 velocityIterations;
+			u32 positionIterations;
+		};
+
 		struct CreateInfo
 		{
 			StringView applicationName;
@@ -58,7 +66,7 @@ namespace stardust
 			FilesystemInfo filesystem;
 			FilepathsInfo filepaths;
 
-			f64 fixedTimestep;
+			PhysicsInfo physicsInfo;
 
 			Optional<InitialiseCallback> initialiseCallback;
 			Optional<ExitCallback> exitCallback;
