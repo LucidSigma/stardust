@@ -503,8 +503,8 @@ namespace stardust
 		case AxisType::ControllerDPadX:
 			for (const auto& controller : gameControllers)
 			{
-				axisValue += controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadRight)) : 0.0f;
-				axisValue -= controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadLeft)) : 0.0f;
+				axisValue += controller != nullptr ? static_cast<f32>(controller->IsButtonPressed(GameControllerButton::DPadRight)) : 0.0f;
+				axisValue -= controller != nullptr ? static_cast<f32>(controller->IsButtonPressed(GameControllerButton::DPadLeft)) : 0.0f;
 			}
 
 			break;
@@ -512,8 +512,8 @@ namespace stardust
 		case AxisType::ControllerDPadY:
 			for (const auto& controller : gameControllers)
 			{
-				axisValue += controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadUp)) : 0.0f;
-				axisValue -= controller != nullptr ? static_cast<f32>(controller->IsButtonDown(GameControllerButton::DPadDown)) : 0.0f;
+				axisValue += controller != nullptr ? static_cast<f32>(controller->IsButtonPressed(GameControllerButton::DPadUp)) : 0.0f;
+				axisValue -= controller != nullptr ? static_cast<f32>(controller->IsButtonPressed(GameControllerButton::DPadDown)) : 0.0f;
 			}
 
 			break;
