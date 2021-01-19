@@ -11,16 +11,21 @@ namespace stardust
 	{
 		struct ApplicationWrapper
 		{
-			const stardust::Application* const application = nullptr;
+			Application* const application = nullptr;
 
-			inline stardust::f64 GetElapsedTime() const noexcept { return application->GetElapsedTime(); }
+			inline void FinishCurrentScene() noexcept { application->FinishCurrentScene(); }
+			inline void ForceQuit() noexcept { application->ForceQuit(); }
+
+			inline f64 GetElapsedTime() const noexcept { return application->GetElapsedTime(); }
 		};
 	}
 
-	void ScriptEngine::Initialise(const Application& application)
+	void ScriptEngine::Initialise(Application& application)
 	{
 		m_luaState.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package, sol::lib::table);
 
+		SetFunction("finish_current_scene", &ApplicationWrapper::FinishCurrentScene, ApplicationWrapper{ &application });
+		SetFunction("force_quit", &ApplicationWrapper::ForceQuit, ApplicationWrapper{ &application });
 		SetFunction("get_elapsed_time", &ApplicationWrapper::GetElapsedTime, ApplicationWrapper{ &application });
 
 		SetFunction("log_info", &Log::Info<>);

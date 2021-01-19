@@ -21,7 +21,7 @@ namespace stardust
 		ScriptEngine() = default;
 		~ScriptEngine() noexcept = default;
 
-		void Initialise(const class Application& application);
+		void Initialise(class Application& application);
 
 		[[nodiscard]] Status LoadScript(const StringView& filename);
 
