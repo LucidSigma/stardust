@@ -7,6 +7,8 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/scene/components/PhysicsBodyComponent.h"
+#include "stardust/physics/Physics.h"
 
 namespace stardust
 {
@@ -31,6 +33,9 @@ namespace stardust
 			~World() noexcept = default;
 
 			void Step(const f32 timestep) const;
+
+			[[nodiscard]] ObserverPtr<Body> CreateBody(const BodyCreateInfo& createInfo) const;
+			void DestroyBody(const components::PhysicsBody& physicsBody) const noexcept;
 
 			[[nodiscard]] Vec2 GetGravity() const;
 			void SetGravity(const Vec2& gravity) const;

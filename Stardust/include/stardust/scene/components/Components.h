@@ -3,6 +3,7 @@
 #define STARDUST_COMPONENTS_H
 
 #include "ParticleGeneratorComponent.h"
+#include "PhysicsBodyComponent.h"
 #include "RenderableComponent.h"
 #include "ScreenTransformComponent.h"
 #include "ShearTransformComponent.h"

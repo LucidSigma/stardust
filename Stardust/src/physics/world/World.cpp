@@ -17,6 +17,16 @@ namespace stardust
 			m_handle->Step(timestep, static_cast<i32>(s_velocityIterations), static_cast<i32>(s_positionIterations));
 		}
 
+		[[nodiscard]] ObserverPtr<Body> World::CreateBody(const BodyCreateInfo& createInfo) const
+		{
+			return m_handle->CreateBody(&createInfo);
+		}
+
+		void World::DestroyBody(const components::PhysicsBody& physicsBody) const noexcept
+		{
+			m_handle->DestroyBody(physicsBody.bodyHandle);
+		}
+
 		[[nodiscard]] Vec2 World::GetGravity() const
 		{
 			const b2Vec2 gravity = m_handle->GetGravity();
