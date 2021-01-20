@@ -2,8 +2,7 @@
 #ifndef STARDUST_PHYSICS_BODY_COMPONENT
 #define STARDUST_PHYSICS_BODY_COMPONENT
 
-#include <utility>
-
+#include "stardust/data/Pointers.h"
 #include "stardust/physics/body/Body.h"
 
 namespace stardust
@@ -12,10 +11,14 @@ namespace stardust
 	{
 		struct PhysicsBody
 		{
-			physics::Body bodyHandle;
+			ObserverPtr<physics::Body> handle;
 
-			explicit PhysicsBody(physics::Body&& bodyHandle)
-				: bodyHandle(std::move(bodyHandle))
+			PhysicsBody()
+				: handle(nullptr)
+			{ }
+
+			explicit PhysicsBody(physics::Body& handle)
+				: handle(&handle)
 			{ }
 
 			~PhysicsBody() noexcept = default;
