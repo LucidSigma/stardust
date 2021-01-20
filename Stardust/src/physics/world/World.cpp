@@ -17,14 +17,14 @@ namespace stardust
 			m_handle->Step(timestep, static_cast<i32>(s_velocityIterations), static_cast<i32>(s_positionIterations));
 		}
 
-		[[nodiscard]] ObserverPtr<Body> World::CreateBody(const BodyCreateInfo& createInfo) const
+		[[nodiscard]] Body World::CreateBody(const Body::CreateInfo& createInfo) const
 		{
-			return m_handle->CreateBody(&createInfo);
+			return Body(*this, createInfo);
 		}
 
-		void World::DestroyBody(const components::PhysicsBody& physicsBody) const noexcept
+		void World::DestroyBody(const Body& body) const noexcept
 		{
-			m_handle->DestroyBody(physicsBody.bodyHandle);
+			m_handle->DestroyBody(body.GetRawHandle());
 		}
 
 		[[nodiscard]] Vec2 World::GetGravity() const
