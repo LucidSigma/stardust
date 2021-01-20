@@ -124,18 +124,26 @@ namespace stardust
 			}
 
 			m_size = UVec2{ tilemapData["width"], tilemapData["height"] };
+			const Vec2 tilePixelSize{ tilemapData["tilewidth"], tilemapData["tileheight"] };
 
 			for (const auto& layer : tilemapData["layers"])
 			{
-				m_layers.emplace_back(Layer::CreateInfo{
-					.owner = this,
-					.id = layer["id"],
-					.name = layer["name"],
-					.size = Vec2{ layer["width"], layer["height"] },
-					.opacity = layer["opacity"],
-					.tiles = layer["data"],
-					.isVisible = layer["visible"],
-				});
+				if (layer.contains("objects"))
+				{
+					ParseColliders(layer["objects"], tilePixelSize, filepath);
+				}
+				else
+				{
+					m_layers.emplace_back(Layer::CreateInfo{
+						.owner = this,
+						.id = layer["id"],
+						.name = layer["name"],
+						.size = Vec2{ layer["width"], layer["height"] },
+						.opacity = layer["opacity"],
+						.tiles = layer["data"],
+						.isVisible = layer["visible"],
+					});
+				}
 			}
 		}
 		catch (const nlohmann::json::exception& error)
@@ -272,5 +280,50 @@ namespace stardust
 		);
 
 		return tilemapJSON;
+	}
+
+	void Tilemap::ParseColliders(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath)
+	{
+		for (const auto& object : objects)
+		{
+			const f32 x = (object["x"] / tilePixelSize.x);
+			const f32 y = (object["y"] / tilePixelSize.y);
+
+			if (object.contains("polygon"))
+			{
+				if (object["polygon"].size() > b2_maxPolygonVertices)
+				{
+					Log::EngineWarn("Polygon object in tilemap {} has too many vertices; skipping.", filepath);
+
+					continue;
+				}
+
+				Vector<physics::Point> points{ };
+				points.reserve(object["polygon"].size());
+
+				for (const auto& vertex : object["polygon"])
+				{
+					const f32 xOffset = vertex["x"] / tilePixelSize.x;
+					const f32 yOffset = vertex["y"] / tilePixelSize.y;
+
+					points.push_back(physics::Point{ x + xOffset, y + yOffset });
+				}
+
+				physics::Polygon polygon{ };
+				polygon.Set(points.data(), static_cast<i32>(points.size()));
+
+				m_colliders.push_back(polygon);
+			}
+			else
+			{
+				const f32 halfWidth = object["width"] / tilePixelSize.x / 2.0f;
+				const f32 halfHeight = object["height"] / tilePixelSize.y / 2.0f;
+
+				physics::Polygon rectangle{ };
+				rectangle.SetAsBox(halfWidth, halfHeight, { x + halfWidth, y + halfHeight }, 0.0f);
+
+				m_colliders.push_back(rectangle);
+			}
+		}
 	}
 }

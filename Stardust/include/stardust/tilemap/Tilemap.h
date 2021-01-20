@@ -6,7 +6,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "stardust//camera/Camera2D.h"
+#include "stardust/camera/Camera2D.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
@@ -14,6 +14,7 @@
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
+#include "stardust/physics/Physics.h"
 
 namespace stardust
 {
@@ -99,6 +100,8 @@ namespace stardust
 		HashMap<Tile, ObserverPtr<const Texture>> m_tileTextureLookup{ };
 		HashMap<String, Tile> m_tileNameLookup{ };
 
+		Vector<physics::Polygon> m_colliders{ };
+
 		bool m_isValid = false;
 
 	public:
@@ -130,10 +133,13 @@ namespace stardust
 		[[nodiscard]] ObserverPtr<Layer> GetLayerByName(const String layerName) noexcept;
 		[[nodiscard]] ObserverPtr<const Layer> GetLayerByName(const String layerName) const noexcept;
 
+		inline const Vector<physics::Polygon>& GetColliders() const noexcept { return m_colliders; }
+
 		inline bool IsValid() const noexcept { return m_isValid; }
 
 	private:
 		[[nodiscard]] nlohmann::json ReadTilemapFile(const StringView& filepath) const;
+		void ParseColliders(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath);
 	};
 }
 

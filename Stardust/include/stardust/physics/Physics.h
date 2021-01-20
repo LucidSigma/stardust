@@ -24,6 +24,7 @@ namespace stardust
 		using Fixture = b2Fixture;
 		using FixtureInfo = b2FixtureDef;
 
+		using Point = b2Vec2;
 		using Chain = b2ChainShape;
 		using Circle = b2CircleShape;
 		using Edge = b2EdgeShape;
