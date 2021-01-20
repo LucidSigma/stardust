@@ -14,6 +14,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Positional audio with SoLoud.
 * Config loading.
 * Particle system.
+* Physics (powered by Box2D).
 * Lua scripting (using Sol2).
 * Support for multiple locales.
 * Timer and timesteps.

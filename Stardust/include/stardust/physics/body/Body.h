@@ -8,9 +8,11 @@
 
 #include <box2d/box2d.h>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/physics/Physics.h"
 
 namespace stardust
 {
@@ -63,6 +65,8 @@ namespace stardust
 			ObserverPtr<b2Body> m_handle = nullptr;
 			ObserverPtr<const class World> m_owningWorld = nullptr;
 
+			HashSet<ObserverPtr<Fixture>> m_fixtures{ };
+
 		public:
 			Body(const class World& world, const CreateInfo& createInfo);
 			Body(Body&& other) noexcept;
@@ -76,6 +80,10 @@ namespace stardust
 			void ApplyLinearImpulse(const Vec2& impulse, const Vec2& point, const bool wakeUp) const;
 			void ApplyLinearImpulseToCentre(const Vec2& impulse, const bool wakeUp) const;
 			void ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const;
+
+			ObserverPtr<Fixture> AddFixture(const FixtureInfo& fixtureInfo);
+			void RemoveFixture(ObserverPtr<Fixture> fixture);
+			inline const HashSet<ObserverPtr<Fixture>>& GetFixtures() const { return m_fixtures; }
 
 			[[nodiscard]] Vec2 GetWorldCentre() const;
 			[[nodiscard]] Vec2 GetLocalCenter() const;

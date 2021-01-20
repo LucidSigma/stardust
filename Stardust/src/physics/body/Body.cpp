@@ -31,16 +31,18 @@ namespace stardust
 		}
 
 		Body::Body(Body&& other) noexcept
-			: m_handle(nullptr), m_owningWorld(nullptr)
+			: m_handle(nullptr), m_owningWorld(nullptr), m_fixtures({ })
 		{
 			std::swap(m_handle, other.m_handle);
 			std::swap(m_owningWorld, other.m_owningWorld);
+			std::swap(m_fixtures, other.m_fixtures);
 		}
 
 		Body& Body::operator =(Body&& other) noexcept
 		{
 			m_handle = std::exchange(other.m_handle, nullptr);
 			m_owningWorld = std::exchange(other.m_owningWorld, nullptr);
+			m_fixtures = std::exchange(other.m_fixtures, { });
 
 			return *this;
 		}
@@ -73,6 +75,20 @@ namespace stardust
 		void Body::ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const
 		{
 			m_handle->ApplyAngularImpulse(impulse, wakeUp);
+		}
+
+		ObserverPtr<Fixture> Body::AddFixture(const FixtureInfo& fixtureInfo)
+		{
+			ObserverPtr<Fixture> fixture = m_handle->CreateFixture(&fixtureInfo);
+			m_fixtures.insert(fixture);
+
+			return fixture;
+		}
+
+		void Body::RemoveFixture(ObserverPtr<Fixture> fixture)
+		{
+			m_fixtures.erase(fixture);
+			m_handle->DestroyFixture(fixture);
 		}
 
 		[[nodiscard]] Vec2 Body::GetWorldCentre() const
