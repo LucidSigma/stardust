@@ -4,6 +4,7 @@
 
 #include <box2d/box2d.h>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
@@ -22,6 +23,8 @@ namespace stardust
 
 			UniquePtr<b2World> m_handle = nullptr;
 
+			HashMap<const b2Body*, Body> m_bodies{ };
+
 		public:
 			inline static u32 GetVelocityIterations() noexcept { return s_velocityIterations; }
 			inline static void SetVelocityIterations(const u32 iterations) noexcept { s_velocityIterations = iterations; }
@@ -34,8 +37,8 @@ namespace stardust
 
 			void Step(const f32 timestep) const;
 
-			[[nodiscard]] Body CreateBody(const Body::CreateInfo& createInfo) const;
-			void DestroyBody(const Body& body) const noexcept;
+			ObserverPtr<Body> CreateBody(const Body::CreateInfo& createInfo);
+			void DestroyBody(ObserverPtr<const Body> body) noexcept;
 
 			[[nodiscard]] Vec2 GetGravity() const;
 			void SetGravity(const Vec2& gravity) const;

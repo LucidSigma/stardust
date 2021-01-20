@@ -1,5 +1,7 @@
 #include "stardust/physics/world/World.h"
 
+#include <utility>
+
 namespace stardust
 {
 	namespace physics
@@ -17,14 +19,19 @@ namespace stardust
 			m_handle->Step(timestep, static_cast<i32>(s_velocityIterations), static_cast<i32>(s_positionIterations));
 		}
 
-		[[nodiscard]] Body World::CreateBody(const Body::CreateInfo& createInfo) const
+		ObserverPtr<Body> World::CreateBody(const Body::CreateInfo& createInfo)
 		{
-			return Body(*this, createInfo);
+			Body body(*this, createInfo);
+			const b2Body* rawBodyHandle = body.GetRawHandle();
+			m_bodies[rawBodyHandle] = std::move(body);
+
+			return &m_bodies[rawBodyHandle];
 		}
 
-		void World::DestroyBody(const Body& body) const noexcept
+		void World::DestroyBody(ObserverPtr<const Body> body) noexcept
 		{
-			m_handle->DestroyBody(body.GetRawHandle());
+			m_bodies.erase(body->GetRawHandle());
+			m_handle->DestroyBody(body->GetRawHandle());
 		}
 
 		[[nodiscard]] Vec2 World::GetGravity() const

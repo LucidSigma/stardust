@@ -68,10 +68,13 @@ namespace stardust
 			HashSet<ObserverPtr<Fixture>> m_fixtures{ };
 
 		public:
+			Body() = default;
 			Body(const class World& world, const CreateInfo& createInfo);
 			Body(Body&& other) noexcept;
 			Body& operator =(Body&& other) noexcept;
 			~Body() noexcept = default;
+
+			void Initialise(const class World& world, const CreateInfo& createInfo);
 
 			void ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const;
 			void ApplyForceToCentre(const Vec2& force, const bool wakeUp) const;

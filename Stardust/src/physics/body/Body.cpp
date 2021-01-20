@@ -11,23 +11,7 @@ namespace stardust
 	{
 		Body::Body(const World& world, const Body::CreateInfo& createInfo)
 		{
-			b2BodyDef bodyDef{ };
-			bodyDef.type = static_cast<b2BodyType>(createInfo.type);
-			bodyDef.position = b2Vec2{ createInfo.position.x, createInfo.position.y };
-			bodyDef.angle = createInfo.angle;
-			bodyDef.linearVelocity = b2Vec2{ createInfo.linearVelocity.x, createInfo.linearVelocity.y };
-			bodyDef.angularVelocity = createInfo.angularVelocity;
-			bodyDef.linearDamping = createInfo.linearDamping;
-			bodyDef.angularDamping = createInfo.angularDamping;
-			bodyDef.allowSleep = createInfo.allowSleep;
-			bodyDef.awake = createInfo.isAwake;
-			bodyDef.fixedRotation = createInfo.hasFixedRotation;
-			bodyDef.bullet = createInfo.isBullet;
-			bodyDef.enabled = createInfo.isEnabled;
-			bodyDef.gravityScale = createInfo.gravityScale;
-
-			m_handle = world.GetRawHandle()->CreateBody(&bodyDef);
-			m_owningWorld = &world;
+			Initialise(world, createInfo);
 		}
 
 		Body::Body(Body&& other) noexcept
@@ -45,6 +29,27 @@ namespace stardust
 			m_fixtures = std::exchange(other.m_fixtures, { });
 
 			return *this;
+		}
+
+		void Body::Initialise(const World& world, const CreateInfo& createInfo)
+		{
+			b2BodyDef bodyDef{ };
+			bodyDef.type = static_cast<b2BodyType>(createInfo.type);
+			bodyDef.position = b2Vec2{ createInfo.position.x, createInfo.position.y };
+			bodyDef.angle = createInfo.angle;
+			bodyDef.linearVelocity = b2Vec2{ createInfo.linearVelocity.x, createInfo.linearVelocity.y };
+			bodyDef.angularVelocity = createInfo.angularVelocity;
+			bodyDef.linearDamping = createInfo.linearDamping;
+			bodyDef.angularDamping = createInfo.angularDamping;
+			bodyDef.allowSleep = createInfo.allowSleep;
+			bodyDef.awake = createInfo.isAwake;
+			bodyDef.fixedRotation = createInfo.hasFixedRotation;
+			bodyDef.bullet = createInfo.isBullet;
+			bodyDef.enabled = createInfo.isEnabled;
+			bodyDef.gravityScale = createInfo.gravityScale;
+
+			m_handle = world.GetRawHandle()->CreateBody(&bodyDef);
+			m_owningWorld = &world;
 		}
 
 		void Body::ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const
