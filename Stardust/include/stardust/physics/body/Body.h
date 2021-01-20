@@ -44,12 +44,19 @@ namespace stardust
 				bool allowSleep = true;
 				bool isAwake = true;
 
-				bool fixedRotation = false;
+				bool hasFixedRotation = false;
 				bool isBullet = false;
 
 				bool isEnabled = true;
 
 				f32 gravityScale = 1.0f;
+			};
+
+			struct MassData
+			{
+				f32 mass;
+				Vec2 centre;
+				f32 momentOfInertia;
 			};
 
 		private:
@@ -62,18 +69,62 @@ namespace stardust
 			Body& operator =(Body&& other) noexcept;
 			~Body() noexcept = default;
 
+			void ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const;
+			void ApplyForceToCentre(const Vec2& force, const bool wakeUp) const;
+			void ApplyTorque(const f32 torque, const bool wakeUp) const;
+
+			void ApplyLinearImpulse(const Vec2& impulse, const Vec2& point, const bool wakeUp) const;
+			void ApplyLinearImpulseToCentre(const Vec2& impulse, const bool wakeUp) const;
+			void ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const;
+
 			[[nodiscard]] Vec2 GetWorldCentre() const;
 			[[nodiscard]] Vec2 GetLocalCenter() const;
+
+			[[nodiscard]] Vec2 GetWorldPoint(const Vec2& localPoint) const;
+			[[nodiscard]] Vec2 GetWorldVector(const Vec2& localVector) const;
+			[[nodiscard]] Vec2 GetLocalPoint(const Vec2& worldPoint) const;
+			[[nodiscard]] Vec2 GetLocalVector(const Vec2& worldVector) const;
+			[[nodiscard]] Vec2 GetLinearVelocityFromWorldPoint(const Vec2& worldPoint) const;
+			[[nodiscard]] Vec2 GetLinearVelocityFromLocalPoint(const Vec2& localPoint) const;
+
+			bool IsEnabled() const;
+			void SetEnabled(const bool isEnabled) const;
+			bool IsAwake() const;
+			bool CanSleep() const;
+			void SetAllowSleeping(const bool canSleep) const;
+
+			Type GetType() const;
+			void SetType(const Type type) const;
+
+			bool IsBullet() const;
+			void SetBullet(const bool isBullet) const;
 
 			[[nodiscard]] Vec2 GetPosition() const;
 			void SetPosition(const Vec2& position) const;
 			f32 GetRotation() const;
 			void SetRotation(const f32 rotation) const;
 
+			bool HasFixedRotation() const;
+			void SetFixedRotation(const bool hasFixedRotation) const;
+
 			[[nodiscard]] Vec2 GetLinearVelocity() const;
 			void SetLinearVelocity(const Vec2& linearVelocity) const;
 			f32 GetAngularVelocity() const;
 			void SetAngularVelocity(const f32 angularVelocity) const;
+
+			f32 GetLinearDamping() const;
+			void SetLinearDamping(const f32 linearDamping) const;
+			f32 GetAngularDamping() const;
+			void SetAngularDamping(const f32 angularDamping) const;
+
+			f32 GetGravityScale() const;
+			void SetGravityScale(const f32 gravityScale) const;
+
+			f32 GetMass() const;
+			f32 GetInertia() const;
+			[[nodiscard]] MassData GetMassData() const;
+			void SetMassData(const MassData& massData) const;
+			void ResetMassData() const;
 
 			ObserverPtr<b2Body> GetRawHandle() const noexcept { return m_handle; }
 			ObserverPtr<const class World> GetOwningWorld() const noexcept { return m_owningWorld; }
