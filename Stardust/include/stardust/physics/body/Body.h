@@ -62,6 +62,19 @@ namespace stardust
 			Body& operator =(Body&& other) noexcept;
 			~Body() noexcept = default;
 
+			[[nodiscard]] Vec2 GetWorldCentre() const;
+			[[nodiscard]] Vec2 GetLocalCenter() const;
+
+			[[nodiscard]] Vec2 GetPosition() const;
+			void SetPosition(const Vec2& position) const;
+			f32 GetRotation() const;
+			void SetRotation(const f32 rotation) const;
+
+			[[nodiscard]] Vec2 GetLinearVelocity() const;
+			void SetLinearVelocity(const Vec2& linearVelocity) const;
+			f32 GetAngularVelocity() const;
+			void SetAngularVelocity(const f32 angularVelocity) const;
+
 			ObserverPtr<b2Body> GetRawHandle() const noexcept { return m_handle; }
 			ObserverPtr<const class World> GetOwningWorld() const noexcept { return m_owningWorld; }
 		};

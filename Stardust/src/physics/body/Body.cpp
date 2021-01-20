@@ -44,5 +44,63 @@ namespace stardust
 
 			return *this;
 		}
+
+		[[nodiscard]] Vec2 Body::GetWorldCentre() const
+		{
+			const auto& worldCentre = m_handle->GetWorldCenter();
+
+			return Vec2{ worldCentre.x, worldCentre.y };
+		}
+
+		[[nodiscard]] Vec2 Body::GetLocalCenter() const
+		{
+			const auto& localCentre = m_handle->GetLocalCenter();
+
+			return Vec2{ localCentre.x, localCentre.y };
+		}
+
+		[[nodiscard]] Vec2 Body::GetPosition() const
+		{
+			const auto& position = m_handle->GetPosition();
+
+			return Vec2{ position.x, position.y };
+		}
+
+		void Body::SetPosition(const Vec2& position) const
+		{
+			m_handle->SetTransform(b2Vec2{ position.x, position.y }, GetRotation());
+		}
+
+		f32 Body::GetRotation() const
+		{
+			return m_handle->GetAngle();
+		}
+
+		void Body::SetRotation(const f32 rotation) const
+		{
+			m_handle->SetTransform(m_handle->GetPosition(), rotation);
+		}
+
+		[[nodiscard]] Vec2 Body::GetLinearVelocity() const
+		{
+			const auto& linearVelocity = m_handle->GetLinearVelocity();
+
+			return Vec2{ linearVelocity.x, linearVelocity.y };
+		}
+
+		void Body::SetLinearVelocity(const Vec2& linearVelocity) const
+		{
+			m_handle->SetLinearVelocity(b2Vec2{ linearVelocity.x, linearVelocity.y });
+		}
+
+		f32 Body::GetAngularVelocity() const
+		{
+			return m_handle->GetAngularVelocity();
+		}
+
+		void Body::SetAngularVelocity(const f32 angularVelocity) const
+		{
+			m_handle->SetAngularVelocity(angularVelocity);
+		}
 	}
 }
