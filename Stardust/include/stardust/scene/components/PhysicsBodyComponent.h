@@ -21,6 +21,10 @@ namespace stardust
 				: handle(&handle)
 			{ }
 
+			explicit PhysicsBody(ObserverPtr<physics::Body> handle)
+				: handle(handle)
+			{ }
+
 			~PhysicsBody() noexcept = default;
 		};
 	}
