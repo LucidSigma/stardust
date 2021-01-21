@@ -112,7 +112,7 @@ namespace stardust
 
 			[[nodiscard]] Vec2 GetPosition() const;
 			void SetPosition(const Vec2& position) const;
-			f32 GetRotation() const;
+			[[nodiscard]] f32 GetRotation() const;
 			void SetRotation(const f32 rotation) const;
 
 			bool HasFixedRotation() const;

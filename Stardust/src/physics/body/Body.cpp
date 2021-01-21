@@ -2,7 +2,7 @@
 
 #include <utility>
 
-
+#include "stardust/math/Math.h"
 #include "stardust/physics/world/World.h"
 
 namespace stardust
@@ -209,14 +209,14 @@ namespace stardust
 			m_handle->SetTransform(b2Vec2{ position.x, position.y }, GetRotation());
 		}
 
-		f32 Body::GetRotation() const
+		[[nodiscard]] f32 Body::GetRotation() const
 		{
-			return m_handle->GetAngle();
+			return -glm::degrees(m_handle->GetAngle());
 		}
 
 		void Body::SetRotation(const f32 rotation) const
 		{
-			m_handle->SetTransform(m_handle->GetPosition(), rotation);
+			m_handle->SetTransform(m_handle->GetPosition(), -glm::radians(rotation));
 		}
 
 		bool Body::HasFixedRotation() const
