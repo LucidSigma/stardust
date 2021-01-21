@@ -50,6 +50,14 @@ namespace stardust
 
 			m_handle = world.GetRawHandle()->CreateBody(&bodyDef);
 			m_owningWorld = &world;
+
+			if (m_handle != nullptr)
+			{
+				for (const auto& fixtureInfo : createInfo.fixtures)
+				{
+					AddFixture(fixtureInfo);
+				}
+			}
 		}
 
 		void Body::ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const

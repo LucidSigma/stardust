@@ -52,6 +52,8 @@ namespace stardust
 				bool isEnabled = true;
 
 				f32 gravityScale = 1.0f;
+
+				Vector<FixtureInfo> fixtures{ };
 			};
 
 			struct MassData
