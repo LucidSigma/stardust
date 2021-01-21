@@ -15,6 +15,8 @@
 
 namespace stardust
 {
+	using FontSize = u32;
+
 	class Font
 		: private INoncopyable
 	{
@@ -56,21 +58,23 @@ namespace stardust
 		Vector<ubyte> m_fontFileData{ };
 		SDL_RWops* m_fontFileRWOps = nullptr;
 
-		u32 m_pointSize = 0u;
+		FontSize m_pointSize = 0u;
 
 	public:
 		Font() = default;
-		Font(const StringView& fontFilepath, const u32 pointSize);
+		Font(const StringView& fontFilepath, const FontSize pointSize);
 
 		Font(Font&& other) noexcept;
 		Font& operator =(Font&& other) noexcept;
 
 		~Font() noexcept;
 
-		void Initialise(const StringView& fontFilepath, const u32 pointSize);
+		void Initialise(const StringView& fontFilepath, const FontSize pointSize);
 		void Destroy() noexcept;
 
 		inline bool IsValid() const noexcept { return m_handle != nullptr; }
+
+		FontSize GetPointSize() const noexcept { return m_pointSize; }
 
 		[[nodiscard]] Vector<Style> GetStyles() const;
 		void SetStyles(const Vector<Style>& styles) const;

@@ -84,6 +84,7 @@
 
 #include "text/clipboard/Clipboard.h"
 #include "text/font/Font.h"
+#include "text/font/FontCache.h"
 #include "text/text_input/TextInput.h"
 #include "text/Text.h"
 #include "tilemap/Tilemap.h"

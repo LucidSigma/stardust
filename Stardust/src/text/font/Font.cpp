@@ -14,7 +14,7 @@ namespace stardust
 		}
 	}
 
-	Font::Font(const StringView& fontFilepath, const u32 pointSize)
+	Font::Font(const StringView& fontFilepath, const FontSize pointSize)
 	{
 		Initialise(fontFilepath, pointSize);
 	}
@@ -54,7 +54,7 @@ namespace stardust
 		Destroy();
 	}
 
-	void Font::Initialise(const StringView& fontFilepath, const u32 pointSize)
+	void Font::Initialise(const StringView& fontFilepath, const FontSize pointSize)
 	{
 		m_fontFileData = vfs::ReadFileData(fontFilepath);
 

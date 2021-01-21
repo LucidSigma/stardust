@@ -13,7 +13,7 @@ private:
 	sd::ObserverPtr<sd::Texture> m_crateTexture = nullptr;
 	sd::ObserverPtr<sd::Texture> m_crumbleTexture = nullptr;
 
-	sd::Font m_font;
+	sd::FontCache m_font;
 	sd::Texture m_glyphTexture;
 	sd::Texture m_textTexture;
 
@@ -65,15 +65,15 @@ public:
 		m_crateTexture = &m_textures["crate"];
 		m_crumbleTexture = &m_textures["crumble"];
 
-		m_font.Initialise("assets/fonts/TheanoModern.ttf", 128u);
-
-		if (!m_font.IsValid())
+		m_font.SetFont("assets/fonts/TheanoModern.ttf");
+		
+		if (m_font.Add(128u) != sd::Status::Success)
 		{
 			return sd::Status::Fail;
 		}
 
-		m_glyphTexture = sd::text::RenderGlyph(m_font, 'A', sd::colours::White);
-		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font, u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
+		m_glyphTexture = sd::text::RenderGlyph(m_font[128u], 'A', sd::colours::White);
+		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font[128u], u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
 
 		m_conveyorTextures.Initialise("assets/textures/texture_atlases/conveyors.taj");
 		m_colourTextures.Initialise("assets/textures/texture_atlases/colours.taj");
@@ -149,11 +149,10 @@ public:
 	}
 
 	virtual void OnUnload() noexcept
-	{
-		m_font.Destroy();
-	}
+	{ }
 
-	virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override { }
+	virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override
+	{ }
 
 	virtual void ProcessInput() override
 	{
