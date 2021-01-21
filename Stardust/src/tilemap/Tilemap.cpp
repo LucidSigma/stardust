@@ -306,7 +306,7 @@ namespace stardust
 					const f32 xOffset = vertex["x"] / tilePixelSize.x;
 					const f32 yOffset = vertex["y"] / tilePixelSize.y;
 
-					points.push_back(physics::Point{ x + xOffset, y + yOffset });
+					points.push_back(physics::Point{ x + xOffset, -y - yOffset });
 				}
 
 				physics::Polygon polygon{ };
@@ -320,7 +320,7 @@ namespace stardust
 				const f32 halfHeight = object["height"] / tilePixelSize.y / 2.0f;
 
 				physics::Polygon rectangle{ };
-				rectangle.SetAsBox(halfWidth, halfHeight, { x + halfWidth, y + halfHeight }, 0.0f);
+				rectangle.SetAsBox(halfWidth, halfHeight, { x + halfWidth, -y - halfHeight }, 0.0f);
 
 				m_colliders.push_back(rectangle);
 			}
