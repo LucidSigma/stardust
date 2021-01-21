@@ -14,6 +14,7 @@ private:
 	sd::ObserverPtr<sd::Texture> m_crumbleTexture = nullptr;
 
 	sd::FontCache m_font;
+	sd::TextCache m_textCache;
 	sd::Texture m_glyphTexture;
 	sd::Texture m_textTexture;
 
@@ -71,6 +72,8 @@ public:
 		{
 			return sd::Status::Fail;
 		}
+
+		m_textCache.Initialise(m_font[128u]);
 
 		m_glyphTexture = sd::text::RenderGlyph(m_font[128u], 'A', sd::colours::White);
 		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font[128u], u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
@@ -359,6 +362,20 @@ public:
 			sd::comp::ScreenTransform(sd::IVec2{ 200, 800 }, m_textTexture.GetSize() / 3u),
 			sd::comp::Sprite(m_textTexture)
 		);
+
+		sd::i32 offset = 0;
+
+		for (const auto& word : { "one", "two", "three", "four", "five" })
+		{
+			const auto texture = m_textCache[word];
+
+			renderer.DrawScreenRect(
+				sd::comp::ScreenTransform(sd::IVec2{ 1400, 100 + offset }, texture->GetSize() / 2u),
+				sd::comp::Sprite(texture)
+			);
+
+			offset += texture->GetSize().y / 2 + 10;
+		}
 
 		renderer.DrawWorldRect(
 			sd::comp::Transform(sd::Vec2(-6.5f, 3.0f), 0.0f, sd::NullOpt, sd::Vec2{ 0.9f, 0.9f }),

@@ -2,6 +2,8 @@
 #ifndef STARDUST_FONT_CACHE_H
 #define STARDUST_FONT_CACHE_H
 
+#include "stardust/utility/interfaces/INoncopyable.h"
+
 #include "stardust/data/Containers.h"
 #include "stardust/text/font/Font.h"
 #include "stardust/utility/status/Status.h"
@@ -9,6 +11,7 @@
 namespace stardust
 {
 	class FontCache
+		: private INoncopyable
 	{
 	private:
 		HashMap<FontSize, Font> m_pointSizes{ };

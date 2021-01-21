@@ -87,6 +87,8 @@
 #include "text/font/FontCache.h"
 #include "text/text_input/TextInput.h"
 #include "text/Text.h"
+#include "text/TextCache.h"
+
 #include "tilemap/Tilemap.h"
 
 #include "utility/cpu/CPU.h"

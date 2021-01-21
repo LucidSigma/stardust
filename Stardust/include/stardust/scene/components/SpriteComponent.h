@@ -26,6 +26,10 @@ namespace stardust
 				: texture(&texture), subTextureArea(subtextureArea), colourMod(colourMod)
 			{ }
 
+			Sprite(ObserverPtr<const Texture> texture, const Optional<TextureCoordinatePair>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
+				: texture(texture), subTextureArea(subtextureArea), colourMod(colourMod)
+			{ }
+
 			~Sprite() noexcept = default;
 		};
 	}
