@@ -6,7 +6,6 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/Sampler.h"
 #include "stardust/text/font/Font.h"
@@ -17,14 +16,6 @@ namespace stardust
 		: private INoncopyable
 	{
 	private:
-		struct OutlineInfo
-		{
-			u32 thickness;
-
-			Colour innerColour;
-			Colour outerColour;
-		};
-
 		ObserverPtr<const Font> m_font = nullptr;
 		Sampler m_sampler{ };
 

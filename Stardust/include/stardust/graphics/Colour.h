@@ -2,10 +2,14 @@
 #ifndef STARDUST_COLOUR_H
 #define STARDUST_COLOUR_H
 
+#include <cstddef>
+#include <functional>
+
 #include <SDL2/SDL.h>
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -50,6 +54,26 @@ namespace stardust
 
 	[[nodiscard]] extern Vec4 ColourToVec4(const Colour& colour);
 	[[nodiscard]] extern Colour Vec4ToColour(const Vec4& vector);
+}
+
+namespace std
+{
+	template <>
+	struct hash<stardust::Colour>
+	{
+		[[nodiscard]] inline std::size_t operator ()(const stardust::Colour& colour) const noexcept
+		{
+			std::size_t seed = 0u;
+			std::hash<stardust::u8> hasher;
+
+			glm::detail::hash_combine(seed, hasher(colour.r));
+			glm::detail::hash_combine(seed, hasher(colour.g));
+			glm::detail::hash_combine(seed, hasher(colour.b));
+			glm::detail::hash_combine(seed, hasher(colour.a));
+
+			return seed;
+		}
+	};
 }
 
 #endif
