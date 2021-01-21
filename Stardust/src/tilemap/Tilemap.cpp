@@ -320,7 +320,7 @@ namespace stardust
 				const f32 halfHeight = object["height"] / tilePixelSize.y / 2.0f;
 
 				physics::Polygon rectangle{ };
-				rectangle.SetAsBox(halfWidth, halfHeight, { x + halfWidth, -y - halfHeight }, 0.0f);
+				rectangle.SetAsBox(halfWidth, halfHeight, { x + halfWidth - tilePixelSize.x / 2.0f, -y - halfHeight + tilePixelSize.y / 2.0f }, 0.0f);
 
 				m_colliders.push_back(rectangle);
 			}
