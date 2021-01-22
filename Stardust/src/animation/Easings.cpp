@@ -110,13 +110,9 @@ namespace stardust
 
 		[[nodiscard]] f32 EaseInOutExponential(const f32 value)
 		{
-			if (value == 0.0f)
+			if (value == 0.0f || value == 1.0f)
 			{
-				return 0.0f;
-			}
-			else if (value == 1.0f)
-			{
-				return 1.0f;
+				return value;
 			}
 			else if (value < 0.5f)
 			{
@@ -143,6 +139,78 @@ namespace stardust
 			return value < 0.5f
 				? (1.0f - glm::sqrt(1.0f - glm::pow(2.0f * value, 2.0f))) / 2.0f
 				: (glm::sqrt(1.0f - glm::pow(-2.0f * value + 2.0f, 2.0f)) + 1.0f) / 2.0f;
+		}
+
+		[[nodiscard]] f32 EaseInBack(const f32 value)
+		{
+			constexpr f32 BackBounceConstant = 1.70158f;
+			constexpr f32 ExtraBackBounceConstant = BackBounceConstant + 1.0f;
+
+			return ExtraBackBounceConstant * value * value * value - BackBounceConstant * value * value;
+		}
+
+		[[nodiscard]] f32 EaseOutBack(const f32 value)
+		{
+			constexpr f32 BackBounceConstant = 1.70158f;
+			constexpr f32 ExtraBackBounceConstant = BackBounceConstant + 1.0f;
+
+			return 1.0f + ExtraBackBounceConstant * glm::pow(value - 1.0f, 3.0f) + BackBounceConstant * glm::pow(value - 1.0f, 2.0f);
+		}
+
+		[[nodiscard]] f32 EaseInOutBack(const f32 value)
+		{
+			constexpr f32 BackBounceConstant = 1.70158f;
+			constexpr f32 ExtraBackBounceConstant = BackBounceConstant * 1.525f;
+
+			return value < 0.5f
+				? (glm::pow(2.0f * value, 2.0f) * ((ExtraBackBounceConstant + 1.0f) * 2.0f * value - ExtraBackBounceConstant)) / 2.0f
+				: (glm::pow(2.0f * value - 2.0f, 2.0f) * ((ExtraBackBounceConstant + 1.0f) * (value * 2.0f - 2.0f) + ExtraBackBounceConstant) + 2.0f) / 2.0f;
+		}
+
+		[[nodiscard]] f32 EaseInElastic(const f32 value)
+		{
+			constexpr f32 ElasticBounceConstant = (2.0f * std::numbers::pi_v<f32>) / 3.0f;
+
+			if (value == 0.0f || value == 1.0f)
+			{
+				return value;
+			}
+			else
+			{
+				return -glm::exp(10.0f * value - 10.0f) * glm::sin((value * 10.0f - 10.75f) * ElasticBounceConstant);
+			}
+		}
+		
+		[[nodiscard]] f32 EaseOutElastic(const f32 value)
+		{
+			constexpr f32 ElasticBounceConstant = (2.0f * std::numbers::pi_v<f32>) / 3.0f;
+
+			if (value == 0.0f || value == 1.0f)
+			{
+				return value;
+			}
+			else
+			{
+				return glm::exp(-10.0f * value) * glm::sin((value * 10.0f - 0.75f) * ElasticBounceConstant) + 1.0f;
+			}
+		}
+		
+		[[nodiscard]] f32 EaseInOutElastic(const f32 value)
+		{
+			constexpr f32 ElasticBounceConstant = (2.0f * std::numbers::pi_v<f32>) / 4.5f;
+
+			if (value == 0.0f || value == 1.0f)
+			{
+				return value;
+			}
+			else if (value < 0.5f)
+			{
+				return -(glm::exp(20.0f * value - 10.0f) * glm::sin((20.0f * value - 11.125f) * ElasticBounceConstant)) / 2.0f;
+			}
+			else
+			{
+				return (glm::exp(-20.0f * value + 10.0f) * glm::sin((20.0f * value - 11.125f) * ElasticBounceConstant)) / 2.0f + 1.0f;
+			}
 		}
 
 		[[nodiscard]] f32 EaseInBounce(const f32 value)
@@ -219,6 +287,14 @@ namespace stardust
 			{ "circle-in", easings::EaseInCircle },
 			{ "circle-out", easings::EaseOutCircle },
 			{ "circle-in-out", easings::EaseInOutCircle },
+
+			{ "back-in", easings::EaseInBack },
+			{ "back-out", easings::EaseOutBack },
+			{ "back-in-out", easings::EaseInOutBack },
+
+			{ "elastic-in", easings::EaseInElastic },
+			{ "elastic-out", easings::EaseOutElastic },
+			{ "elastic-in-out", easings::EaseInOutElastic },
 
 			{ "bounce-in", easings::EaseInBounce },
 			{ "bounce-out", easings::EaseOutBounce },

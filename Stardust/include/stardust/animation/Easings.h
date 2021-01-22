@@ -43,6 +43,14 @@ namespace stardust
 		[[nodiscard]] extern f32 EaseOutCircle(const f32 value);
 		[[nodiscard]] extern f32 EaseInOutCircle(const f32 value);
 
+		[[nodiscard]] extern f32 EaseInBack(const f32 value);
+		[[nodiscard]] extern f32 EaseOutBack(const f32 value);
+		[[nodiscard]] extern f32 EaseInOutBack(const f32 value);
+
+		[[nodiscard]] extern f32 EaseInElastic(const f32 value);
+		[[nodiscard]] extern f32 EaseOutElastic(const f32 value);
+		[[nodiscard]] extern f32 EaseInOutElastic(const f32 value);
+
 		[[nodiscard]] extern f32 EaseInBounce(const f32 value);
 		[[nodiscard]] extern f32 EaseOutBounce(f32 value);
 		[[nodiscard]] extern f32 EaseInOutBounce(const f32 value);
