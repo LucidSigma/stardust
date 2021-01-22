@@ -151,15 +151,15 @@ namespace stardust
 			return CreateTextTexture(renderedTextSurface, sampler);
 		}
 		
-		[[nodiscard]] Texture RenderGlyphWithOutline(const Font& font, const char glyph, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderGlyphWithOutline(const Font& font, const char glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			return RenderGlyphWithOutline(font, static_cast<char16_t>(glyph), colour, outlineSize, outlineColour, sampler);
+			return RenderGlyphWithOutline(font, static_cast<char16_t>(glyph), outlineInfo, sampler);
 		}
 
-		[[nodiscard]] Texture RenderGlyphWithOutline(const Font& font, const char16_t glyph, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderGlyphWithOutline(const Font& font, const char16_t glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Blended(font.GetRawHandle(), static_cast<u32>(glyph), outlineColour);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Blended(font.GetRawHandle(), static_cast<u32>(glyph), outlineInfo.outerColour);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -167,20 +167,20 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderGlyph_Blended(font.GetRawHandle(), static_cast<u32>(glyph), colour);
+			SDL_Surface* innerTextSurface = TTF_RenderGlyph_Blended(font.GetRawHandle(), static_cast<u32>(glyph), outlineInfo.innerColour);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 
-		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), outlineColour);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), outlineInfo.outerColour);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -188,20 +188,20 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), colour);
+			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), outlineInfo.innerColour);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 
-		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const UTF16String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const UTF16String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineColour);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.outerColour);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -209,20 +209,20 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour);
+			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.innerColour);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 
-		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const u32 wrapLength, const Sampler& sampler)
+		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const String& text, const OutlineInfo& outlineInfo, const u32 wrapLength, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), outlineColour, wrapLength);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), outlineInfo.outerColour, wrapLength);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -230,20 +230,20 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), colour, wrapLength);
+			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), outlineInfo.innerColour, wrapLength);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 
-		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const UTF16String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const u32 wrapLength, const Sampler& sampler)
+		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const UTF16String& text, const OutlineInfo& outlineInfo, const u32 wrapLength, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineColour, wrapLength);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.outerColour, wrapLength);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -251,25 +251,25 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour, wrapLength);
+			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.innerColour, wrapLength);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 
-		[[nodiscard]] Texture RenderGlyphQuickWithOutline(const Font& font, const char glyph, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderGlyphQuickWithOutline(const Font& font, const char glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			return RenderGlyphQuickWithOutline(font, static_cast<char16_t>(glyph), colour, outlineSize, outlineColour, sampler);
+			return RenderGlyphQuickWithOutline(font, static_cast<char16_t>(glyph), outlineInfo, sampler);
 		}
 
-		[[nodiscard]] Texture RenderGlyphQuickWithOutline(const Font& font, const char16_t glyph, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderGlyphQuickWithOutline(const Font& font, const char16_t glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Solid(font.GetRawHandle(), static_cast<u16>(glyph), outlineColour);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Solid(font.GetRawHandle(), static_cast<u16>(glyph), outlineInfo.outerColour);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -277,20 +277,20 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderGlyph_Solid(font.GetRawHandle(), static_cast<u16>(glyph), colour);
+			SDL_Surface* innerTextSurface = TTF_RenderGlyph_Solid(font.GetRawHandle(), static_cast<u16>(glyph), outlineInfo.innerColour);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 
-		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Solid(font.GetRawHandle(), text.c_str(), outlineColour);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Solid(font.GetRawHandle(), text.c_str(), outlineInfo.outerColour);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -298,20 +298,20 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Solid(font.GetRawHandle(), text.c_str(), colour);
+			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Solid(font.GetRawHandle(), text.c_str(), outlineInfo.innerColour);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 
-		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const UTF16String& text, const Colour& colour, const u32 outlineSize, const Colour& outlineColour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const UTF16String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
 		{
-			font.SetOutlineThickness(outlineSize);
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Solid(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineColour);
+			font.SetOutlineThickness(outlineInfo.thickness);
+			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Solid(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.outerColour);
 			font.RemoveOutline();
 
 			if (renderedTextSurface == nullptr)
@@ -319,14 +319,14 @@ namespace stardust
 				return Texture();
 			}
 
-			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Solid(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour);
+			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Solid(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.innerColour);
 
 			if (renderedTextSurface == nullptr)
 			{
 				return Texture();
 			}
 
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineSize, sampler);
+			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 	}
 }

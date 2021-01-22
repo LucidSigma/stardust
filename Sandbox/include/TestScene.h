@@ -76,7 +76,15 @@ public:
 		m_textCache.Initialise(m_font[128u]);
 
 		m_glyphTexture = sd::text::RenderGlyph(m_font[128u], 'A', sd::colours::White);
-		m_textTexture = sd::text::RenderWrappedTextWithOutline(m_font[128u], u"This is some text. \u0400\u0411\u0414\u042B", sd::colours::Red, 4u, sd::colours::Green, 1024u);
+		m_textTexture = sd::text::RenderWrappedTextWithOutline(
+			m_font[128u], u"This is some text. \u0400\u0411\u0414\u042B",
+			sd::text::OutlineInfo{
+				.thickness = 4u,
+				.innerColour = sd::colours::Red,
+				.outerColour = sd::colours::Green,
+			},
+			1024u
+		);
 
 		m_conveyorTextures.Initialise("assets/textures/texture_atlases/conveyors.taj");
 		m_colourTextures.Initialise("assets/textures/texture_atlases/colours.taj");
