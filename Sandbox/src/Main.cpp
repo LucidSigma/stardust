@@ -11,6 +11,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
 		.organisationName = "test_organisation",
 
 		.windowTitle = "Stardust Sandbox",
+		.allowResizableWindow = true,
 
 		.filesystem = sd::Application::FilesystemInfo{
 			.argv0 = argv[0],

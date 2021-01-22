@@ -363,8 +363,12 @@ namespace stardust
 			Window::CreateFlag::AllowHighDPI,
 			Window::CreateFlag::OpenGL,
 			Window::CreateFlag::Shown,
-			Window::CreateFlag::Resizable,
 		};
+
+		if (createInfo.allowResizableWindow)
+		{
+			windowCreateFlags.push_back(Window::CreateFlag::Resizable);
+		}
 
 		if (m_config["graphics"]["window"]["fullscreen"])
 		{

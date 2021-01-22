@@ -63,6 +63,8 @@ namespace stardust
 			StringView organisationName;
 			StringView windowTitle;
 
+			bool allowResizableWindow;
+
 			FilesystemInfo filesystem;
 			FilepathsInfo filepaths;
 
