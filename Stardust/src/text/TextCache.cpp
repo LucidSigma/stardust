@@ -24,31 +24,35 @@ namespace stardust
 	
 	[[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const String& text)
 	{
-		if (const auto textLocation = m_textures.find(text); 
-			textLocation == std::cend(m_textures))
-		{
-			const auto insertionResult = m_textures.emplace(text, text::RenderText(*m_font, text, colours::White, m_sampler));
+		//if (const auto textLocation = m_textures.find(text); 
+		//	textLocation == std::cend(m_textures))
+		//{
+		//	//const auto insertionResult = m_textures.emplace(text, text::RenderText(*m_font, text, colours::White, m_sampler));
+		//
+		//	return &insertionResult.first->second;
+		//}
+		//else
+		//{
+		//	return &textLocation->second;
+		//}
 
-			return &insertionResult.first->second;
-		}
-		else
-		{
-			return &textLocation->second;
-		}
+		return nullptr;
 	}
 
 	[[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const UTF16String& text)
 	{
-		if (const auto textLocation = m_utf16Textures.find(text); 
-			textLocation == std::cend(m_utf16Textures))
-		{
-			const auto insertionResult = m_utf16Textures.emplace(text, text::RenderText(*m_font, text, colours::White, m_sampler));
+		//if (const auto textLocation = m_utf16Textures.find(text); 
+		//	textLocation == std::cend(m_utf16Textures))
+		//{
+		//	//const auto insertionResult = m_utf16Textures.emplace(text, text::RenderText(*m_font, text, colours::White, m_sampler));
+		//
+		//	return &insertionResult.first->second;
+		//}
+		//else
+		//{
+		//	return &textLocation->second;
+		//}
 
-			return &insertionResult.first->second;
-		}
-		else
-		{
-			return &textLocation->second;
-		}
+		return nullptr;
 	}
 }

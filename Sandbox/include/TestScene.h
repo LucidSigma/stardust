@@ -75,16 +75,31 @@ public:
 
 		m_textCache.Initialise(m_font[128u]);
 
-		m_glyphTexture = sd::text::RenderGlyph(m_font[128u], 'A', sd::colours::White);
-		m_textTexture = sd::text::RenderWrappedTextWithOutline(
-			m_font[128u], u"This is some text. \u0400\u0411\u0414\u042B",
-			sd::text::OutlineInfo{
-				.thickness = 4u,
-				.innerColour = sd::colours::Red,
-				.outerColour = sd::colours::Green,
-			},
-			1024u
+		m_glyphTexture = sd::text::RenderGlyph(
+			m_font[128u],
+			sd::text::GlyphInfo{
+				.glyph = 'A',
+				.outline = sd::NullOpt,
+			}
 		);
+
+		m_textTexture = sd::text::RenderText(
+			m_font[128u],
+			sd::text::UTF16TextInfo{
+				.text = u"This is some text. \u0400\u0411\u0414\u042B",
+				.outline = sd::text::OutlineInfo{
+					.thickness = 4u,
+					.innerColour = sd::colours::Red,
+					.outerColour = sd::colours::Green,
+				},
+				.wrapLength = 1024u,
+			}
+		);
+
+		sd::HashMap<sd::text::TextInfo, sd::i32> test0{ };
+		sd::HashMap<sd::text::UTF16TextInfo, sd::i32> test1{ };
+		sd::HashMap<sd::text::GlyphInfo, sd::i32> test2{ };
+		sd::HashMap<sd::text::UTF16GlyphInfo, sd::i32> test3{ };
 
 		m_conveyorTextures.Initialise("assets/textures/texture_atlases/conveyors.taj");
 		m_colourTextures.Initialise("assets/textures/texture_atlases/colours.taj");
@@ -375,14 +390,14 @@ public:
 
 		for (const auto& word : { "one", "two", "three", "four", "five" })
 		{
-			const auto texture = m_textCache[word];
-
-			renderer.DrawScreenRect(
-				sd::comp::ScreenTransform(sd::IVec2{ 1400, 100 + offset }, texture->GetSize() / 2u),
-				sd::comp::Sprite(texture)
-			);
-
-			offset += texture->GetSize().y / 2 + 10;
+			//const auto texture = m_textCache[word];
+			//
+			//renderer.DrawScreenRect(
+			//	sd::comp::ScreenTransform(sd::IVec2{ 1400, 100 + offset }, texture->GetSize() / 2u),
+			//	sd::comp::Sprite(texture)
+			//);
+			//
+			//offset += texture->GetSize().y / 2 + 10;
 		}
 
 		renderer.DrawWorldRect(

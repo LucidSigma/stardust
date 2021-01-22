@@ -45,69 +45,257 @@ namespace stardust
 
 	namespace text
 	{
-		[[nodiscard]] Texture RenderGlyph(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderGlyph(const Font& font, const GlyphInfo& glyphInfo, const Sampler& sampler)
 		{
-			return RenderGlyph(font, static_cast<char16_t>(glyph), colour, sampler);
+			return RenderGlyph(
+				font,
+				UTF16GlyphInfo{
+					.glyph = static_cast<char16_t>(glyphInfo.glyph),
+					.outline = glyphInfo.outline,
+				},
+				sampler
+			);
 		}
 
-		[[nodiscard]] Texture RenderGlyph(const Font& font, const char16_t glyph, const Colour& colour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderGlyph(const Font& font, const UTF16GlyphInfo& glyphInfo, const Sampler& sampler)
 		{
-			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Blended(font.GetRawHandle(), static_cast<u16>(glyph), colour);
+			const bool hasOutline = glyphInfo.outline.has_value();
 
-			if (renderedTextSurface == nullptr)
+			if (hasOutline)
 			{
-				return Texture();
-			}
+				font.SetOutlineThickness(glyphInfo.outline->thickness);
+				SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Blended(
+					font.GetRawHandle(),
+					static_cast<u16>(glyphInfo.glyph),
+					glyphInfo.outline->outerColour
+				);
+				font.RemoveOutline();
 
-			return CreateTextTexture(renderedTextSurface, sampler);
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				SDL_Surface* innerTextSurface = TTF_RenderGlyph_Blended(
+					font.GetRawHandle(),
+					static_cast<u16>(glyphInfo.glyph),
+					glyphInfo.outline->innerColour
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, glyphInfo.outline->thickness, sampler);
+			}
+			else
+			{
+				SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Blended(
+					font.GetRawHandle(),
+					static_cast<u16>(glyphInfo.glyph),
+					colours::White
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateTextTexture(renderedTextSurface, sampler);
+			}
 		}
 
-		[[nodiscard]] Texture RenderText(const Font& font, const String& text, const Colour& colour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderText(const Font& font, const TextInfo& textInfo, const Sampler& sampler)
 		{
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), colour);
+			const bool hasOutline = textInfo.outline.has_value();
+			const bool isWrapped = textInfo.wrapLength.has_value();
 
-			if (renderedTextSurface == nullptr)
+			if (hasOutline && isWrapped)
 			{
-				return Texture();
-			}
+				font.SetOutlineThickness(textInfo.outline->thickness);
+				SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended_Wrapped(
+					font.GetRawHandle(),
+					textInfo.text.c_str(),
+					textInfo.outline->outerColour,
+					textInfo.wrapLength.value()
+				);
+				font.RemoveOutline();
 
-			return CreateTextTexture(renderedTextSurface, sampler);
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended_Wrapped(
+					font.GetRawHandle(),
+					textInfo.text.c_str(),
+					textInfo.outline->innerColour,
+					textInfo.wrapLength.value()
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, textInfo.outline->thickness, sampler);
+			}
+			else if (hasOutline && !isWrapped)
+			{
+				font.SetOutlineThickness(textInfo.outline->thickness);
+				SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended(
+					font.GetRawHandle(),
+					textInfo.text.c_str(),
+					textInfo.outline->outerColour
+				);
+				font.RemoveOutline();
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended(
+					font.GetRawHandle(),
+					textInfo.text.c_str(),
+					textInfo.outline->innerColour
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, textInfo.outline->thickness, sampler);
+			}
+			else if (!hasOutline && isWrapped)
+			{
+				SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended_Wrapped(
+					font.GetRawHandle(),
+					textInfo.text.c_str(),
+					colours::White,
+					textInfo.wrapLength.value()
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateTextTexture(renderedTextSurface, sampler);
+			}
+			else
+			{
+				SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended(
+					font.GetRawHandle(),
+					textInfo.text.c_str(),
+					colours::White
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateTextTexture(renderedTextSurface, sampler);
+			}
 		}
 
-		[[nodiscard]] Texture RenderText(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler)
+		[[nodiscard]] Texture RenderText(const Font& font, const UTF16TextInfo& textInfo, const Sampler& sampler)
 		{
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour);
+			const bool hasOutline = textInfo.outline.has_value();
+			const bool isWrapped = textInfo.wrapLength.has_value();
 
-			if (renderedTextSurface == nullptr)
+			if (hasOutline && isWrapped)
 			{
-				return Texture();
+				font.SetOutlineThickness(textInfo.outline->thickness);
+				SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(
+					font.GetRawHandle(),
+					reinterpret_cast<const u16*>(textInfo.text.data()),
+					textInfo.outline->outerColour,
+					textInfo.wrapLength.value()
+				);
+				font.RemoveOutline();
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended_Wrapped(
+					font.GetRawHandle(),
+					reinterpret_cast<const u16*>(textInfo.text.data()),
+					textInfo.outline->innerColour,
+					textInfo.wrapLength.value()
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, textInfo.outline->thickness, sampler);
 			}
-
-			return CreateTextTexture(renderedTextSurface, sampler);
-		}
-
-		[[nodiscard]] Texture RenderWrappedText(const Font& font, const String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
-		{
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), colour, wrapLength);
-
-			if (renderedTextSurface == nullptr)
+			else if (hasOutline && !isWrapped)
 			{
-				return Texture();
+				font.SetOutlineThickness(textInfo.outline->thickness);
+				SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended(
+					font.GetRawHandle(),
+					reinterpret_cast<const u16*>(textInfo.text.data()),
+					textInfo.outline->outerColour
+				);
+				font.RemoveOutline();
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended(
+					font.GetRawHandle(),
+					reinterpret_cast<const u16*>(textInfo.text.data()),
+					textInfo.outline->innerColour
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, textInfo.outline->thickness, sampler);
 			}
-
-			return CreateTextTexture(renderedTextSurface, sampler);
-		}
-
-		[[nodiscard]] Texture RenderWrappedText(const Font& font, const UTF16String& text, const Colour& colour, const u32 wrapLength, const Sampler& sampler)
-		{
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), colour, wrapLength);
-
-			if (renderedTextSurface == nullptr)
+			else if (!hasOutline && isWrapped)
 			{
-				return Texture();
-			}
+				SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(
+					font.GetRawHandle(),
+					reinterpret_cast<const u16*>(textInfo.text.data()),
+					colours::White,
+					textInfo.wrapLength.value()
+				);
 
-			return CreateTextTexture(renderedTextSurface, sampler);
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateTextTexture(renderedTextSurface, sampler);
+			}
+			else
+			{
+				SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended(
+					font.GetRawHandle(),
+					reinterpret_cast<const u16*>(textInfo.text.data()),
+					colours::White
+				);
+
+				if (renderedTextSurface == nullptr)
+				{
+					return Texture();
+				}
+
+				return CreateTextTexture(renderedTextSurface, sampler);
+			}
 		}
 
 		[[nodiscard]] Texture RenderGlyphQuick(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler)
@@ -149,184 +337,6 @@ namespace stardust
 			}
 
 			return CreateTextTexture(renderedTextSurface, sampler);
-		}
-		
-		[[nodiscard]] Texture RenderGlyphWithOutline(const Font& font, const char glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			return RenderGlyphWithOutline(font, static_cast<char16_t>(glyph), outlineInfo, sampler);
-		}
-
-		[[nodiscard]] Texture RenderGlyphWithOutline(const Font& font, const char16_t glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Blended(font.GetRawHandle(), static_cast<u32>(glyph), outlineInfo.outerColour);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderGlyph_Blended(font.GetRawHandle(), static_cast<u32>(glyph), outlineInfo.innerColour);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
-		}
-
-		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), outlineInfo.outerColour);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended(font.GetRawHandle(), text.c_str(), outlineInfo.innerColour);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
-		}
-
-		[[nodiscard]] Texture RenderTextWithOutline(const Font& font, const UTF16String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.outerColour);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.innerColour);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
-		}
-
-		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const String& text, const OutlineInfo& outlineInfo, const u32 wrapLength, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), outlineInfo.outerColour, wrapLength);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Blended_Wrapped(font.GetRawHandle(), text.c_str(), outlineInfo.innerColour, wrapLength);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
-		}
-
-		[[nodiscard]] Texture RenderWrappedTextWithOutline(const Font& font, const UTF16String& text, const OutlineInfo& outlineInfo, const u32 wrapLength, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.outerColour, wrapLength);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Blended_Wrapped(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.innerColour, wrapLength);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
-		}
-
-		[[nodiscard]] Texture RenderGlyphQuickWithOutline(const Font& font, const char glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			return RenderGlyphQuickWithOutline(font, static_cast<char16_t>(glyph), outlineInfo, sampler);
-		}
-
-		[[nodiscard]] Texture RenderGlyphQuickWithOutline(const Font& font, const char16_t glyph, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderGlyph_Solid(font.GetRawHandle(), static_cast<u16>(glyph), outlineInfo.outerColour);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderGlyph_Solid(font.GetRawHandle(), static_cast<u16>(glyph), outlineInfo.innerColour);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
-		}
-
-		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderUTF8_Solid(font.GetRawHandle(), text.c_str(), outlineInfo.outerColour);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderUTF8_Solid(font.GetRawHandle(), text.c_str(), outlineInfo.innerColour);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
-		}
-
-		[[nodiscard]] Texture RenderTextQuickWithOutline(const Font& font, const UTF16String& text, const OutlineInfo& outlineInfo, const Sampler& sampler)
-		{
-			font.SetOutlineThickness(outlineInfo.thickness);
-			SDL_Surface* renderedTextSurface = TTF_RenderUNICODE_Solid(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.outerColour);
-			font.RemoveOutline();
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			SDL_Surface* innerTextSurface = TTF_RenderUNICODE_Solid(font.GetRawHandle(), reinterpret_cast<const u16*>(text.data()), outlineInfo.innerColour);
-
-			if (renderedTextSurface == nullptr)
-			{
-				return Texture();
-			}
-
-			return CreateOutlinedTextTexture(innerTextSurface, renderedTextSurface, outlineInfo.thickness, sampler);
 		}
 	}
 }
