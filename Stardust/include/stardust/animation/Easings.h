@@ -4,6 +4,7 @@
 
 #include <functional>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust
@@ -46,6 +47,8 @@ namespace stardust
 		[[nodiscard]] extern f32 EaseOutBounce(f32 value);
 		[[nodiscard]] extern f32 EaseInOutBounce(const f32 value);
 	}
+
+	[[nodiscard]] Optional<EasingFunction> GetEasingFunctionFromString(const String& easingFunction);
 }
 
 #endif

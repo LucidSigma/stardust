@@ -186,4 +186,53 @@ namespace stardust
 				: (1.0f + EaseOutBounce(2.0f * value - 1.0f)) / 2.0f;
 		}
 	}
+
+	[[nodiscard]] Optional<EasingFunction> GetEasingFunctionFromString(const String& easingFunction)
+	{
+		static const HashMap<String, EasingFunction> easingFunctionLookup{
+			{ "linear", easings::EaseLinear },
+
+			{ "quad-in", easings::EaseInQuad },
+			{ "quad-out", easings::EaseOutQuad },
+			{ "quad-in-out", easings::EaseInOutQuad },
+
+			{ "cubic-in", easings::EaseInCubic },
+			{ "cubic-out", easings::EaseOutCubic },
+			{ "cubic-in-out", easings::EaseInOutCubic },
+
+			{ "quart-in", easings::EaseInQuart },
+			{ "quart-out", easings::EaseOutQuart },
+			{ "quart-in-out", easings::EaseInOutQuart },
+
+			{ "quint-in", easings::EaseInQuint },
+			{ "quint-out", easings::EaseOutQuint },
+			{ "quint-in-out", easings::EaseInOutQuint },
+
+			{ "sine-in", easings::EaseInSine },
+			{ "sine-out", easings::EaseOutSine },
+			{ "sine-in-out", easings::EaseInOutSine },
+
+			{ "exponential-in", easings::EaseInExponential },
+			{ "exponential-out", easings::EaseOutExponential },
+			{ "exponential-in-out", easings::EaseInOutExponential },
+
+			{ "circle-in", easings::EaseInCircle },
+			{ "circle-out", easings::EaseOutCircle },
+			{ "circle-in-out", easings::EaseInOutCircle },
+
+			{ "bounce-in", easings::EaseInBounce },
+			{ "bounce-out", easings::EaseOutBounce },
+			{ "bounce-in-out", easings::EaseInOutBounce },
+		};
+
+		if (const auto easingFunctionLocation = easingFunctionLookup.find(easingFunction);
+			easingFunctionLocation != std::cend(easingFunctionLookup))
+		{
+			return easingFunctionLocation->second;
+		}
+		else
+		{
+			return NullOpt;
+		}
+	}
 }
