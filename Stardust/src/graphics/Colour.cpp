@@ -58,3 +58,13 @@ namespace stardust
 		};
 	}
 }
+
+[[nodiscard]] bool operator ==(const stardust::Colour& lhs, const stardust::Colour& rhs) noexcept
+{
+	return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b && lhs.a == rhs.a;
+}
+
+[[nodiscard]] bool operator !=(const stardust::Colour& lhs, const stardust::Colour& rhs) noexcept
+{
+	return !(lhs == rhs);
+}

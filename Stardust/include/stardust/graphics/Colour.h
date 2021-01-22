@@ -76,4 +76,7 @@ namespace std
 	};
 }
 
+[[nodiscard]] extern bool operator ==(const stardust::Colour& lhs, const stardust::Colour& rhs) noexcept;
+[[nodiscard]] extern bool operator !=(const stardust::Colour& lhs, const stardust::Colour& rhs) noexcept;
+
 #endif

@@ -23,6 +23,9 @@ namespace stardust
 
 			Colour innerColour;
 			Colour outerColour;
+
+			[[nodiscard]] bool operator ==(const OutlineInfo&) const noexcept = default;
+			[[nodiscard]] bool operator !=(const OutlineInfo&) const noexcept = default;
 		};
 
 		[[nodiscard]] extern Texture RenderGlyph(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler = Sampler{ });
