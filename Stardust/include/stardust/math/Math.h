@@ -13,6 +13,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/color_space.hpp>
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/hash.hpp>
 #include <glm/gtx/transform2.hpp>

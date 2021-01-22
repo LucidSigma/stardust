@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Types.h"
+#include "stardust/data/Types.h"
 
 namespace stardust
 {
@@ -42,6 +42,18 @@ namespace stardust
 	using BVec2 = glm::tvec2<bool>;
 	using BVec3 = glm::tvec3<bool>;
 	using BVec4 = glm::tvec4<bool>;
+
+	template <typename T>
+	using TVec1 = glm::tvec1<T>;
+
+	template <typename T>
+	using TVec2 = glm::tvec2<T>;
+
+	template <typename T>
+	using TVec3 = glm::tvec3<T>;
+
+	template <typename T>
+	using TVec4 = glm::tvec4<T>;
 
 	using Mat2 = glm::tmat2x2<f32>;
 	using Mat2x2 = glm::tmat2x2<f32>;
@@ -121,8 +133,14 @@ namespace stardust
 	using U64Mat4x2 = glm::tmat4x2<u64>;
 	using U64Mat4x3 = glm::tmat4x3<u64>;
 
+	template <usize M, usize N, typename T>
+	using TMat = glm::mat<M, N, T>;
+
 	using Quaternion = glm::tquat<f32>;
 	using DQuaternion = glm::tquat<f64>;
+
+	template <typename T>
+	using TQuat = glm::tquat<T>;
 }
 
 #endif

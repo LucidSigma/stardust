@@ -15,6 +15,18 @@ namespace stardust
 {
 	using Colour = SDL_Color;
 
+	struct HSVColour
+	{
+		float h;
+		float s;
+		float v;
+
+		float a = 1.0f;
+
+		[[nodiscard]] bool operator ==(const HSVColour&) const noexcept = default;
+		[[nodiscard]] bool operator !=(const HSVColour&) const noexcept = default;
+	};
+
 	namespace colours
 	{
 		constexpr Colour Black{ 0u, 0u, 0u, 255u };
@@ -48,12 +60,25 @@ namespace stardust
 	}
 
 	[[nodiscard]] extern Colour CreateColour(const u8 red, const u8 green, const u8 blue);
+	[[nodiscard]] extern Colour CreateColour(const u32 red, const u32 green, const u32 blue);
 	[[nodiscard]] extern Colour CreateColour(const u8 red, const u8 green, const u8 blue, const u8 alpha);
+	[[nodiscard]] extern Colour CreateColour(const u32 red, const u32 green, const u32 blue, const u32 alpha);
 	[[nodiscard]] extern Colour CreateColour(const f32 red, const f32 green, const f32 blue);
 	[[nodiscard]] extern Colour CreateColour(const f32 red, const f32 green, const f32 blue, const f32 alpha);
 
+	[[nodiscard]] extern HSVColour CreateHSVColour(const f32 hue, const f32 saturation, const f32 value);
+	[[nodiscard]] extern HSVColour CreateHSVColour(const f32 hue, const f32 saturation, const f32 value, const f32 alpha);
+
+	[[nodiscard]] extern Colour RandomColour();
+	[[nodiscard]] extern Colour RandomOpaqueColour();
+	[[nodiscard]] extern HSVColour RandomHSVColour();
+	[[nodiscard]] extern HSVColour RandomOpaqueHSVColour();
+
 	[[nodiscard]] extern Vec4 ColourToVec4(const Colour& colour);
-	[[nodiscard]] extern Colour Vec4ToColour(const Vec4& vector);
+	[[nodiscard]] extern Colour Vec4ToColour(const Vec4& vector); 
+
+	[[nodiscard]] extern HSVColour RGBToHSV(const Colour& rgbColour);
+	[[nodiscard]] extern Colour HSVToRGB(const HSVColour& hsvColour);
 }
 
 namespace std
