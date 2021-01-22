@@ -8,6 +8,7 @@
 
 #include "animation/Animation.h"
 #include "animation/Animator.h"
+#include "animation/Easings.h"
 
 #include "application/Application.h"
 #include "assets/AssetManager.h"
