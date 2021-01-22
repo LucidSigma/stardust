@@ -75,10 +75,7 @@ public:
 
 		m_textCache.Initialise(m_font[128u]);
 
-		m_glyphTexture = m_textCache.Get(sd::text::GlyphInfo{
-			.glyph = 'A',
-			.outline = sd::NullOpt,
-		});
+		m_glyphTexture = m_textCache['A'];
 
 		m_textTexture = m_textCache.Get(sd::text::UTF16TextInfo{
 			.text = u"This is some text. \u0400\u0411\u0414\u042B",
