@@ -9,6 +9,7 @@
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/Sampler.h"
 #include "stardust/text/font/Font.h"
+#include "stardust/text/Text.h"
 
 namespace stardust
 {
@@ -19,8 +20,11 @@ namespace stardust
 		ObserverPtr<const Font> m_font = nullptr;
 		Sampler m_sampler{ };
 
-		HashMap<String, Texture> m_textures{ };
-		HashMap<UTF16String, Texture> m_utf16Textures{ };
+		HashMap<text::GlyphInfo, Texture> m_glyphs{ };
+		HashMap<text::UTF16GlyphInfo, Texture> m_utf16glyphs{ };
+
+		HashMap<text::TextInfo, Texture> m_textures{ };
+		HashMap<text::UTF16TextInfo, Texture> m_utf16Textures{ };
 
 	public:
 		TextCache() = default;
@@ -29,11 +33,20 @@ namespace stardust
 
 		void Initialise(const Font& font, const Sampler& sampler = Sampler{ });
 
+		[[nodiscard]] ObserverPtr<const Texture> Get(const char glyph);
+		[[nodiscard]] ObserverPtr<const Texture> Get(const text::GlyphInfo& glyphInfo);
+		[[nodiscard]] ObserverPtr<const Texture> Get(const char16_t glyph);
+		[[nodiscard]] ObserverPtr<const Texture> Get(const text::UTF16GlyphInfo& glyphInfo);
+
 		[[nodiscard]] ObserverPtr<const Texture> Get(const String& text);
+		[[nodiscard]] ObserverPtr<const Texture> Get(const text::TextInfo& textInfo);
 		[[nodiscard]] ObserverPtr<const Texture> Get(const UTF16String& text);
+		[[nodiscard]] ObserverPtr<const Texture> Get(const text::UTF16TextInfo& textInfo);
 
 		[[nodiscard]] inline ObserverPtr<const Texture> operator [](const String& text) { return Get(text); }
+		[[nodiscard]] inline ObserverPtr<const Texture> operator [](const text::TextInfo& textInfo) { return Get(textInfo); }
 		[[nodiscard]] inline ObserverPtr<const Texture> operator [](const UTF16String& text) { return Get(text); }
+		[[nodiscard]] inline ObserverPtr<const Texture> operator [](const text::UTF16TextInfo& textInfo) { return Get(textInfo); }
 	};
 }
 
