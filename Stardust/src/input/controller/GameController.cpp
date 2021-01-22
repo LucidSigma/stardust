@@ -190,7 +190,7 @@ namespace stardust
 
 	void GameController::SetLED(const Colour& colour) const
 	{
-		SDL_GameControllerSetLED(GetRawHandle(), colour.r, colour.g, colour.b);
+		SDL_GameControllerSetLED(GetRawHandle(), colour.red, colour.green, colour.blue);
 	}
 
 	[[nodiscard]] u32 GameController::GetSupportedTouchpadFingerCount() const

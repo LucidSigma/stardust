@@ -119,10 +119,10 @@ namespace stardust
 	void Renderer::SetClearColour(const Colour& colour) const
 	{
 		glClearColor(
-			static_cast<f32>(colour.r / 255.0f),
-			static_cast<f32>(colour.g / 255.0f),
-			static_cast<f32>(colour.b / 255.0f),
-			static_cast<f32>(colour.a / 255.0f)
+			static_cast<f32>(colour.red / 255.0f),
+			static_cast<f32>(colour.green / 255.0f),
+			static_cast<f32>(colour.blue / 255.0f),
+			static_cast<f32>(colour.alpha / 255.0f)
 		);
 	}
 
@@ -777,7 +777,7 @@ namespace stardust
 	void Renderer::GenerateRect(const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
 	{
 		const auto& [bottomLeftTextureCoordinate, topRightTextureCoordinate] = textureCoordinates;
-		const Vec4 colourVector = ColourToVec4(colour);
+		const Vec4 colourVector = Vec4(colour);
 
 		bufferPtr->position = Vec2(modelMatrix * Vec4{ -0.5f, -0.5f, 0.0f, 1.0f });
 		bufferPtr->colour = colourVector;
@@ -809,7 +809,7 @@ namespace stardust
 	void Renderer::GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount)
 	{
 		const auto& [bottomLeftTextureCoordinate, topRightTextureCoordinate] = textureCoordinates;
-		const Vec4 colourVector = ColourToVec4(colour);
+		const Vec4 colourVector = Vec4(colour);
 
 		bufferPtr->position = Vec2(modelMatrix * Vec4{ quad.lowerLeft.x, quad.lowerLeft.y, 0.0f, 1.0f });
 		bufferPtr->colour = colourVector;

@@ -13,18 +13,94 @@
 
 namespace stardust
 {
-	using Colour = SDL_Color;
+	struct Colour
+	{
+		[[nodiscard]] static Colour Random();
+		[[nodiscard]] static Colour RandomOpaque();
+
+		u8 red;
+		u8 green;
+		u8 blue;
+
+		u8 alpha;
+
+		constexpr Colour()
+			: red(0u), green(0u), blue(0u), alpha(SDL_ALPHA_OPAQUE)
+		{ }
+
+		constexpr Colour(const u8 red, const u8 green, const u8 blue, const u8 alpha = SDL_ALPHA_OPAQUE)
+			: red(red), green(green), blue(blue), alpha(alpha)
+		{ }
+
+		constexpr Colour(const u32 red, const u32 green, const u32 blue, const u32 alpha = SDL_ALPHA_OPAQUE)
+			: red(red), green(green), blue(blue), alpha(alpha)
+		{ }
+
+		constexpr Colour(const f32 red, const f32 green, const f32 blue, const f32 alpha = 1.0f)
+			: red(static_cast<u8>(red * 255.0f)), green(static_cast<u8>(green * 255.0f)), blue(static_cast<u8>(blue * 255.0f)), alpha(static_cast<u8>(alpha * 255.0f))
+		{ }
+
+		constexpr Colour(const UVec3& values)
+			: red(values.r), green(values.g), blue(values.b), alpha(SDL_ALPHA_OPAQUE)
+		{ }
+
+		constexpr Colour(const UVec4& values)
+			: red(values.r), green(values.g), blue(values.b), alpha(values.a)
+		{ }
+
+		constexpr Colour(const Vec3& values)
+			: Colour(values.r, values.g, values.b)
+		{ }
+
+		constexpr Colour(const Vec4& values)
+			: Colour(values.r, values.g, values.b, values.a)
+		{ }
+
+		~Colour() noexcept = default;
+
+		[[nodiscard]] bool operator ==(const Colour&) const noexcept = default;
+		[[nodiscard]] bool operator !=(const Colour&) const noexcept = default;
+
+		[[nodiscard]] operator SDL_Colour() const noexcept;
+
+		[[nodiscard]] explicit operator Vec3() const noexcept;
+		[[nodiscard]] explicit operator Vec4() const noexcept;
+	};
 
 	struct HSVColour
 	{
-		float h;
-		float s;
-		float v;
+		[[nodiscard]] static HSVColour Random();
+		[[nodiscard]] static HSVColour RandomOpaque();
 
-		float a = 1.0f;
+		f32 hue;
+		f32 saturation;
+		f32 value;
+
+		f32 alpha;
+
+		constexpr HSVColour()
+			: hue(0.0f), saturation(0.0f), value(0.0f), alpha(1.0f)
+		{ }
+
+		constexpr HSVColour(const f32 hue, const f32 saturation, const f32 value, const f32 alpha = 1.0f)
+			: hue(hue), saturation(saturation), value(value), alpha(alpha)
+		{ }
+
+		constexpr HSVColour(const Vec3& values)
+			: hue(values.r), saturation(values.g), value(values.b), alpha(1.0f)
+		{ }
+
+		constexpr HSVColour(const Vec4& values)
+			: hue(values.r), saturation(values.g), value(values.b), alpha(values.a)
+		{ }
+
+		~HSVColour() noexcept = default;
 
 		[[nodiscard]] bool operator ==(const HSVColour&) const noexcept = default;
 		[[nodiscard]] bool operator !=(const HSVColour&) const noexcept = default;
+
+		[[nodiscard]] explicit operator Vec3() const noexcept;
+		[[nodiscard]] explicit operator Vec4() const noexcept;
 	};
 
 	namespace colours
@@ -59,26 +135,10 @@ namespace stardust
 		constexpr Colour Clear{ 0u, 0u, 0u, 0u };
 	}
 
-	[[nodiscard]] extern Colour CreateColour(const u8 red, const u8 green, const u8 blue);
-	[[nodiscard]] extern Colour CreateColour(const u32 red, const u32 green, const u32 blue);
-	[[nodiscard]] extern Colour CreateColour(const u8 red, const u8 green, const u8 blue, const u8 alpha);
-	[[nodiscard]] extern Colour CreateColour(const u32 red, const u32 green, const u32 blue, const u32 alpha);
-	[[nodiscard]] extern Colour CreateColour(const f32 red, const f32 green, const f32 blue);
-	[[nodiscard]] extern Colour CreateColour(const f32 red, const f32 green, const f32 blue, const f32 alpha);
-
-	[[nodiscard]] extern HSVColour CreateHSVColour(const f32 hue, const f32 saturation, const f32 value);
-	[[nodiscard]] extern HSVColour CreateHSVColour(const f32 hue, const f32 saturation, const f32 value, const f32 alpha);
-
-	[[nodiscard]] extern Colour RandomColour();
-	[[nodiscard]] extern Colour RandomOpaqueColour();
-	[[nodiscard]] extern HSVColour RandomHSVColour();
-	[[nodiscard]] extern HSVColour RandomOpaqueHSVColour();
-
-	[[nodiscard]] extern Vec4 ColourToVec4(const Colour& colour);
-	[[nodiscard]] extern Colour Vec4ToColour(const Vec4& vector); 
-
 	[[nodiscard]] extern HSVColour RGBToHSV(const Colour& rgbColour);
 	[[nodiscard]] extern Colour HSVToRGB(const HSVColour& hsvColour);
+	[[nodiscard]] extern Colour HexToRGB(u32 colourHex);
+	[[nodiscard]] extern u32 RGBToHex(const Colour& rgbColour);
 }
 
 namespace std
@@ -91,17 +151,33 @@ namespace std
 			std::size_t seed = 0u;
 			std::hash<stardust::u8> hasher;
 
-			glm::detail::hash_combine(seed, hasher(colour.r));
-			glm::detail::hash_combine(seed, hasher(colour.g));
-			glm::detail::hash_combine(seed, hasher(colour.b));
-			glm::detail::hash_combine(seed, hasher(colour.a));
+			glm::detail::hash_combine(seed, hasher(colour.red));
+			glm::detail::hash_combine(seed, hasher(colour.green));
+			glm::detail::hash_combine(seed, hasher(colour.blue));
+			glm::detail::hash_combine(seed, hasher(colour.alpha));
+
+			return seed;
+		}
+	};
+
+	template <>
+	struct hash<stardust::HSVColour>
+	{
+		[[nodiscard]] inline std::size_t operator ()(const stardust::HSVColour& colour) const noexcept
+		{
+			std::size_t seed = 0u;
+			std::hash<stardust::u8> hasher;
+
+			glm::detail::hash_combine(seed, hasher(colour.hue));
+			glm::detail::hash_combine(seed, hasher(colour.saturation));
+			glm::detail::hash_combine(seed, hasher(colour.value));
+			glm::detail::hash_combine(seed, hasher(colour.alpha));
 
 			return seed;
 		}
 	};
 }
 
-[[nodiscard]] extern bool operator ==(const stardust::Colour& lhs, const stardust::Colour& rhs) noexcept;
-[[nodiscard]] extern bool operator !=(const stardust::Colour& lhs, const stardust::Colour& rhs) noexcept;
+[[nodiscard]] extern stardust::Colour operator ""_colour(const stardust::u64 hexCode);
 
 #endif

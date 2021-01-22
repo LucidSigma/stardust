@@ -48,7 +48,7 @@ public:
 
 	[[nodiscard]] virtual sd::Status OnLoad() override
 	{
-		m_application.GetRenderer().SetClearColour(sd::CreateColour(0.3f, 0.05f, 0.5f, 1.0f));
+		m_application.GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
 
 		const auto textures = sd::vfs::GetAllFilesInDirectory("assets/textures");
 
@@ -222,7 +222,7 @@ public:
 				m_clickParticleDelay = 0.01f;
 
 				auto finalColour = sd::colours::Yellow;
-				finalColour.a = 0u;
+				finalColour.alpha = 0u;
 
 				m_particles.Emit(sd::ParticleSystem::ParticleData{
 					.initialPosition = GetMouseState().GetProportionalCoordinates(GetRenderer()),
@@ -313,7 +313,7 @@ public:
 				sd::Vec2{ -1.0f, -1.0f },
 				sd::Vec2{ 2.0f, 2.0f }
 			),
-			sd::CreateColour(1.0f, 1.0f, 0.0f, 0.5f),
+			sd::Colour(1.0f, 1.0f, 0.0f, 0.5f),
 			GetCamera()
 		);
 

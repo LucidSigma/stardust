@@ -43,10 +43,10 @@ namespace stardust
 			particle->rotation += particle->angularVelocity * deltaTime;
 			particle->size *= 1.0f + (particle->sizeUpdateMultipler * deltaTime);
 
-			particle->currentColour = Vec4ToColour(
+			particle->currentColour = Colour(
 				glm::lerp(
-					ColourToVec4(particle->endColour),
-					ColourToVec4(particle->startColour),
+					Vec4(particle->endColour),
+					Vec4(particle->startColour),
 					particle->lifetimeRemaining / particle->lifetime
 				)
 			);

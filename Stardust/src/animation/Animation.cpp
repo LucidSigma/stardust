@@ -152,7 +152,7 @@ namespace stardust
 
 		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation);
 
-		return Vec4ToColour(glm::lerp(ColourToVec4(currentColour), ColourToVec4(nextColour), percentage));
+		return Colour(glm::lerp(Vec4(currentColour), Vec4(nextColour), percentage));
 	}
 
 	void Animation::Reset()
@@ -252,7 +252,7 @@ namespace stardust
 				{
 					m_colourFrames.push_back({
 						currentKeyFrame,
-						CreateColour(
+						Colour(
 							static_cast<u8>(value["r"]),
 							static_cast<u8>(value["g"]),
 							static_cast<u8>(value["b"]),

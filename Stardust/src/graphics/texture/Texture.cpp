@@ -279,7 +279,7 @@ namespace stardust
 
 		if (sampler.sWrap == Sampler::Wrap::ClampToBorder || sampler.tWrap == Sampler::Wrap::ClampToBorder)
 		{
-			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(ColourToVec4(sampler.borderColour.value())));
+			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(Vec4(sampler.borderColour.value())));
 		}
 
 		if (sampler.enableAnisotropicFiltering)
