@@ -90,6 +90,16 @@ namespace stardust
 			m_handle->ApplyAngularImpulse(impulse, wakeUp);
 		}
 
+		void Body::Move(const Vec2& positionOffset) const
+		{
+			SetPosition(GetPosition() + positionOffset);
+		}
+
+		void Body::Rotate(const f32 angleOffset) const
+		{
+			SetRotation(GetRotation() + angleOffset);
+		}
+
 		ObserverPtr<Fixture> Body::AddFixture(const FixtureInfo& fixtureInfo)
 		{
 			ObserverPtr<Fixture> fixture = m_handle->CreateFixture(&fixtureInfo);

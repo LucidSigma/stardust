@@ -86,6 +86,9 @@ namespace stardust
 			void ApplyLinearImpulseToCentre(const Vec2& impulse, const bool wakeUp) const;
 			void ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const;
 
+			void Move(const Vec2& positionOffset) const;
+			void Rotate(const f32 angleOffset) const;
+
 			ObserverPtr<Fixture> AddFixture(const FixtureInfo& fixtureInfo);
 			void RemoveFixture(ObserverPtr<Fixture> fixture);
 			inline const HashSet<ObserverPtr<Fixture>>& GetFixtures() const { return m_fixtures; }
