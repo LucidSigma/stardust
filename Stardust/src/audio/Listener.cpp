@@ -39,6 +39,12 @@ namespace stardust
 		m_velocity = Vec3{ 0.0f, 0.0f, 0.0f };
 	}
 
+	void Listener::SetPosition(const Vec2& position) noexcept
+	{
+		m_position = Vec3{ position, m_position.z };
+		m_soundSystem->GetRawHandle().set3dListenerPosition(position.x, position.y, m_position.z);
+	}
+
 	void Listener::SetPosition(const Vec3& position) noexcept
 	{
 		m_position = position;

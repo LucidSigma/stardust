@@ -29,6 +29,7 @@ namespace stardust
 		void Reset() noexcept;
 
 		inline const Vec3& GetPosition() const noexcept { return m_position; }
+		void SetPosition(const Vec2& position) noexcept;
 		void SetPosition(const Vec3& position) noexcept;
 
 		inline const Vec3& GetLookAt() const noexcept { return m_lookAt; }
