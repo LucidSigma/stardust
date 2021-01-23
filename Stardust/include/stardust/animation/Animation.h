@@ -25,6 +25,8 @@ namespace stardust
 		using Event = std::function<void()>;
 
 	private:
+		inline static HashMap<String, EasingFunction> s_customEasingFunctions{ };
+
 		Vector<Pair<KeyFrame, TextureCoordinatePair>> m_spriteFrames{ };
 		Vector<Pair<KeyFrame, Vec2>> m_positionOffsetFrames{ };
 		Vector<Pair<KeyFrame, Quaternion>> m_rotationFrames{ };
@@ -56,6 +58,8 @@ namespace stardust
 		bool m_didLoadSuccessfully = false;
 
 	public:
+		static void AddCustomEasingFunction(const String& name, const EasingFunction& easingFunction);
+
 		Animation() = default;
 		Animation(const StringView& filepath);
 		Animation(const StringView& filepath, const TextureAtlas& textureAtlas);
@@ -83,6 +87,8 @@ namespace stardust
 		inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
 
 	private:
+		[[nodiscard]] static Optional<EasingFunction> GetEasingFunction(const String& name);
+
 		void LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas);
 		void LoadEasings(const nlohmann::json& data);
 		void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas);

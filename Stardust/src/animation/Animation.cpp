@@ -9,6 +9,11 @@
 
 namespace stardust
 {
+	void Animation::AddCustomEasingFunction(const String& name, const EasingFunction& easingFunction)
+	{
+		s_customEasingFunctions[name] = easingFunction;
+	}
+
 	Animation::Animation(const StringView& filepath)
 	{
 		Initialise(filepath);
@@ -167,6 +172,26 @@ namespace stardust
 		m_currentColourIndex = 0u;
 	}
 
+	[[nodiscard]] Optional<EasingFunction> Animation::GetEasingFunction(const String& name)
+	{
+		const Optional<EasingFunction> easingFunction = GetEasingFunctionFromString(name);
+
+		if (easingFunction.has_value())
+		{
+			return easingFunction;
+		}
+		
+		if (const auto easingFunctionLocation = s_customEasingFunctions.find(name);
+			easingFunctionLocation != std::cend(s_customEasingFunctions))
+		{
+			return easingFunctionLocation->second;
+		}
+		else
+		{
+			return NullOpt;
+		}
+	}
+
 	void Animation::LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas)
 	{
 		const Vector<ubyte> animationData = vfs::ReadFileData(filepath);
@@ -207,36 +232,56 @@ namespace stardust
 	{
 		if (data.contains("easings"))
 		{
-			for (const auto& [attribute, easingFunctionName] : data["easings"].items())
+			if (data["easings"].is_string())
 			{
-				const Optional<EasingFunction> easingFunction = GetEasingFunctionFromString(easingFunctionName);
+				const Optional<EasingFunction> easingFunction = GetEasingFunction(data["easings"]);
 
 				if (!easingFunction.has_value())
 				{
-					Log::EngineWarn("Animation has easing {}, but this easing does not exist; defaulting to linear easing.", easingFunctionName);
-
-					continue;
+					Log::EngineWarn("Animation has easing {}, but this easing does not exist; defaulting to linear easing.", data["easings"]);
 				}
-
-				if (attribute == "position-offset")
+				else
 				{
 					m_positionOffsetEasing = easingFunction.value();
-				}
-				else if (attribute == "rotation")
-				{
 					m_rotationEasing = easingFunction.value();
-				}
-				else if (attribute == "scale")
-				{
 					m_scaleEasing = easingFunction.value();
-				}
-				else if (attribute == "shear")
-				{
 					m_shearEasing = easingFunction.value();
-				}
-				else if (attribute == "colour")
-				{
 					m_colourEasing = easingFunction.value();
+				}
+			}
+			else
+			{
+				for (const auto& [attribute, easingFunctionName] : data["easings"].items())
+				{
+					const Optional<EasingFunction> easingFunction = GetEasingFunction(easingFunctionName);
+
+					if (!easingFunction.has_value())
+					{
+						Log::EngineWarn("Animation has easing {}, but this easing does not exist; defaulting to linear easing.", easingFunctionName);
+
+						continue;
+					}
+
+					if (attribute == "position-offset")
+					{
+						m_positionOffsetEasing = easingFunction.value();
+					}
+					else if (attribute == "rotation")
+					{
+						m_rotationEasing = easingFunction.value();
+					}
+					else if (attribute == "scale")
+					{
+						m_scaleEasing = easingFunction.value();
+					}
+					else if (attribute == "shear")
+					{
+						m_shearEasing = easingFunction.value();
+					}
+					else if (attribute == "colour")
+					{
+						m_colourEasing = easingFunction.value();
+					}
 				}
 			}
 		}
