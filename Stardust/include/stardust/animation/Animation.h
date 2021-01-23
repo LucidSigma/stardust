@@ -90,8 +90,8 @@ namespace stardust
 		[[nodiscard]] static Optional<EasingFunction> GetEasingFunction(const String& name);
 
 		void LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas);
-		void LoadEasings(const nlohmann::json& data);
-		void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas);
+		void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas, const StringView& filepath);
+		void LoadEasings(const nlohmann::json& data, const StringView& filepath);
 		void AddDefaultKeyFrames();
 
 		template <typename T>

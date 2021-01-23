@@ -215,7 +215,7 @@ namespace stardust
 		
 		try
 		{
-			LoadAttributes(animationJSON, textureAtlas);
+			LoadAttributes(animationJSON, textureAtlas, filepath);
 		}
 		catch (const nlohmann::json::exception& error)
 		{
@@ -228,72 +228,13 @@ namespace stardust
 		m_didLoadSuccessfully = true;
 	}
 
-	void Animation::LoadEasings(const nlohmann::json& data)
-	{
-		if (data.contains("easings"))
-		{
-			if (data["easings"].is_string())
-			{
-				const Optional<EasingFunction> easingFunction = GetEasingFunction(data["easings"]);
-
-				if (!easingFunction.has_value())
-				{
-					Log::EngineWarn("Animation has easing {}, but this easing does not exist; defaulting to linear easing.", data["easings"]);
-				}
-				else
-				{
-					m_positionOffsetEasing = easingFunction.value();
-					m_rotationEasing = easingFunction.value();
-					m_scaleEasing = easingFunction.value();
-					m_shearEasing = easingFunction.value();
-					m_colourEasing = easingFunction.value();
-				}
-			}
-			else
-			{
-				for (const auto& [attribute, easingFunctionName] : data["easings"].items())
-				{
-					const Optional<EasingFunction> easingFunction = GetEasingFunction(easingFunctionName);
-
-					if (!easingFunction.has_value())
-					{
-						Log::EngineWarn("Animation has easing {}, but this easing does not exist; defaulting to linear easing.", easingFunctionName);
-
-						continue;
-					}
-
-					if (attribute == "position-offset")
-					{
-						m_positionOffsetEasing = easingFunction.value();
-					}
-					else if (attribute == "rotation")
-					{
-						m_rotationEasing = easingFunction.value();
-					}
-					else if (attribute == "scale")
-					{
-						m_scaleEasing = easingFunction.value();
-					}
-					else if (attribute == "shear")
-					{
-						m_shearEasing = easingFunction.value();
-					}
-					else if (attribute == "colour")
-					{
-						m_colourEasing = easingFunction.value();
-					}
-				}
-			}
-		}
-	}
-
-	void Animation::LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas)
+	void Animation::LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas, const StringView& filepath)
 	{
 		m_maxKeyFrame = data["length"];
 		m_fps = data["fps"];
 		m_secondsPerFrame = 1.0f / static_cast<f32>(m_fps);
 
-		LoadEasings(data);
+		LoadEasings(data, filepath);
 
 		for (const auto& [frameNumber, frameData] : data["frames"].items())
 		{
@@ -360,6 +301,65 @@ namespace stardust
 		std::ranges::sort(m_scaleFrames, SortingPredicate);
 		std::ranges::sort(m_shearFrames, SortingPredicate);
 		std::ranges::sort(m_colourFrames, SortingPredicate);
+	}
+
+	void Animation::LoadEasings(const nlohmann::json& data, const StringView& filepath)
+	{
+		if (data.contains("easings"))
+		{
+			if (data["easings"].is_string())
+			{
+				const Optional<EasingFunction> easingFunction = GetEasingFunction(data["easings"]);
+
+				if (!easingFunction.has_value())
+				{
+					Log::EngineWarn("Animation {} has easing {}, but this easing does not exist; defaulting to linear easing.", filepath, data["easings"]);
+				}
+				else
+				{
+					m_positionOffsetEasing = easingFunction.value();
+					m_rotationEasing = easingFunction.value();
+					m_scaleEasing = easingFunction.value();
+					m_shearEasing = easingFunction.value();
+					m_colourEasing = easingFunction.value();
+				}
+			}
+			else
+			{
+				for (const auto& [attribute, easingFunctionName] : data["easings"].items())
+				{
+					const Optional<EasingFunction> easingFunction = GetEasingFunction(easingFunctionName);
+
+					if (!easingFunction.has_value())
+					{
+						Log::EngineWarn("Animation {} has easing {}, but this easing does not exist; defaulting to linear easing.", filepath, easingFunctionName);
+
+						continue;
+					}
+
+					if (attribute == "position-offset")
+					{
+						m_positionOffsetEasing = easingFunction.value();
+					}
+					else if (attribute == "rotation")
+					{
+						m_rotationEasing = easingFunction.value();
+					}
+					else if (attribute == "scale")
+					{
+						m_scaleEasing = easingFunction.value();
+					}
+					else if (attribute == "shear")
+					{
+						m_shearEasing = easingFunction.value();
+					}
+					else if (attribute == "colour")
+					{
+						m_colourEasing = easingFunction.value();
+					}
+				}
+			}
+		}
 	}
 
 	void Animation::AddDefaultKeyFrames()
