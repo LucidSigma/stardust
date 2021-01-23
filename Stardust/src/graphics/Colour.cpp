@@ -97,7 +97,7 @@ namespace stardust
 		return Colour(rgbColour.r, rgbColour.g, rgbColour.b, hsvColour.alpha);
 	}
 
-	[[nodiscard]] Colour HexToRGB(u32 colourHex)
+	[[nodiscard]] Colour HexToRGB(u32 colourHex, const u8 alpha)
 	{
 		constexpr u32 bitmask = 0xFF;
 		Colour colour;
@@ -109,6 +109,7 @@ namespace stardust
 		colourHex >>= sizeof(u8) * 8u;
 
 		colour.red = static_cast<u8>(colourHex & bitmask);
+		colour.alpha = alpha;
 
 		return colour;
 	}

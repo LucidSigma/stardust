@@ -137,7 +137,7 @@ namespace stardust
 
 	[[nodiscard]] extern HSVColour RGBToHSV(const Colour& rgbColour);
 	[[nodiscard]] extern Colour HSVToRGB(const HSVColour& hsvColour);
-	[[nodiscard]] extern Colour HexToRGB(u32 colourHex);
+	[[nodiscard]] extern Colour HexToRGB(u32 colourHex, const u8 alpha = SDL_ALPHA_OPAQUE);
 	[[nodiscard]] extern u32 RGBToHex(const Colour& rgbColour);
 }
 
