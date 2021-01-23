@@ -2,7 +2,7 @@
 #ifndef STARDUST_ANIMATED_COMPONENT_H
 #define STARDUST_ANIMATED_COMPONENT_H
 
-#include "stardust/animation/Animation.h"
+#include "stardust/animation/Animator.h"
 #include "stardust/data/Pointers.h"
 
 namespace stardust
@@ -11,18 +11,14 @@ namespace stardust
 	{
 		struct Animated
 		{
-			ObserverPtr<const Animation> animation;
+			ObserverPtr<const Animator> animator;
 
 			Animated()
-				: animation(nullptr)
+				: animator(nullptr)
 			{ }
 
-			Animated(const Animation& animation)
-				: animation(&animation)
-			{ }
-
-			Animated(ObserverPtr<const Animation> animation)
-				: animation(animation)
+			Animated(const Animator& animator)
+				: animator(&animator)
 			{ }
 
 			~Animated() noexcept = default;
