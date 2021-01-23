@@ -113,6 +113,7 @@ public:
 
 		m_colourAnimator.AddAnimation("dance", m_colourAnimation, true);
 		m_colourAnimator.AddAnimation("flash", m_flashAnimation);
+		m_colourAnimator.SetSpeed(0.25f);
 
 		m_tilemap.Initialise("assets/tilemaps/ground.json");
 
@@ -190,7 +191,7 @@ public:
 			}
 			else if (GetInputManager().IsButtonUp("speed"))
 			{
-				m_colourAnimator.SetSpeed(1.0f);
+				m_colourAnimator.SetSpeed(0.25f);
 			}
 
 			if (GetInputManager().IsButtonUp("coords"))

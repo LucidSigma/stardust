@@ -78,7 +78,7 @@ namespace stardust
 		const KeyFrame currentFrame = m_positionOffsetFrames[m_currentPositionOffsetIndex].first;
 		const KeyFrame nextFrame = m_positionOffsetFrames[(m_currentPositionOffsetIndex + 1u) % m_positionOffsetFrames.size()].first;
 
-		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation);
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation, m_positionOffsetEasing);
 
 		return glm::lerp(currentPositionOffset, nextPositionOffset, percentage);
 	}
@@ -96,7 +96,7 @@ namespace stardust
 		const KeyFrame currentFrame = m_rotationFrames[m_currentRotationIndex].first;
 		const KeyFrame nextFrame = m_rotationFrames[(m_currentRotationIndex + 1u) % m_rotationFrames.size()].first;
 
-		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation);
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation, m_rotationEasing);
 
 		return glm::degrees(glm::roll(glm::slerp(currentRotation, nextRotation, percentage)));
 	}
@@ -114,7 +114,7 @@ namespace stardust
 		const KeyFrame currentFrame = m_scaleFrames[m_currentScaleIndex].first;
 		const KeyFrame nextFrame = m_scaleFrames[(m_currentScaleIndex + 1u) % m_scaleFrames.size()].first;
 
-		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation);
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation, m_scaleEasing);
 
 		return glm::lerp(currentScale, nextScale, percentage);
 	}
@@ -132,7 +132,7 @@ namespace stardust
 		const KeyFrame currentFrame = m_shearFrames[m_currentShearIndex].first;
 		const KeyFrame nextFrame = m_shearFrames[(m_currentShearIndex + 1u) % m_shearFrames.size()].first;
 
-		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation);
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation, m_shearEasing);
 
 		return glm::lerp(currentShear, nextShear, percentage);
 	}
@@ -150,7 +150,7 @@ namespace stardust
 		const KeyFrame currentFrame = m_colourFrames[m_currentColourIndex].first;
 		const KeyFrame nextFrame = m_colourFrames[(m_currentColourIndex + 1u) % m_colourFrames.size()].first;
 
-		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation);
+		const f32 percentage = GetPercentageBetweenFrames(currentFrame, nextFrame, frameInterpolation, m_colourEasing);
 
 		return Colour(glm::lerp(Vec4(currentColour), Vec4(nextColour), percentage));
 	}
@@ -203,11 +203,52 @@ namespace stardust
 		m_didLoadSuccessfully = true;
 	}
 
+	void Animation::LoadEasings(const nlohmann::json& data)
+	{
+		if (data.contains("easings"))
+		{
+			for (const auto& [attribute, easingFunctionName] : data["easings"].items())
+			{
+				const Optional<EasingFunction> easingFunction = GetEasingFunctionFromString(easingFunctionName);
+
+				if (!easingFunction.has_value())
+				{
+					Log::EngineWarn("Animation has easing {}, but this easing does not exist; defaulting to linear easing.", easingFunctionName);
+
+					continue;
+				}
+
+				if (attribute == "position-offset")
+				{
+					m_positionOffsetEasing = easingFunction.value();
+				}
+				else if (attribute == "rotation")
+				{
+					m_rotationEasing = easingFunction.value();
+				}
+				else if (attribute == "scale")
+				{
+					m_scaleEasing = easingFunction.value();
+				}
+				else if (attribute == "shear")
+				{
+					m_shearEasing = easingFunction.value();
+				}
+				else if (attribute == "colour")
+				{
+					m_colourEasing = easingFunction.value();
+				}
+			}
+		}
+	}
+
 	void Animation::LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas)
 	{
 		m_maxKeyFrame = data["length"];
 		m_fps = data["fps"];
 		m_secondsPerFrame = 1.0f / static_cast<f32>(m_fps);
+
+		LoadEasings(data);
 
 		for (const auto& [frameNumber, frameData] : data["frames"].items())
 		{
@@ -315,7 +356,7 @@ namespace stardust
 		}
 	}
 
-	[[nodiscard]] f32 Animation::GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation) const
+	[[nodiscard]] f32 Animation::GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation, const EasingFunction& easingFunction) const
 	{
 		if (nextFrame < currentFrame)
 		{
@@ -325,6 +366,6 @@ namespace stardust
 		const f32 frameDifference = static_cast<f32>(nextFrame) - static_cast<f32>(currentFrame);
 		const f32 shiftedCurrentFrame = static_cast<f32>(m_currentKeyFrame) - static_cast<f32>(currentFrame);
 
-		return (shiftedCurrentFrame + frameInterpolation) / frameDifference;
+		return easingFunction((shiftedCurrentFrame + frameInterpolation) / frameDifference);
 	}
 }

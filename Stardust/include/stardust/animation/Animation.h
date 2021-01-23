@@ -6,6 +6,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "stardust/animation/Easings.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
@@ -30,6 +31,12 @@ namespace stardust
 		Vector<Pair<KeyFrame, Vec2>> m_scaleFrames{ };
 		Vector<Pair<KeyFrame, Vec2>> m_shearFrames{ };
 		Vector<Pair<KeyFrame, Colour>> m_colourFrames{ };
+
+		EasingFunction m_positionOffsetEasing = easings::EaseLinear;
+		EasingFunction m_rotationEasing = easings::EaseLinear;
+		EasingFunction m_scaleEasing = easings::EaseLinear;
+		EasingFunction m_shearEasing = easings::EaseLinear;
+		EasingFunction m_colourEasing = easings::EaseLinear;
 
 		HashMap<KeyFrame, Vector<Event>> m_eventCallbacks{ };
 
@@ -77,6 +84,7 @@ namespace stardust
 
 	private:
 		void LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas);
+		void LoadEasings(const nlohmann::json& data);
 		void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas);
 		void AddDefaultKeyFrames();
 
@@ -99,7 +107,7 @@ namespace stardust
 			}
 		}
 
-		[[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation) const;
+		[[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation, const EasingFunction& easingFunction) const;
 	};
 }
 

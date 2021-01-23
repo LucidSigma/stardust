@@ -1,6 +1,13 @@
 {
 	"fps": 24,
 	"length": 32,
+	"easings": {
+		"position-offset": "quint-out",
+		"rotation": "bounce-in",
+		"scale": "elastic-in-out",
+		"shear": "linear",
+		"colour": "cubic-in"
+	},
 	"frames": {
 		"0": {
 			"sprite": "red",
