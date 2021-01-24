@@ -4,7 +4,7 @@ namespace stardust
 {
 	namespace physics
 	{
-		RaycastCallback::RaycastCallback(RaycastFixtureReportCallback& fixtureReportCallback)
+		RaycastCallback::RaycastCallback(const RaycastFixtureReportCallback& fixtureReportCallback)
 			: m_fixtureReportCallback(fixtureReportCallback)
 		{ }
 

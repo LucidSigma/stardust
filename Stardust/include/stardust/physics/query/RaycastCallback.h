@@ -28,7 +28,7 @@ namespace stardust
 			RaycastFixtureReportCallback m_fixtureReportCallback;
 
 		public:
-			RaycastCallback(RaycastFixtureReportCallback& fixtureReportCallback);
+			RaycastCallback(const RaycastFixtureReportCallback& fixtureReportCallback);
 			virtual ~RaycastCallback() noexcept override = default;
 
 			virtual f32 ReportFixture(Fixture* fixture, const Point& point, const Point& normal, const f32 fraction) override;
