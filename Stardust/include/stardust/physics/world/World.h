@@ -42,7 +42,7 @@ namespace stardust
 			ObserverPtr<Body> CreateBody(const Body::CreateInfo& createInfo);
 			void DestroyBody(ObserverPtr<const Body> body) noexcept;
 
-			void Raycast(RaycastCallback& callback, const Pair<Point, Point>& points) const;
+			void Raycast(RaycastCallback& callback, const Pair<Vec2, Vec2>& points) const;
 			void QueryAABB(AABBCallback& callback, const AABB& aabb) const;
 
 			[[nodiscard]] Vec2 GetGravity() const;

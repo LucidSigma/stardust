@@ -34,9 +34,9 @@ namespace stardust
 			m_handle->DestroyBody(body->GetRawHandle());
 		}
 
-		void World::Raycast(RaycastCallback& callback, const Pair<Point, Point>& points) const
+		void World::Raycast(RaycastCallback& callback, const Pair<Vec2, Vec2>& points) const
 		{
-			m_handle->RayCast(&callback, points.first, points.second);
+			m_handle->RayCast(&callback, b2Vec2{ points.first.x, points.first.y }, b2Vec2{ points.second.x, points.second.y });
 		}
 
 		void World::QueryAABB(AABBCallback& callback, const AABB& aabb) const
