@@ -10,6 +10,7 @@
 #include <stb/stb_image_write.h>
 
 #include "stardust/data/MathTypes.h"
+#include "stardust/data/Pointers.h"
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/filesystem/vfs/VFS.h"
@@ -641,7 +642,7 @@ namespace stardust
 				break;
 
 			case SDL_CONTROLLERDEVICEADDED:
-				if (GameController* const gameController = Input::AddGameController(event.cdevice.which, m_locale);
+				if (const ObserverPtr<GameController> gameController = Input::AddGameController(event.cdevice.which, m_locale);
 					gameController != nullptr)
 				{
 					m_sceneManager.CurrentScene()->OnGameControllerAdded(*gameController);
@@ -650,7 +651,7 @@ namespace stardust
 				break;
 
 			case SDL_CONTROLLERDEVICEREMOVED:
-				if (GameController* const gameController = Input::GetGameController(event.cdevice.which);
+				if (const ObserverPtr<const GameController> gameController = Input::GetGameController(event.cdevice.which);
 					gameController != nullptr)
 				{
 					m_sceneManager.CurrentScene()->OnGameControllerRemoved(*gameController);

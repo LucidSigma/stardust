@@ -2,10 +2,54 @@
 
 #include <utility>
 
+#include "stardust/math/Math.h"
+
 namespace stardust
 {
 	namespace physics
 	{
+		namespace
+		{
+			class RaycastCallback
+				: public b2RayCastCallback
+			{
+			private:
+				const Vec2& m_origin;
+				CollisionLayer m_layerMask = 0u;
+
+				bool& m_hasHitFixture;
+				RaycastHit& m_raycastHitData;
+
+			public:
+				inline RaycastCallback(const Vec2& origin, const CollisionLayer layerMask, bool& hasHitFixture, RaycastHit& raycastHitData)
+					: m_origin(origin), m_layerMask(layerMask), m_hasHitFixture(hasHitFixture), m_raycastHitData(raycastHitData)
+				{ }
+
+				virtual ~RaycastCallback() noexcept override = default;
+
+				inline virtual f32 ReportFixture(Fixture* fixture, const Point& point, const Point& normal, const f32 fraction) override
+				{
+					if (fixture->GetFilterData().maskBits & m_layerMask)
+					{
+						m_hasHitFixture = true;
+
+						m_raycastHitData.fraction = fraction;
+						m_raycastHitData.fixture = fixture;
+						m_raycastHitData.normal = Vec2{ normal.x, normal.y };
+						m_raycastHitData.point = Vec2{ point.x, point.y };
+
+						m_raycastHitData.distance = glm::distance(m_origin, m_raycastHitData.point);
+
+						return fraction;
+					}
+					else
+					{
+						return -1.0f;
+					}
+				}
+			};
+		}
+
 		World::World()
 			: m_handle(std::make_unique<b2World>(b2Vec2_zero))
 		{ }
@@ -34,14 +78,33 @@ namespace stardust
 			m_handle->DestroyBody(body->GetRawHandle());
 		}
 
-		void World::Raycast(RaycastCallback& callback, const Pair<Vec2, Vec2>& points) const
+		void World::Raycast(OldRaycastCallback& callback, const Pair<Vec2, Vec2>& points) const
 		{
 			m_handle->RayCast(&callback, b2Vec2{ points.first.x, points.first.y }, b2Vec2{ points.second.x, points.second.y });
 		}
 
-		void World::Raycast(RaycastCallback& callback, const Vec2& origin, const Vec2& destination) const
+		void World::Raycast(OldRaycastCallback& callback, const Vec2& origin, const Vec2& destination) const
 		{
 			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destination.x, destination.y });
+		}
+
+		[[nodiscard]] Optional<RaycastHit> World::Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
+		{
+			bool hasHitAnything = false;
+			RaycastHit raycastHitData{ };
+
+			const Vec2 destinationPoint = origin + direction * distance;
+			RaycastCallback callback(origin, layerMask, hasHitAnything, raycastHitData);
+			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destinationPoint.x, destinationPoint.y });
+
+			if (hasHitAnything)
+			{
+				return raycastHitData;
+			}
+			else
+			{
+				return NullOpt;
+			}
 		}
 
 		void World::QueryAABB(AABBCallback& callback, const AABB& aabb) const

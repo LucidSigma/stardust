@@ -21,15 +21,15 @@ namespace stardust
 		constexpr f32 TerminateRaycast = 0.0f;
 		constexpr f32 ContinueRaycast = 1.0f;
 
-		class RaycastCallback
+		class OldRaycastCallback
 			: public b2RayCastCallback
 		{
 		private:
 			RaycastFixtureReportCallback m_fixtureReportCallback;
 
 		public:
-			RaycastCallback(const RaycastFixtureReportCallback& fixtureReportCallback);
-			virtual ~RaycastCallback() noexcept override = default;
+			OldRaycastCallback(const RaycastFixtureReportCallback& fixtureReportCallback);
+			virtual ~OldRaycastCallback() noexcept override = default;
 
 			virtual f32 ReportFixture(Fixture* fixture, const Point& point, const Point& normal, const f32 fraction) override;
 		};
