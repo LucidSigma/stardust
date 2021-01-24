@@ -34,6 +34,11 @@ namespace stardust
 			m_handle->DestroyBody(body->GetRawHandle());
 		}
 
+		void World::Raycast(RaycastCallback& callback, const Pair<Point, Point>& points) const
+		{
+			m_handle->RayCast(&callback, points.first, points.second);
+		}
+
 		[[nodiscard]] Vec2 World::GetGravity() const
 		{
 			const b2Vec2 gravity = m_handle->GetGravity();

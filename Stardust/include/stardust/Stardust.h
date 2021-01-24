@@ -73,6 +73,7 @@
 #include "particles/ParticleSystem.h"
 
 #include "physics/body/Body.h"
+#include "physics/raycast/RaycastCallback.h"
 #include "physics/world/World.h"
 #include "physics/Physics.h"
 

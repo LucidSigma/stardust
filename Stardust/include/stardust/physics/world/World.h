@@ -9,7 +9,8 @@
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 #include "stardust/physics/body/Body.h"
-#include "stardust/scene/components/PhysicsBodyComponent.h"
+#include "stardust/physics/raycast/RaycastCallback.h"
+#include "stardust/physics/Physics.h"
 
 namespace stardust
 {
@@ -39,6 +40,8 @@ namespace stardust
 
 			ObserverPtr<Body> CreateBody(const Body::CreateInfo& createInfo);
 			void DestroyBody(ObserverPtr<const Body> body) noexcept;
+
+			void Raycast(RaycastCallback& callback, const Pair<Point, Point>& points) const;
 
 			[[nodiscard]] Vec2 GetGravity() const;
 			void SetGravity(const Vec2& gravity) const;

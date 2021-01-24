@@ -4,6 +4,8 @@
 
 #include <box2d/box2d.h>
 
+#include "stardust/data/Types.h"
+
 namespace stardust
 {
 	namespace physics
