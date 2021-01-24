@@ -74,7 +74,6 @@
 
 #include "physics/body/Body.h"
 #include "physics/query/AABBCallback.h"
-#include "physics/query/RaycastCallback.h"
 #include "physics/raycast/RaycastHit.h"
 #include "physics/world/World.h"
 #include "physics/Physics.h"

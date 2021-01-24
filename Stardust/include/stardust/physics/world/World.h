@@ -10,7 +10,6 @@
 #include "stardust/data/Types.h"
 #include "stardust/physics/body/Body.h"
 #include "stardust/physics/query/AABBCallback.h"
-#include "stardust/physics/query/RaycastCallback.h"
 #include "stardust/physics/raycast/RaycastHit.h"
 #include "stardust/physics/Physics.h"
 
@@ -43,9 +42,7 @@ namespace stardust
 			ObserverPtr<Body> CreateBody(const Body::CreateInfo& createInfo);
 			void DestroyBody(ObserverPtr<const Body> body) noexcept;
 
-			void Raycast(OldRaycastCallback& callback, const Pair<Vec2, Vec2>& points) const;
-			void Raycast(OldRaycastCallback& callback, const Vec2& origin, const Vec2& destination) const;
-			[[nodiscard]] Optional<RaycastHit> Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const;
+			[[nodiscard]] Optional<RaycastHit> Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = 0xFFFF) const;
 			void QueryAABB(AABBCallback& callback, const AABB& aabb) const;
 
 			[[nodiscard]] Vec2 GetGravity() const;

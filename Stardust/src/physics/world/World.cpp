@@ -27,7 +27,7 @@ namespace stardust
 
 				virtual ~RaycastCallback() noexcept override = default;
 
-				inline virtual f32 ReportFixture(Fixture* fixture, const Point& point, const Point& normal, const f32 fraction) override
+				inline virtual f32 ReportFixture(Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
 				{
 					if (fixture->GetFilterData().maskBits & m_layerMask)
 					{
@@ -78,22 +78,18 @@ namespace stardust
 			m_handle->DestroyBody(body->GetRawHandle());
 		}
 
-		void World::Raycast(OldRaycastCallback& callback, const Pair<Vec2, Vec2>& points) const
-		{
-			m_handle->RayCast(&callback, b2Vec2{ points.first.x, points.first.y }, b2Vec2{ points.second.x, points.second.y });
-		}
-
-		void World::Raycast(OldRaycastCallback& callback, const Vec2& origin, const Vec2& destination) const
-		{
-			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destination.x, destination.y });
-		}
-
 		[[nodiscard]] Optional<RaycastHit> World::Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
 		{
+			const Vec2 destinationPoint = origin + direction * distance;
+
+			if (origin == destinationPoint)
+			{
+				return NullOpt;
+			}
+
 			bool hasHitAnything = false;
 			RaycastHit raycastHitData{ };
 
-			const Vec2 destinationPoint = origin + direction * distance;
 			RaycastCallback callback(origin, layerMask, hasHitAnything, raycastHitData);
 			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destinationPoint.x, destinationPoint.y });
 
