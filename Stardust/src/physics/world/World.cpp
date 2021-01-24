@@ -29,7 +29,7 @@ namespace stardust
 
 				inline virtual f32 ReportFixture(Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
 				{
-					if (fixture->GetFilterData().maskBits & m_layerMask)
+					if (fixture->GetFilterData().categoryBits & m_layerMask)
 					{
 						m_hasHitFixture = true;
 
