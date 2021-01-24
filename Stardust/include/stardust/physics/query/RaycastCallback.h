@@ -1,6 +1,6 @@
 #pragma once
-#ifndef STARDUST_RAYCAST_H
-#define STARDUST_RAYCAST_H
+#ifndef STARDUST_RAYCAST_CALLBACK_H
+#define STARDUST_RAYCAST_CALLBACK_H
 
 #include <functional>
 
@@ -14,7 +14,7 @@ namespace stardust
 {
 	namespace physics
 	{
-		using RaycastFixtureReportCallback = std::function<f32(Fixture*, Vec2, Vec2, f32)>;
+		using RaycastFixtureReportCallback = std::function<f32(Fixture&, Vec2, Vec2, f32)>;
 		using ClipRaycast = f32;
 
 		constexpr f32 IgnoreCurrentFixture = -1.0f;
@@ -29,7 +29,7 @@ namespace stardust
 
 		public:
 			explicit RaycastCallback(const RaycastFixtureReportCallback& fixtureReportCallback);
-			virtual ~RaycastCallback() override = default;
+			virtual ~RaycastCallback() noexcept override = default;
 
 			virtual f32 ReportFixture(Fixture* fixture, const Point& point, const Point& normal, const f32 fraction) override;
 		};

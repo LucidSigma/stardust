@@ -39,6 +39,11 @@ namespace stardust
 			m_handle->RayCast(&callback, points.first, points.second);
 		}
 
+		void World::QueryAABB(AABBCallback& callback, const AABB& aabb) const
+		{
+			m_handle->QueryAABB(&callback, aabb);
+		}
+
 		[[nodiscard]] Vec2 World::GetGravity() const
 		{
 			const b2Vec2 gravity = m_handle->GetGravity();

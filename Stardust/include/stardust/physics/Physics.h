@@ -19,6 +19,8 @@ namespace stardust
 		using Circle = b2CircleShape;
 		using Edge = b2EdgeShape;
 		using Polygon = b2PolygonShape;
+
+		using AABB = b2AABB;
 	}
 
 	namespace phys = physics;
