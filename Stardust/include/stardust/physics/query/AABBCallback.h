@@ -21,7 +21,7 @@ namespace stardust
 			AABBFixtureReportCallback m_fixtureReportCallback;
 
 		public:
-			AABBCallback(const AABBFixtureReportCallback& fixtureReportCallback);
+			AABBCallback(AABBFixtureReportCallback& fixtureReportCallback);
 			virtual ~AABBCallback() noexcept override = default;
 
 			virtual bool ReportFixture(Fixture* fixture) override;

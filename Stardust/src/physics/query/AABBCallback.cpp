@@ -4,7 +4,7 @@ namespace stardust
 {
 	namespace physics
 	{
-		AABBCallback::AABBCallback(const AABBFixtureReportCallback& fixtureReportCallback)
+		AABBCallback::AABBCallback(AABBFixtureReportCallback& fixtureReportCallback)
 			: m_fixtureReportCallback(fixtureReportCallback)
 		{ }
 
