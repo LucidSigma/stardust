@@ -13,6 +13,9 @@ namespace stardust
 		using Fixture = b2Fixture;
 		using FixtureInfo = b2FixtureDef;
 
+		using Filter = b2Filter;
+		using CollisionMask = u16;
+
 		using Shape = b2Shape;
 		using Point = b2Vec2;
 		using Chain = b2ChainShape;

@@ -39,6 +39,11 @@ namespace stardust
 			m_handle->RayCast(&callback, b2Vec2{ points.first.x, points.first.y }, b2Vec2{ points.second.x, points.second.y });
 		}
 
+		void World::Raycast(RaycastCallback& callback, const Vec2& origin, const Vec2& destination) const
+		{
+			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destination.x, destination.y });
+		}
+
 		void World::QueryAABB(AABBCallback& callback, const AABB& aabb) const
 		{
 			m_handle->QueryAABB(&callback, aabb);
