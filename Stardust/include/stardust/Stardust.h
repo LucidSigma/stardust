@@ -76,6 +76,7 @@
 #include "physics/query/AABBCallback.h"
 #include "physics/raycast/RaycastHit.h"
 #include "physics/world/World.h"
+#include "physics/AABB.h"
 #include "physics/Physics.h"
 
 #include "scene/components/Components.h"

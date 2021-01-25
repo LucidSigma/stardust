@@ -11,6 +11,7 @@
 #include "stardust/physics/body/Body.h"
 #include "stardust/physics/query/AABBCallback.h"
 #include "stardust/physics/raycast/RaycastHit.h"
+#include "stardust/physics/AABB.h"
 #include "stardust/physics/Physics.h"
 
 namespace stardust
