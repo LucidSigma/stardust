@@ -43,6 +43,7 @@ namespace stardust
 			void DestroyBody(ObserverPtr<const Body> body) noexcept;
 
 			[[nodiscard]] Optional<RaycastHit> Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = 0xFFFF) const;
+			[[nodiscard]] Vector<RaycastHit> RaycastAll(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = 0xFFFF) const;
 			void QueryAABB(AABBCallback& callback, const AABB& aabb) const;
 
 			[[nodiscard]] Vec2 GetGravity() const;

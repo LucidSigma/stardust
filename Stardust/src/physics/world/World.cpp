@@ -15,7 +15,7 @@ namespace stardust
 			{
 			private:
 				const Vec2& m_origin;
-				CollisionLayer m_layerMask = 0u;
+				CollisionLayer m_layerMask;
 
 				bool& m_hasHitFixture;
 				RaycastHit& m_raycastHitData;
@@ -41,6 +41,42 @@ namespace stardust
 						m_raycastHitData.distance = glm::distance(m_origin, m_raycastHitData.point);
 
 						return fraction;
+					}
+					else
+					{
+						return -1.0f;
+					}
+				}
+			};
+
+			class RaycastAllCallback
+				: public b2RayCastCallback
+			{
+			private:
+				const Vec2& m_origin;
+				CollisionLayer m_layerMask;
+
+				Vector<RaycastHit>& m_raycastHits;
+
+			public:
+				inline RaycastAllCallback(const Vec2& origin, const CollisionLayer layerMask, Vector<RaycastHit>& raycastHits)
+					: m_origin(origin), m_layerMask(layerMask), m_raycastHits(raycastHits)
+				{ }
+
+				virtual ~RaycastAllCallback() noexcept override = default;
+
+				inline virtual f32 ReportFixture(Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
+				{
+					if (fixture->GetFilterData().categoryBits & m_layerMask)
+					{
+						m_raycastHits.emplace_back();
+						m_raycastHits.back().fixture = fixture;
+						m_raycastHits.back().fraction = fraction;
+						m_raycastHits.back().normal = Vec2{ normal.x, normal.y };
+						m_raycastHits.back().point = Vec2{ point.x, point.y };
+						m_raycastHits.back().distance = glm::distance(m_origin, m_raycastHits.back().point);
+
+						return 1.0f;
 					}
 					else
 					{
@@ -101,6 +137,22 @@ namespace stardust
 			{
 				return NullOpt;
 			}
+		}
+
+		[[nodiscard]] Vector<RaycastHit> World::RaycastAll(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
+		{
+			const Vec2 destinationPoint = origin + direction * distance;
+
+			if (origin == destinationPoint)
+			{
+				return { };
+			}
+
+			Vector<RaycastHit> raycastHits{ };
+			RaycastAllCallback callback(origin, layerMask, raycastHits);
+			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destinationPoint.x, destinationPoint.y });
+
+			return raycastHits;
 		}
 
 		void World::QueryAABB(AABBCallback& callback, const AABB& aabb) const
