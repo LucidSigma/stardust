@@ -4,10 +4,23 @@ namespace stardust
 {
 	namespace physics
 	{
-		AABB::AABB(const Vec2& lowerBound, const Vec2& upperBound)
+		AABB::AABB(const Pair<Vec2, Vec2>& bounds)
 		{
-			m_aabb.lowerBound = b2Vec2{ lowerBound.x, lowerBound.y };
-			m_aabb.upperBound = b2Vec2{ upperBound.x, upperBound.y };
+			m_aabb.lowerBound = b2Vec2{ bounds.first.x, bounds.first.y };
+			m_aabb.upperBound = b2Vec2{ bounds.second.x, bounds.second.y };
+		}
+
+		AABB::AABB(const Vec2& centre, const Vec2& halfSize)
+		{
+			m_aabb.lowerBound = b2Vec2{
+				centre.x - halfSize.x,
+				centre.y - halfSize.y,
+			};
+
+			m_aabb.upperBound = b2Vec2{
+				centre.x + halfSize.x,
+				centre.y + halfSize.y,
+			};
 		}
 
 		void AABB::Combine(const AABB& other)

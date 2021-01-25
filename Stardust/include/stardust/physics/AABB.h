@@ -4,6 +4,7 @@
 
 #include <box2d/box2d.h>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"
 
@@ -18,7 +19,8 @@ namespace stardust
 
 		public:
 			AABB() = default;
-			AABB(const Vec2& lowerBound, const Vec2& upperBound);
+			AABB(const Pair<Vec2, Vec2>& bounds);
+			AABB(const Vec2& centre, const Vec2& halfSize);
 			~AABB() noexcept = default;
 
 			void Combine(const AABB& other);

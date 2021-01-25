@@ -22,6 +22,8 @@ namespace stardust
 		using Circle = b2CircleShape;
 		using Edge = b2EdgeShape;
 		using Polygon = b2PolygonShape;
+
+		constexpr CollisionLayer AllLayers = 0xFFFF;
 	}
 
 	namespace phys = physics;

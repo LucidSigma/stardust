@@ -9,7 +9,6 @@
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 #include "stardust/physics/body/Body.h"
-#include "stardust/physics/query/AABBCallback.h"
 #include "stardust/physics/raycast/RaycastHit.h"
 #include "stardust/physics/AABB.h"
 #include "stardust/physics/Physics.h"
@@ -43,9 +42,13 @@ namespace stardust
 			ObserverPtr<Body> CreateBody(const Body::CreateInfo& createInfo);
 			void DestroyBody(ObserverPtr<const Body> body) noexcept;
 
-			[[nodiscard]] Optional<RaycastHit> Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = 0xFFFF) const;
-			[[nodiscard]] Vector<RaycastHit> RaycastAll(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = 0xFFFF) const;
-			void QueryAABB(AABBCallback& callback, const AABB& aabb) const;
+			[[nodiscard]] Optional<RaycastHit> Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = AllLayers) const;
+			[[nodiscard]] Vector<RaycastHit> RaycastAll(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = AllLayers) const;
+
+			[[nodiscard]] Optional<ObserverPtr<Fixture>> OverlapBox(const AABB& box, const CollisionLayer layerMask = AllLayers) const;
+			[[nodiscard]] Optional<ObserverPtr<Fixture>> OverlapBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask = AllLayers) const;
+			[[nodiscard]] Vector<ObserverPtr<Fixture>> OverlapBoxAll(const AABB& box, const CollisionLayer layerMask = AllLayers) const;
+			[[nodiscard]] Vector<ObserverPtr<Fixture>> OverlapBoxAll(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask = AllLayers) const;
 
 			[[nodiscard]] Vec2 GetGravity() const;
 			void SetGravity(const Vec2& gravity) const;

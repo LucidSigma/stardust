@@ -84,6 +84,60 @@ namespace stardust
 					}
 				}
 			};
+
+			class OverlapBoxCallback
+				: public b2QueryCallback
+			{
+			private:
+				CollisionLayer m_layerMask;
+				ObserverPtr<Fixture>& m_hitFixture;
+
+			public:
+				inline OverlapBoxCallback(ObserverPtr<Fixture>& hitFixture, const CollisionLayer layerMask)
+					: m_hitFixture(m_hitFixture), m_layerMask(layerMask)
+				{ }
+
+				virtual ~OverlapBoxCallback() noexcept override = default;
+
+				inline virtual bool ReportFixture(Fixture* const fixture) override
+				{
+					if (fixture->GetFilterData().categoryBits & m_layerMask)
+					{
+						m_hitFixture = fixture;
+
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+				}
+			};
+
+			class OverlapBoxAllCallback
+				: public b2QueryCallback
+			{
+			private:
+				CollisionLayer m_layerMask;
+				Vector<ObserverPtr<Fixture>>& m_hitFixtures;
+
+			public:
+				inline OverlapBoxAllCallback(Vector<ObserverPtr<Fixture>>& hitFixtures, const CollisionLayer layerMask)
+					: m_hitFixtures(hitFixtures), m_layerMask(layerMask)
+				{ }
+
+				virtual ~OverlapBoxAllCallback() noexcept override = default;
+
+				inline virtual bool ReportFixture(Fixture* const fixture) override
+				{
+					if (fixture->GetFilterData().categoryBits & m_layerMask)
+					{
+						m_hitFixtures.push_back(fixture);
+					}
+					
+					return true;
+				}
+			};
 		}
 
 		World::World()
@@ -157,9 +211,62 @@ namespace stardust
 			return raycastHits;
 		}
 
-		void World::QueryAABB(AABBCallback& callback, const AABB& aabb) const
+		[[nodiscard]] Optional<ObserverPtr<Fixture>> World::OverlapBox(const AABB& box, const CollisionLayer layerMask) const
 		{
-			m_handle->QueryAABB(&callback, aabb);
+			ObserverPtr<Fixture> hitFixture = nullptr;
+			OverlapBoxCallback callback(hitFixture, layerMask);
+
+			m_handle->QueryAABB(&callback, box);
+
+			if (hitFixture != nullptr)
+			{
+				return hitFixture;
+			}
+			else
+			{
+				return NullOpt;
+			}
+		}
+
+		[[nodiscard]] Optional<ObserverPtr<Fixture>> World::OverlapBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+		{
+			const AABB box(centre, halfSize);
+
+			ObserverPtr<Fixture> hitFixture = nullptr;
+			OverlapBoxCallback callback(hitFixture, layerMask);
+
+			m_handle->QueryAABB(&callback, box);
+
+			if (hitFixture != nullptr)
+			{
+				return hitFixture;
+			}
+			else
+			{
+				return NullOpt;
+			}
+		}
+
+		[[nodiscard]] Vector<ObserverPtr<Fixture>> World::OverlapBoxAll(const AABB& box, const CollisionLayer layerMask) const
+		{
+			Vector<ObserverPtr<Fixture>> hitFixtures{ };
+			OverlapBoxAllCallback callback(hitFixtures, layerMask);
+
+			m_handle->QueryAABB(&callback, box);
+
+			return hitFixtures;
+		}
+
+		[[nodiscard]] Vector<ObserverPtr<Fixture>> World::OverlapBoxAll(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+		{
+			const AABB box(centre, halfSize);
+
+			Vector<ObserverPtr<Fixture>> hitFixtures{ };
+			OverlapBoxAllCallback callback(hitFixtures, layerMask);
+
+			m_handle->QueryAABB(&callback, box);
+
+			return hitFixtures;
 		}
 
 		[[nodiscard]] Vec2 World::GetGravity() const
