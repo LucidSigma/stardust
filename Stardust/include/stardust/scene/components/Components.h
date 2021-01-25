@@ -4,8 +4,8 @@
 
 #include "AnimatedComponent.h"
 #include "ParticleGeneratorComponent.h"
-#include "PhysicsBodyComponent.h"
 #include "RenderableComponent.h"
+#include "RigidBodyComponent.h"
 #include "ScreenTransformComponent.h"
 #include "ShearTransformComponent.h"
 #include "SpriteComponent.h"

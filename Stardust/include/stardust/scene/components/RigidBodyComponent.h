@@ -1,6 +1,6 @@
 #pragma once
-#ifndef STARDUST_PHYSICS_BODY_COMPONENT
-#define STARDUST_PHYSICS_BODY_COMPONENT
+#ifndef STARDUST_RIGID_BODY_COMPONENT
+#define STARDUST_RIGID_BODY_COMPONENT
 
 #include "stardust/data/Pointers.h"
 #include "stardust/physics/body/Body.h"
@@ -9,23 +9,23 @@ namespace stardust
 {
 	namespace components
 	{
-		struct PhysicsBody
+		struct RigidBody
 		{
 			ObserverPtr<physics::Body> handle;
 
-			PhysicsBody()
+			RigidBody()
 				: handle(nullptr)
 			{ }
 
-			explicit PhysicsBody(physics::Body& handle)
+			explicit RigidBody(physics::Body& handle)
 				: handle(&handle)
 			{ }
 
-			explicit PhysicsBody(ObserverPtr<physics::Body> handle)
+			explicit RigidBody(ObserverPtr<physics::Body> handle)
 				: handle(handle)
 			{ }
 
-			~PhysicsBody() noexcept = default;
+			~RigidBody() noexcept = default;
 		};
 	}
 }
