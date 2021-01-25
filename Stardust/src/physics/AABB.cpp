@@ -4,6 +4,10 @@ namespace stardust
 {
 	namespace physics
 	{
+		AABB::AABB(const b2AABB& aabb)
+			: m_aabb(aabb)
+		{ }
+
 		AABB::AABB(const Pair<Vec2, Vec2>& bounds)
 		{
 			m_aabb.lowerBound = b2Vec2{ bounds.first.x, bounds.first.y };

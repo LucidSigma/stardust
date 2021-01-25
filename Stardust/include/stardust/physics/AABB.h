@@ -19,6 +19,7 @@ namespace stardust
 
 		public:
 			AABB() = default;
+			AABB(const b2AABB& aabb);
 			AABB(const Pair<Vec2, Vec2>& bounds);
 			AABB(const Vec2& centre, const Vec2& halfSize);
 			~AABB() noexcept = default;
