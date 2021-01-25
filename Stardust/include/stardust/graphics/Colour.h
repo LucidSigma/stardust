@@ -56,6 +56,10 @@ namespace stardust
 			: Colour(values.r, values.g, values.b, values.a)
 		{ }
 
+		constexpr Colour(const SDL_Colour& colour)
+			: red(colour.r), green(colour.g), blue(colour.b), alpha(colour.a)
+		{ }
+
 		~Colour() noexcept = default;
 
 		[[nodiscard]] bool operator ==(const Colour&) const noexcept = default;
