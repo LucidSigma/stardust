@@ -37,6 +37,17 @@ namespace stardust
 			m_aabb.Combine(first, second);
 		}
 
+		void AABB::Expand(f32 amount)
+		{
+			amount /= 2.0f;
+
+			m_aabb.lowerBound.x -= amount;
+			m_aabb.lowerBound.y -= amount;
+
+			m_aabb.upperBound.x += amount;
+			m_aabb.upperBound.y += amount;
+		}
+
 		void AABB::Expand(Vec2 amount)
 		{
 			amount /= 2.0f;
