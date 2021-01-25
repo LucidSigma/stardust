@@ -116,7 +116,8 @@ namespace stardust
 
 		[[nodiscard]] Optional<RaycastHit> World::Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
 		{
-			const Vec2 destinationPoint = origin + direction * distance;
+			const Vec2 normalisedDirection = glm::normalize(direction);
+			const Vec2 destinationPoint = origin + normalisedDirection * distance;
 
 			if (origin == destinationPoint)
 			{
@@ -141,7 +142,8 @@ namespace stardust
 
 		[[nodiscard]] Vector<RaycastHit> World::RaycastAll(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
 		{
-			const Vec2 destinationPoint = origin + direction * distance;
+			const Vec2 normalisedDirection = glm::normalize(direction);
+			const Vec2 destinationPoint = origin + normalisedDirection * distance;
 
 			if (origin == destinationPoint)
 			{

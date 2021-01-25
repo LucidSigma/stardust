@@ -168,7 +168,10 @@ namespace stardust
 	constexpr BVec4 BVec4True{ true, true, true, true };
 	constexpr BVec4 BVec4False{ false, false, false, false };
 
-	[[nodiscard]] extern f32 SmoothDamp(const f32 currentValue, f32 targetValue, f32& velocity, f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed = std::numeric_limits<f32>::infinity());
+	[[nodiscard]] extern f32 SmoothDamp(const f32 currentValue, const f32 targetValue, f32& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed = std::numeric_limits<f32>::infinity());
+	[[nodiscard]] extern Vec2 SmoothDamp(const Vec2 currentValue, const Vec2 targetValue, Vec2& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed = std::numeric_limits<f32>::infinity());
+	[[nodiscard]] extern Vec3 SmoothDamp(const Vec3 currentValue, const Vec3 targetValue, Vec3& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed = std::numeric_limits<f32>::infinity());
+	[[nodiscard]] extern Vec4 SmoothDamp(const Vec4 currentValue, const Vec4 targetValue, Vec4& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed = std::numeric_limits<f32>::infinity());
 }
 
 #endif
