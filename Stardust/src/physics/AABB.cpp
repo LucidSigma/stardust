@@ -37,8 +37,10 @@ namespace stardust
 			m_aabb.Combine(first, second);
 		}
 
-		void AABB::Expand(const Vec2& amount)
+		void AABB::Expand(Vec2 amount)
 		{
+			amount /= 2.0f;
+
 			m_aabb.lowerBound.x -= amount.x;
 			m_aabb.lowerBound.y -= amount.y;
 

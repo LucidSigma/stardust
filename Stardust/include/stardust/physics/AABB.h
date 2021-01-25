@@ -27,7 +27,7 @@ namespace stardust
 			void Combine(const AABB& other);
 			void Combine(const AABB& first, const AABB& second);
 
-			void Expand(const Vec2& amount);
+			void Expand(Vec2 amount);
 
 			[[nodiscard]] bool Contains(const Vec2& point) const;
 			[[nodiscard]] bool Contains(const AABB& aabb) const;
