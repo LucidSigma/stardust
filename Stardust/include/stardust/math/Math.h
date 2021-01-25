@@ -167,6 +167,8 @@ namespace stardust
 
 	constexpr BVec4 BVec4True{ true, true, true, true };
 	constexpr BVec4 BVec4False{ false, false, false, false };
+
+	[[nodiscard]] extern f32 SmoothDamp(const f32 currentValue, f32 targetValue, f32& velocity, f32 smoothingTime, const f32 maxSpeed, const f32 deltaTime);
 }
 
 #endif
