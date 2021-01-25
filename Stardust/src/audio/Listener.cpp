@@ -11,7 +11,7 @@ namespace stardust
 	{ }
 
 	Listener::Listener(Listener&& other) noexcept
-		: m_soundSystem(nullptr), m_position(Vec3{ 0.0f, 0.0f, 0.0f }), m_lookAt(Vec3{ 0.0f, 0.0f, 0.0f }), m_upVector(Vec3{ 0.0f, 1.0f, 0.0f })
+		: m_soundSystem(nullptr), m_position(Vec3Zero), m_lookAt(Vec3Zero), m_upVector(Vec3Up)
 	{
 		std::swap(m_soundSystem, other.m_soundSystem);
 
@@ -24,19 +24,19 @@ namespace stardust
 	{
 		m_soundSystem = std::exchange(other.m_soundSystem, nullptr);
 
-		m_position = std::exchange(other.m_position, Vec3{ 0.0f, 0.0f, 0.0f });
-		m_lookAt = std::exchange(other.m_lookAt, Vec3{ 0.0f, 0.0f, 0.0f });
-		m_upVector = std::exchange(other.m_upVector, Vec3{ 0.0f, 1.0f, 0.0f });
+		m_position = std::exchange(other.m_position, Vec3Zero);
+		m_lookAt = std::exchange(other.m_lookAt, Vec3Zero);
+		m_upVector = std::exchange(other.m_upVector, Vec3Up);
 
 		return *this;
 	}
 
 	void Listener::Reset() noexcept
 	{
-		m_position = Vec3{ 0.0f, 0.0f, 0.0f };
-		m_lookAt = Vec3{ 0.0f, 0.0f, 0.0f };
-		m_upVector = Vec3{ 0.0f, 1.0f, 0.0f };
-		m_velocity = Vec3{ 0.0f, 0.0f, 0.0f };
+		m_position = Vec3Zero;
+		m_lookAt = Vec3Zero;
+		m_upVector = Vec3Up;
+		m_velocity = Vec3Zero;
 	}
 
 	void Listener::SetPosition(const Vec2& position) noexcept

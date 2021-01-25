@@ -15,6 +15,7 @@
 #include "stardust/data/Types.h"
 #include "stardust/graphics/display/VSyncType.h"
 #include "stardust/locale/Locale.h"
+#include "stardust/math/Math.h"
 #include "stardust/utility/status/Status.h"
 
 namespace stardust
@@ -80,7 +81,7 @@ namespace stardust
 
 		UniquePtr<SDL_Window, WindowDestroyer> m_handle = nullptr;
 
-		UVec2 m_size{ 0u, 0u };
+		UVec2 m_size = UVec2Zero;
 		Optional<UVec2> m_sizeBeforeFullscreen = NullOpt;
 
 		FullscreenType m_fullscreenType = FullscreenType::Hard;

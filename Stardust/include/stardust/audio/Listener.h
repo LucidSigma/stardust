@@ -5,6 +5,7 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 
 #include "stardust/data/MathTypes.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -14,11 +15,11 @@ namespace stardust
 	private:
 		class SoundSystem* m_soundSystem = nullptr;
 
-		Vec3 m_position{ 0.0f, 0.0f, 0.0f };
-		Vec3 m_lookAt{ 0.0f, 0.0f, 0.0f };
-		Vec3 m_upVector{ 0.0f, 1.0f, 0.0f };
+		Vec3 m_position = Vec3Zero;
+		Vec3 m_lookAt = Vec3Zero;
+		Vec3 m_upVector = Vec3Up;
 
-		Vec3 m_velocity{ 0.0f, 0.0f, 0.0f };
+		Vec3 m_velocity = Vec3Zero;
 
 	public:
 		Listener(class SoundSystem& soundSystem);

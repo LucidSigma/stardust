@@ -8,7 +8,6 @@
 #include "stardust/debug/logging/Log.h"
 #include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/graphics/Colour.h"
-#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -114,7 +113,7 @@ namespace stardust
 			glDeleteTextures(1, &m_id);
 			m_id = 0u;
 
-			m_size = UVec2{ 0u, 0u };
+			m_size = UVec2Zero;
 			m_isValid = false;
 		}
 	}

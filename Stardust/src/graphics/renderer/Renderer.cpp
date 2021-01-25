@@ -6,7 +6,6 @@
 
 #include "stardust/graphics/renderer/objects/BufferUsage.h"
 #include "stardust/graphics/shaders/Shader.h"
-#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -158,7 +157,7 @@ namespace stardust
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateRect(modelMatrix, colour, { Vec2Zero, Vec2One }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera)
@@ -173,7 +172,7 @@ namespace stardust
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateRect(modelMatrix, colour, { Vec2Zero, Vec2One }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawWorldRect(const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera)
@@ -205,8 +204,8 @@ namespace stardust
 		}
 
 		const TextureCoordinatePair textureCoordinates{
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2Zero,
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2One,
 		};
 
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
@@ -241,8 +240,8 @@ namespace stardust
 		}
 
 		const TextureCoordinatePair textureCoordinates{
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2Zero,
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2One,
 		};
 
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
@@ -260,7 +259,7 @@ namespace stardust
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateQuad(quad, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateQuad(quad, modelMatrix, colour, { Vec2Zero, Vec2One }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera)
@@ -275,7 +274,7 @@ namespace stardust
 		const Mat4 modelMatrix = CreateWorldModelMatrix(transform.position, transform.scale, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateQuad(quad, modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
+		GenerateQuad(quad, modelMatrix, colour, { Vec2Zero, Vec2One }, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
 	}
 
 	void Renderer::DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera)
@@ -307,8 +306,8 @@ namespace stardust
 		}
 
 		const TextureCoordinatePair textureCoordinates{
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2Zero,
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2One,
 		};
 
 		GenerateQuad(quad, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
@@ -343,8 +342,8 @@ namespace stardust
 		}
 
 		const TextureCoordinatePair textureCoordinates{
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2Zero,
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2One,
 		};
 
 		GenerateQuad(quad, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
@@ -362,7 +361,7 @@ namespace stardust
 		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot);
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
+		GenerateRect(modelMatrix, colour, { Vec2Zero, Vec2One }, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
 	}
 
 	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour)
@@ -377,7 +376,7 @@ namespace stardust
 		const Mat4 modelMatrix = CreateScreenModelMatrix(Vec2(transform.position), Vec2(transform.size), transform.flip, transform.rotation, transform.pivot, Vec2{ shear.xShear, shear.yShear });
 		const f32 textureIndex = static_cast<f32>(s_BlankTextureSlot);
 
-		GenerateRect(modelMatrix, colour, { Vec2{ 0.0f, 0.0f }, Vec2{ 1.0f, 1.0f } }, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
+		GenerateRect(modelMatrix, colour, { Vec2Zero, Vec2One }, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
 	}
 
 	void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const components::Sprite& sprite)
@@ -409,8 +408,8 @@ namespace stardust
 		}
 
 		const TextureCoordinatePair textureCoordinates{
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2Zero,
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2One,
 		};
 
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
@@ -445,8 +444,8 @@ namespace stardust
 		}
 
 		const TextureCoordinatePair textureCoordinates{
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2{ 0.0f, 0.0f },
-			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2{ 1.0f, 1.0f },
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().first : Vec2Zero,
+			sprite.subTextureArea.has_value() ? sprite.subTextureArea.value().second : Vec2One,
 		};
 
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
@@ -721,7 +720,7 @@ namespace stardust
 			modelMatrix = glm::translate(modelMatrix, Vec3{ pivot.value(), 0.0f });
 		}
 
-		modelMatrix = glm::rotate(modelMatrix, -glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+		modelMatrix = glm::rotate(modelMatrix, -glm::radians(rotation), Vec3Forward);
 
 		if (pivot.has_value())
 		{
@@ -754,7 +753,7 @@ namespace stardust
 			modelMatrix = glm::translate(modelMatrix, Vec3{ pivotValue.x, -pivotValue.y, 0.0f });
 		}
 
-		modelMatrix = glm::rotate(modelMatrix, -glm::radians(rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+		modelMatrix = glm::rotate(modelMatrix, -glm::radians(rotation), Vec3Forward);
 
 		if (pivot.has_value())
 		{

@@ -12,6 +12,7 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/math/Math.h"
 #include "stardust/physics/Physics.h"
 
 namespace stardust
@@ -34,10 +35,10 @@ namespace stardust
 			{
 				Type type = Type::Static;
 
-				Vec2 position{ 0.0f, 0.0f };
+				Vec2 position = Vec2Zero;
 				f32 angle = 0.0f;
 
-				Vec2 linearVelocity{ 0.0f, 0.0f };
+				Vec2 linearVelocity = Vec2Zero;
 				f32 angularVelocity = 0.0f;
 
 				f32 linearDamping = 0.0f;

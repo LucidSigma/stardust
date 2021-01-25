@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "stardust/input/Input.h"
-#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -54,7 +53,7 @@ namespace stardust
 
 	GameController::GameController(GameController&& other) noexcept
 		: m_id(0), m_playerIndex(0u), m_handle(nullptr),
-		  m_currentButtons(ButtonState{ }), m_previousButtons(ButtonState{ }), m_axes(Axes{ }), m_touchpadFingers({ }), m_accelerometerState(Vec3{ 0.0f, 0.0f, 0.0f }), m_gyroscopeState(Vec3{ 0.0f, 0.0f, 0.0f }),
+		  m_currentButtons(ButtonState{ }), m_previousButtons(ButtonState{ }), m_axes(Axes{ }), m_touchpadFingers({ }), m_accelerometerState(Vec3Zero), m_gyroscopeState(Vec3Zero),
 		  m_hasLED(false), m_hasTouchpad(false), m_canRumble(false), m_canRumbleTriggers(false), m_hasAccelerometer(false), m_hasGyroscope(false)
 	{
 		std::swap(m_id, other.m_id);
@@ -86,8 +85,8 @@ namespace stardust
 		m_previousButtons = std::exchange(other.m_previousButtons, ButtonState{ });
 		m_axes = std::exchange(other.m_axes, Axes{ });
 		m_touchpadFingers = std::exchange(other.m_touchpadFingers, { });
-		m_accelerometerState = std::exchange(other.m_accelerometerState, Vec3{ 0.0f, 0.0f, 0.0f });
-		m_gyroscopeState = std::exchange(other.m_gyroscopeState, Vec3{ 0.0f, 0.0f, 0.0f });
+		m_accelerometerState = std::exchange(other.m_accelerometerState, Vec3Zero);
+		m_gyroscopeState = std::exchange(other.m_gyroscopeState, Vec3Zero);
 
 		m_hasLED = std::exchange(other.m_hasLED, false);
 		m_hasTouchpad = std::exchange(other.m_hasTouchpad, false);

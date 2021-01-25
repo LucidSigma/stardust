@@ -20,6 +20,7 @@
 #include "stardust/graphics/shaders/ShaderProgram.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/Colour.h"
+#include "stardust/math/Math.h"
 #include "stardust/scene/components/ScreenTransformComponent.h"
 #include "stardust/scene/components/ShearTransformComponent.h"
 #include "stardust/scene/components/SpriteComponent.h"
@@ -70,8 +71,8 @@ namespace stardust
 
 		ObserverPtr<Window> m_window = nullptr;
 
-		UVec2 m_virtualSize{ 0u, 0u };
-		Vec2 m_virtualScale{ 1.0f, 1.0f };
+		UVec2 m_virtualSize = UVec2Zero;
+		Vec2 m_virtualScale = Vec2One;
 		f32 m_virtualAspectRatio = 0.0f;
 
 		VertexLayout m_worldVertexLayout;

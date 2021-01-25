@@ -11,6 +11,7 @@
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"
 #include "stardust/graphics/texture/Sampler.h"
+#include "stardust/math/Math.h"
 #include "stardust/utility/status/Status.h"
 
 namespace stardust
@@ -27,7 +28,7 @@ namespace stardust
 		};
 
 		GLuint m_id = 0u;
-		UVec2 m_size{ 0u, 0u };
+		UVec2 m_size = UVec2Zero;
 
 		bool m_isValid = false;
 

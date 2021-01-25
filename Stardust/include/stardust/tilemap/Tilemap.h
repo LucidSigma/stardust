@@ -14,6 +14,7 @@
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
+#include "stardust/math/Math.h"
 #include "stardust/physics/Physics.h"
 
 namespace stardust
@@ -46,7 +47,7 @@ namespace stardust
 			u32 m_id = 0u;
 			String m_name;
 
-			UVec2 m_size{ 0u, 0u };
+			UVec2 m_size = UVec2Zero;
 			f32 m_opacity = 0.0f;
 
 			Vector<Tile> m_tileData{ };
@@ -89,10 +90,10 @@ namespace stardust
 	private:
 		static constexpr Tile s_EmptyTile = 0u;
 
-		Vec2 m_position{ 0.0f, 0.0f };
+		Vec2 m_position = Vec2Zero;
 
-		UVec2 m_size{ 0u, 0u };
-		Vec2 m_tileSize{ 1.0f, 1.0f };
+		UVec2 m_size = UVec2Zero;
+		Vec2 m_tileSize = Vec2One;
 
 		Vector<Layer> m_layers{ };
 

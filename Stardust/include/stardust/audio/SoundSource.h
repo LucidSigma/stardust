@@ -13,6 +13,7 @@
 #include "stardust/audio/sounds/SoundEnums.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -23,8 +24,8 @@ namespace stardust
 		class SoundSystem* m_soundSystem = nullptr;
 		SoLoud::handle m_handle = std::numeric_limits<SoLoud::handle>::max();
 
-		Vec3 m_position = Vec3{ 0.0f, 0.0f, 0.0f };
-		Vec3 m_velocity = Vec3{ 0.0f, 0.0f, 0.0f };
+		Vec3 m_position = Vec3Zero;
+		Vec3 m_velocity = Vec3Zero;
 
 		f32 m_minDistance = 1.0f;
 		f32 m_maxDistance = 1'000'000.0f;
@@ -33,7 +34,7 @@ namespace stardust
 
 	public:
 		SoundSource() = default;
-		SoundSource(const SoLoud::handle handle, class SoundSystem& soundSystem, const Vec3& position = Vec3{ 0.0f, 0.0f, 0.0f }, const Vec3& velocity = Vec3{ 0.0f, 0.0f, 0.0f });
+		SoundSource(const SoLoud::handle handle, class SoundSystem& soundSystem, const Vec3& position = Vec3Zero, const Vec3& velocity = Vec3Zero);
 		SoundSource(SoundSource&& other) noexcept;
 		SoundSource& operator =(SoundSource&& other) noexcept;
 		~SoundSource() noexcept = default;

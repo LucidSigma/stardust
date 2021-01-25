@@ -27,7 +27,7 @@ namespace stardust
 
 	void Camera2D::ResetTransform()
 	{
-		m_position = Vec3{ 0.0f, 0.0f, 0.0f };
+		m_position = Vec3Zero;
 		m_rotation = 0.0f;
 		m_zoom = 1.0f;
 	}
@@ -43,7 +43,7 @@ namespace stardust
 	[[nodiscard]] Mat4 Camera2D::GetViewMatrix() const noexcept
 	{
 		Mat4 viewMatrix{ 1.0f };
-		viewMatrix = glm::rotate(viewMatrix, -glm::radians(m_rotation), Vec3{ 0.0f, 0.0f, 1.0f });
+		viewMatrix = glm::rotate(viewMatrix, -glm::radians(m_rotation), Vec3Forward);
 		viewMatrix = glm::scale(viewMatrix, Vec3{ m_zoom, m_zoom, 1.0f });
 		viewMatrix = glm::translate(viewMatrix, Vec3{ -m_position.x, -m_position.y, 0.0f });
 

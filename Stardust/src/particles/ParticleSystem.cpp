@@ -1,7 +1,6 @@
 #include "stardust/particles/ParticleSystem.h"
 
 #include "stardust/graphics/renderer/FlipType.h"
-#include "stardust/math/Math.h"
 #include "stardust/scene/components/Components.h"
 #include "stardust/utility/random/Random.h"
 

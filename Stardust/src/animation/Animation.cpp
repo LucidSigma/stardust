@@ -258,7 +258,7 @@ namespace stardust
 				{
 					m_rotationFrames.push_back({
 						currentKeyFrame,
-						glm::angleAxis(glm::radians(static_cast<f32>(value)), Vec3{ 0.0f, 0.0f, 1.0f }),
+						glm::angleAxis(glm::radians(static_cast<f32>(value)), Vec3Forward),
 					});
 				}
 				else if (attribute == "scale")
@@ -369,30 +369,30 @@ namespace stardust
 			m_spriteFrames.push_back({
 				0u,
 				TextureCoordinatePair{
-					Vec2{ 0.0f, 0.0f },
-					Vec2{ 1.0f, 1.0f },
+					Vec2Zero,
+					Vec2One,
 				},
 			});
 		}
 
 		if (m_positionOffsetFrames.empty())
 		{
-			m_positionOffsetFrames.push_back({ 0u, Vec2{ 0.0f, 0.0f } });
+			m_positionOffsetFrames.push_back({ 0u, Vec2Zero });
 		}
 
 		if (m_rotationFrames.empty())
 		{
-			m_rotationFrames.push_back({ 0u, glm::angleAxis(0.0f, Vec3{ 0.0f, 0.0f, 1.0f }) });
+			m_rotationFrames.push_back({ 0u, glm::angleAxis(0.0f, Vec3Forward) });
 		}
 
 		if (m_scaleFrames.empty())
 		{
-			m_scaleFrames.push_back({ 0u, Vec2{ 1.0f, 1.0f } });
+			m_scaleFrames.push_back({ 0u, Vec2One });
 		}
 
 		if (m_shearFrames.empty())
 		{
-			m_shearFrames.push_back({ 0u, Vec2{ 0.0f, 0.0f } });
+			m_shearFrames.push_back({ 0u, Vec2Zero });
 		}
 
 		if (m_colourFrames.empty())

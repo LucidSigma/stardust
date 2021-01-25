@@ -20,8 +20,8 @@ namespace stardust
 		other.m_soundSystem = nullptr;
 		other.m_handle = 0u;
 
-		other.m_position = Vec3{ 0.0f, 0.0f, 0.0f };
-		other.m_velocity = Vec3{ 0.0f, 0.0f, 0.0f };
+		other.m_position = Vec3Zero;
+		other.m_velocity = Vec3Zero;
 
 		other.m_minDistance = 1.0f;
 		other.m_maxDistance = 1'000'000.0f;
@@ -34,8 +34,8 @@ namespace stardust
 		m_soundSystem = std::exchange(other.m_soundSystem, nullptr);
 		m_handle = std::exchange(other.m_handle, 0u);
 
-		m_position = std::exchange(other.m_position, Vec3{ 0.0f, 0.0f, 0.0f });
-		m_velocity = std::exchange(other.m_velocity, Vec3{ 0.0f, 0.0f, 0.0f });
+		m_position = std::exchange(other.m_position, Vec3Zero);
+		m_velocity = std::exchange(other.m_velocity, Vec3Zero);
 
 		m_minDistance = std::exchange(other.m_minDistance, 1.0f);
 		m_maxDistance = std::exchange(other.m_maxDistance, 1'000'000.0f);

@@ -10,6 +10,7 @@
 #include "stardust/graphics/Colour.h"
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/texture/Texture.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -18,11 +19,11 @@ namespace stardust
 	public:
 		struct ParticleData
 		{
-			Vec2 initialPosition{ 0.0f, 0.0f };
+			Vec2 initialPosition = Vec2Zero;
 			f32 initialRotation = 0.0f;
 
-			Vec2 minVelocity{ 0.0f, 0.0f };
-			Vec2 maxVelocity{ 0.0f, 0.0f };
+			Vec2 minVelocity = Vec2Zero;
+			Vec2 maxVelocity = Vec2Zero;
 			f32 acceleration = 1.0f;
 
 			f32 minAngularVelocity = 0.0f;
@@ -31,8 +32,8 @@ namespace stardust
 
 			bool isAffectedByGravity = false;
 
-			Vec2 minSize{ 1.0f, 1.0f };
-			Vec2 maxSize{ 1.0f, 1.0f };
+			Vec2 minSize = Vec2One;
+			Vec2 maxSize = Vec2One;
 			f32 sizeUpdateMultipler = 1.0f;
 			bool keepAsSquare = false;
 			bool shiftToCentre = false;
@@ -49,10 +50,10 @@ namespace stardust
 	private:
 		struct Particle
 		{
-			Vec2 position{ 0.0f, 0.0f };
+			Vec2 position = Vec2Zero;
 			f32 rotation = 0.0f;
 
-			Vec2 velocity{ 0.0f, 0.0f };
+			Vec2 velocity = Vec2Zero;
 			f32 acceleration = 1.0f;
 
 			f32 angularVelocity = 0.0f;
@@ -60,7 +61,7 @@ namespace stardust
 
 			bool isAffectedByGravity = false;
 
-			Vec2 size{ 0.0f, 0.0f };
+			Vec2 size = Vec2One;
 			f32 sizeUpdateMultipler = 1.0f;
 
 			Colour currentColour = colours::White;
@@ -81,7 +82,7 @@ namespace stardust
 		usize m_particlePoolIndex = s_ParticleCount - 1u;
 		HashMap<usize, ObserverPtr<Particle>> m_activeParticles{ };
 
-		Vec2 m_gravity = Vec2{ 0.0f, 0.0f };
+		Vec2 m_gravity = Vec2Zero;
 
 	public:
 		static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }

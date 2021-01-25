@@ -2,7 +2,6 @@
 
 #include <utility>
 
-#include "stardust/math/Math.h"
 #include "stardust/physics/world/World.h"
 
 namespace stardust

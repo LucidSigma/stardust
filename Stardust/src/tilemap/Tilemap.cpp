@@ -4,7 +4,6 @@
 
 #include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/debug/logging/Log.h"
-#include "stardust/math/Math.h"
 #include "stardust/scene/components/Components.h"
 
 namespace stardust

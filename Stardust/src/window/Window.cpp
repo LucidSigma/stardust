@@ -41,7 +41,7 @@ namespace stardust
 	}
 
 	Window::Window(Window&& other) noexcept
-		: m_handle(nullptr), m_size(UVec2{ 0u, 0u }), m_sizeBeforeFullscreen(NullOpt), m_fullscreenType(FullscreenType::Hard), m_isFullscreen(false), m_hasUpdatedFullscreen(false)
+		: m_handle(nullptr), m_size(UVec2Zero), m_sizeBeforeFullscreen(NullOpt), m_fullscreenType(FullscreenType::Hard), m_isFullscreen(false), m_hasUpdatedFullscreen(false)
 	{
 		std::swap(m_handle, other.m_handle);
 
@@ -57,7 +57,7 @@ namespace stardust
 	{
 		m_handle = std::exchange(other.m_handle, nullptr);
 
-		m_size = std::exchange(other.m_size, UVec2{ 0u, 0u });
+		m_size = std::exchange(other.m_size, UVec2Zero);
 		m_sizeBeforeFullscreen = std::exchange(other.m_sizeBeforeFullscreen, NullOpt);
 
 		m_fullscreenType = std::exchange(other.m_fullscreenType, FullscreenType::Hard);
@@ -137,7 +137,7 @@ namespace stardust
 		{
 			m_handle = nullptr;
 
-			m_size = UVec2{ 0u, 0u };
+			m_size = UVec2Zero;
 			m_sizeBeforeFullscreen = NullOpt;
 			m_isFullscreen = false;
 			m_hasUpdatedFullscreen = false;

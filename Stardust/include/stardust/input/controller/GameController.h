@@ -12,6 +12,7 @@
 #include "stardust/data/Types.h"
 #include "stardust/input/controller/GameControllerCodes.h"
 #include "stardust/graphics/Colour.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -89,8 +90,8 @@ namespace stardust
 		ButtonState m_previousButtons;
 		Axes m_axes;
 		Vector<TouchpadFingerInfo> m_touchpadFingers{ };
-		Vec3 m_accelerometerState{ 0.0f, 0.0f, 0.0f };
-		Vec3 m_gyroscopeState{ 0.0f, 0.0f, 0.0f };
+		Vec3 m_accelerometerState = Vec3Zero;
+		Vec3 m_gyroscopeState = Vec3Zero;
 
 		bool m_hasLED = false;
 		bool m_hasTouchpad = false;
