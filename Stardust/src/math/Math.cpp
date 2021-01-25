@@ -3,15 +3,13 @@
 namespace stardust
 {
 	// All of these functions are based on Unity's C# implementation of SmoothDamp, which itself is based on the algorithm from Game Programming Gems 4 Chapter 1.10.
-	[[nodiscard]] f32 SmoothDamp(const f32 currentValue, const f32 targetValue, f32& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed)
+	[[nodiscard]] f32 SmoothDamp(const f32 currentValue, const f32 targetValue, f32& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
 	{
 		const f32 omega = 2.0f / smoothingTime;
 		const f32 x = omega * deltaTime;
 		const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 		
-		const f32 valueDeltaLimit = maxSpeed * smoothingTime;
-		const f32 valueDelta = glm::clamp(currentValue - targetValue, -valueDeltaLimit, valueDeltaLimit);
-		
+		const f32 valueDelta = currentValue - targetValue;
 		const f32 newTargetValue = currentValue - valueDelta;
 		
 		const f32 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
@@ -31,15 +29,13 @@ namespace stardust
 		return smoothingResult;
 	}
 
-	[[nodiscard]] Vec2 SmoothDamp(const Vec2 currentValue, const Vec2 targetValue, Vec2& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed)
+	[[nodiscard]] Vec2 SmoothDamp(const Vec2 currentValue, const Vec2 targetValue, Vec2& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
 	{
 		const f32 omega = 2.0f / smoothingTime;
 		const f32 x = omega * deltaTime;
 		const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 
-		const f32 valueDeltaLimit = maxSpeed * smoothingTime;
-		const Vec2 valueDelta = glm::clamp(currentValue - targetValue, -valueDeltaLimit, valueDeltaLimit);
-
+		const Vec2 valueDelta = currentValue - targetValue;
 		const Vec2 newTargetValue = currentValue - valueDelta;
 
 		const Vec2 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
@@ -59,15 +55,13 @@ namespace stardust
 		return smoothingResult;
 	}
 
-	[[nodiscard]] Vec3 SmoothDamp(const Vec3 currentValue, const Vec3 targetValue, Vec3& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed)
+	[[nodiscard]] Vec3 SmoothDamp(const Vec3 currentValue, const Vec3 targetValue, Vec3& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
 	{
 		const f32 omega = 2.0f / smoothingTime;
 		const f32 x = omega * deltaTime;
 		const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 
-		const f32 valueDeltaLimit = maxSpeed * smoothingTime;
-		const Vec3 valueDelta = glm::clamp(currentValue - targetValue, -valueDeltaLimit, valueDeltaLimit);
-
+		const Vec3 valueDelta = currentValue - targetValue;
 		const Vec3 newTargetValue = currentValue - valueDelta;
 
 		const Vec3 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
@@ -87,15 +81,13 @@ namespace stardust
 		return smoothingResult;
 	}
 	
-	[[nodiscard]] Vec4 SmoothDamp(const Vec4 currentValue, const Vec4 targetValue, Vec4& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime, const f32 maxSpeed)
+	[[nodiscard]] Vec4 SmoothDamp(const Vec4 currentValue, const Vec4 targetValue, Vec4& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
 	{
 		const f32 omega = 2.0f / smoothingTime;
 		const f32 x = omega * deltaTime;
 		const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 
-		const f32 valueDeltaLimit = maxSpeed * smoothingTime;
-		const Vec4 valueDelta = glm::clamp(currentValue - targetValue, -valueDeltaLimit, valueDeltaLimit);
-
+		const Vec4 valueDelta = currentValue - targetValue;
 		const Vec4 newTargetValue = currentValue - valueDelta;
 
 		const Vec4 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
