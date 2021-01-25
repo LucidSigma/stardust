@@ -23,20 +23,20 @@ namespace stardust
 	using IVec3 = glm::tvec3<i32>;
 	using IVec4 = glm::tvec4<i32>;
 
-	using I64Vec1 = glm::tvec1<i64>;
-	using I64Vec2 = glm::tvec2<i64>;
-	using I64Vec3 = glm::tvec3<i64>;
-	using I64Vec4 = glm::tvec4<i64>;
+	using LVec1 = glm::tvec1<i64>;
+	using LVec2 = glm::tvec2<i64>;
+	using LVec3 = glm::tvec3<i64>;
+	using LVec4 = glm::tvec4<i64>;
 
 	using UVec1 = glm::tvec1<u32>;
 	using UVec2 = glm::tvec2<u32>;
 	using UVec3 = glm::tvec3<u32>;
 	using UVec4 = glm::tvec4<u32>;
 
-	using U64Vec1 = glm::tvec1<u64>;
-	using U64Vec2 = glm::tvec2<u64>;
-	using U64Vec3 = glm::tvec3<u64>;
-	using U64Vec4 = glm::tvec4<u64>;
+	using ULVec1 = glm::tvec1<u64>;
+	using ULVec2 = glm::tvec2<u64>;
+	using ULVec3 = glm::tvec3<u64>;
+	using ULVec4 = glm::tvec4<u64>;
 
 	using BVec1 = glm::tvec1<bool>;
 	using BVec2 = glm::tvec2<bool>;
@@ -94,18 +94,18 @@ namespace stardust
 	using IMat4x2 = glm::tmat4x2<i32>;
 	using IMat4x3 = glm::tmat4x3<i32>;
 
-	using I64Mat2 = glm::tmat2x2<i64>;
-	using I64Mat2x2 = glm::tmat2x2<i64>;
-	using I64Mat2x3 = glm::tmat2x3<i64>;
-	using I64Mat2x4 = glm::tmat2x4<i64>;
-	using I64Mat3 = glm::tmat3x3<i64>;
-	using I64Mat3x3 = glm::tmat3x3<i64>;
-	using I64Mat3x2 = glm::tmat3x2<i64>;
-	using I64Mat3x4 = glm::tmat3x4<i64>;
-	using I64Mat4 = glm::tmat4x4<i64>;
-	using I64Mat4x4 = glm::tmat4x4<i64>;
-	using I64Mat4x2 = glm::tmat4x2<i64>;
-	using I64Mat4x3 = glm::tmat4x3<i64>;
+	using LMat2 = glm::tmat2x2<i64>;
+	using LMat2x2 = glm::tmat2x2<i64>;
+	using LMat2x3 = glm::tmat2x3<i64>;
+	using LMat2x4 = glm::tmat2x4<i64>;
+	using LMat3 = glm::tmat3x3<i64>;
+	using LMat3x3 = glm::tmat3x3<i64>;
+	using LMat3x2 = glm::tmat3x2<i64>;
+	using LMat3x4 = glm::tmat3x4<i64>;
+	using LMat4 = glm::tmat4x4<i64>;
+	using LMat4x4 = glm::tmat4x4<i64>;
+	using LMat4x2 = glm::tmat4x2<i64>;
+	using LMat4x3 = glm::tmat4x3<i64>;
 
 	using UMat2 = glm::tmat2x2<u32>;
 	using UMat2x2 = glm::tmat2x2<u32>;
@@ -120,18 +120,18 @@ namespace stardust
 	using UMat4x2 = glm::tmat4x2<u32>;
 	using UMat4x3 = glm::tmat4x3<u32>;
 
-	using U64Mat2 = glm::tmat2x2<u64>;
-	using U64Mat2x2 = glm::tmat2x2<u64>;
-	using U64Mat2x3 = glm::tmat2x3<u64>;
-	using U64Mat2x4 = glm::tmat2x4<u64>;
-	using U64Mat3 = glm::tmat3x3<u64>;
-	using U64Mat3x3 = glm::tmat3x3<u64>;
-	using U64Mat3x2 = glm::tmat3x2<u64>;
-	using U64Mat3x4 = glm::tmat3x4<u64>;
-	using U64Mat4 = glm::tmat4x4<u64>;
-	using U64Mat4x4 = glm::tmat4x4<u64>;
-	using U64Mat4x2 = glm::tmat4x2<u64>;
-	using U64Mat4x3 = glm::tmat4x3<u64>;
+	using ULMat2 = glm::tmat2x2<u64>;
+	using ULMat2x2 = glm::tmat2x2<u64>;
+	using ULMat2x3 = glm::tmat2x3<u64>;
+	using ULMat2x4 = glm::tmat2x4<u64>;
+	using ULMat3 = glm::tmat3x3<u64>;
+	using ULMat3x3 = glm::tmat3x3<u64>;
+	using ULMat3x2 = glm::tmat3x2<u64>;
+	using ULMat3x4 = glm::tmat3x4<u64>;
+	using ULMat4 = glm::tmat4x4<u64>;
+	using ULMat4x4 = glm::tmat4x4<u64>;
+	using ULMat4x2 = glm::tmat4x2<u64>;
+	using ULMat4x3 = glm::tmat4x3<u64>;
 
 	template <usize M, usize N, typename T>
 	using TMat = glm::mat<M, N, T>;

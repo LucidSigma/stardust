@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <optional>
 #include <variant>
 
@@ -31,9 +32,11 @@ namespace stardust
 
 	using f32 = std::float_t;
 	static_assert(sizeof(f32) == 4u);
+	static_assert(std::numeric_limits<f32>::is_iec559);
 
 	using f64 = std::double_t;
 	static_assert(sizeof(f64) == 8u);
+	static_assert(std::numeric_limits<f64>::is_iec559);
 
 	template <typename T>
 	using Optional = std::optional<T>;
