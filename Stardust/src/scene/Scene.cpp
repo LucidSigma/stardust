@@ -15,11 +15,6 @@ namespace stardust
 		: m_name(name), m_application(application), m_entityRegistry(application.GetEntityRegistry())
 	{ }
 
-	Entity Scene::CreateEntity()
-	{
-		return Entity(m_entityRegistry.create(), *this);
-	}
-
 	Window& Scene::GetWindow() noexcept
 	{
 		return m_application.GetWindow();
@@ -93,5 +88,10 @@ namespace stardust
 	f64 Scene::GetElapsedTime() const noexcept
 	{
 		return m_application.GetElapsedTime();
+	}
+
+	Entity Scene::CreateEntity()
+	{
+		return Entity(m_entityRegistry.create(), *this);
 	}
 }

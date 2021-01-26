@@ -50,9 +50,6 @@ namespace stardust
 		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 		inline const String& GetName() const noexcept { return m_name; }
 
-	protected:
-		class Entity CreateEntity();
-
 		class Window& GetWindow() noexcept;
 		const class Window& GetWindow() const noexcept;
 
@@ -78,6 +75,9 @@ namespace stardust
 		inline const Mouse& GetMouseState() const noexcept { return Input::GetMouseState(); }
 
 		f64 GetElapsedTime() const noexcept;
+
+	protected:
+		class Entity CreateEntity();
 	};
 }
 
