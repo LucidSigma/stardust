@@ -158,6 +158,8 @@ public:
 		GetScriptEngine().Set("a", 13);
 		sd::Log::Trace("{} {} {}", (sd::i32)GetScriptEngine()["a"], GetScriptEngine().Get<sd::i32>("b"), GetScriptEngine().Get<sd::i32>("c"));
 
+		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
+
 		return sd::Status::Success;
 	}
 

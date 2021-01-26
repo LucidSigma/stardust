@@ -3,6 +3,7 @@
 #define STARDUST_SCRIPT_ENGINE_H
 
 #include <functional>
+#include <type_traits>
 #include <utility>
 
 #include <sol/sol.hpp>
@@ -40,7 +41,7 @@ namespace stardust
 		template <typename... Args>
 		inline void CreateTable(const StringView& name, Args&&... values)
 		{
-			m_luaState.create_named_table(name, values...);
+			m_luaState.create_named_table(name, std::forward<Args>(values)...);
 		}
 
 		template <typename T>
@@ -53,6 +54,19 @@ namespace stardust
 		void SetFunction(const StringView& functionName, Args&&... values)
 		{
 			m_luaState.set_function(functionName, values...);
+		}
+
+		template <typename Result, typename... Args>
+		[[nodiscard]] Result CallFunction(const StringView& name, Args&&... args) const
+		{
+			if constexpr (std::is_same_v<Result, void>)
+			{
+				GetFunction<Result(Args...)>(name)(args...);
+			}
+			else
+			{
+				return GetFunction<Result(Args...)>(name)(args...);
+			}
 		}
 
 		inline decltype(auto) operator [](const StringView& variableName) { return m_luaState[variableName]; }
