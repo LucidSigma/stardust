@@ -15,6 +15,16 @@ namespace stardust
 		: m_name(name), m_application(application), m_entityRegistry(application.GetEntityRegistry())
 	{ }
 
+	Application& Scene::GetApplication() noexcept
+	{
+		return m_application;
+	}
+
+	const Application& Scene::GetApplication() const noexcept
+	{
+		return m_application;
+	}
+
 	Window& Scene::GetWindow() noexcept
 	{
 		return m_application.GetWindow();

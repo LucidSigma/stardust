@@ -47,8 +47,13 @@ namespace stardust
 		inline virtual void OnGameControllerAdded(GameController& gameController) { }
 		inline virtual void OnGameControllerRemoved(const GameController& gameController) { }
 
-		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
 		inline const String& GetName() const noexcept { return m_name; }
+
+		class Application& GetApplication() noexcept;
+		const class Application& GetApplication() const noexcept;
+
+		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+		inline const entt::registry& GetEntityRegistry() const noexcept { return m_entityRegistry; }
 
 		class Window& GetWindow() noexcept;
 		const class Window& GetWindow() const noexcept;
