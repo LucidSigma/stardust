@@ -13,6 +13,8 @@
 
 namespace stardust
 {
+	constexpr sol::nil_t Nil = sol::nil;
+
 	class ScriptEngine
 	{
 	private:
