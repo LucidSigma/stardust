@@ -101,7 +101,7 @@ namespace stardust
 		HashMap<Tile, ObserverPtr<const Texture>> m_tileTextureLookup{ };
 		HashMap<String, Tile> m_tileNameLookup{ };
 
-		Vector<physics::Polygon> m_colliders{ };
+		HashMap<String, Vector<physics::Polygon>> m_objects{ };
 
 		bool m_isValid = false;
 
@@ -134,13 +134,14 @@ namespace stardust
 		[[nodiscard]] ObserverPtr<Layer> GetLayerByName(const String layerName) noexcept;
 		[[nodiscard]] ObserverPtr<const Layer> GetLayerByName(const String layerName) const noexcept;
 
-		inline const Vector<physics::Polygon>& GetColliders() const noexcept { return m_colliders; }
+		[[nodiscard]] inline bool HasObjectType(const String& type) const noexcept { return m_objects.contains(type); }
+		inline const Vector<physics::Polygon>& GetObjects(const String& type) const noexcept { return m_objects.at(type); }
 
 		inline bool IsValid() const noexcept { return m_isValid; }
 
 	private:
 		[[nodiscard]] nlohmann::json ReadTilemapFile(const StringView& filepath) const;
-		void ParseColliders(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath);
+		void ParseObjects(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath);
 	};
 }
 

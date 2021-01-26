@@ -129,7 +129,7 @@ namespace stardust
 			{
 				if (layer.contains("objects"))
 				{
-					ParseColliders(layer["objects"], tilePixelSize, filepath);
+					ParseObjects(layer["objects"], tilePixelSize, filepath);
 				}
 				else
 				{
@@ -281,12 +281,19 @@ namespace stardust
 		return tilemapJSON;
 	}
 
-	void Tilemap::ParseColliders(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath)
+	void Tilemap::ParseObjects(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath)
 	{
 		for (const auto& object : objects)
 		{
 			const f32 x = (object["x"] / tilePixelSize.x);
 			const f32 y = (object["y"] / tilePixelSize.y);
+
+			const String objectType = object.contains("type") ? object["type"] : "";
+
+			if (!m_objects.contains(objectType))
+			{
+				m_objects[objectType] = { };
+			}
 
 			if (object.contains("polygon"))
 			{
@@ -311,7 +318,7 @@ namespace stardust
 				physics::Polygon polygon{ };
 				polygon.Set(points.data(), static_cast<i32>(points.size()));
 
-				m_colliders.push_back(polygon);
+				m_objects[objectType].push_back(polygon);
 			}
 			else
 			{
@@ -321,7 +328,7 @@ namespace stardust
 				physics::Polygon rectangle{ };
 				rectangle.SetAsBox(halfWidth, halfHeight, physics::Point{ x + halfWidth - 0.5f, -y - halfHeight + 0.5f }, 0.0f);
 
-				m_colliders.push_back(rectangle);
+				m_objects[objectType].push_back(rectangle);
 			}
 		}
 	}
