@@ -14,18 +14,18 @@ namespace stardust
 		}
 
 		Body::Body(Body&& other) noexcept
-			: m_handle(nullptr), m_owningWorld(nullptr), m_fixtures({ })
+			: m_handle(nullptr), m_owningWorld(nullptr), m_colliders({ })
 		{
 			std::swap(m_handle, other.m_handle);
 			std::swap(m_owningWorld, other.m_owningWorld);
-			std::swap(m_fixtures, other.m_fixtures);
+			std::swap(m_colliders, other.m_colliders);
 		}
 
 		Body& Body::operator =(Body&& other) noexcept
 		{
 			m_handle = std::exchange(other.m_handle, nullptr);
 			m_owningWorld = std::exchange(other.m_owningWorld, nullptr);
-			m_fixtures = std::exchange(other.m_fixtures, { });
+			m_colliders = std::exchange(other.m_colliders, { });
 
 			return *this;
 		}
@@ -46,15 +46,16 @@ namespace stardust
 			bodyDef.bullet = createInfo.isBullet;
 			bodyDef.enabled = createInfo.isEnabled;
 			bodyDef.gravityScale = createInfo.gravityScale;
+			bodyDef.userData = b2BodyUserData{ };
 
 			m_handle = world.GetRawHandle()->CreateBody(&bodyDef);
 			m_owningWorld = &world;
 
 			if (m_handle != nullptr)
 			{
-				for (const auto& fixtureInfo : createInfo.fixtures)
+				for (const auto& fixtureInfo : createInfo.colliderInfos)
 				{
-					AddFixture(fixtureInfo);
+					AddCollider(fixtureInfo);
 				}
 			}
 		}
@@ -99,18 +100,15 @@ namespace stardust
 			SetRotation(GetRotation() + angleOffset);
 		}
 
-		ObserverPtr<Fixture> Body::AddFixture(const FixtureInfo& fixtureInfo)
+		Collider Body::AddCollider(const Collider::CreateInfo& colliderInfo)
 		{
-			ObserverPtr<Fixture> fixture = m_handle->CreateFixture(&fixtureInfo);
-			m_fixtures.insert(fixture);
-
-			return fixture;
+			return Collider(*this, colliderInfo);
 		}
 
-		void Body::RemoveFixture(ObserverPtr<Fixture> fixture)
+		void Body::RemoveCollider(const Collider& collider)
 		{
-			m_fixtures.erase(fixture);
-			m_handle->DestroyFixture(fixture);
+			m_colliders.erase(collider);
+			m_handle->DestroyFixture(collider.GetRawHandle());
 		}
 
 		[[nodiscard]] Vec2 Body::GetWorldCentre() const
@@ -308,7 +306,7 @@ namespace stardust
 			return m_handle->GetInertia();
 		}
 
-		[[nodiscard]] Body::MassData Body::GetMassData() const
+		[[nodiscard]] MassData Body::GetMassData() const
 		{
 			b2MassData massData{ };
 			m_handle->GetMassData(&massData);

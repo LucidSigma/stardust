@@ -20,21 +20,23 @@ namespace stardust
 				bool& m_hasHitFixture;
 				RaycastHit& m_raycastHitData;
 
+				const World& m_world;
+
 			public:
-				inline RaycastCallback(const Vec2& origin, const CollisionLayer layerMask, bool& hasHitFixture, RaycastHit& raycastHitData)
-					: m_origin(origin), m_layerMask(layerMask), m_hasHitFixture(hasHitFixture), m_raycastHitData(raycastHitData)
+				inline RaycastCallback(const Vec2& origin, const CollisionLayer layerMask, bool& hasHitFixture, RaycastHit& raycastHitData, const World& world)
+					: m_origin(origin), m_layerMask(layerMask), m_hasHitFixture(hasHitFixture), m_raycastHitData(raycastHitData), m_world(world)
 				{ }
 
 				virtual ~RaycastCallback() noexcept override = default;
 
-				inline virtual f32 ReportFixture(Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
+				inline virtual f32 ReportFixture(b2Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
 				{
 					if (fixture->GetFilterData().categoryBits & m_layerMask)
 					{
 						m_hasHitFixture = true;
 
+						m_raycastHitData.collider = Collider(fixture, m_world);
 						m_raycastHitData.fraction = fraction;
-						m_raycastHitData.fixture = fixture;
 						m_raycastHitData.normal = Vec2{ normal.x, normal.y };
 						m_raycastHitData.point = Vec2{ point.x, point.y };
 
@@ -58,19 +60,21 @@ namespace stardust
 
 				Vector<RaycastHit>& m_raycastHits;
 
+				const World& m_world;
+
 			public:
-				inline RaycastAllCallback(const Vec2& origin, const CollisionLayer layerMask, Vector<RaycastHit>& raycastHits)
-					: m_origin(origin), m_layerMask(layerMask), m_raycastHits(raycastHits)
+				inline RaycastAllCallback(const Vec2& origin, const CollisionLayer layerMask, Vector<RaycastHit>& raycastHits, const World& world)
+					: m_origin(origin), m_layerMask(layerMask), m_raycastHits(raycastHits), m_world(world)
 				{ }
 
 				virtual ~RaycastAllCallback() noexcept override = default;
 
-				inline virtual f32 ReportFixture(Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
+				inline virtual f32 ReportFixture(b2Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
 				{
 					if (fixture->GetFilterData().categoryBits & m_layerMask)
 					{
 						m_raycastHits.emplace_back();
-						m_raycastHits.back().fixture = fixture;
+						m_raycastHits.back().collider = Collider(fixture, m_world);
 						m_raycastHits.back().fraction = fraction;
 						m_raycastHits.back().normal = Vec2{ normal.x, normal.y };
 						m_raycastHits.back().point = Vec2{ point.x, point.y };
@@ -90,20 +94,22 @@ namespace stardust
 			{
 			private:
 				CollisionLayer m_layerMask;
-				ObserverPtr<Fixture>& m_hitFixture;
+				Collider& m_hitCollider;
+
+				const World& m_world;
 
 			public:
-				inline OverlapBoxCallback(ObserverPtr<Fixture>& hitFixture, const CollisionLayer layerMask)
-					: m_hitFixture(m_hitFixture), m_layerMask(layerMask)
+				inline OverlapBoxCallback(Collider& hitCollider, const CollisionLayer layerMask, const World& world)
+					: m_hitCollider(hitCollider), m_layerMask(layerMask), m_world(world)
 				{ }
 
 				virtual ~OverlapBoxCallback() noexcept override = default;
 
-				inline virtual bool ReportFixture(Fixture* const fixture) override
+				inline virtual bool ReportFixture(b2Fixture* const fixture) override
 				{
 					if (fixture->GetFilterData().categoryBits & m_layerMask)
 					{
-						m_hitFixture = fixture;
+						m_hitCollider = Collider(fixture, m_world);
 
 						return false;
 					}
@@ -119,20 +125,22 @@ namespace stardust
 			{
 			private:
 				CollisionLayer m_layerMask;
-				Vector<ObserverPtr<Fixture>>& m_hitFixtures;
+				Vector<Collider>& m_hitColliders;
+
+				const World& m_world;
 
 			public:
-				inline OverlapBoxAllCallback(Vector<ObserverPtr<Fixture>>& hitFixtures, const CollisionLayer layerMask)
-					: m_hitFixtures(hitFixtures), m_layerMask(layerMask)
+				inline OverlapBoxAllCallback(Vector<Collider>& hitColliders, const CollisionLayer layerMask, const World& world)
+					: m_hitColliders(hitColliders), m_layerMask(layerMask), m_world(world)
 				{ }
 
 				virtual ~OverlapBoxAllCallback() noexcept override = default;
 
-				inline virtual bool ReportFixture(Fixture* const fixture) override
+				inline virtual bool ReportFixture(b2Fixture* const fixture) override
 				{
 					if (fixture->GetFilterData().categoryBits & m_layerMask)
 					{
-						m_hitFixtures.push_back(fixture);
+						m_hitColliders.emplace_back(fixture, m_world);
 					}
 					
 					return true;
@@ -168,6 +176,30 @@ namespace stardust
 			m_handle->DestroyBody(body->GetRawHandle());
 		}
 
+		[[nodiscard]] ObserverPtr<Body> World::LookupBody(const ObserverPtr<const b2Body> bodyHandle)
+		{
+			if (m_bodies.contains(bodyHandle))
+			{
+				return &m_bodies.at(bodyHandle);
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+
+		[[nodiscard]] ObserverPtr<const Body> World::LookupBody(const ObserverPtr<const b2Body> bodyHandle) const
+		{
+			if (m_bodies.contains(bodyHandle))
+			{
+				return &m_bodies.at(bodyHandle);
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+
 		[[nodiscard]] Optional<RaycastHit> World::Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
 		{
 			const Vec2 normalisedDirection = glm::normalize(direction);
@@ -181,7 +213,7 @@ namespace stardust
 			bool hasHitAnything = false;
 			RaycastHit raycastHitData{ };
 
-			RaycastCallback callback(origin, layerMask, hasHitAnything, raycastHitData);
+			RaycastCallback callback(origin, layerMask, hasHitAnything, raycastHitData, *this);
 			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destinationPoint.x, destinationPoint.y });
 
 			if (hasHitAnything)
@@ -205,20 +237,20 @@ namespace stardust
 			}
 
 			Vector<RaycastHit> raycastHits{ };
-			RaycastAllCallback callback(origin, layerMask, raycastHits);
+			RaycastAllCallback callback(origin, layerMask, raycastHits, *this);
 			m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destinationPoint.x, destinationPoint.y });
 
 			return raycastHits;
 		}
 
-		[[nodiscard]] Optional<ObserverPtr<Fixture>> World::OverlapBox(const AABB& box, const CollisionLayer layerMask) const
+		[[nodiscard]] Optional<Collider> World::OverlapBox(const AABB& box, const CollisionLayer layerMask) const
 		{
-			ObserverPtr<Fixture> hitFixture = nullptr;
-			OverlapBoxCallback callback(hitFixture, layerMask);
+			Collider hitFixture;
+			OverlapBoxCallback callback(hitFixture, layerMask, *this);
 
 			m_handle->QueryAABB(&callback, box);
 
-			if (hitFixture != nullptr)
+			if (hitFixture.IsValid())
 			{
 				return hitFixture;
 			}
@@ -228,16 +260,16 @@ namespace stardust
 			}
 		}
 
-		[[nodiscard]] Optional<ObserverPtr<Fixture>> World::OverlapBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+		[[nodiscard]] Optional<Collider> World::OverlapBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
 		{
 			const AABB box(centre, halfSize);
 
-			ObserverPtr<Fixture> hitFixture = nullptr;
-			OverlapBoxCallback callback(hitFixture, layerMask);
+			Collider hitFixture;
+			OverlapBoxCallback callback(hitFixture, layerMask, *this);
 
 			m_handle->QueryAABB(&callback, box);
 
-			if (hitFixture != nullptr)
+			if (hitFixture.IsValid())
 			{
 				return hitFixture;
 			}
@@ -247,22 +279,22 @@ namespace stardust
 			}
 		}
 
-		[[nodiscard]] Vector<ObserverPtr<Fixture>> World::OverlapBoxAll(const AABB& box, const CollisionLayer layerMask) const
+		[[nodiscard]] Vector<Collider> World::OverlapBoxAll(const AABB& box, const CollisionLayer layerMask) const
 		{
-			Vector<ObserverPtr<Fixture>> hitFixtures{ };
-			OverlapBoxAllCallback callback(hitFixtures, layerMask);
+			Vector<Collider> hitFixtures{ };
+			OverlapBoxAllCallback callback(hitFixtures, layerMask, *this);
 
 			m_handle->QueryAABB(&callback, box);
 
 			return hitFixtures;
 		}
 
-		[[nodiscard]] Vector<ObserverPtr<Fixture>> World::OverlapBoxAll(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+		[[nodiscard]] Vector<Collider> World::OverlapBoxAll(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
 		{
 			const AABB box(centre, halfSize);
 
-			Vector<ObserverPtr<Fixture>> hitFixtures{ };
-			OverlapBoxAllCallback callback(hitFixtures, layerMask);
+			Vector<Collider> hitFixtures{ };
+			OverlapBoxAllCallback callback(hitFixtures, layerMask, *this);
 
 			m_handle->QueryAABB(&callback, box);
 

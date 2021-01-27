@@ -13,6 +13,7 @@
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 #include "stardust/math/Math.h"
+#include "stardust/physics/collider/Collider.h"
 #include "stardust/physics/Physics.h"
 
 namespace stardust
@@ -54,21 +55,14 @@ namespace stardust
 
 				f32 gravityScale = 1.0f;
 
-				Vector<FixtureInfo> fixtures{ };
-			};
-
-			struct MassData
-			{
-				f32 mass;
-				Vec2 centre;
-				f32 momentOfInertia;
+				Vector<Collider::CreateInfo> colliderInfos{ };
 			};
 
 		private:
 			ObserverPtr<b2Body> m_handle = nullptr;
 			ObserverPtr<const class World> m_owningWorld = nullptr;
 
-			HashSet<ObserverPtr<Fixture>> m_fixtures{ };
+			HashSet<Collider> m_colliders{ };
 
 		public:
 			Body() = default;
@@ -78,6 +72,8 @@ namespace stardust
 			~Body() noexcept = default;
 
 			void Initialise(const class World& world, const CreateInfo& createInfo);
+
+			inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
 			void ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const;
 			void ApplyForceToCentre(const Vec2& force, const bool wakeUp) const;
@@ -90,9 +86,10 @@ namespace stardust
 			void Move(const Vec2& positionOffset) const;
 			void Rotate(const f32 angleOffset) const;
 
-			ObserverPtr<Fixture> AddFixture(const FixtureInfo& fixtureInfo);
-			void RemoveFixture(ObserverPtr<Fixture> fixture);
-			inline const HashSet<ObserverPtr<Fixture>>& GetFixtures() const { return m_fixtures; }
+			Collider AddCollider(const Collider::CreateInfo& colliderInfo);
+			void RemoveCollider(const Collider& collider);
+			inline const HashSet<Collider>& GetColliders() const { return m_colliders; }
+			[[nodiscard]] inline bool HasCollider(const Collider& collider) const { return m_colliders.contains(collider); }
 
 			[[nodiscard]] Vec2 GetWorldCentre() const;
 			[[nodiscard]] Vec2 GetLocalCenter() const;

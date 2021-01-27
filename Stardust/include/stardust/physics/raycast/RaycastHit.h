@@ -13,7 +13,7 @@ namespace stardust
 	{
 		struct RaycastHit
 		{
-			ObserverPtr<Fixture> fixture;
+			Collider collider;
 
 			f32 distance;
 			f32 fraction;
