@@ -23,7 +23,7 @@ namespace stardust
 			fixtureDef.filter.groupIndex = createInfo.filter.groupIndex;
 			fixtureDef.userData = b2FixtureUserData{ };
 
-			body.GetRawHandle()->CreateFixture(&fixtureDef);
+			m_handle = body.GetRawHandle()->CreateFixture(&fixtureDef);
 		}
 
 		Collider::Collider(const ObserverPtr<b2Fixture> fixtureHandle, const World& world)

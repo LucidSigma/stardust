@@ -102,7 +102,7 @@ namespace stardust
 
 		Collider Body::AddCollider(const Collider::CreateInfo& colliderInfo)
 		{
-			return Collider(*this, colliderInfo);
+			return *m_colliders.emplace(*this, colliderInfo).first;
 		}
 
 		void Body::RemoveCollider(const Collider& collider)
