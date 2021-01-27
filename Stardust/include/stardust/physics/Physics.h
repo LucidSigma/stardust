@@ -13,7 +13,6 @@ namespace stardust
 	{
 		using Shape = b2Shape;
 		using Chain = b2ChainShape;
-		using Edge = b2EdgeShape;
 
 		using CollisionLayer = u16;
 
