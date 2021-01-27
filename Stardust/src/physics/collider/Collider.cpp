@@ -18,6 +18,9 @@ namespace stardust
 			fixtureDef.restitutionThreshold = createInfo.restitutionThreshold;
 			fixtureDef.density = createInfo.density;
 			fixtureDef.isSensor = createInfo.isSensor;
+			fixtureDef.filter.categoryBits = createInfo.filter.layers;
+			fixtureDef.filter.maskBits = createInfo.filter.collidesWith;
+			fixtureDef.filter.groupIndex = createInfo.filter.groupIndex;
 			fixtureDef.userData = b2FixtureUserData{ };
 
 			body.GetRawHandle()->CreateFixture(&fixtureDef);

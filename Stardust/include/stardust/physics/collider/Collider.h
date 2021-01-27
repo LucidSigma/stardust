@@ -18,6 +18,14 @@ namespace stardust
 		class Collider
 		{
 		public:
+			struct Filter
+			{
+				CollisionLayer layers = 0x0001;
+				CollisionLayer collidesWith = AllLayers;
+
+				i16 groupIndex = 0;
+			};
+
 			struct CreateInfo
 			{
 				const Shape* shape = nullptr;
@@ -28,14 +36,8 @@ namespace stardust
 				f32 density = 0.0f;
 
 				bool isSensor = false;
-			};
 
-			struct Filter
-			{
-				CollisionLayer layers = 0x0001;
-				CollisionLayer collidesWith = AllLayers;
-
-				i16 groupIndex;
+				Filter filter{ };
 			};
 
 		private:
