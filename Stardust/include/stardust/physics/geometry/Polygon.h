@@ -2,6 +2,8 @@
 #ifndef STARDUST_POLYGON_H
 #define STARDUST_POLYGON_H
 
+#include <box2d/box2d.h>
+
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"

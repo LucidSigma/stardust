@@ -30,9 +30,9 @@ namespace stardust
 			: m_handle(fixtureHandle), m_owningBody(world.LookupBody(fixtureHandle->GetBody()))
 		{ }
 
-		[[nodiscard]] b2Shape::Type Collider::GetShapeType() const
+		[[nodiscard]] ShapeType Collider::GetShapeType() const
 		{
-			return m_handle->GetType();
+			return static_cast<ShapeType>(m_handle->GetType());
 		}
 
 		[[nodiscard]] ObserverPtr<b2Shape> Collider::GetShape()

@@ -13,12 +13,19 @@ namespace stardust
 	{
 		using Shape = b2Shape;
 		using Chain = b2ChainShape;
-		using Circle = b2CircleShape;
 		using Edge = b2EdgeShape;
 
 		using CollisionLayer = u16;
 
 		constexpr CollisionLayer AllLayers = 0xFFFF;
+
+		enum class ShapeType
+		{
+			Circle = b2Shape::e_circle,
+			Edge = b2Shape::e_edge,
+			Polygon = b2Shape::e_polygon,
+			Chain = b2Shape::e_chain,
+		};
 
 		struct MassData
 		{

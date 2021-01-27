@@ -52,7 +52,7 @@ namespace stardust
 
 			inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
-			[[nodiscard]] b2Shape::Type GetShapeType() const;
+			[[nodiscard]] ShapeType GetShapeType() const;
 
 			[[nodiscard]] ObserverPtr<b2Shape> GetShape();
 			[[nodiscard]] ObserverPtr<const b2Shape> GetShape() const;
