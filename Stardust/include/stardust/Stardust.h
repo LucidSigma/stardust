@@ -74,6 +74,7 @@
 
 #include "physics/body/Body.h"
 #include "physics/collider/Collider.h"
+#include "physics/geometry/Rectangle.h"
 #include "physics/raycast/RaycastHit.h"
 #include "physics/world/World.h"
 #include "physics/AABB.h"
