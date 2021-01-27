@@ -12,11 +12,9 @@ namespace stardust
 	namespace physics
 	{
 		using Shape = b2Shape;
-		using Point = b2Vec2;
 		using Chain = b2ChainShape;
 		using Circle = b2CircleShape;
 		using Edge = b2EdgeShape;
-		using Polygon = b2PolygonShape;
 
 		using CollisionLayer = u16;
 

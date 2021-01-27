@@ -297,14 +297,14 @@ namespace stardust
 
 			if (object.contains("polygon"))
 			{
-				if (object["polygon"].size() > b2_maxPolygonVertices)
+				if (object["polygon"].size() > physics::Polygon::GetMaxVertices())
 				{
 					Log::EngineWarn("Polygon object in tilemap {} has too many vertices; skipping.", filepath);
 
 					continue;
 				}
 
-				Vector<physics::Point> points{ };
+				Vector<Vec2> points{ };
 				points.reserve(object["polygon"].size());
 
 				for (const auto& vertex : object["polygon"])
@@ -312,21 +312,21 @@ namespace stardust
 					const f32 xOffset = vertex["x"] / tilePixelSize.x;
 					const f32 yOffset = vertex["y"] / tilePixelSize.y;
 
-					points.push_back(physics::Point{ x + xOffset, -y - yOffset });
+					points.push_back(Vec2{ x + xOffset, -y - yOffset });
 				}
 
 				physics::Polygon polygon{ };
-				polygon.Set(points.data(), static_cast<i32>(points.size()));
+				polygon.Set(points);
 
 				m_objects[objectType].push_back(polygon);
 			}
 			else
 			{
-				const f32 halfWidth = object["width"] / tilePixelSize.x / 2.0f;
-				const f32 halfHeight = object["height"] / tilePixelSize.y / 2.0f;
+				const f32 width = object["width"] / tilePixelSize.x;
+				const f32 height = object["height"] / tilePixelSize.y;
 
 				physics::Polygon rectangle{ };
-				rectangle.SetAsBox(halfWidth, halfHeight, physics::Point{ x + halfWidth - 0.5f, -y - halfHeight + 0.5f }, 0.0f);
+				rectangle.SetAsBox(width, height, Vec2{ x + (width / 2.0f) - 0.5f, -y - (height / 2.0f) + 0.5f }, 0.0f);
 
 				m_objects[objectType].push_back(rectangle);
 			}

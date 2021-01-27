@@ -15,7 +15,7 @@
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
 #include "stardust/math/Math.h"
-#include "stardust/physics/Physics.h"
+#include "stardust/physics/geometry/Polygon.h"
 
 namespace stardust
 {

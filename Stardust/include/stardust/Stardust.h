@@ -74,6 +74,10 @@
 
 #include "physics/body/Body.h"
 #include "physics/collider/Collider.h"
+#include "physics/geometry/Chain.h"
+#include "physics/geometry/Circle.h"
+#include "physics/geometry/Edge.h"
+#include "physics/geometry/Polygon.h"
 #include "physics/geometry/Rectangle.h"
 #include "physics/raycast/RaycastHit.h"
 #include "physics/world/World.h"

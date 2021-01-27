@@ -28,7 +28,7 @@ namespace stardust
 
 			struct CreateInfo
 			{
-				const Shape* shape = nullptr;
+				ObserverPtr<const Shape> shape = nullptr;
 
 				f32 friction = 0.2;
 				f32 restitution = 0.0f;

@@ -29,7 +29,7 @@ namespace stardust
 
 				virtual ~RaycastCallback() noexcept override = default;
 
-				inline virtual f32 ReportFixture(b2Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
+				inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
 				{
 					if (fixture->GetFilterData().categoryBits & m_layerMask)
 					{
@@ -69,7 +69,7 @@ namespace stardust
 
 				virtual ~RaycastAllCallback() noexcept override = default;
 
-				inline virtual f32 ReportFixture(b2Fixture* const fixture, const Point& point, const Point& normal, const f32 fraction) override
+				inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
 				{
 					if (fixture->GetFilterData().categoryBits & m_layerMask)
 					{
