@@ -6,6 +6,10 @@ namespace stardust
 {
 	namespace physics
 	{
+		Polygon::Polygon(const b2PolygonShape& shapeHandle)
+			: m_polygon(shapeHandle)
+		{ }
+
 		Polygon::Polygon(const Vector<Vec2>& points)
 		{
 			Set(points);

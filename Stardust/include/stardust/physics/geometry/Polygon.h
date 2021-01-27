@@ -24,6 +24,7 @@ namespace stardust
 			static constexpr u32 GetMaxVertices() noexcept { return b2_maxPolygonVertices; }
 
 			Polygon() = default;
+			Polygon(const b2PolygonShape& shapeHandle);
 			Polygon(const Vector<Vec2>& points);
 			~Polygon() noexcept = default;
 

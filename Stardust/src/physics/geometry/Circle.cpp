@@ -4,6 +4,10 @@ namespace stardust
 {
 	namespace physics
 	{
+		Circle::Circle(const b2CircleShape& shapeHandle)
+			: m_circle(shapeHandle)
+		{ }
+
 		Circle::Circle(const f32 radius, const Vec2& position)
 		{
 			m_circle.m_radius = radius;

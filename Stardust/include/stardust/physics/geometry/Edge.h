@@ -22,6 +22,7 @@ namespace stardust
 
 		public:
 			Edge() = default;
+			Edge(const b2EdgeShape& shapeHandle);
 			Edge(const Vec2& vertexA, const Vec2& vertexB);
 			Edge(const Vec2& ghostVertexA, const Vec2& vertexA, const Vec2& vertexB, const Vec2& ghostVertexB);
 			~Edge() noexcept = default;

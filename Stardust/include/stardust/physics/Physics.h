@@ -12,8 +12,6 @@ namespace stardust
 	namespace physics
 	{
 		using Shape = b2Shape;
-		using Chain = b2ChainShape;
-
 		using CollisionLayer = u16;
 
 		constexpr CollisionLayer AllLayers = 0xFFFF;

@@ -23,6 +23,7 @@ namespace stardust
 
 		public:
 			Circle() = default;
+			Circle(const b2CircleShape& shapeHandle);
 			Circle(const f32 radius, const Vec2& position = Vec2Zero);
 			~Circle() noexcept = default;
 

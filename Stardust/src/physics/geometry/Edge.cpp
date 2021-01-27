@@ -6,6 +6,10 @@ namespace stardust
 {
 	namespace physics
 	{
+		Edge::Edge(const b2EdgeShape& shapeHandle)
+			: m_edge(shapeHandle)
+		{ }
+
 		Edge::Edge(const Vec2& vertexA, const Vec2& vertexB)
 		{
 			SetTwoSided(vertexA, vertexB);
