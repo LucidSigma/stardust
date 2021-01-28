@@ -17,6 +17,7 @@
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/hash.hpp>
 #include <glm/gtx/transform2.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"
