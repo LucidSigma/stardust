@@ -312,7 +312,7 @@ namespace stardust
 					const f32 xOffset = vertex["x"] / tilePixelSize.x;
 					const f32 yOffset = vertex["y"] / tilePixelSize.y;
 
-					points.push_back(Vec2{ x + xOffset, -y - yOffset });
+					points.push_back(Vec2{ x + xOffset - 0.5f, -y - yOffset + 0.5f });
 				}
 
 				physics::Polygon polygon{ };

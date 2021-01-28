@@ -17,7 +17,7 @@ namespace stardust
 
 		void Polygon::Set(const Vector<Vec2>& vertices)
 		{
-			if (vertices.size() < GetMaxVertices())
+			if (vertices.size() > GetMaxVertices())
 			{
 				return;
 			}
