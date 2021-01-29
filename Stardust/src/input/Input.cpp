@@ -6,9 +6,34 @@
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/math/Math.h"
+#include "stardust/filesystem/vfs/VFS.h"
 
 namespace stardust
 {
+	[[nodiscard]] Status Input::InitialiseGameControllerDatabase(const StringView& controllerDatabaseFilepath)
+	{
+		const Vector<ubyte> controllerDatabaseFileData = vfs::ReadFileData(controllerDatabaseFilepath);
+
+		if (controllerDatabaseFileData.empty())
+		{
+			return Status::Fail;
+		}
+
+		SDL_RWops* controllerDatabaseRWOps = SDL_RWFromConstMem(controllerDatabaseFileData.data(), static_cast<i32>(controllerDatabaseFileData.size()));
+
+		if (controllerDatabaseRWOps == nullptr)
+		{
+			return Status::Fail;
+		}
+
+		if (SDL_GameControllerAddMappingsFromRW(controllerDatabaseRWOps, SDL_TRUE) == -1)
+		{
+			return Status::Fail;
+		}
+
+		return Status::Success;
+	}
+
 	bool Input::IsMouseCaptured()
 	{
 		return s_isMouseCaptured;

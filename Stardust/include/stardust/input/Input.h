@@ -15,6 +15,7 @@
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/keyboard/Keyboard.h"
 #include "stardust/input/mouse/Mouse.h"
+#include "stardust/utility/status/Status.h"
 #include "stardust/window/Window.h"
 
 namespace stardust
@@ -40,6 +41,8 @@ namespace stardust
 		inline static u32 s_gameControllerDeadzone = 0u;
 
 	public:
+		[[nodiscard]] static Status InitialiseGameControllerDatabase(const StringView& controllerDatabaseFilepath);
+
 		static bool IsMouseCaptured();
 		static void CaptureMouse(const bool captureMouse);
 

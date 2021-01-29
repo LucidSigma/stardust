@@ -179,6 +179,11 @@ namespace stardust
 
 		Input::SetGameControllerDeadzone(m_config["input"]["controller-deadzone"]);
 
+		if (Input::InitialiseGameControllerDatabase("assets/input/gamecontrollerdb.txt") != Status::Success)
+		{
+			Log::EngineWarn("Game controller database not loaded correctly - some controllers might not work properly.");
+		}
+
 		m_onInitialise = createInfo.initialiseCallback;
 		m_onExit = createInfo.exitCallback;
 
