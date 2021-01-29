@@ -2,16 +2,21 @@
 #ifndef STARDUST_RECORDING_DEVICE_H
 #define STARDUST_RECORDING_DEVICE_H
 
+#include <functional>
+
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
+#include "stardust/utility/status/Status.h"
 
 namespace stardust
 {
 	class RecordingDevice
 	{
 	public:
+		using Callback = std::function<void(Vector<ubyte>)>;
+
 		struct Info
 		{
 			i32 index;
@@ -21,7 +26,7 @@ namespace stardust
 	private:
 		static constexpr SDL_AudioDeviceID s_InvalidDeviceID = 0u;
 
-		SDL_AudioDeviceID m_interalID = s_InvalidDeviceID;
+		SDL_AudioDeviceID m_internalID = s_InvalidDeviceID;
 
 		i32 m_index;
 		String m_name;
@@ -31,21 +36,23 @@ namespace stardust
 
 		bool m_isRecording = false;
 
+		Callback m_callback{ };
+
 	public:
-		[[nodiscard]] Vector<Info> GetAllDeviceInfos();
+		[[nodiscard]] static Vector<Info> GetAllDeviceInfos();
 
 		RecordingDevice(const Info& info);
 		~RecordingDevice() noexcept;
 
-		void Open(const u32 frequency = 44'100u, const u32 channelCount = 2u);
+		Status Open(const u32 frequency = 44'100u, const u32 channelCount = 2u);
 		void Close() noexcept;
-		inline bool IsOpen() const { return m_interalID != s_InvalidDeviceID; }
+		inline bool IsOpen() const { return m_internalID != s_InvalidDeviceID; }
 
 		void StartRecording();
 		void StopRecording();
 		inline bool IsRecording() const noexcept { return m_isRecording; }
 
-		void SetCallback();
+		inline void SetCallback(const Callback& callback) noexcept { m_callback = callback; }
 
 		inline i32 GetIndex() const noexcept { return m_index; }
 		inline const String& GetName() const noexcept { return m_name; }

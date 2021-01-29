@@ -38,6 +38,13 @@ int main([[maybe_unused]] const int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
+	const auto devices = sd::RecordingDevice::GetAllDeviceInfos();
+
+	for (const auto& [index, name] : devices)
+	{
+		sd::Log::Trace("{} : {}", index, name);
+	}
+
 	application.GetSceneManager().PushScene<TestScene>(application, "Test");
 	application.Run();
 
