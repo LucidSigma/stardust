@@ -39,7 +39,7 @@ namespace stardust
 		return Vec3{
 			static_cast<f32>(red) / 255.0f,
 			static_cast<f32>(green) / 255.0f,
-			static_cast<f32>(blue) / 255.0f
+			static_cast<f32>(blue) / 255.0f,
 		};
 	}
 
