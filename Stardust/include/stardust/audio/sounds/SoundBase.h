@@ -48,13 +48,24 @@ namespace stardust
 	public:
 		SoundBase(const StringView& filepath)
 		{
+			Initialise(filepath);
+		}
+
+		SoundBase(const Vector<ubyte>& soundData)
+		{
+			Initialise(soundData);
+		}
+
+		~SoundBase() noexcept = default;
+
+		void Initialise(const StringView& filepath)
+		{
 			const Vector<ubyte> rawSoundData = vfs::ReadFileData(filepath);
 
 			const SoLoud::result loadStatus = m_handle.loadMem(
 				reinterpret_cast<const unsigned char*>(rawSoundData.data()),
-				static_cast<unsigned int>(rawSoundData.size()),
-				true,
-				false
+				static_cast<u32>(rawSoundData.size()),
+				true, false
 			);
 			m_isValid = loadStatus == 0u;
 
@@ -65,7 +76,22 @@ namespace stardust
 			}
 		}
 
-		~SoundBase() noexcept = default;
+		void Initialise(const Vector<ubyte>& soundData, const f32 sampleRate = 44'100.0f, const u32 channelCount = 1u)
+		{
+			const SoLoud::result loadStatus = m_handle.loadRawWave(
+				reinterpret_cast<const unsigned char*>(soundData.data()),
+				static_cast<u32>(soundData.size()),
+				sampleRate, channelCount,
+				true, false
+			);
+			m_isValid = loadStatus == 0u;
+
+			if (m_isValid)
+			{
+				m_length = m_handle.getLength();
+				SetInaudibleBehaviour(InaudibleBehaviour::KeepTicking);
+			}
+		}
 
 		inline bool IsValid() const noexcept { return m_isValid; }
 
