@@ -1,15 +1,10 @@
 #include "stardust/audio/recording/RecordingDevice.h"
 
+#include <algorithm>
+#include <cstring>
+
 namespace stardust
 {
-	namespace
-	{
-		void AudioRecordingCallback(void* const userData, u8* const stream, const i32 length)
-		{
-
-		}
-	}
-
 	[[nodiscard]] Vector<RecordingDevice::Info> RecordingDevice::GetAllDeviceInfos()
 	{
 		const i32 audioRecordingDeviceCount = SDL_GetNumAudioDevices(SDL_TRUE);
@@ -68,12 +63,59 @@ namespace stardust
 		m_frequency = static_cast<u32>(obtainedAudioSpec.freq);
 		m_channelCount = static_cast<u32>(obtainedAudioSpec.channels);
 
+		if (m_frequency != m_previousFrequency || m_channelCount != m_previousChannelCount)
+		{
+			const u32 bytesPerSample = m_channelCount * static_cast<u32>(SDL_AUDIO_BITSIZE(obtainedAudioSpec.format)) / 8u;
+			const u32 bytesPerSecond = m_frequency * bytesPerSample;
+
+			m_bufferByteSize = static_cast<usize>(s_RecordingBufferSeconds) * bytesPerSecond;
+			m_maxBufferByteOffset = static_cast<usize>(s_MaxRecordingSeconds) * bytesPerSecond;
+
+			m_recordingBuffer.resize(m_bufferByteSize, 0u);
+		}
+
 		return Status::Success;
 	}
 
 	void RecordingDevice::Close() noexcept
 	{
+		if (m_isRecording)
+		{
+			StopRecording();
+		}
+
 		SDL_CloseAudioDevice(m_internalID);
 		m_internalID = s_InvalidDeviceID;
+	}
+
+	void RecordingDevice::StartRecording()
+	{
+		std::ranges::fill(m_recordingBuffer, 0u);
+		m_currentBufferByteOffset = 0u;
+
+		SDL_PauseAudioDevice(m_internalID, SDL_FALSE);
+		m_isRecording = true;
+	}
+
+	Pair<Vector<ubyte>, usize> RecordingDevice::StopRecording()
+	{
+		SDL_PauseAudioDevice(m_internalID, SDL_TRUE);
+		m_isRecording = false;
+
+		return { m_recordingBuffer, m_currentBufferByteOffset };
+	}
+
+	void RecordingDevice::AudioRecordingCallback(void* const userData, u8* const stream, const i32 length)
+	{
+		RecordingDevice* const recordingDevice = static_cast<RecordingDevice*>(userData);
+
+		std::memcpy(recordingDevice->m_recordingBuffer.data() + recordingDevice->m_currentBufferByteOffset, stream, length);
+		recordingDevice->m_currentBufferByteOffset += static_cast<u32>(length);
+
+		if (recordingDevice->m_currentBufferByteOffset > recordingDevice->m_maxBufferByteOffset)
+		{
+			recordingDevice->m_callback(recordingDevice->m_recordingBuffer, recordingDevice->m_currentBufferByteOffset);
+			recordingDevice->m_currentBufferByteOffset = 0u;
+		}
 	}
 }
