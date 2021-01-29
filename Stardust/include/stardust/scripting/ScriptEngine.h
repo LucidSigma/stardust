@@ -9,6 +9,8 @@
 #include <sol/sol.hpp>
 
 #include "stardust/data/Containers.h"
+#include "stardust/data/MathTypes.h"
+#include "stardust/data/Types.h"
 #include "stardust/utility/status/Status.h"
 
 namespace stardust
@@ -58,16 +60,16 @@ namespace stardust
 			m_luaState.set_function(functionName, values...);
 		}
 
-		template <typename Result, typename... Args>
-		[[nodiscard]] Result CallFunction(const StringView& name, Args&&... args) const
+		template <typename ReturnType, typename... Args>
+		[[nodiscard]] ReturnType CallFunction(const StringView& name, Args&&... args) const
 		{
-			if constexpr (std::is_same_v<Result, void>)
+			if constexpr (std::is_same_v<ReturnType, void>)
 			{
-				GetFunction<Result(Args...)>(name)(args...);
+				GetFunction<ReturnType(Args...)>(name)(args...);
 			}
 			else
 			{
-				return GetFunction<Result(Args...)>(name)(args...);
+				return GetFunction<ReturnType(Args...)>(name)(args...);
 			}
 		}
 
@@ -75,6 +77,67 @@ namespace stardust
 
 		inline sol::state& GetState() noexcept { return m_luaState; }
 		inline const sol::state& GetState() const noexcept { return m_luaState; }
+
+	private:
+		template <typename T, typename Constructors>
+		void LoadVectorType()
+		{
+			String vectorTypeName = "vec";
+
+			if constexpr (std::is_same_v<T, Vec2>)
+			{
+				vectorTypeName += "2";
+			}
+			else if constexpr (std::is_same_v<T, Vec3>)
+			{
+				vectorTypeName += "3";
+			}
+			else if constexpr (std::is_same_v<T, Vec4>)
+			{
+				vectorTypeName += "4";
+			}
+			else
+			{
+				static_assert(false, "Invalid vector type.");
+			}
+
+			sol::usertype<T> vectorType = m_luaState.new_usertype<T>(
+				vectorTypeName, Constructors{ },
+				"x", &T::x,
+				"y", &T::y,
+				"normalise", [](const T& self) -> T { return glm::normalize(self); },
+				"length", [](const T& self) -> f32 { return glm::length(self); },
+				"distance", [](const T& self, const T& other) -> f32 { return glm::distance(self, other); },
+				"dot", [](const T& self, const T& other) -> f32 { return glm::dot(self, other); },
+				sol::meta_function::addition, sol::resolve<T(const T&, const T&)>(glm::operator +),
+				sol::meta_function::subtraction, sol::resolve<T(const T&, const T&)>(glm::operator -),
+				sol::meta_function::multiplication, sol::resolve<T(const T&, const T&)>(glm::operator *),
+				sol::meta_function::division, sol::resolve<T(const T&, const T&)>(glm::operator /)
+			);
+
+			if constexpr (!std::is_same_v<T, Vec4>)
+			{
+				vectorType.set_function(sol::meta_function::addition, sol::resolve<T(const T&, f32)>(glm::operator +));
+				vectorType.set_function(sol::meta_function::subtraction, sol::resolve<T(const T&, f32)>(glm::operator -));
+				vectorType.set_function(sol::meta_function::multiplication, sol::resolve<T(const T&, const f32)>(glm::operator *));
+				vectorType.set_function(sol::meta_function::division, sol::resolve<T(const T&, const f32)>(glm::operator /));
+			}
+
+			if constexpr (std::is_same_v<T, Vec3> || std::is_same_v<T, Vec4>)
+			{
+				vectorType.set_function("z", &T::z);
+			}
+
+			if constexpr (std::is_same_v<T, Vec4>)
+			{
+				vectorType.set_function("w", &T::w);
+			}
+
+			if constexpr (std::is_same_v<T, Vec3>)
+			{
+				vectorType.set_function("cross", [](const T& self, const T& other) -> T { return glm::cross(self, other); });
+			}
+		}
 	};
 }
 

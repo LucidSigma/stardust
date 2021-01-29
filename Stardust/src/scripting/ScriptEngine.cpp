@@ -1,9 +1,9 @@
 #include "stardust/scripting/ScriptEngine.h"
 
 #include "stardust/application/Application.h"
-#include "stardust/data/Types.h"
 #include "stardust/debug/logging/Log.h"
 #include "stardust/filesystem/vfs/VFS.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
@@ -34,6 +34,10 @@ namespace stardust
 		SetFunction("log_warn", &Log::Warn<>);
 		SetFunction("log_error", &Log::Error<>);
 		SetFunction("log_critical", &Log::Critical<>);
+
+		LoadVectorType<Vec2, sol::constructors<Vec2(), Vec2(f32), Vec2(f32, f32), Vec2(const Vec2&)>>();
+		LoadVectorType<Vec3, sol::constructors<Vec3(), Vec3(f32), Vec3(f32, f32, f32), Vec3(const Vec3&)>>();
+		LoadVectorType<Vec4, sol::constructors<Vec4(), Vec4(f32), Vec4(f32, f32, f32, f32), Vec4(const Vec4&)>>();
 	}
 
 	[[nodiscard]] Status ScriptEngine::LoadScript(const StringView& filename)

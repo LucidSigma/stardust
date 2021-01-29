@@ -159,6 +159,7 @@ public:
 		sd::Log::Trace("{} {} {}", (sd::i32)GetScriptEngine()["a"], GetScriptEngine().Get<sd::i32>("b"), GetScriptEngine().Get<sd::i32>("c"));
 
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
+		GetScriptEngine().CallFunction<void>("vector_stuff");
 
 		return sd::Status::Success;
 	}
