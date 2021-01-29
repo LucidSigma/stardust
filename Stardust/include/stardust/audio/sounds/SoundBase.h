@@ -76,12 +76,12 @@ namespace stardust
 			}
 		}
 
-		void Initialise(const Vector<ubyte>& soundData, const f32 sampleRate = 44'100.0f, const u32 channelCount = 1u)
+		void Initialise(const Vector<ubyte>& soundData, const u32 frequency = 44'100u, const u32 channelCount = 2u)
 		{
 			const SoLoud::result loadStatus = m_handle.loadRawWave(
 				reinterpret_cast<const unsigned char*>(soundData.data()),
 				static_cast<u32>(soundData.size()),
-				sampleRate, channelCount,
+				static_cast<f32>(frequency), channelCount,
 				true, false
 			);
 			m_isValid = loadStatus == 0u;
