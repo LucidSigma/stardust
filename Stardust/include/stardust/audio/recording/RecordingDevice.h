@@ -16,8 +16,6 @@ namespace stardust
 	class RecordingDevice
 	{
 	public:
-		using Callback = std::function<void(Vector<ubyte>, usize)>;
-
 		struct Info
 		{
 			i32 index;
@@ -32,7 +30,7 @@ namespace stardust
 
 		SDL_AudioDeviceID m_internalID = s_InvalidDeviceID;
 
-		i32 m_index;
+		i32 m_index = std::numeric_limits<i32>::max();
 		String m_name;
 
 		u32 m_frequency = 0u;
@@ -47,23 +45,27 @@ namespace stardust
 		usize m_currentBufferByteOffset = 0u;
 		usize m_maxBufferByteOffset = 0u;
 
-		Callback m_callback{ };
+		ConcurrentQueue<Vector<ubyte>> m_soundChunks{ };
 
 	public:
 		[[nodiscard]] static Vector<Info> GetAllDeviceInfos();
 
+		RecordingDevice() = default;
 		RecordingDevice(const Info& info);
 		~RecordingDevice() noexcept;
+
+		void Initialise(const Info& info);
 
 		Status Open(const u32 frequency = 44'100u, const u32 channelCount = 2u);
 		void Close() noexcept;
 		inline bool IsOpen() const { return m_internalID != s_InvalidDeviceID; }
 
 		void StartRecording();
-		Pair<Vector<ubyte>, usize> StopRecording();
+		void StopRecording();
 		inline bool IsRecording() const noexcept { return m_isRecording; }
 
-		inline void SetCallback(const Callback& callback) noexcept { m_callback = callback; }
+		inline bool HasChunk() const noexcept { return m_soundChunks.size_approx() > 0u; }
+		[[nodiscard]] Vector<ubyte> DequeueChunk();
 
 		inline i32 GetIndex() const noexcept { return m_index; }
 		inline const String& GetName() const noexcept { return m_name; }
@@ -73,6 +75,8 @@ namespace stardust
 
 	private:
 		static void AudioRecordingCallback(void* const userData, u8* const stream, const i32 length);
+
+		void EnqueueChunk();
 	};
 }
 

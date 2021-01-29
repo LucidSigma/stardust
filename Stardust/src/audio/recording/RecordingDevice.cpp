@@ -23,8 +23,9 @@ namespace stardust
 	}
 
 	RecordingDevice::RecordingDevice(const Info& info)
-		: m_index(info.index), m_name(info.name)
-	{ }
+	{
+		Initialise(info);
+	}
 
 	RecordingDevice::~RecordingDevice() noexcept
 	{
@@ -32,6 +33,12 @@ namespace stardust
 		{
 			Close();
 		}
+	}
+
+	void RecordingDevice::Initialise(const Info& info)
+	{
+		m_index = info.index;
+		m_name = info.name;
 	}
 
 	Status RecordingDevice::Open(const u32 frequency, const u32 channelCount)
@@ -72,6 +79,9 @@ namespace stardust
 			m_maxBufferByteOffset = static_cast<usize>(s_MaxRecordingSeconds) * bytesPerSecond;
 
 			m_recordingBuffer.resize(m_bufferByteSize, 0u);
+
+			m_previousFrequency = m_frequency;
+			m_previousChannelCount = m_channelCount;
 		}
 
 		return Status::Success;
@@ -97,12 +107,20 @@ namespace stardust
 		m_isRecording = true;
 	}
 
-	Pair<Vector<ubyte>, usize> RecordingDevice::StopRecording()
+	void RecordingDevice::StopRecording()
 	{
-		SDL_PauseAudioDevice(m_internalID, SDL_TRUE);
 		m_isRecording = false;
+		SDL_PauseAudioDevice(m_internalID, SDL_TRUE);
+		
+		EnqueueChunk();
+		m_currentBufferByteOffset = 0u;
+	}
 
-		return { m_recordingBuffer, m_currentBufferByteOffset };
+	[[nodiscard]] Vector<ubyte> RecordingDevice::DequeueChunk()
+	{
+		Vector<ubyte> data{ };
+		
+		return m_soundChunks.try_dequeue(data) ? data : Vector<ubyte>{ };
 	}
 
 	void RecordingDevice::AudioRecordingCallback(void* const userData, u8* const stream, const i32 length)
@@ -114,8 +132,15 @@ namespace stardust
 
 		if (recordingDevice->m_currentBufferByteOffset > recordingDevice->m_maxBufferByteOffset)
 		{
-			recordingDevice->m_callback(recordingDevice->m_recordingBuffer, recordingDevice->m_currentBufferByteOffset);
-			recordingDevice->m_currentBufferByteOffset = 0u;
+			recordingDevice->EnqueueChunk();
 		}
+	}
+
+	void RecordingDevice::EnqueueChunk()
+	{
+		Vector<ubyte> soundChunk(std::cbegin(m_recordingBuffer), std::cbegin(m_recordingBuffer) + m_currentBufferByteOffset);
+		m_soundChunks.enqueue(soundChunk);
+
+		m_currentBufferByteOffset = 0u;
 	}
 }
