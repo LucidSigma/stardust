@@ -149,12 +149,14 @@ namespace stardust
 	{
 		EndWorldBatch();
 		FlushWorldBatch(camera);
+		BeginWorldBatch();
 	}
 
 	void Renderer::NewScreenBatch()
 	{
 		EndScreenBatch();
 		FlushScreenBatch();
+		BeginScreenBatch();
 	}
 
 	void Renderer::DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera)
