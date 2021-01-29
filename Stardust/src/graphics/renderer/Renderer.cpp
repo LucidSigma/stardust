@@ -145,6 +145,18 @@ namespace stardust
 		FlushScreenBatch();
 	}
 
+	void Renderer::NewWorldBatch(const Camera2D& camera)
+	{
+		EndWorldBatch();
+		FlushWorldBatch(camera);
+	}
+
+	void Renderer::NewScreenBatch()
+	{
+		EndScreenBatch();
+		FlushScreenBatch();
+	}
+
 	void Renderer::DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera)
 	{
 		if (m_worldIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]

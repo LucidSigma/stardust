@@ -125,6 +125,9 @@ namespace stardust
 		void BeginFrame();
 		void EndFrame(const Camera2D& camera);
 
+		void NewWorldBatch(const Camera2D& camera);
+		void NewScreenBatch();
+
 		void DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera);
 		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
 		void DrawWorldRect(const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
