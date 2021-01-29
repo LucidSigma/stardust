@@ -72,6 +72,7 @@ public:
 ## Dependencies
 ### Window/Input
 * [SDL2](https://www.libsdl.org/)
+	* [SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB)
 
 ### Graphics
 * [Glad](https://glad.dav1d.de/)
