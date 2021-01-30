@@ -297,7 +297,7 @@ namespace stardust
 			return raycastHits;
 		}
 
-		[[nodiscard]] Optional<Collider> World::OverlapBox(const AABB& box, const CollisionLayer layerMask) const
+		[[nodiscard]] Optional<Collider> World::QueryBox(const AABB& box, const CollisionLayer layerMask) const
 		{
 			Collider hitFixture;
 			OverlapBoxCallback callback(hitFixture, layerMask, *this);
@@ -314,7 +314,7 @@ namespace stardust
 			}
 		}
 
-		[[nodiscard]] Optional<Collider> World::OverlapBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+		[[nodiscard]] Optional<Collider> World::QueryBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
 		{
 			const AABB box(centre, halfSize);
 
@@ -333,7 +333,7 @@ namespace stardust
 			}
 		}
 
-		[[nodiscard]] Vector<Collider> World::OverlapBoxAll(const AABB& box, const CollisionLayer layerMask) const
+		[[nodiscard]] Vector<Collider> World::QueryBoxAll(const AABB& box, const CollisionLayer layerMask) const
 		{
 			Vector<Collider> hitFixtures{ };
 			OverlapBoxAllCallback callback(hitFixtures, layerMask, *this);
@@ -343,7 +343,7 @@ namespace stardust
 			return hitFixtures;
 		}
 
-		[[nodiscard]] Vector<Collider> World::OverlapBoxAll(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+		[[nodiscard]] Vector<Collider> World::QueryBoxAll(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
 		{
 			const AABB box(centre, halfSize);
 

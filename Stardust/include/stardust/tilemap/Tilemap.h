@@ -135,7 +135,7 @@ namespace stardust
 		[[nodiscard]] ObserverPtr<const Layer> GetLayerByName(const String layerName) const noexcept;
 
 		[[nodiscard]] inline bool HasObjectType(const String& type) const noexcept { return m_objects.contains(type); }
-		inline const Vector<physics::Polygon>& GetObjects(const String& type = "") const noexcept { return m_objects.at(type); }
+		[[nodiscard]] const Vector<physics::Polygon>& GetObjects(const String& type = "") const noexcept { return m_objects.at(type); }
 		inline const HashMap<String, Vector<physics::Polygon>>& GetAllObjects() const noexcept { return m_objects; }
 
 		inline bool IsValid() const noexcept { return m_isValid; }
