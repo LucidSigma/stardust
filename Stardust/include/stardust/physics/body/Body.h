@@ -89,6 +89,8 @@ namespace stardust
 			Collider AddCollider(const Collider::CreateInfo& colliderInfo);
 			void RemoveCollider(const Collider& collider);
 			inline const HashSet<Collider>& GetColliders() const { return m_colliders; }
+			[[nodiscard]] inline const Collider& GetFirstCollider() const { return *std::cbegin(m_colliders); }
+			[[nodiscard]] inline bool HasColliders() const noexcept { return !m_colliders.empty(); }
 			[[nodiscard]] inline bool HasCollider(const Collider& collider) const { return m_colliders.contains(collider); }
 
 			[[nodiscard]] Vec2 GetWorldCentre() const;
