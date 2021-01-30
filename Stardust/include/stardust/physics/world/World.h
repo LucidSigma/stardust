@@ -53,8 +53,6 @@ namespace stardust
 			HashMap<const b2Body*, CollisionCallback> m_sensorExitCallbacks{ };
 
 		public:
-			friend class CollisionListener;
-
 			inline static u32 GetVelocityIterations() noexcept { return s_velocityIterations; }
 			inline static void SetVelocityIterations(const u32 iterations) noexcept { s_velocityIterations = iterations; }
 			inline static u32 GetPositionIterations() noexcept { return s_positionIterations; }
