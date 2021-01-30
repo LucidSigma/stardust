@@ -41,7 +41,7 @@ namespace stardust
 			inline u32 GetChildEdgeCount() const noexcept { return static_cast<u32>(m_chain.GetChildCount()); }			
 
 			[[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
-			[[nodiscard]] AABB ComputeAABB(const Vec2& worldPosition, const f32 rotation) const;
+			[[nodiscard]] AABB ComputeEdgeAABB(const Vec2& worldPosition, const f32 rotation, const u32 childEdgeIndex) const;
 			[[nodiscard]] MassData ComputeMassData(const f32 density) const;
 
 			inline operator ObserverPtr<b2Shape>() noexcept { return &m_chain; }

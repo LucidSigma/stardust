@@ -90,13 +90,13 @@ namespace stardust
 			return m_chain.TestPoint(transform, b2Vec2{ point.x, point.y });
 		}
 
-		[[nodiscard]] AABB Chain::ComputeAABB(const Vec2& worldPosition, const f32 rotation) const
+		[[nodiscard]] AABB Chain::ComputeEdgeAABB(const Vec2& worldPosition, const f32 rotation, const u32 childEdgeIndex) const
 		{
 			b2Transform transform{ };
 			transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
 
 			b2AABB aabb{ };
-			m_chain.ComputeAABB(&aabb, transform, 0);
+			m_chain.ComputeAABB(&aabb, transform, static_cast<i32>(childEdgeIndex));
 
 			return aabb;
 		}
