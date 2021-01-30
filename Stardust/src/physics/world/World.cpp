@@ -297,6 +297,41 @@ namespace stardust
 			return raycastHits;
 		}
 
+		[[nodiscard]] bool World::RaycastBox(AABB box, const f32 inset, const CollisionLayer layerMask) const
+		{
+			box.Expand(-inset);
+
+			const auto upRaycastHit = Raycast(box.GetLowerBound(), Vec2Up, box.GetSize().y - inset * 2.0f, layerMask);
+
+			if (upRaycastHit.has_value())
+			{
+				return true;
+			}
+
+			const auto downRaycastHit = Raycast(box.GetUpperBound(), Vec2Down, box.GetSize().y - inset * 2.0f, layerMask);
+
+			if (downRaycastHit.has_value())
+			{
+				return true;
+			}
+
+			const auto leftRaycastHit = Raycast(Vec2{ box.GetUpperBound().x, box.GetLowerBound().y }, Vec2Left, box.GetSize().x - inset * 2.0f, layerMask);
+
+			if (downRaycastHit.has_value())
+			{
+				return true;
+			}
+
+			const auto rightRaycastHit = Raycast(Vec2{ box.GetLowerBound().x, box.GetUpperBound().y }, Vec2Right, box.GetSize().x - inset * 2.0f, layerMask);
+
+			return rightRaycastHit.has_value();
+		}
+
+		[[nodiscard]] bool World::RaycastBox(const Vec2& centre, const Vec2& halfSize, const f32 inset, const CollisionLayer layerMask) const
+		{
+			return RaycastBox(AABB(centre, halfSize), inset, layerMask);
+		}
+
 		[[nodiscard]] Optional<Collider> World::QueryBox(const AABB& box, const CollisionLayer layerMask) const
 		{
 			Collider hitFixture;

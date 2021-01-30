@@ -77,6 +77,9 @@ namespace stardust
 			[[nodiscard]] Optional<RaycastHit> Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = AllLayers) const;
 			[[nodiscard]] Vector<RaycastHit> RaycastAll(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask = AllLayers) const;
 
+			[[nodiscard]] bool RaycastBox(AABB box, const f32 inset = 0.0f, const CollisionLayer layerMask = AllLayers) const;
+			[[nodiscard]] bool RaycastBox(const Vec2& centre, const Vec2& halfSize, const f32 inset = 0.0f, const CollisionLayer layerMask = AllLayers) const;
+
 			[[nodiscard]] Optional<Collider> QueryBox(const AABB& box, const CollisionLayer layerMask = AllLayers) const;
 			[[nodiscard]] Optional<Collider> QueryBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask = AllLayers) const;
 			[[nodiscard]] Vector<Collider> QueryBoxAll(const AABB& box, const CollisionLayer layerMask = AllLayers) const;
