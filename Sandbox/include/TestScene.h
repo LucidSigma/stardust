@@ -41,7 +41,7 @@ public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
 	{
-
+		
 	}
 
 	virtual ~TestScene() noexcept = default;

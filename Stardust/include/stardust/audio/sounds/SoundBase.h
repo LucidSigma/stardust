@@ -51,9 +51,9 @@ namespace stardust
 			Initialise(filepath);
 		}
 
-		SoundBase(const Vector<ubyte>& soundData)
+		SoundBase(const Vector<f32>& soundData, const u32 frequency = 44'100u, const u32 channelCount = 2u)
 		{
-			Initialise(soundData);
+			Initialise(soundData, frequency, channelCount);
 		}
 
 		~SoundBase() noexcept = default;
@@ -76,14 +76,15 @@ namespace stardust
 			}
 		}
 
-		void Initialise(const Vector<ubyte>& soundData, const u32 frequency = 44'100u, const u32 channelCount = 2u)
+		void Initialise(Vector<f32> soundData, const u32 frequency = 44'100u, const u32 channelCount = 2u)
 		{
 			const SoLoud::result loadStatus = m_handle.loadRawWave(
-				reinterpret_cast<const unsigned char*>(soundData.data()),
+				reinterpret_cast<f32*>(soundData.data()),
 				static_cast<u32>(soundData.size()),
 				static_cast<f32>(frequency), channelCount,
 				true, false
 			);
+
 			m_isValid = loadStatus == 0u;
 
 			if (m_isValid)

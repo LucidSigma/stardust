@@ -69,8 +69,9 @@ namespace stardust
 
 		m_frequency = static_cast<u32>(obtainedAudioSpec.freq);
 		m_channelCount = static_cast<u32>(obtainedAudioSpec.channels);
+		m_audioFormat = obtainedAudioSpec.format;
 
-		if (m_frequency != m_previousFrequency || m_channelCount != m_previousChannelCount)
+		if (m_frequency != m_previousFrequency || m_channelCount != m_previousChannelCount || m_audioFormat != m_previousAudioFormat)
 		{
 			const u32 bytesPerSample = m_channelCount * static_cast<u32>(SDL_AUDIO_BITSIZE(obtainedAudioSpec.format)) / 8u;
 			const u32 bytesPerSecond = m_frequency * bytesPerSample;
@@ -82,6 +83,7 @@ namespace stardust
 
 			m_previousFrequency = m_frequency;
 			m_previousChannelCount = m_channelCount;
+			m_previousAudioFormat = m_audioFormat;
 		}
 
 		return Status::Success;
@@ -109,28 +111,36 @@ namespace stardust
 
 	void RecordingDevice::StopRecording()
 	{
-		m_isRecording = false;
 		SDL_PauseAudioDevice(m_internalID, SDL_TRUE);
+		m_isRecording = false;
 		
 		EnqueueChunk();
 		m_currentBufferByteOffset = 0u;
 	}
 
-	[[nodiscard]] Vector<ubyte> RecordingDevice::DequeueChunk()
+	[[nodiscard]] Vector<f32> RecordingDevice::DequeueChunk()
 	{
-		Vector<ubyte> data{ };
-		
-		return m_soundChunks.try_dequeue(data) ? data : Vector<ubyte>{ };
+		if (Vector<f32> data{ };
+			m_soundChunks.try_dequeue(data))
+		{
+			--m_soundChunkCount;
+
+			return data;
+		}
+		else
+		{
+			return { };
+		}
 	}
 
-	void RecordingDevice::AudioRecordingCallback(void* const userData, u8* const stream, const i32 length)
+	void RecordingDevice::AudioRecordingCallback(void* const userData, ubyte* const stream, const i32 length)
 	{
 		RecordingDevice* const recordingDevice = static_cast<RecordingDevice*>(userData);
 
 		std::memcpy(recordingDevice->m_recordingBuffer.data() + recordingDevice->m_currentBufferByteOffset, stream, length);
 		recordingDevice->m_currentBufferByteOffset += static_cast<u32>(length);
 
-		if (recordingDevice->m_currentBufferByteOffset > recordingDevice->m_maxBufferByteOffset)
+		if (recordingDevice->m_currentBufferByteOffset >= recordingDevice->m_maxBufferByteOffset)
 		{
 			recordingDevice->EnqueueChunk();
 		}
@@ -138,8 +148,10 @@ namespace stardust
 
 	void RecordingDevice::EnqueueChunk()
 	{
-		Vector<ubyte> soundChunk(std::cbegin(m_recordingBuffer), std::cbegin(m_recordingBuffer) + m_currentBufferByteOffset);
+		Vector<f32> soundChunk(m_currentBufferByteOffset / (static_cast<u32>(SDL_AUDIO_BITSIZE(m_audioFormat)) / 8u));
+		std::memcpy(soundChunk.data(), m_recordingBuffer.data(), m_currentBufferByteOffset);
 		m_soundChunks.enqueue(soundChunk);
+		++m_soundChunkCount;
 
 		m_currentBufferByteOffset = 0u;
 	}

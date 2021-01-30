@@ -35,8 +35,10 @@ namespace stardust
 
 		u32 m_frequency = 0u;
 		u32 m_channelCount = 0u;
+		SDL_AudioFormat m_audioFormat = AUDIO_F32LSB;
 		u32 m_previousFrequency = std::numeric_limits<u32>::max();
 		u32 m_previousChannelCount = std::numeric_limits<u32>::max();
+		SDL_AudioFormat m_previousAudioFormat = AUDIO_F32LSB;
 
 		bool m_isRecording = false;
 
@@ -45,7 +47,8 @@ namespace stardust
 		usize m_currentBufferByteOffset = 0u;
 		usize m_maxBufferByteOffset = 0u;
 
-		ConcurrentQueue<Vector<ubyte>> m_soundChunks{ };
+		ConcurrentQueue<Vector<f32>> m_soundChunks{ };
+		u32 m_soundChunkCount = 0u;
 
 	public:
 		[[nodiscard]] static Vector<Info> GetAllDeviceInfos();
@@ -64,17 +67,18 @@ namespace stardust
 		void StopRecording();
 		inline bool IsRecording() const noexcept { return m_isRecording; }
 
-		inline bool HasChunk() const noexcept { return m_soundChunks.size_approx() > 0u; }
-		[[nodiscard]] Vector<ubyte> DequeueChunk();
+		inline bool HasChunk() const noexcept { return m_soundChunkCount > 0u; }
+		[[nodiscard]] Vector<f32> DequeueChunk();
 
 		inline i32 GetIndex() const noexcept { return m_index; }
 		inline const String& GetName() const noexcept { return m_name; }
 
 		inline u32 GetFrequency() const noexcept { return m_frequency; }
 		inline u32 GetChannelCount() const noexcept { return m_channelCount; }
+		inline u32 GetFormat() const noexcept { return m_channelCount; }
 
 	private:
-		static void AudioRecordingCallback(void* const userData, u8* const stream, const i32 length);
+		static void AudioRecordingCallback(void* const userData, ubyte* const stream, const i32 length);
 
 		void EnqueueChunk();
 	};
