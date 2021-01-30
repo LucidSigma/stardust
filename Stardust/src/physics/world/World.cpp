@@ -148,13 +148,67 @@ namespace stardust
 			};
 		}
 
+		World::CollisionListener::CollisionListener(const World& world)
+			: m_world(world)
+		{ }
+
+		void World::CollisionListener::BeginContact(b2Contact* const contact)
+		{
+			const ObserverPtr<b2Body> firstBody = contact->GetFixtureA()->GetBody();
+			const ObserverPtr<b2Body> secondBody = contact->GetFixtureB()->GetBody();
+
+			const bool isSensorContact = contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor();
+
+			if (isSensorContact)
+			{
+				if (m_world.m_sensorEnterCallbacks.contains(firstBody))
+				{
+					m_world.m_sensorEnterCallbacks.at(firstBody)(Collider(contact->GetFixtureB(), m_world));
+				}
+			}
+			else
+			{
+				if (m_world.m_collisionEnterCallbacks.contains(firstBody))
+				{
+					m_world.m_collisionEnterCallbacks.at(firstBody)(Collider(contact->GetFixtureB(), m_world));
+				}
+			}
+		}
+
+		void World::CollisionListener::EndContact(b2Contact* const contact)
+		{
+			const ObserverPtr<b2Body> firstBody = contact->GetFixtureA()->GetBody();
+			const ObserverPtr<b2Body> secondBody = contact->GetFixtureB()->GetBody();
+
+			const bool isSensorContact = contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor();
+
+			if (isSensorContact)
+			{
+				if (m_world.m_sensorExitCallbacks.contains(firstBody))
+				{
+					m_world.m_sensorExitCallbacks.at(firstBody)(Collider(contact->GetFixtureB(), m_world));
+				}
+			}
+			else
+			{
+				if (m_world.m_collisionExitCallbacks.contains(firstBody))
+				{
+					m_world.m_collisionExitCallbacks.at(firstBody)(Collider(contact->GetFixtureB(), m_world));
+				}
+			}
+		}
+
 		World::World()
 			: m_handle(std::make_unique<b2World>(b2Vec2_zero))
-		{ }
+		{
+			m_handle->SetContactListener(&m_collisionListener);
+		}
 
 		World::World(const Vec2& gravity)
 			: m_handle(std::make_unique<b2World>(b2Vec2{ gravity.x, gravity.y }))
-		{ }
+		{
+			m_handle->SetContactListener(&m_collisionListener);
+		}
 
 		void World::Step(const f32 timestep) const
 		{
