@@ -46,14 +46,11 @@ namespace stardust
 		f32 m_maxDistance = 1'000'000.0f;
 
 	public:
+		SoundBase() = default;
+
 		SoundBase(const StringView& filepath)
 		{
 			Initialise(filepath);
-		}
-
-		SoundBase(const Vector<f32>& soundData, const u32 frequency = 44'100u, const u32 channelCount = 2u)
-		{
-			Initialise(soundData, frequency, channelCount);
 		}
 
 		~SoundBase() noexcept = default;
@@ -67,24 +64,6 @@ namespace stardust
 				static_cast<u32>(rawSoundData.size()),
 				true, false
 			);
-			m_isValid = loadStatus == 0u;
-
-			if (m_isValid)
-			{
-				m_length = m_handle.getLength();
-				SetInaudibleBehaviour(InaudibleBehaviour::KeepTicking);
-			}
-		}
-
-		void Initialise(Vector<f32> soundData, const u32 frequency = 44'100u, const u32 channelCount = 2u)
-		{
-			const SoLoud::result loadStatus = m_handle.loadRawWave(
-				reinterpret_cast<f32*>(soundData.data()),
-				static_cast<u32>(soundData.size()),
-				static_cast<f32>(frequency), channelCount,
-				true, false
-			);
-
 			m_isValid = loadStatus == 0u;
 
 			if (m_isValid)
