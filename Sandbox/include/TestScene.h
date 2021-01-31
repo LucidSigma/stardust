@@ -310,7 +310,7 @@ public:
 				if (m_device.HasPCMChunk())
 				{
 					const auto pcmChunk = m_device.DequeuePCMChunk();
-					m_chunkSound.Initialise(pcmChunk);
+					m_chunkSound.Initialise(pcmChunk, m_device.GetFrequency(), m_device.GetChannelCount());
 
 					m_source = GetSoundSystem().PlaySound(m_chunkSound);
 				}

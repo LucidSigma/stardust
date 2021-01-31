@@ -72,11 +72,11 @@ namespace stardust
 		m_channelCount = static_cast<u32>(obtainedAudioSpec.channels);
 		m_audioFormat = obtainedAudioSpec.format;
 
-		const u32 bytesPerSample = m_channelCount * static_cast<u32>(SDL_AUDIO_BITSIZE(obtainedAudioSpec.format)) / 8u;
-		const u32 bytesPerSecond = m_frequency * bytesPerSample;
+		const f32 bytesPerSample = static_cast<f32>(m_channelCount * static_cast<u32>(SDL_AUDIO_BITSIZE(obtainedAudioSpec.format)) / 8u);
+		const f32 bytesPerSecond = static_cast<f32>(m_frequency * bytesPerSample);
 
-		m_bufferByteSize = static_cast<usize>(s_RecordingBufferSeconds) * bytesPerSecond;
-		m_maxBufferByteOffset = static_cast<usize>(s_MaxRecordingSeconds) * bytesPerSecond;
+		m_bufferByteSize = static_cast<usize>(s_RecordingBufferSeconds * bytesPerSecond);
+		m_maxBufferByteOffset = static_cast<usize>(s_MaxRecordingSeconds * bytesPerSecond);
 
 		m_recordingBuffer.resize(m_bufferByteSize, 0u);
 
