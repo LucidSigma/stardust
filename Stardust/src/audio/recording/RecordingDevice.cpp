@@ -104,7 +104,10 @@ namespace stardust
 
 	void RecordingDevice::StopRecording()
 	{
+		SDL_LockAudioDevice(m_internalID);
 		SDL_PauseAudioDevice(m_internalID, SDL_TRUE);
+		SDL_UnlockAudioDevice(m_internalID);
+
 		m_isRecording = false;
 
 		EnqueuePCMChunk();

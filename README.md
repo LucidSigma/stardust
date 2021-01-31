@@ -21,13 +21,13 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Tilemaps (using Tiled JSON files).
 * Scene queue.
 * Converting JSON to and from MessagePack (for binary storage).
+* Audio recording.
 * Animation (sprites and basic tweens).
 * Logging and system modals.
 * Basic parallel task scheduling.
 
 ## Functionality to come
 * Basic AI (graphs, pathfinding/searching, boids, minimax, et cetera).
-* Audio recording.
 * Graphical effects (outlines, kernel effects (blur, edge detection), HDR/bloom).
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
 * UI (canvases, basic elements such as buttons/sliders/checkboxes).

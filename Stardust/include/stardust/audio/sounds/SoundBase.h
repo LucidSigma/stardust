@@ -8,6 +8,7 @@
 #include <concepts>
 
 #include <soloud/soloud.h>
+#include <soloud/soloud_wav.h>
 #undef min
 #undef max
 
@@ -53,6 +54,12 @@ namespace stardust
 			Initialise(filepath);
 		}
 
+		template <std::same_as<SoLoud::Wav> U = T>
+		SoundBase(const Vector<ubyte>& pcmData, const f32 frequency = 44'100u, const u32 channelCount = 1u)
+		{
+			Initialise(pcmData, frequency, channelCount);
+		}
+
 		~SoundBase() noexcept = default;
 
 		void Initialise(const StringView& filepath)
@@ -62,6 +69,24 @@ namespace stardust
 			const SoLoud::result loadStatus = m_handle.loadMem(
 				reinterpret_cast<const unsigned char*>(rawSoundData.data()),
 				static_cast<u32>(rawSoundData.size()),
+				true, false
+			);
+			m_isValid = loadStatus == 0u;
+
+			if (m_isValid)
+			{
+				m_length = m_handle.getLength();
+				SetInaudibleBehaviour(InaudibleBehaviour::KeepTicking);
+			}
+		}
+
+		template <std::same_as<SoLoud::Wav> U = T>
+		void Initialise(Vector<ubyte> pcmData, const f32 frequency = 44'100u, const u32 channelCount = 1u)
+		{
+			const SoLoud::result loadStatus = m_handle.loadRawWave(
+				reinterpret_cast<f32*>(pcmData.data()),
+				static_cast<u32>(pcmData.size() / sizeof(f32)),
+				static_cast<f32>(frequency), channelCount,
 				true, false
 			);
 			m_isValid = loadStatus == 0u;

@@ -37,7 +37,10 @@ private:
 
 	sd::Tilemap m_tilemap;
 
+	bool m_startRecording = false;
 	sd::RecordingDevice m_device;
+	sd::Sound m_chunkSound;
+	sd::SoundSource m_source;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -163,21 +166,9 @@ public:
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
 
-		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos()[2u]);
+		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();
 		m_device.StartRecording();
-		sd::Log::Info("Recording...");
-
-		while (!m_device.HasPCMChunk())
-		{
-
-		}
-
-		const auto pcmChunk = m_device.DequeuePCMChunk();
-
-		sd::Log::Info("Finished recording.");
-		m_device.StopRecording();
-		m_device.Close();
 
 		return sd::Status::Success;
 	}
@@ -270,11 +261,11 @@ public:
 				});
 			}
 
-			if (GetKeyboardState().IsKeyDown(sd::KeyCode::V))
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::Z))
 			{
 				m_colourAnimator.SetCurrentAnimation("flash");
 			}
-			else if (GetKeyboardState().IsKeyUp(sd::KeyCode::V))
+			else if (GetKeyboardState().IsKeyUp(sd::KeyCode::Z))
 			{
 				m_colourAnimator.SetCurrentAnimation("dance");
 			}
@@ -283,6 +274,18 @@ public:
 			{
 				const sd::f64 elapsedTime = GetScriptEngine().GetFunction<sd::f64()>("get_time")();
 				sd::Log::Trace("Elapsed time: {}", elapsedTime);
+			}
+
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::V))
+			{
+				m_startRecording = true;
+				m_device.StartRecording();
+			}
+
+			if (GetKeyboardState().IsKeyUp(sd::KeyCode::V))
+			{
+				m_startRecording = false;
+				m_device.StopRecording();
 			}
 		}
 	}
@@ -299,6 +302,20 @@ public:
 		m_particles.Update(deltaTime);
 
 		m_colourAnimator.Update(deltaTime);
+
+		if (m_startRecording)
+		{
+			if (!m_source.HasValidHandle() || m_source.IsStopped())
+			{
+				if (m_device.HasPCMChunk())
+				{
+					const auto pcmChunk = m_device.DequeuePCMChunk();
+					m_chunkSound.Initialise(pcmChunk);
+
+					m_source = GetSoundSystem().PlaySound(m_chunkSound);
+				}
+			}
+		}
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
