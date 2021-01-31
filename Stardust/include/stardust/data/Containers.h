@@ -20,6 +20,7 @@
 #include <vector>
 
 #include <concurrentqueue/concurrentqueue.h>
+#include <concurrentqueue/blockingconcurrentqueue.h>
 
 namespace stardust
 {
@@ -76,6 +77,9 @@ namespace stardust
 
 	template <typename T>
 	using ConcurrentQueue = moodycamel::ConcurrentQueue<T>;
+
+	template <typename T>
+	using BlockingConcurrentQueue = moodycamel::BlockingConcurrentQueue<T>;
 
 	template <typename T, typename U>
 	using Pair = std::pair<T, U>;
