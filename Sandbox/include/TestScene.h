@@ -37,6 +37,8 @@ private:
 
 	sd::Tilemap m_tilemap;
 
+	sd::RecordingDevice m_device;
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -160,6 +162,22 @@ public:
 
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
+
+		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos()[2u]);
+		m_device.Open();
+		m_device.StartRecording();
+		sd::Log::Info("Recording...");
+
+		while (!m_device.HasPCMChunk())
+		{
+
+		}
+
+		const auto pcmChunk = m_device.DequeuePCMChunk();
+
+		sd::Log::Info("Finished recording.");
+		m_device.StopRecording();
+		m_device.Close();
 
 		return sd::Status::Success;
 	}
