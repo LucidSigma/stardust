@@ -42,12 +42,12 @@ namespace stardust
 		m_name = info.name;
 	}
 
-	Status RecordingDevice::Open(const u32 frequency)
+	Status RecordingDevice::Open(const u32 frequency, const u32 channelCount)
 	{
 		const SDL_AudioSpec desiredAudioSpec{
 			.freq = static_cast<i32>(frequency),
 			.format = AUDIO_F32,
-			.channels = static_cast<u8>(s_RecordingChannelCount),
+			.channels = static_cast<u8>(channelCount),
 			.silence = 0u,
 			.samples = 4'096u,
 			.size = 0u,
@@ -69,9 +69,10 @@ namespace stardust
 		}
 
 		m_frequency = static_cast<u32>(obtainedAudioSpec.freq);
+		m_channelCount = static_cast<u32>(obtainedAudioSpec.channels);
 		m_audioFormat = obtainedAudioSpec.format;
 
-		const u32 bytesPerSample = s_RecordingChannelCount * static_cast<u32>(SDL_AUDIO_BITSIZE(obtainedAudioSpec.format)) / 8u;
+		const u32 bytesPerSample = m_channelCount * static_cast<u32>(SDL_AUDIO_BITSIZE(obtainedAudioSpec.format)) / 8u;
 		const u32 bytesPerSecond = m_frequency * bytesPerSample;
 
 		m_bufferByteSize = static_cast<usize>(s_RecordingBufferSeconds) * bytesPerSecond;

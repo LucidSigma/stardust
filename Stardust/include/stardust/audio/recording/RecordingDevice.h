@@ -26,8 +26,6 @@ namespace stardust
 	private:
 		static constexpr SDL_AudioDeviceID s_InvalidDeviceID = 0u;
 
-		static constexpr u32 s_RecordingChannelCount = 1u;
-
 		static constexpr u32 s_MaxRecordingSeconds = 1u;
 		static constexpr u32 s_RecordingBufferSeconds = s_MaxRecordingSeconds + 1u;
 
@@ -37,6 +35,7 @@ namespace stardust
 		String m_name;
 
 		u32 m_frequency = 0u;
+		u32 m_channelCount = 0u;
 		SDL_AudioFormat m_audioFormat = AUDIO_F32;
 
 		bool m_isRecording = false;
@@ -58,7 +57,7 @@ namespace stardust
 
 		void Initialise(const Info& info);
 
-		Status Open(const u32 frequency = 44'100u);
+		Status Open(const u32 frequency = 44'100u, const u32 channelCount = 1u);
 		void Close() noexcept;
 		inline bool IsOpen() const { return m_internalID != s_InvalidDeviceID; }
 
@@ -73,7 +72,7 @@ namespace stardust
 		inline const String& GetName() const noexcept { return m_name; }
 
 		inline u32 GetFrequency() const noexcept { return m_frequency; }
-		inline u32 GetChannelCount() const noexcept { return s_RecordingChannelCount; }
+		inline u32 GetChannelCount() const noexcept { return m_channelCount; }
 		inline u32 GetFormat() const noexcept { return m_audioFormat; }
 
 	private:
