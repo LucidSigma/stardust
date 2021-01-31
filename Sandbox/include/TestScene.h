@@ -278,14 +278,13 @@ public:
 
 			if (GetKeyboardState().IsKeyDown(sd::KeyCode::V))
 			{
-				m_startRecording = true;
 				m_device.StartRecording();
 			}
 
 			if (GetKeyboardState().IsKeyUp(sd::KeyCode::V))
 			{
-				m_startRecording = false;
 				m_device.StopRecording();
+				m_device.ClearPCMChunks();
 			}
 		}
 	}
@@ -303,17 +302,14 @@ public:
 
 		m_colourAnimator.Update(deltaTime);
 
-		if (m_startRecording)
+		if (!m_source.HasValidHandle() || m_source.IsStopped())
 		{
-			if (!m_source.HasValidHandle() || m_source.IsStopped())
+			if (m_device.HasPCMChunk())
 			{
-				if (m_device.HasPCMChunk())
-				{
-					const auto pcmChunk = m_device.DequeuePCMChunk();
-					m_chunkSound.Initialise(pcmChunk, m_device.GetFrequency(), m_device.GetChannelCount());
+				const auto pcmChunk = m_device.DequeuePCMChunk();
+				m_chunkSound.Initialise(pcmChunk, m_device.GetFrequency(), m_device.GetChannelCount());
 
-					m_source = GetSoundSystem().PlaySound(m_chunkSound);
-				}
+				m_source = GetSoundSystem().PlaySound(m_chunkSound);
 			}
 		}
 	}

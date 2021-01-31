@@ -129,6 +129,16 @@ namespace stardust
 		}
 	}
 
+	void RecordingDevice::ClearPCMChunks()
+	{
+		Vector<ubyte> data{ };
+
+		while (m_soundChunks.try_dequeue(data))
+		{
+			--m_soundChunkCount;
+		}
+	}
+
 	void RecordingDevice::AudioRecordingCallback(void* const userData, ubyte* const stream, const i32 length)
 	{
 		RecordingDevice* const recordingDevice = static_cast<RecordingDevice*>(userData);

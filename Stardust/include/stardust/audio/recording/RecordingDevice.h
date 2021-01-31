@@ -26,7 +26,7 @@ namespace stardust
 	private:
 		static constexpr SDL_AudioDeviceID s_InvalidDeviceID = 0u;
 
-		static constexpr f32 s_MaxRecordingSeconds = 0.5f;
+		static constexpr f32 s_MaxRecordingSeconds = 0.25f;
 		static constexpr f32 s_RecordingBufferSeconds = 1.0f;
 
 		SDL_AudioDeviceID m_internalID = s_InvalidDeviceID;
@@ -67,6 +67,7 @@ namespace stardust
 
 		inline bool HasPCMChunk() const noexcept { return m_soundChunkCount > 0u; }
 		[[nodiscard]] Vector<ubyte> DequeuePCMChunk();
+		void ClearPCMChunks();
 
 		inline i32 GetIndex() const noexcept { return m_index; }
 		inline const String& GetName() const noexcept { return m_name; }
