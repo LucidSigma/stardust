@@ -21,7 +21,7 @@ namespace stardust
 	public:
 		FontCache() = default;
 		FontCache(const StringView& fontFilepath);
-		~FontCache() noexcept;
+		~FontCache() noexcept = default;
 
 		void SetFont(const StringView& fontFilepath);
 

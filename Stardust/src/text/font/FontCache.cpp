@@ -6,11 +6,6 @@ namespace stardust
 		: m_filepath(fontFilepath)
 	{ }
 
-	FontCache::~FontCache() noexcept
-	{
-		m_pointSizes.clear();
-	}
-
 	void FontCache::SetFont(const StringView& fontFilepath)
 	{
 		m_filepath = fontFilepath;

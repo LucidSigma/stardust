@@ -9,12 +9,6 @@ namespace stardust
 		Initialise(font, sampler);
 	}
 
-	TextCache::~TextCache() noexcept
-	{
-		m_textures.clear();
-		m_utf16Textures.clear();
-	}
-
 	void TextCache::Initialise(const Font& font, const Sampler& sampler)
 	{
 		m_font = &font;

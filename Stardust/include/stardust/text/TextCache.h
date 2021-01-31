@@ -32,7 +32,7 @@ namespace stardust
 	public:
 		TextCache() = default;
 		TextCache(const Font& font, const Sampler& sampler = Sampler{ });
-		~TextCache() noexcept;
+		~TextCache() noexcept = default;
 
 		void Initialise(const Font& font, const Sampler& sampler = Sampler{ });
 
