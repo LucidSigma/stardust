@@ -19,10 +19,10 @@ namespace stardust
 		static constexpr bool s_CanCountMicroseconds = std::ratio_greater_equal_v<std::micro, Clock::period>;
 		static constexpr bool s_CanCountNanoseconds = std::ratio_greater_equal_v<std::nano, Clock::period>;
 
-		bool m_isRunning;
+		bool m_isRunning = false;
 		bool m_isPaused = false;
 
-		Clock::time_point m_startTimepoint;
+		u64 m_startTicks = 0u;
 		u64 m_pausedTickCount = 0u;
 
 	public:
@@ -41,19 +41,23 @@ namespace stardust
 		void Pause();
 		void Resume();
 
-		bool IsRunning();
-		bool IsStopped();
-		bool IsPaused();
+		inline bool IsRunning() const noexcept { return m_isRunning && !m_isPaused; }
+		inline bool IsStopped() const noexcept { return !m_isRunning; }
+		inline bool IsPaused() const noexcept { return m_isRunning && m_isPaused; }
 
 		[[nodiscard]] u32 GetElapsedSeconds() const;
-		[[nodiscard]] u32 GetElapsedMilliseconds() const;
+		[[nodiscard]] u64 GetElapsedMilliseconds() const;
 		[[nodiscard]] u64 GetElapsedMicroseconds() const;
 		[[nodiscard]] u64 GetElapsedNanoseconds() const;
 		
-		[[nodiscard]] bool HasPassedSeconds() const;
-		[[nodiscard]] bool HasPassedMilliSeconds() const;
-		[[nodiscard]] bool HasPassedMicroSeconds() const;
-		[[nodiscard]] bool HasPassedNanoSeconds() const;
+		[[nodiscard]] inline bool HasPassedSeconds(const u32 seconds) const { return GetElapsedSeconds() >= seconds; }
+		[[nodiscard]] inline bool HasPassedMilliSeconds(const u64 milliseconds) const { return GetElapsedMilliseconds() >= milliseconds; }
+		[[nodiscard]] inline bool HasPassedMicroSeconds(const u64 microseconds) const { return GetElapsedMicroseconds() >= microseconds; }
+		[[nodiscard]] inline bool HasPassedNanoSeconds(const u64 nanoseconds) const { return GetElapsedNanoseconds() >= nanoseconds; }
+
+	private:
+		[[nodiscard]] u64 GetTimeSinceEpoch() const;
+		[[nodiscard]] u64 GetElapsedTime(const u64 magnitude) const;
 	};
 }
 

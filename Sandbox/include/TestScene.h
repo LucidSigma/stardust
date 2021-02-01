@@ -168,7 +168,6 @@ public:
 
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();
-		m_device.StartRecording();
 
 		return sd::Status::Success;
 	}
