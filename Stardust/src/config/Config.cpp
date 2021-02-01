@@ -63,7 +63,7 @@ namespace stardust
 		if (!doesConfigFileExist)
 		{
 			String preferredLocale = "en_gb";
-			const auto preferredLocales = Locale::GetSystemPreferredLocales();
+			const auto& preferredLocales = Locale::GetSystemPreferredLocales();
 
 			for (const auto& locale : preferredLocales)
 			{
