@@ -81,6 +81,8 @@ namespace stardust
 
 		void Reset();
 
+		KeyFrame GetCurrentKeyFrame() const noexcept { return m_currentKeyFrame; }
+		u32 GetFrameCount() const noexcept { return m_maxKeyFrame; }
 		u32 GetFPS() const noexcept { return m_fps; }
 		f32 GetSecondsPerFrame() const noexcept { return m_secondsPerFrame; }
 

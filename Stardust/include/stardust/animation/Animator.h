@@ -40,6 +40,8 @@ namespace stardust
 		[[nodiscard]] Vec2 GetShear() const;
 		[[nodiscard]] Colour GetColour() const;
 
+		void SkipToFrame(KeyFrame frame) const;
+
 		inline ObserverPtr<const Animation> GetCurrentAnimation() const noexcept { return m_currentAnimation; }
 		void SetCurrentAnimation(const String& animationName);
 

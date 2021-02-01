@@ -285,6 +285,11 @@ public:
 				m_device.StopRecording();
 				m_device.ClearPCMChunks();
 			}
+
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::X))
+			{
+				m_colourAnimator.SkipToFrame(16u);
+			}
 		}
 	}
 

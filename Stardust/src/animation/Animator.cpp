@@ -69,6 +69,16 @@ namespace stardust
 		return m_currentAnimation->GetColour(m_currentFramePercentage);
 	}
 
+	void Animator::SkipToFrame(KeyFrame frame) const
+	{
+		frame %= m_currentAnimation->GetFrameCount();
+
+		while (m_currentAnimation->GetCurrentKeyFrame() != frame)
+		{
+			m_currentAnimation->Step();
+		}
+	}
+
 	void Animator::SetCurrentAnimation(const String& animationName)
 	{
 		if (m_currentAnimation != nullptr) [[unlikely]]
