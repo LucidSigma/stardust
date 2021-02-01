@@ -30,7 +30,7 @@ namespace stardust
 
 	public:
 		SoundSystem();
-		~SoundSystem();
+		~SoundSystem() noexcept;
 
 		void Update() const;
 

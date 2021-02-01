@@ -9,6 +9,11 @@
 #include "stardust/data/Containers.h"
 #include "stardust/debug/logging/Log.h"
 
+#ifndef WIN32
+#define __cdecl
+#endif
+
+
 #ifdef WIN32
 extern "C"
 {
@@ -73,3 +78,7 @@ namespace stardust
 		}
 	}
 }
+
+#ifndef WIN32
+#undef __cdecl
+#endif

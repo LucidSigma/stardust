@@ -22,7 +22,7 @@ namespace stardust
 		Vec3 m_velocity = Vec3Zero;
 
 	public:
-		Listener(class SoundSystem& soundSystem);
+		explicit Listener(class SoundSystem& soundSystem);
 		Listener(Listener&& other) noexcept;
 		Listener& operator =(Listener&& other) noexcept;
 		~Listener() noexcept = default;

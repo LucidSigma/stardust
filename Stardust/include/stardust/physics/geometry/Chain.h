@@ -24,7 +24,7 @@ namespace stardust
 		public:
 			Chain() = default;
 			Chain(const b2ChainShape& shapeHandle);
-			Chain(const Vector<Vec2>& vertices);
+			explicit Chain(const Vector<Vec2>& vertices);
 			Chain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB);
 			~Chain() noexcept = default;
 

@@ -24,7 +24,7 @@ namespace stardust
 
 		public:
 			Rectangle() = default;
-			Rectangle(const f32 width);
+			explicit Rectangle(const f32 width);
 			Rectangle(const f32 width, const f32 height);
 			~Rectangle() noexcept = default;
 

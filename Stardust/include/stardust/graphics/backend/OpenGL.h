@@ -21,4 +21,8 @@ namespace stardust
 	}
 }
 
+#ifndef WIN32
+#undef __cdecl
+#endif
+
 #endif

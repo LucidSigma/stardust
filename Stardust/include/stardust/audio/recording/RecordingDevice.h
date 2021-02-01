@@ -52,7 +52,7 @@ namespace stardust
 		[[nodiscard]] static Vector<Info> GetAllDeviceInfos();
 
 		RecordingDevice() = default;
-		RecordingDevice(const Info& info);
+		explicit RecordingDevice(const Info& info);
 		~RecordingDevice() noexcept;
 
 		void Initialise(const Info& info);

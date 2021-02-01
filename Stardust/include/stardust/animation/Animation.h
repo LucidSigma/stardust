@@ -61,7 +61,7 @@ namespace stardust
 		static void AddCustomEasingFunction(const String& name, const EasingFunction& easingFunction);
 
 		Animation() = default;
-		Animation(const StringView& filepath);
+		explicit Animation(const StringView& filepath);
 		Animation(const StringView& filepath, const TextureAtlas& textureAtlas);
 		~Animation() noexcept = default;
 

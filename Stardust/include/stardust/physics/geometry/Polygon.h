@@ -25,7 +25,7 @@ namespace stardust
 
 			Polygon() = default;
 			Polygon(const b2PolygonShape& shapeHandle);
-			Polygon(const Vector<Vec2>& points);
+			explicit Polygon(const Vector<Vec2>& points);
 			~Polygon() noexcept = default;
 
 			void Set(const Vector<Vec2>& points);

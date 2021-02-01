@@ -113,7 +113,7 @@ namespace stardust
 		Optional<InitialiseCallback> m_onInitialise = NullOpt;
 
 	public:
-		Application(const CreateInfo& createInfo);
+		explicit Application(const CreateInfo& createInfo);
 		~Application() noexcept;
 
 		void Run();

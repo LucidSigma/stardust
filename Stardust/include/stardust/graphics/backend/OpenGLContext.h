@@ -21,7 +21,7 @@ namespace stardust
 
 	public:
 		OpenGLContext() = default;
-		OpenGLContext(const Window& window);
+		explicit OpenGLContext(const Window& window);
 
 		OpenGLContext(OpenGLContext&& other) noexcept;
 		OpenGLContext& operator =(OpenGLContext&& other) noexcept;

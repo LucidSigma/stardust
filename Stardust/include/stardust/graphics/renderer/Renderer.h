@@ -109,7 +109,7 @@ namespace stardust
 
 	public:
 		Renderer() = default;
-		Renderer(const CreateInfo& createInfo);
+		explicit Renderer(const CreateInfo& createInfo);
 		~Renderer() noexcept;
 
 		void Initialise(const CreateInfo& createInfo);

@@ -32,7 +32,7 @@ namespace stardust
 				const World& m_world;
 
 			public:
-				CollisionListener(const World& world);
+				explicit CollisionListener(const World& world);
 				virtual ~CollisionListener() noexcept = default;
 
 				virtual void BeginContact(b2Contact* const contact) override;
@@ -59,7 +59,7 @@ namespace stardust
 			inline static void SetPositionIterations(const u32 iterations) noexcept { s_positionIterations = iterations; }
 
 			World();
-			World(const Vec2& gravity);
+			explicit World(const Vec2& gravity);
 			~World() noexcept = default;
 
 			void Step(const f32 timestep) const;

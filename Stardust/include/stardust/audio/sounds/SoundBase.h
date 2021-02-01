@@ -49,13 +49,13 @@ namespace stardust
 	public:
 		SoundBase() = default;
 
-		SoundBase(const StringView& filepath)
+		explicit SoundBase(const StringView& filepath)
 		{
 			Initialise(filepath);
 		}
 
 		template <std::same_as<SoLoud::Wav> U = T>
-		SoundBase(const Vector<ubyte>& pcmData, const f32 frequency = 44'100u, const u32 channelCount = 1u)
+		explicit SoundBase(const Vector<ubyte>& pcmData, const f32 frequency = 44'100u, const u32 channelCount = 1u)
 		{
 			Initialise(pcmData, frequency, channelCount);
 		}

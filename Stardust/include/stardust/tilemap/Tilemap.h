@@ -55,7 +55,7 @@ namespace stardust
 
 		public:
 			Layer() = default;
-			Layer(const CreateInfo& createInfo);
+			explicit Layer(const CreateInfo& createInfo);
 			~Layer() noexcept = default;
 
 			void Initialise(const CreateInfo& createInfo);
@@ -109,7 +109,7 @@ namespace stardust
 		friend class Layer;
 
 		Tilemap() = default;
-		Tilemap(const StringView& filepath);
+		explicit Tilemap(const StringView& filepath);
 		~Tilemap() noexcept = default;
 
 		void Initialise(const StringView& filepath);

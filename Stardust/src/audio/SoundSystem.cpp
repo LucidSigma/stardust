@@ -8,7 +8,7 @@ namespace stardust
 		Initialise();
 	}
 
-	SoundSystem::~SoundSystem()
+	SoundSystem::~SoundSystem() noexcept
 	{
 		Destroy();
 	}

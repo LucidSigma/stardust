@@ -26,7 +26,7 @@ namespace stardust
 
 	public:
 		ShaderProgram() = default;
-		ShaderProgram(const Vector<ObserverPtr<const Shader>>& shaders);
+		explicit ShaderProgram(const Vector<ObserverPtr<const Shader>>& shaders);
 
 		ShaderProgram(ShaderProgram&& other) noexcept;
 		ShaderProgram& operator =(ShaderProgram&& other) noexcept;

@@ -24,7 +24,7 @@ namespace stardust
 
 	public:
 		TextureAtlas() = default;
-		TextureAtlas(const StringView& filepath);
+		explicit TextureAtlas(const StringView& filepath);
 
 		TextureAtlas(TextureAtlas&& other) noexcept;
 		TextureAtlas& operator =(TextureAtlas&& other) noexcept;
