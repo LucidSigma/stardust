@@ -9,5 +9,19 @@ namespace stardust
 		Component::Component(const Canvas& canvas)
 			: m_owningCanvas(&canvas)
 		{ }
+
+		void Component::SetEnabled(const bool isEnabled)
+		{
+			m_isEnabled = isEnabled;
+
+			if (m_isEnabled)
+			{
+				OnEnable();
+			}
+			else
+			{
+				OnDisable();
+			}
+		}
 	}
 }

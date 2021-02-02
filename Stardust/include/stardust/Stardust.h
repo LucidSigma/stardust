@@ -106,6 +106,7 @@
 
 #include "ui/canvas/Canvas.h"
 #include "ui/components/UIComponent.h"
+#include "ui/Anchor.h"
 
 #include "utility/cpu/CPU.h"
 #include "utility/interfaces/INoncopyable.h"
