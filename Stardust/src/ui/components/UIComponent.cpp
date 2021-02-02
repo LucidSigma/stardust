@@ -6,8 +6,8 @@ namespace stardust
 {
 	namespace ui
 	{
-		Component::Component(const Canvas& canvas)
-			: m_owningCanvas(&canvas)
+		Component::Component(const Canvas& canvas, const Anchor anchor, const IVec2& anchorOffset)
+			: m_owningCanvas(&canvas), m_anchor(anchor), m_anchorOffset(anchorOffset)
 		{ }
 
 		void Component::SetEnabled(const bool isEnabled)

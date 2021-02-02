@@ -1,14 +1,28 @@
 #include "stardust/ui/canvas/Canvas.h"
 
-#include "stardust/data/Types.h"
-
 namespace stardust
 {
 	namespace ui
 	{
+		Canvas::Canvas(const UVec2& drawingSize)
+		{
+			Initialise(drawingSize);
+		}
+
 		Canvas::Canvas(const Renderer& renderer)
-			: m_drawingSize(renderer.GetVirtualSize())
-		{ }
+		{
+			Initialise(renderer);
+		}
+
+		void Canvas::Initialise(const UVec2& drawingSize)
+		{
+			SetDrawingSize(drawingSize);
+		}
+
+		void Canvas::Initialise(const Renderer& renderer)
+		{
+			SetDrawingSize(renderer.GetVirtualSize());
+		}
 
 		void Canvas::PollEvent(const SDL_Event& event)
 		{
@@ -24,7 +38,7 @@ namespace stardust
 			}
 		}
 
-		void Canvas::Update()
+		void Canvas::Update(const f32 deltaTime)
 		{
 			if (m_isEnabled)
 			{
@@ -32,7 +46,7 @@ namespace stardust
 				{
 					if (component->IsEnabled())
 					{
-						component->Update();
+						component->Update(deltaTime);
 					}
 				}
 			}
@@ -161,6 +175,16 @@ namespace stardust
 				{
 					component->OnCanvasDisable();
 				}
+			}
+		}
+
+		void Canvas::SetDrawingSize(const UVec2& drawingSize)
+		{
+			m_drawingSize = drawingSize;
+
+			for (auto& [component, type] : m_components)
+			{
+				component->OnCanvasResize(m_drawingSize);
 			}
 		}
 	}

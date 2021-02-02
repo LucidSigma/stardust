@@ -7,6 +7,7 @@
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
+#include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/math/Math.h"
 #include "stardust/ui/Anchor.h"
@@ -27,11 +28,16 @@ namespace stardust
 			UVec2 m_drawingSize = UVec2Zero;
 
 		public:
-			Canvas(const Renderer& renderer);
+			Canvas() = default;
+			explicit Canvas(const UVec2& drawingSize);
+			explicit Canvas(const Renderer& renderer);
 			~Canvas() noexcept = default;
 
+			void Initialise(const UVec2& drawingSize);
+			void Initialise(const Renderer& renderer);
+
 			void PollEvent(const SDL_Event& event);
-			void Update();
+			void Update(const f32 deltaTime);
 			void Render(Renderer& renderer);
 
 			void AttachComponent(Component& component, const String type);
@@ -49,7 +55,7 @@ namespace stardust
 			inline void SetVisibility(const bool isVisible) noexcept { m_isVisible = isVisible; }
 
 			inline const UVec2& GetDrawingSize() const noexcept { return m_drawingSize; }
-			inline void SetDrawingSize(const UVec2& drawingSize) noexcept { m_drawingSize = drawingSize; }
+			void SetDrawingSize(const UVec2& drawingSize);
 		};
 	}
 }

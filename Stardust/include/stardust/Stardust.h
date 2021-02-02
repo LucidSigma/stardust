@@ -105,6 +105,7 @@
 #include "time/Timers.h"
 
 #include "ui/canvas/Canvas.h"
+#include "ui/components/ColourBlock.h"
 #include "ui/components/UIComponent.h"
 #include "ui/Anchor.h"
 

@@ -28,7 +28,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 
 ## Functionality to come
 * Basic AI (graphs, pathfinding/searching, boids, minimax, et cetera).
-* Graphical effects (outlines, kernel effects (blur, edge detection), HDR/bloom).
+* Graphical effects (kernel effects (blur, edge detection), HDR/bloom).
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
 * UI (canvases, basic elements such as buttons/sliders/checkboxes).
 * Networking support (using ENet).
@@ -49,21 +49,21 @@ class ExampleScene final
 {
 public:
 	ExampleScene(sd::Application& application, const sd::String& name);
-	virtual ~ExampleScene() noexcept = default;
+	virtual ~ExampleScene() noexcept override = default;
 
-	[[nodiscard]] virtual sd::Status OnLoad();
-	virtual void OnUnload() noexcept;
+	[[nodiscard]] virtual sd::Status OnLoad() override;
+	virtual void OnUnload() noexcept override;
 
-	virtual void FixedUpdate(const sd::f32 fixedDeltaTime);
-	virtual void ProcessInput();
-	virtual void Update(const sd::f32 deltaTime);
-	virtual void LateUpdate(const sd::f32 deltaTime);
+	virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override;
+	virtual void ProcessInput() override;
+	virtual void Update(const sd::f32 deltaTime) override;
+	virtual void LateUpdate(const sd::f32 deltaTime) override;
 
-	virtual void Render(sd::Renderer& renderer);
+	virtual void Render(sd::Renderer& renderer) override;
 
-	virtual void PollEvent(const SDL_Event& event);
-	virtual void OnGameControllerAdded(sd::GameController& gameController);
-	virtual void OnGameControllerRemoved(const sd::GameController& gameController);
+	virtual void PollEvent(const SDL_Event& event) override;
+	virtual void OnGameControllerAdded(sd::GameController& gameController) override;
+	virtual void OnGameControllerRemoved(const sd::GameController& gameController) override;
 };
 
 #endif

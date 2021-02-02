@@ -7,6 +7,7 @@
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
+#include "stardust/data/Types.h"
 #include "stardust/math/Math.h"
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/ui/Anchor.h"
@@ -27,11 +28,11 @@ namespace stardust
 			ObserverPtr<const class Canvas> m_owningCanvas = nullptr;
 
 		public:
-			Component(const class Canvas& canvas);
+			explicit Component(const class Canvas& canvas, const Anchor anchor = Anchor::Centre, const IVec2& anchorOffset = IVec2Zero);
 			virtual ~Component() noexcept = default;
 
-			virtual void PollEvent(const SDL_Event& event) = 0;
-			inline virtual void Update() { }
+			virtual void PollEvent(const SDL_Event& event) { };
+			inline virtual void Update(const f32 deltaTime) { }
 			virtual void Render(Renderer& renderer) = 0;
 
 			inline virtual void OnAttach() { }
@@ -42,6 +43,8 @@ namespace stardust
 			inline virtual void OnCanvasEnable() { }
 			inline virtual void OnCanvasDisable() { }
 
+			inline virtual void OnCanvasResize(const UVec2& newCanvasSize) { }
+
 			inline bool IsEnabled() const noexcept { return m_isEnabled; }
 			void SetEnabled(const bool isEnabled);
 
@@ -51,7 +54,7 @@ namespace stardust
 			inline Anchor GetAnchor() const noexcept { return m_anchor; }
 			inline void SetAnchor(const Anchor anchor) noexcept { m_anchor = anchor; }
 			inline const IVec2& GetAnchorOffset() const noexcept { return m_anchorOffset; }
-			inline void GetAnchorOffset(const IVec2& anchorOffset) noexcept { m_anchorOffset = anchorOffset; }
+			inline void SetAnchorOffset(const IVec2& anchorOffset) noexcept { m_anchorOffset = anchorOffset; }
 
 			inline bool HasOwningCanvas() const noexcept { return m_owningCanvas != nullptr; }
 			inline const class Canvas& GetOwningCanvas() const { return *m_owningCanvas; }

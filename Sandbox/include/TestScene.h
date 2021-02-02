@@ -42,6 +42,9 @@ private:
 	sd::Sound m_chunkSound;
 	sd::SoundSource m_source;
 
+	sd::ui::Canvas m_canvas{ GetRenderer() };
+	sd::ui::ColourBlock m_colourBlock{ m_canvas, sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 } };
+
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -49,11 +52,11 @@ public:
 		
 	}
 
-	virtual ~TestScene() noexcept = default;
+	virtual ~TestScene() noexcept override = default;
 
 	[[nodiscard]] virtual sd::Status OnLoad() override
 	{
-		m_application.GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
+		GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
 
 		const auto textures = sd::vfs::GetAllFilesInDirectory("assets/textures");
 
@@ -166,13 +169,15 @@ public:
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
 
+		m_canvas.AttachComponent(m_colourBlock, "block");
+
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();
 
 		return sd::Status::Success;
 	}
 
-	virtual void OnUnload() noexcept
+	virtual void OnUnload() noexcept override
 	{ }
 
 	virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override
@@ -456,6 +461,7 @@ public:
 			GetCamera()
 		);
 
+		m_canvas.Render(renderer);
 		m_particles.RenderOnScreen(renderer);
 	}
 
