@@ -47,6 +47,7 @@ namespace stardust
 		{
 			m_components.emplace(&component, type);
 			component.OnAttach();
+			component.SetOwningCanvas(this);
 		}
 
 		void Canvas::DetachComponent(Component& component)
@@ -54,6 +55,7 @@ namespace stardust
 			if (m_components.contains(&component))
 			{
 				component.OnDetach();
+				component.SetOwningCanvas(nullptr);
 				m_components.erase(&component);
 			}
 		}

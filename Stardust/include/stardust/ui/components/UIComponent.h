@@ -53,7 +53,9 @@ namespace stardust
 			inline const IVec2& GetAnchorOffset() const noexcept { return m_anchorOffset; }
 			inline void GetAnchorOffset(const IVec2& anchorOffset) noexcept { m_anchorOffset = anchorOffset; }
 
-			inline const class Canvas& GetOwningCanvas() const noexcept { return *m_owningCanvas; }
+			inline bool HasOwningCanvas() const noexcept { return m_owningCanvas != nullptr; }
+			inline const class Canvas& GetOwningCanvas() const { return *m_owningCanvas; }
+			inline void SetOwningCanvas(const ObserverPtr<const class Canvas> canvas) noexcept { m_owningCanvas = canvas; }
 		};
 	}
 }
