@@ -16,7 +16,10 @@ namespace stardust
 			{
 				for (auto& [component, type] : m_components)
 				{
-					component->PollEvent(event);
+					if (component->IsEnabled())
+					{
+						component->PollEvent(event);
+					}
 				}
 			}
 		}
@@ -27,18 +30,24 @@ namespace stardust
 			{
 				for (auto& [component, type] : m_components)
 				{
-					component->Update();
+					if (component->IsEnabled())
+					{
+						component->Update();
+					}
 				}
 			}
 		}
 
-		void Canvas::Render(Renderer & renderer)
+		void Canvas::Render(Renderer& renderer)
 		{
 			if (m_isEnabled && m_isVisible)
 			{
 				for (auto& [component, type] : m_components)
 				{
-					component->Render(renderer);
+					if (component->IsEnabled() && component->IsVisible())
+					{
+						component->Render(renderer);
+					}
 				}
 			}
 		}
