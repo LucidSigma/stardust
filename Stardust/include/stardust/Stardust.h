@@ -104,6 +104,9 @@
 #include "time/Stopwatch.h"
 #include "time/Timers.h"
 
+#include "ui/canvas/Canvas.h"
+#include "ui/components/UIComponent.h"
+
 #include "utility/cpu/CPU.h"
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"
