@@ -169,7 +169,7 @@ public:
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
 
-		m_canvas.AttachComponent(m_colourBlock, "block");
+		m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
 
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();

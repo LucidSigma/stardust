@@ -2,6 +2,7 @@
 #ifndef STARDUST_SCENE_MANAGER_H
 #define STARDUST_SCENE_MANAGER_H
 
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -20,7 +21,7 @@ namespace stardust
 		SceneManager() = default;
 		~SceneManager() noexcept = default;
 
-		template <typename T, typename... Args, typename = std::enable_if_t<std::is_base_of_v<Scene, T>&& std::is_constructible_v<T, Args...>>>
+		template <std::derived_from<Scene> T, typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Args...>>>
 		void PushScene(Args&&... args)
 		{
 			m_scenes.push(std::make_unique<T>(std::forward<Args>(args)...));

@@ -28,7 +28,7 @@ namespace stardust
 		{
 			if (m_isEnabled)
 			{
-				for (auto& [component, type] : m_components)
+				for (auto& [name, component] : m_components)
 				{
 					if (component->IsEnabled())
 					{
@@ -42,7 +42,7 @@ namespace stardust
 		{
 			if (m_isEnabled)
 			{
-				for (auto& [component, type] : m_components)
+				for (auto& [name, component] : m_components)
 				{
 					if (component->IsEnabled())
 					{
@@ -56,7 +56,7 @@ namespace stardust
 		{
 			if (m_isEnabled && m_isVisible)
 			{
-				for (auto& [component, type] : m_components)
+				for (auto& [name, component] : m_components)
 				{
 					if (component->IsEnabled() && component->IsVisible())
 					{
@@ -66,36 +66,27 @@ namespace stardust
 			}
 		}
 
-		void Canvas::AttachComponent(Component& component, const String type)
+		void Canvas::DetachComponent(const String& name)
 		{
-			m_components.emplace(&component, type);
-			component.OnAttach();
-			component.SetOwningCanvas(this);
-		}
-
-		void Canvas::DetachComponent(Component& component)
-		{
-			if (m_components.contains(&component))
+			if (const auto componentLocation = m_components.find(name);
+				componentLocation != std::cend(m_components))
 			{
-				component.OnDetach();
-				component.SetOwningCanvas(nullptr);
-				m_components.erase(&component);
+				componentLocation->second->OnDetach();
+				m_components.erase(componentLocation);
 			}
 		}
 
-		[[nodiscard]] Vector<ObserverPtr<Component>> Canvas::GetComponents(const String& type)
+		[[nodiscard]] ObserverPtr<Component> Canvas::GetComponent(const String& name)
 		{
-			Vector<ObserverPtr<Component>> components{ };
-
-			for (const auto& [component, componentType] : m_components)
+			if (const auto componentLocation = m_components.find(name);
+				componentLocation != std::cend(m_components))
 			{
-				if (componentType == type)
-				{
-					components.push_back(component);
-				}
+				return componentLocation->second.get();
 			}
-
-			return components;
+			else
+			{
+				return nullptr;
+			}
 		}
 
 		[[nodiscard]] IVec2 Canvas::GetPositionFromAnchor(const Anchor anchor, const UVec2& componentSize, const IVec2& anchorOffset) const
@@ -164,14 +155,14 @@ namespace stardust
 
 			if (m_isEnabled)
 			{
-				for (auto& [component, type] : m_components)
+				for (auto& [name, component] : m_components)
 				{
 					component->OnCanvasEnable();
 				}
 			}
 			else
 			{
-				for (auto& [component, type] : m_components)
+				for (auto& [name, component] : m_components)
 				{
 					component->OnCanvasDisable();
 				}
@@ -182,7 +173,7 @@ namespace stardust
 		{
 			m_drawingSize = drawingSize;
 
-			for (auto& [component, type] : m_components)
+			for (auto& [name, component] : m_components)
 			{
 				component->OnCanvasResize(m_drawingSize);
 			}

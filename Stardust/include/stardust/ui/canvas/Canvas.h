@@ -2,6 +2,10 @@
 #ifndef STARDUST_CANVAS_H
 #define STARDUST_CANVAS_H
 
+#include <concepts>
+#include <type_traits>
+#include <utility>
+
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
@@ -20,7 +24,7 @@ namespace stardust
 		class Canvas
 		{
 		private:
-			HashMap<ObserverPtr<Component>, String> m_components{ };
+			HashMap<String, UniquePtr<Component>> m_components{ };
 
 			bool m_isEnabled = true;
 			bool m_isVisible = true;
@@ -40,11 +44,19 @@ namespace stardust
 			void Update(const f32 deltaTime);
 			void Render(Renderer& renderer);
 
-			void AttachComponent(Component& component, const String type);
-			void DetachComponent(Component& component);
-			inline HashMap<ObserverPtr<Component>, String>& GetComponents() noexcept { return m_components; }
-			inline const HashMap<ObserverPtr<Component>, String>& GetComponents() const noexcept { return m_components; }
-			[[nodiscard]] Vector<ObserverPtr<Component>> GetComponents(const String& type);
+			template <std::derived_from<Component> T, typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Canvas, Args...>>>
+			ObserverPtr<Component> AttachComponent(const String name, Args&&... args)
+			{
+				m_components[name] = std::make_unique<T>(*this, std::forward<Args>(args)...);
+				m_components[name]->OnAttach();
+
+				return m_components[name].get();
+			}
+
+			void DetachComponent(const String& name);
+			inline HashMap<String, UniquePtr<Component>>& GetComponents() noexcept { return m_components; }
+			inline const HashMap<String, UniquePtr<Component>>& GetComponents() const noexcept { return m_components; }
+			[[nodiscard]] ObserverPtr<Component> GetComponent(const String& name);
 
 			[[nodiscard]] IVec2 GetPositionFromAnchor(const Anchor anchor, const UVec2& componentSize, const IVec2& anchorOffset = IVec2Zero) const;
 
