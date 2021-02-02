@@ -43,7 +43,7 @@ private:
 	sd::SoundSource m_source;
 
 	sd::ui::Canvas m_canvas{ GetRenderer() };
-	sd::ui::ColourBlock m_colourBlock{ m_canvas, sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 } };
+	sd::ui::Component* m_colourBlock;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -169,7 +169,7 @@ public:
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
 
-		m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
+		m_colourBlock = m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
 
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();

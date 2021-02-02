@@ -52,9 +52,9 @@ namespace stardust
 			inline void SetVisibility(const bool isVisible) noexcept { m_isVisible = isVisible; }
 
 			inline Anchor GetAnchor() const noexcept { return m_anchor; }
-			inline void SetAnchor(const Anchor anchor) noexcept { m_anchor = anchor; }
+			inline virtual void SetAnchor(const Anchor anchor) noexcept { m_anchor = anchor; }
 			inline const IVec2& GetAnchorOffset() const noexcept { return m_anchorOffset; }
-			inline void SetAnchorOffset(const IVec2& anchorOffset) noexcept { m_anchorOffset = anchorOffset; }
+			inline virtual void SetAnchorOffset(const IVec2& anchorOffset) noexcept { m_anchorOffset = anchorOffset; }
 
 			inline bool HasOwningCanvas() const noexcept { return m_owningCanvas != nullptr; }
 			inline const class Canvas& GetOwningCanvas() const { return *m_owningCanvas; }

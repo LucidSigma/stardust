@@ -28,7 +28,6 @@ Once I have created a few demo games and solidified the API enough, I will begin
 
 ## Functionality to come
 * Basic AI (graphs, pathfinding/searching, boids, minimax, et cetera).
-* Graphical effects (kernel effects (blur, edge detection), HDR/bloom).
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
 * UI (canvases, basic elements such as buttons/sliders/checkboxes).
 * Networking support (using ENet).

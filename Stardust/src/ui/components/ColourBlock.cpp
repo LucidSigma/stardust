@@ -20,17 +20,15 @@ namespace stardust
 			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, m_transform.size, m_anchorOffset);
 		}
 
-		void ColourBlock::SetAnchorOffset(const IVec2& anchorOffset) noexcept
+		void ColourBlock::SetAnchor(const Anchor anchor) noexcept
 		{
-			Component::SetAnchorOffset(anchorOffset);
-
+			m_anchor = anchor;
 			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, m_transform.size, m_anchorOffset);
 		}
 
-		void ColourBlock::SetAnchor(const Anchor anchor) noexcept
+		void ColourBlock::SetAnchorOffset(const IVec2& anchorOffset) noexcept
 		{
-			Component::SetAnchor(anchor);
-
+			m_anchorOffset = anchorOffset;
 			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, m_transform.size, m_anchorOffset);
 		}
 

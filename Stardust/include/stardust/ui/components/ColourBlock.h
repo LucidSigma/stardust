@@ -32,8 +32,8 @@ namespace stardust
 
 			virtual void OnCanvasResize(const UVec2&) override;
 
-			void SetAnchorOffset(const IVec2& anchorOffset) noexcept;
-			void SetAnchor(const Anchor anchor) noexcept;
+			virtual void SetAnchor(const Anchor anchor) noexcept override;
+			virtual void SetAnchorOffset(const IVec2& anchorOffset) noexcept override;
 
 			inline const UVec2& GetSize() const noexcept { return m_transform.size; }
 			void SetSize(const UVec2& size);
