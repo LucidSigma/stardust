@@ -20,15 +20,30 @@ namespace stardust
 		class ColourBlock
 			: public Component
 		{
+		public:
+			struct CreateInfo
+			{
+				UVec2 size;
+
+				Colour enabledColour;
+				Optional<Colour> disabledColour;
+			};
+
 		private:
 			components::ScreenTransform m_transform;
+
 			Colour m_colour;
+			Colour m_enabledColour;
+			Optional<Colour> m_disabledColour;
 
 		public:
-			ColourBlock(const Canvas& canvas, const Colour& colour, const UVec2& size, const Anchor anchor = Anchor::Centre, const IVec2& anchorOffset = IVec2Zero);
+			ColourBlock(const Canvas& canvas, const CreateInfo& createInfo, const Anchor anchor = Anchor::Centre, const IVec2& anchorOffset = IVec2Zero);
 			virtual ~ColourBlock() noexcept override = default;
 
 			virtual void Render(Renderer& renderer) override;
+
+			virtual void OnEnable() override;
+			virtual void OnDisable() override;
 
 			virtual void OnCanvasResize(const UVec2&) override;
 

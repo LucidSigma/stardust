@@ -4,15 +4,29 @@ namespace stardust
 {
 	namespace ui
 	{
-		ColourBlock::ColourBlock(const Canvas& canvas, const Colour& colour, const UVec2& size, const Anchor anchor, const IVec2& anchorOffset)
-			: Component(canvas, anchor, anchorOffset), m_transform(IVec2Zero, size), m_colour(colour)
+		ColourBlock::ColourBlock(const Canvas& canvas, const CreateInfo& createInfo, const Anchor anchor, const IVec2& anchorOffset)
+			: Component(canvas, anchor, anchorOffset), m_transform(IVec2Zero, createInfo.size),
+			  m_colour(createInfo.enabledColour), m_enabledColour(createInfo.enabledColour), m_disabledColour(createInfo.disabledColour)
 		{
-			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, size, m_anchorOffset);
+			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, createInfo.size, m_anchorOffset);
 		}
 
 		void ColourBlock::Render(Renderer& renderer)
 		{
 			renderer.DrawScreenRect(m_transform, m_colour);
+		}
+
+		void ColourBlock::OnEnable()
+		{
+			m_colour = m_enabledColour;
+		}
+
+		void ColourBlock::OnDisable()
+		{
+			if (m_disabledColour.has_value())
+			{
+				m_colour = m_disabledColour.value();
+			}
 		}
 
 		void ColourBlock::OnCanvasResize(const UVec2&)

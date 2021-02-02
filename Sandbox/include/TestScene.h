@@ -168,7 +168,12 @@ public:
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
 
-		m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
+		m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::ui::ColourBlock::CreateInfo{
+			.size = sd::UVec2{ 200u, 200u },
+			.enabledColour = sd::colours::Lime,
+			.disabledColour = sd::colours::Red,
+		}, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
+
 		m_canvas.AttachComponent<sd::ui::Image>("image", sd::ui::Image::CreateInfo{
 			.size = sd::IVec2{ 100u, 200u },
 			.flip = sd::FlipType::Vertical,
