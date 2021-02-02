@@ -54,11 +54,11 @@ namespace stardust
 
 		void Canvas::Render(Renderer& renderer)
 		{
-			if (m_isEnabled && m_isVisible)
+			if (m_isVisible)
 			{
 				for (auto& [name, component] : m_components)
 				{
-					if (component->IsEnabled() && component->IsVisible())
+					if (component->IsVisible())
 					{
 						component->Render(renderer);
 					}

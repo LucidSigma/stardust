@@ -43,7 +43,6 @@ private:
 	sd::SoundSource m_source;
 
 	sd::ui::Canvas m_canvas{ GetRenderer() };
-	sd::ui::Component* m_colourBlock;
 
 public:
 	TestScene(sd::Application& application, const sd::String& name)
@@ -169,7 +168,16 @@ public:
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
 
-		m_colourBlock = m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
+		m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::colours::Lime, sd::UVec2{ 200u, 200u }, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
+		m_canvas.AttachComponent<sd::ui::Image>("image", sd::ui::Image::CreateInfo{
+			.size = sd::IVec2{ 100u, 200u },
+			.flip = sd::FlipType::Vertical,
+			.rotation = 0.0f,
+			.pivot = sd::NullOpt,
+			.texture = &m_textures["crumble"],
+			.subTextureArea = sd::NullOpt,
+			.colourMod = sd::colours::Orange,
+		}, sd::ui::Anchor::CentreLeft, sd::IVec2{ 40, 0 });
 
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();

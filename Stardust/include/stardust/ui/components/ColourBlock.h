@@ -26,7 +26,7 @@ namespace stardust
 
 		public:
 			ColourBlock(const Canvas& canvas, const Colour& colour, const UVec2& size, const Anchor anchor = Anchor::Centre, const IVec2& anchorOffset = IVec2Zero);
-			~ColourBlock() noexcept = default;
+			virtual ~ColourBlock() noexcept override = default;
 
 			virtual void Render(Renderer& renderer) override;
 
