@@ -174,9 +174,12 @@ public:
 			.flip = sd::FlipType::Vertical,
 			.rotation = 0.0f,
 			.pivot = sd::NullOpt,
-			.texture = &m_textures["crumble"],
-			.subTextureArea = sd::NullOpt,
-			.colourMod = sd::colours::Orange,
+			.enabledTexture = &m_textures["crumble"],
+			.enabledSubTextureArea = sd::NullOpt,
+			.enabledColourMod = sd::colours::Orange,
+			.disabledTexture = sd::NullOpt,
+			.disabledSubTextureArea = sd::NullOpt,
+			.disabledColourMod = sd::colours::Teal,
 		}, sd::ui::Anchor::CentreLeft, sd::IVec2{ 40, 0 });
 
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
@@ -302,6 +305,15 @@ public:
 			if (GetKeyboardState().IsKeyDown(sd::KeyCode::X))
 			{
 				m_colourAnimator.SkipToFrame(16u);
+			}
+
+			if (GetKeyboardState().IsKeyDown(sd::KeyCode::L))
+			{
+				m_canvas.SetEnabled(false);
+			}
+			else if (GetKeyboardState().IsKeyUp(sd::KeyCode::L))
+			{
+				m_canvas.SetEnabled(true);
 			}
 		}
 	}

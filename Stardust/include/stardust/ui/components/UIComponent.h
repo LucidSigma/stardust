@@ -40,8 +40,6 @@ namespace stardust
 
 			inline virtual void OnEnable() { }
 			inline virtual void OnDisable() { }
-			inline virtual void OnCanvasEnable() { }
-			inline virtual void OnCanvasDisable() { }
 
 			inline virtual void OnCanvasResize(const UVec2& newCanvasSize) { }
 

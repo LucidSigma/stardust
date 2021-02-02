@@ -157,14 +157,14 @@ namespace stardust
 			{
 				for (auto& [name, component] : m_components)
 				{
-					component->OnCanvasEnable();
+					component->SetEnabled(true);
 				}
 			}
 			else
 			{
 				for (auto& [name, component] : m_components)
 				{
-					component->OnCanvasDisable();
+					component->SetEnabled(false);
 				}
 			}
 		}
