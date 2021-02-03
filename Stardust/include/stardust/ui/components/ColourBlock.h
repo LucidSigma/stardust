@@ -4,8 +4,6 @@
 
 #include "stardust/ui/components/UIComponent.h"
 
-#include <SDL2/SDL.h>
-
 #include "stardust/data/Types.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/graphics/renderer/Renderer.h"
@@ -66,6 +64,8 @@ namespace stardust
 
 			virtual void SetAnchor(const Anchor anchor) noexcept override;
 			virtual void SetAnchorOffset(const IVec2& anchorOffset) noexcept override;
+
+			inline const IVec2& GetPosition() const noexcept { return m_transform.position; }
 
 			inline const UVec2& GetSize() const noexcept { return m_transform.size; }
 			void SetSize(const UVec2& size);

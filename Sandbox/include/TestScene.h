@@ -191,6 +191,16 @@ public:
 			.renderer = &GetRenderer(),
 		}, sd::ui::Anchor::CentreLeft, sd::IVec2{ 40, 0 });
 
+		m_canvas.AttachComponent<sd::ui::Label>("plus", sd::ui::Label::CreateInfo{
+			.textCache = &m_textCache,
+			.textScale = 0.75f,
+			.flip = sd::FlipType::None,
+			.rotation = 0.0f,
+			.pivot = sd::NullOpt,
+			.enabledColour = sd::colours::Azure,
+			.disabledColour = sd::colours::Purple,
+		}, "+");
+
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();
 
