@@ -10,19 +10,15 @@
 
 		}
 	},
-	"frame-rate": {
-		"cap-fps": false,
-		"fps-limit": 60,
-		"vsync": {
-			"enabled": false,
-			"adaptive": true
-		}
-	},
 	"graphics": {
 		"anti-aliasing": false,
 		"resolution": {
 			"height": 1080,
 			"width": 1920
+		},
+		"vsync": {
+			"enabled": false,
+			"adaptive": true
 		},
 		"window": {
 			"borderless": false,

@@ -1,6 +1,5 @@
 #include "stardust/application/Application.h"
 
-#include <chrono>
 #include <string>
 #include <utility>
 
@@ -51,6 +50,7 @@ namespace stardust
 
 		SDL_Event event{ };
 		f64 timeAccumulator = 0.0f;
+		m_ticksCount = std::chrono::high_resolution_clock::now();
 
 		while (m_isRunning)
 		{
@@ -197,8 +197,6 @@ namespace stardust
 
 		stbi_set_flip_vertically_on_load(true);
 		stbi_flip_vertically_on_write(true);
-
-		m_ticksCount = SDL_GetPerformanceCounter();
 
 		m_didInitialiseSuccessfully = true;
 	}
@@ -440,9 +438,9 @@ namespace stardust
 			return Status::Fail;
 		}
 
-		if (m_config["frame-rate"]["vsync"]["enabled"])
+		if (m_config["graphics"]["vsync"]["enabled"])
 		{
-			const bool useAdaptiveVSync = m_config["frame-rate"]["vsync"]["adaptive"];
+			const bool useAdaptiveVSync = m_config["graphics"]["vsync"]["adaptive"];
 			bool didAdaptiveVSyncFail = false;
 
 			if (useAdaptiveVSync)
@@ -727,28 +725,11 @@ namespace stardust
 
 	void Application::UpdateTime(f64& timeAccumulator)
 	{
-		static const bool capFramerate = m_config["frame-rate"]["cap-fps"];
+		const auto newTicks = std::chrono::high_resolution_clock::now();
+		const auto frameTicks = newTicks - m_ticksCount;
+		const f64 preciseDeltaTime = static_cast<f64>(frameTicks.count()) / static_cast<f64>(std::chrono::high_resolution_clock::period::den);
 
-		const u64 newTicks = SDL_GetPerformanceCounter();
-		const u64 frameTicks = newTicks - m_ticksCount;
-		const f64 preciseDeltaTime = static_cast<f64>(frameTicks) / static_cast<f64>(SDL_GetPerformanceFrequency());
 		m_deltaTime = static_cast<f32>(preciseDeltaTime);
-
-		if (capFramerate)
-		{
-			static const f32 fpsLimit = m_config["frame-rate"]["fps-limit"];
-			static const f32 timeToWait = 1.0f / fpsLimit;
-		
-			if (m_deltaTime < timeToWait)
-			{
-				constexpr f32 MillisecondsPerSecond = 1'000.0f;
-		
-				SDL_Delay(static_cast<u32>((timeToWait - m_deltaTime) * MillisecondsPerSecond));
-			}
-		
-			m_deltaTime = timeToWait;
-		}
-
 		m_ticksCount = newTicks;
 		m_elapsedTime += preciseDeltaTime;
 		timeAccumulator += preciseDeltaTime;

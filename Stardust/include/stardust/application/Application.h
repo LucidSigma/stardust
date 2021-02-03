@@ -6,6 +6,7 @@
 #include "stardust/utility/interfaces/INonmovable.h"
 
 #include <atomic>
+#include <chrono>
 #include <functional>
 
 #include <entt/entt.hpp>
@@ -91,7 +92,7 @@ namespace stardust
 
 		f64 m_fixedTimestep = 0.0f;
 		f32 m_deltaTime = 0.0f;
-		u64 m_ticksCount = 0u;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_ticksCount;
 		f64 m_elapsedTime = 0.0;
 
 		InputManager m_inputManager;
@@ -140,7 +141,6 @@ namespace stardust
 		[[nodiscard]] String GetPlatformName() const;
 
 		inline bool IsRunning() const noexcept { return m_isRunning; }
-		inline u64 GetTicksCount() const noexcept { return m_ticksCount; }
 		inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
 		inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
 
