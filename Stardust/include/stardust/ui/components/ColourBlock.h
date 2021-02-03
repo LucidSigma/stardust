@@ -4,6 +4,8 @@
 
 #include "stardust/ui/components/UIComponent.h"
 
+#include <SDL2/SDL.h>
+
 #include "stardust/data/Types.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/graphics/renderer/Renderer.h"
@@ -24,6 +26,8 @@ namespace stardust
 			struct CreateInfo
 			{
 				UVec2 size;
+				f32 rotation;
+				Optional<IVec2> pivot;
 
 				Colour enabledColour;
 				Optional<Colour> disabledColour;
@@ -57,6 +61,8 @@ namespace stardust
 			virtual void OnDisable() override;
 
 			virtual void OnCanvasResize(const UVec2&) override;
+
+			inline virtual bool IsMouseHoveredOver() const noexcept override { return m_isHoveredOver; }
 
 			virtual void SetAnchor(const Anchor anchor) noexcept override;
 			virtual void SetAnchorOffset(const IVec2& anchorOffset) noexcept override;

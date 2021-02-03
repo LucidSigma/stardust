@@ -181,12 +181,12 @@ public:
 			.flip = sd::FlipType::Vertical,
 			.rotation = 0.0f,
 			.pivot = sd::NullOpt,
-			.enabledTexture = &m_textures["crumble"],
-			.enabledSubTextureArea = sd::NullOpt,
-			.enabledColourMod = sd::colours::Orange,
-			.disabledTexture = &m_textures["crate"],
-			.disabledSubTextureArea = sd::NullOpt,
-			.disabledColourMod = sd::colours::Teal,
+			.texture = &m_textures["crumble"],
+			.subTextureArea = sd::NullOpt,
+			.enabledColourMod = sd::colours::White,
+			.disabledColourMod = sd::colours::Red,
+			.hoverColourMod = sd::colours::Orange,
+			.renderer = &GetRenderer(),
 		}, sd::ui::Anchor::CentreLeft, sd::IVec2{ 40, 0 });
 
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());

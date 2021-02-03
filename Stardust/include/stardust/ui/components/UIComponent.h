@@ -44,6 +44,8 @@ namespace stardust
 
 			inline virtual void OnCanvasResize(const UVec2& newCanvasSize) { }
 
+			inline virtual bool IsMouseHoveredOver() const noexcept { return false; }
+
 			inline bool IsEnabled() const noexcept { return m_isEnabled; }
 			void SetEnabled(const bool isEnabled);
 

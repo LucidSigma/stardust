@@ -1,5 +1,6 @@
 #include "stardust/ui/components/ColourBlock.h"
 
+#include "stardust/graphics/renderer/FlipType.h"
 #include "stardust/input/Input.h"
 
 namespace stardust
@@ -7,7 +8,7 @@ namespace stardust
 	namespace ui
 	{
 		ColourBlock::ColourBlock(const Canvas& canvas, const CreateInfo& createInfo, const Anchor anchor, const IVec2& anchorOffset)
-			: Component(canvas, anchor, anchorOffset), m_transform(IVec2Zero, createInfo.size),
+			: Component(canvas, anchor, anchorOffset), m_transform(IVec2Zero, createInfo.size, FlipType::None, createInfo.rotation, createInfo.pivot),
 			  m_colour(createInfo.enabledColour), m_enabledColour(createInfo.enabledColour), m_disabledColour(createInfo.disabledColour), m_hoverColour(createInfo.hoverColour),
 			  m_renderer(createInfo.renderer)
 		{
@@ -16,7 +17,7 @@ namespace stardust
 
 		void ColourBlock::ProcessInput()
 		{
-			const auto mouseCoordinates = Input::GetMouseState().GetProportionalCoordinates(*m_renderer);
+			const IVec2 mouseCoordinates = IVec2(Input::GetMouseState().GetProportionalCoordinates(*m_renderer));
 
 			m_previousIsHoveredOver = m_isHoveredOver;
 			m_isHoveredOver = mouseCoordinates.x >= m_transform.position.x && mouseCoordinates.x <= m_transform.position.x + m_transform.size.x
