@@ -77,14 +77,20 @@ namespace stardust
 			inline const Optional<IVec2>& GetPivot() const noexcept { return m_transform.pivot; }
 			inline void SetPivot(const Optional<IVec2>& pivot) noexcept { m_transform.pivot = pivot; }
 
-			//inline ObserverPtr<const Texture> GetTexture() const noexcept { return m_sprite.texture; }
-			//inline void SetTexture(const Texture& texture) noexcept { m_sprite.texture = &texture; }
-			//
-			//inline const Optional<TextureCoordinatePair>& GetSubTextureArea() const noexcept { return m_sprite.subTextureArea; }
-			//inline void SetSubTextureArea(const Optional<TextureCoordinatePair>& textureCoordinates) noexcept { m_sprite.subTextureArea = textureCoordinates; }
-			//
-			//inline const Colour& GetColourMod() const noexcept { return m_sprite.colourMod; }
-			//inline void SetColourMod(const Colour& colourMod) noexcept { m_sprite.colourMod = colourMod; }
+			inline ObserverPtr<const Texture> GetEnabledTexture() const noexcept { return m_enabledTexture; }
+			void SetEnabledTexture(const ObserverPtr<const Texture> texture) noexcept;
+			inline const Optional<ObserverPtr<const Texture>>& SetDisabledTexture() const noexcept { return m_disabledTexture; }
+			void SetDisabledTexture(const Optional<ObserverPtr<const Texture>>& texture) noexcept;
+
+			inline const Optional<TextureCoordinatePair>& GetEnabledSubTextureArea() const noexcept { return m_enabledSubTextureArea; }
+			void SetEnabledSubTextureArea(const Optional<TextureCoordinatePair>& textureCoordinates) noexcept;
+			inline const Optional<Optional<TextureCoordinatePair>>& GetDisabledSubTextureArea() const noexcept { return m_disabledSubTextureArea; }
+			void SetDisabledSubTextureArea(const Optional<Optional<TextureCoordinatePair>>& textureCoordinates) noexcept;
+
+			inline const Colour& GetEnabledColourMod() const noexcept { return m_enabledColourMod; }
+			void SetEnabledColourMod(const Colour& colourMod) noexcept;
+			inline const Optional<Colour>& GetDisabledColourMod() const noexcept { return m_disabledColourMod; }
+			void SetDisabledColourMod(const Optional<Colour>& colourMod) noexcept;
 		};
 	}
 }

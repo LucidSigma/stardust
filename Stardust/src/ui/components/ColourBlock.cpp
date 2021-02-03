@@ -51,5 +51,25 @@ namespace stardust
 			m_transform.size = size;
 			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, m_transform.size, m_anchorOffset);
 		}
+
+		void ColourBlock::SetEnabledColour(const Colour& colour) noexcept
+		{
+			m_enabledColour = colour;
+
+			if (m_isEnabled)
+			{
+				m_colour = m_enabledColour;
+			}
+		}
+
+		void ColourBlock::SetDisabledColour(const Optional<Colour>& colour) noexcept
+		{
+			m_disabledColour = colour;
+
+			if (m_disabledColour.has_value() && !m_isEnabled)
+			{
+				m_colour = m_disabledColour.value();
+			}
+		}
 	}
 }

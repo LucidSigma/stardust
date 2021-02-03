@@ -67,5 +67,65 @@ namespace stardust
 			m_transform.size = size;
 			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, m_transform.size, m_anchorOffset);
 		}
+
+		void Image::SetEnabledTexture(const ObserverPtr<const Texture> texture) noexcept
+		{
+			m_enabledTexture = texture;
+
+			if (m_isEnabled)
+			{
+				m_sprite.texture = m_enabledTexture;
+			}
+		}
+
+		void Image::SetDisabledTexture(const Optional<ObserverPtr<const Texture>>& texture) noexcept
+		{
+			m_disabledTexture = texture;
+
+			if (m_disabledTexture.has_value() && !m_isEnabled)
+			{
+				m_sprite.texture = m_disabledTexture.value();
+			}
+		}
+
+		void Image::SetEnabledSubTextureArea(const Optional<TextureCoordinatePair>& textureCoordinates) noexcept
+		{
+			m_enabledSubTextureArea = textureCoordinates;
+
+			if (m_isEnabled)
+			{
+				m_sprite.subTextureArea = m_enabledSubTextureArea;
+			}
+		}
+
+		void Image::SetDisabledSubTextureArea(const Optional<Optional<TextureCoordinatePair>>& textureCoordinates) noexcept
+		{
+			m_disabledSubTextureArea = textureCoordinates;
+
+			if (m_disabledSubTextureArea.has_value() && !m_isEnabled)
+			{
+				m_sprite.subTextureArea = m_disabledSubTextureArea.value();
+			}
+		}
+
+		void Image::SetEnabledColourMod(const Colour& colourMod) noexcept
+		{
+			m_enabledColourMod = colourMod;
+
+			if (m_isEnabled)
+			{
+				m_sprite.colourMod = m_enabledColourMod;
+			}
+		}
+
+		void Image::SetDisabledColourMod(const Optional<Colour>& colourMod) noexcept
+		{
+			m_disabledColourMod = colourMod;
+
+			if (m_disabledColourMod.has_value() && !m_isEnabled)
+			{
+				m_sprite.colourMod = m_disabledColourMod.value();
+			}
+		}
 	}
 }

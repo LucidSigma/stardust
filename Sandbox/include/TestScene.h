@@ -182,7 +182,7 @@ public:
 			.enabledTexture = &m_textures["crumble"],
 			.enabledSubTextureArea = sd::NullOpt,
 			.enabledColourMod = sd::colours::Orange,
-			.disabledTexture = sd::NullOpt,
+			.disabledTexture = &m_textures["crate"],
 			.disabledSubTextureArea = sd::NullOpt,
 			.disabledColourMod = sd::colours::Teal,
 		}, sd::ui::Anchor::CentreLeft, sd::IVec2{ 40, 0 });

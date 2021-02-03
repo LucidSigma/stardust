@@ -58,6 +58,12 @@ namespace stardust
 
 			inline const Optional<IVec2>& GetPivot() const noexcept { return m_transform.pivot; }
 			inline void SetPivot(const Optional<IVec2>& pivot) noexcept { m_transform.pivot = pivot; }
+
+			inline const Colour& GetEnabledColour() const noexcept { return m_enabledColour; }
+			void SetEnabledColour(const Colour& colour) noexcept;
+
+			inline const Optional<Colour>& GetDisabledColour() const noexcept { return m_disabledColour; }
+			void SetDisabledColour(const Optional<Colour>& colour) noexcept;
 		};
 	}
 }
