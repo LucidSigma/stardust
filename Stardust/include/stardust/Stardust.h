@@ -107,6 +107,7 @@
 #include "ui/canvas/Canvas.h"
 #include "ui/components/ColourBlock.h"
 #include "ui/components/Image.h"
+#include "ui/components/Label.h"
 #include "ui/components/UIComponent.h"
 #include "ui/Anchor.h"
 

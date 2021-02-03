@@ -96,8 +96,10 @@ namespace stardust
 
 			inline const Colour& GetEnabledColourMod() const noexcept { return m_enabledColourMod; }
 			void SetEnabledColourMod(const Colour& colourMod) noexcept;
+
 			inline const Optional<Colour>& GetDisabledColourMod() const noexcept { return m_disabledColourMod; }
 			void SetDisabledColourMod(const Optional<Colour>& colourMod) noexcept;
+
 			inline const Optional<Colour>& GetHoverColourMod() const noexcept { return m_hoverColourMod; }
 			void SetHoverColourMod(const Optional<Colour>& colourMod) noexcept;
 		};

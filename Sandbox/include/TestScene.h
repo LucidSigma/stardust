@@ -170,6 +170,8 @@ public:
 
 		m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::ui::ColourBlock::CreateInfo{
 			.size = sd::UVec2{ 200u, 200u },
+			.rotation = 0.0f,
+			.pivot = sd::NullOpt,
 			.enabledColour = sd::colours::Lime,
 			.disabledColour = sd::colours::Red,
 			.hoverColour = sd::colours::Yellow,
