@@ -31,7 +31,8 @@ namespace stardust
 			explicit Component(const class Canvas& canvas, const Anchor anchor = Anchor::Centre, const IVec2& anchorOffset = IVec2Zero);
 			virtual ~Component() noexcept = default;
 
-			virtual void PollEvent(const SDL_Event& event) { };
+			inline virtual void ProcessInput() { }
+			inline virtual void PollEvent(const SDL_Event& event) { }
 			inline virtual void Update(const f32 deltaTime) { }
 			virtual void Render(Renderer& renderer) = 0;
 

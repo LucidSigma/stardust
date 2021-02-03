@@ -27,6 +27,9 @@ namespace stardust
 
 				Colour enabledColour;
 				Optional<Colour> disabledColour;
+				Optional<Colour> hoverColour;
+
+				ObserverPtr<const Renderer> renderer;
 			};
 
 		private:
@@ -35,11 +38,19 @@ namespace stardust
 			Colour m_colour;
 			Colour m_enabledColour;
 			Optional<Colour> m_disabledColour;
+			Optional<Colour> m_hoverColour;
+
+			ObserverPtr<const Renderer> m_renderer;
+
+			bool m_isHoveredOver = false;
+			bool m_previousIsHoveredOver = false;
 
 		public:
 			ColourBlock(const Canvas& canvas, const CreateInfo& createInfo, const Anchor anchor = Anchor::Centre, const IVec2& anchorOffset = IVec2Zero);
 			virtual ~ColourBlock() noexcept override = default;
 
+			virtual void ProcessInput() override;
+			virtual void Update(const f32) override;
 			virtual void Render(Renderer& renderer) override;
 
 			virtual void OnEnable() override;
@@ -64,6 +75,9 @@ namespace stardust
 
 			inline const Optional<Colour>& GetDisabledColour() const noexcept { return m_disabledColour; }
 			void SetDisabledColour(const Optional<Colour>& colour) noexcept;
+
+			inline const Optional<Colour>& GetHoverColour() const noexcept { return m_hoverColour; }
+			void SetHoverColour(const Optional<Colour>& colour) noexcept;
 		};
 	}
 }

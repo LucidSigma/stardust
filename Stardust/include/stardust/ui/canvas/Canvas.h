@@ -41,6 +41,7 @@ namespace stardust
 			void Initialise(const Renderer& renderer);
 
 			void PollEvent(const SDL_Event& event);
+			void ProcessInput();
 			void Update(const f32 deltaTime);
 			void Render(Renderer& renderer);
 
@@ -57,6 +58,7 @@ namespace stardust
 			inline HashMap<String, UniquePtr<Component>>& GetComponents() noexcept { return m_components; }
 			inline const HashMap<String, UniquePtr<Component>>& GetComponents() const noexcept { return m_components; }
 			[[nodiscard]] ObserverPtr<Component> GetComponent(const String& name);
+			[[nodiscard]] bool HasComponent(const String& name) const { return m_components.contains(name); }
 
 			[[nodiscard]] IVec2 GetPositionFromAnchor(const Anchor anchor, const UVec2& componentSize, const IVec2& anchorOffset = IVec2Zero) const;
 

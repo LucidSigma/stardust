@@ -172,6 +172,8 @@ public:
 			.size = sd::UVec2{ 200u, 200u },
 			.enabledColour = sd::colours::Lime,
 			.disabledColour = sd::colours::Red,
+			.hoverColour = sd::colours::Yellow,
+			.renderer = &GetRenderer(),
 		}, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
 
 		m_canvas.AttachComponent<sd::ui::Image>("image", sd::ui::Image::CreateInfo{
@@ -321,6 +323,8 @@ public:
 				m_canvas.SetEnabled(true);
 			}
 		}
+
+		m_canvas.ProcessInput();
 	}
 
 	virtual void Update(const sd::f32 deltaTime) override
@@ -346,6 +350,8 @@ public:
 				m_source = GetSoundSystem().PlaySound(m_chunkSound);
 			}
 		}
+
+		m_canvas.Update(deltaTime);
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }

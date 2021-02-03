@@ -1,4 +1,6 @@
-#include "stardust\ui\components\ColourBlock.h"
+#include "stardust/ui/components/ColourBlock.h"
+
+#include "stardust/input/Input.h"
 
 namespace stardust
 {
@@ -6,9 +8,34 @@ namespace stardust
 	{
 		ColourBlock::ColourBlock(const Canvas& canvas, const CreateInfo& createInfo, const Anchor anchor, const IVec2& anchorOffset)
 			: Component(canvas, anchor, anchorOffset), m_transform(IVec2Zero, createInfo.size),
-			  m_colour(createInfo.enabledColour), m_enabledColour(createInfo.enabledColour), m_disabledColour(createInfo.disabledColour)
+			  m_colour(createInfo.enabledColour), m_enabledColour(createInfo.enabledColour), m_disabledColour(createInfo.disabledColour), m_hoverColour(createInfo.hoverColour),
+			  m_renderer(createInfo.renderer)
 		{
 			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, createInfo.size, m_anchorOffset);
+		}
+
+		void ColourBlock::ProcessInput()
+		{
+			const auto mouseCoordinates = Input::GetMouseState().GetProportionalCoordinates(*m_renderer);
+
+			m_previousIsHoveredOver = m_isHoveredOver;
+			m_isHoveredOver = mouseCoordinates.x >= m_transform.position.x && mouseCoordinates.x <= m_transform.position.x + m_transform.size.x
+				&& mouseCoordinates.y >= m_transform.position.y && mouseCoordinates.y <= m_transform.position.y + m_transform.size.y;
+		}
+
+		void ColourBlock::Update(const f32)
+		{
+			if (m_previousIsHoveredOver != m_isHoveredOver)
+			{
+				if (m_isHoveredOver && m_hoverColour.has_value())
+				{
+					m_colour = m_hoverColour.value();
+				}
+				else
+				{
+					m_colour = m_enabledColour;
+				}
+			}
 		}
 
 		void ColourBlock::Render(Renderer& renderer)
@@ -18,7 +45,14 @@ namespace stardust
 
 		void ColourBlock::OnEnable()
 		{
-			m_colour = m_enabledColour;
+			if (m_isHoveredOver && m_hoverColour.has_value())
+			{
+				m_colour = m_hoverColour.value();
+			}
+			else
+			{
+				m_colour = m_enabledColour;
+			}
 		}
 
 		void ColourBlock::OnDisable()
@@ -69,6 +103,16 @@ namespace stardust
 			if (m_disabledColour.has_value() && !m_isEnabled)
 			{
 				m_colour = m_disabledColour.value();
+			}
+		}
+
+		void ColourBlock::SetHoverColour(const Optional<Colour>& colour) noexcept
+		{
+			m_hoverColour = colour;
+
+			if (m_isHoveredOver && m_hoverColour.has_value())
+			{
+				m_colour = m_hoverColour.value();
 			}
 		}
 	}

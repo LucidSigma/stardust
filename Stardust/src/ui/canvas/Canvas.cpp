@@ -38,6 +38,20 @@ namespace stardust
 			}
 		}
 
+		void Canvas::ProcessInput()
+		{
+			if (m_isEnabled)
+			{
+				for (auto& [name, component] : m_components)
+				{
+					if (component->IsEnabled())
+					{
+						component->ProcessInput();
+					}
+				}
+			}
+		}
+
 		void Canvas::Update(const f32 deltaTime)
 		{
 			if (m_isEnabled)
