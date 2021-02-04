@@ -179,7 +179,7 @@ public:
 		}, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
 
 		m_canvas.AttachComponent<sd::ui::Image>("image", sd::ui::Image::CreateInfo{
-			.size = sd::IVec2{ 100u, 200u },
+			.size = sd::UVec2{ 100u, 200u },
 			.flip = sd::FlipType::Vertical,
 			.rotation = 0.0f,
 			.pivot = sd::NullOpt,
@@ -200,6 +200,20 @@ public:
 			.enabledColour = sd::colours::Azure,
 			.disabledColour = sd::colours::Purple,
 		}, "+");
+
+		m_canvas.AttachComponent<sd::ui::Checkbox>("tick", sd::ui::Checkbox::CreateInfo{
+			.size = sd::UVec2{ 64u, 64u },
+			.flip = sd::FlipType::None,
+			.rotation = 0.0f,
+			.pivot = sd::NullOpt,
+			.texture = &m_textures["checkbox"],
+			.subTextureArea = sd::NullOpt,
+			.checkOverlayTexture = &m_textures["tick"],
+			.checkOverlaySubTextureArea = sd::NullOpt,
+			.enabledColourMod = sd::colours::White,
+			.disabledColourMod = sd::colours::Grey,
+			.renderer = &GetRenderer(),
+		}, sd::ui::Anchor::TopRight, sd::IVec2{ -50, 50 });
 
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();
@@ -271,28 +285,28 @@ public:
 				auto finalColour = sd::colours::Yellow;
 				finalColour.alpha = 0u;
 
-				m_particles.Emit(sd::ParticleSystem::ParticleData{
-					.initialPosition = GetMouseState().GetProportionalCoordinates(GetRenderer()),
-					.initialRotation = 0.0f,
-					.minVelocity = { -100.0f, -400.0f },
-					.maxVelocity = { 100.0f, -10.0f },
-					.acceleration = 0.4f,
-					.minAngularVelocity = 0.0f,
-					.maxAngularVelocity = 180.0f,
-					.angularAcceleration = -0.1f,
-					.isAffectedByGravity = false,
-					.minSize = { 20.0f, 20.0f },
-					.maxSize = { 40.0f, 40.0f },
-					.sizeUpdateMultipler = -0.2f,
-					.keepAsSquare = true,
-					.shiftToCentre = true,
-					.startColour = sd::colours::Red,
-					.endColour = finalColour,
-					.texture = nullptr,  
-					.textureArea = std::nullopt,
-					.minLifetime = 0.5f,
-					.maxLifetime = 1.0f,
-				});
+				//m_particles.Emit(sd::ParticleSystem::ParticleData{
+				//	.initialPosition = GetMouseState().GetProportionalCoordinates(GetRenderer()),
+				//	.initialRotation = 0.0f,
+				//	.minVelocity = { -100.0f, -400.0f },
+				//	.maxVelocity = { 100.0f, -10.0f },
+				//	.acceleration = 0.4f,
+				//	.minAngularVelocity = 0.0f,
+				//	.maxAngularVelocity = 180.0f,
+				//	.angularAcceleration = -0.1f,
+				//	.isAffectedByGravity = false,
+				//	.minSize = { 20.0f, 20.0f },
+				//	.maxSize = { 40.0f, 40.0f },
+				//	.sizeUpdateMultipler = -0.2f,
+				//	.keepAsSquare = true,
+				//	.shiftToCentre = true,
+				//	.startColour = sd::colours::Red,
+				//	.endColour = finalColour,
+				//	.texture = nullptr,  
+				//	.textureArea = std::nullopt,
+				//	.minLifetime = 0.5f,
+				//	.maxLifetime = 1.0f,
+				//});
 			}
 
 			if (GetKeyboardState().IsKeyDown(sd::KeyCode::Z))

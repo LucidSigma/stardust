@@ -2,6 +2,8 @@
 #ifndef STARDUST_UI_COMPONENT_H
 #define STARDUST_UI_COMPONENT_H
 
+#include <functional>
+
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Containers.h"
@@ -16,6 +18,8 @@ namespace stardust
 {
 	namespace ui
 	{
+		using Callback = std::function<void()>;
+
 		class Component
 		{
 		protected:

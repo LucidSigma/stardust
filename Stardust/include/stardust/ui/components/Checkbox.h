@@ -4,8 +4,7 @@
 
 #include "stardust/ui/components/UIComponent.h"
 
-#include <SDL2/SDL.h>
-
+#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
@@ -56,15 +55,17 @@ namespace stardust
 
 			ObserverPtr<const Renderer> m_renderer;
 
+			bool m_isChecked = false;
 			bool m_isHoveredOver = false;
+
+			Vector<Callback> m_onCheckCallbacks{ };
+			Vector<Callback> m_onUncheckCallbacks{ };
 
 		public:
 			Checkbox(const Canvas& canvas, const CreateInfo& createInfo, const Anchor anchor = Anchor::Centre, const IVec2& anchorOffset = IVec2Zero);
 			virtual ~Checkbox() noexcept override = default;
 
-			virtual void PollEvent(const SDL_Event& event) override;
 			virtual void ProcessInput() override;
-			virtual void Update(const f32) override;
 			virtual void Render(Renderer& renderer) override;
 
 			virtual void OnEnable() override;
@@ -73,6 +74,13 @@ namespace stardust
 			virtual void OnCanvasResize(const UVec2&) override;
 
 			inline virtual bool IsMouseHoveredOver() const noexcept override { return m_isHoveredOver; }
+
+			void AddOnCheckCallback(const Callback& callback);
+			void AddOnUncheckCallback(const Callback& callback);
+
+			inline bool IsChecked() const noexcept { return m_isChecked; }
+			void ToggleChecked();
+			void SetChecked(const bool isChecked);
 
 			virtual void SetAnchor(const Anchor anchor) noexcept override;
 			virtual void SetAnchorOffset(const IVec2& anchorOffset) noexcept override;

@@ -88,6 +88,16 @@ namespace stardust
 			m_transform.position = m_owningCanvas->GetPositionFromAnchor(m_anchor, m_transform.size, m_anchorOffset);
 		}
 
+		void Image::SetTexture(const ObserverPtr<const Texture> texture) noexcept
+		{
+			m_sprite.texture = texture;
+		}
+
+		void Image::SetSubTextureArea(const Optional<TextureCoordinatePair>& textureCoordinates) noexcept
+		{
+			m_sprite.subTextureArea = textureCoordinates;
+		}
+
 		void Image::SetEnabledColourMod(const Colour& colourMod) noexcept
 		{
 			m_enabledColourMod = colourMod;
