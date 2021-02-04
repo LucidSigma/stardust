@@ -26,13 +26,6 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Logging and system modals.
 * Basic parallel task scheduling.
 
-## Functionality to come
-* Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
-* Networking support (using ENet).
-* Replace OpenGL renderer with Vulkan (possibly).
-* RGB keyboard lighting support (Corsair, Razer, Logitech).
-* Integration with Discord Rich Presence.
-
 ## Scene Template
 ```cpp
 #pragma once

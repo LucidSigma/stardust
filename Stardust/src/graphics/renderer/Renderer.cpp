@@ -97,8 +97,15 @@ namespace stardust
 
 		const auto [viewportTopLeft, viewportSize] = GetViewportRect();
 
-		glViewport(viewportTopLeft.x, viewportTopLeft.y, viewportSize.x, viewportSize.y);
-		glScissor(viewportTopLeft.x, viewportTopLeft.y, viewportSize.x, viewportSize.y);
+		glViewport(
+			static_cast<i32>(viewportTopLeft.x), static_cast<i32>(viewportTopLeft.y),
+			static_cast<i32>(viewportSize.x), static_cast<i32>(viewportSize.y)
+		);
+
+		glScissor(
+			static_cast<i32>(viewportTopLeft.x), static_cast<i32>(viewportTopLeft.y),
+			static_cast<i32>(viewportSize.x), static_cast<i32>(viewportSize.y)
+		);
 	}
 
 	void Renderer::SetVirtualSize(const UVec2& virtualSize)
@@ -463,6 +470,24 @@ namespace stardust
 		};
 
 		GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
+	}
+
+	void Renderer::SetScissorRect(const IVec2& topLeft, const UVec2& size) const
+	{
+		glScissor(
+			static_cast<i32>(topLeft.x), static_cast<i32>(size.y - topLeft.y),
+			static_cast<i32>(size.x), static_cast<i32>(size.y)
+		);
+	}
+
+	void Renderer::ResetScissorRect() const
+	{
+		const auto [viewportTopLeft, viewportSize] = GetViewportRect();
+
+		glScissor(
+			static_cast<i32>(viewportTopLeft.x), static_cast<i32>(viewportTopLeft.y),
+			static_cast<i32>(viewportSize.x), static_cast<i32>(viewportSize.y)
+		);
 	}
 
 	void Renderer::SetAntiAliasing(const bool enableAntiAliasing) const
