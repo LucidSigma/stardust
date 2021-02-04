@@ -93,7 +93,6 @@ public:
 	* [FreeType](https://www.freetype.org/)
 	* [zlib](https://zlib.net/)
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
-* [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
 
 ### Mathematics
 * [GLM](https://github.com/g-truc/glm)

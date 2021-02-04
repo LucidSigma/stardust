@@ -47,7 +47,6 @@ add_subdirectory("dep/lua-5.4.2")
 add_subdirectory("dep/physfs-3.0.2")
 add_subdirectory("dep/SoLoud-2020.02.07")
 add_subdirectory("dep/stb_image-2.26")
-add_subdirectory("dep/stb_image_write-1.15")
 
 # Projects in workspace.
 add_subdirectory("Stardust")
