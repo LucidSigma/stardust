@@ -27,12 +27,10 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Basic parallel task scheduling.
 
 ## Functionality to come
-* Basic AI (graphs, pathfinding/searching, boids, minimax, et cetera).
 * Rendering to multiple viewport setups (single, double horizontal, double vertical, quad).
-* UI (canvases, basic elements such as buttons/sliders/checkboxes).
 * Networking support (using ENet).
-* RGB keyboard lighting support (Corsair, Razer, Logitech).
 * Replace OpenGL renderer with Vulkan (possibly).
+* RGB keyboard lighting support (Corsair, Razer, Logitech).
 * Integration with Discord Rich Presence.
 
 ## Scene Template

@@ -104,14 +104,6 @@
 #include "time/Stopwatch.h"
 #include "time/Timers.h"
 
-#include "ui/canvas/Canvas.h"
-#include "ui/components/Checkbox.h"
-#include "ui/components/ColourBlock.h"
-#include "ui/components/Image.h"
-#include "ui/components/Label.h"
-#include "ui/components/UIComponent.h"
-#include "ui/Anchor.h"
-
 #include "utility/cpu/CPU.h"
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"

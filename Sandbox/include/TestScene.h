@@ -42,8 +42,6 @@ private:
 	sd::Sound m_chunkSound;
 	sd::SoundSource m_source;
 
-	sd::ui::Canvas m_canvas{ GetRenderer() };
-
 public:
 	TestScene(sd::Application& application, const sd::String& name)
 		: Scene(application, name)
@@ -170,53 +168,6 @@ public:
 		GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
 		GetScriptEngine().CallFunction<void>("vector_stuff");
 
-		m_canvas.AttachComponent<sd::ui::ColourBlock>("block", sd::ui::ColourBlock::CreateInfo{
-			.size = sd::UVec2{ 200u, 200u },
-			.rotation = 0.0f,
-			.pivot = sd::NullOpt,
-			.enabledColour = sd::colours::Lime,
-			.disabledColour = sd::colours::Red,
-			.hoverColour = sd::colours::Yellow,
-			.renderer = &GetRenderer(),
-		}, sd::ui::Anchor::BottomRight, sd::IVec2{ -20, -20 });
-
-		m_canvas.AttachComponent<sd::ui::Image>("image", sd::ui::Image::CreateInfo{
-			.size = sd::UVec2{ 100u, 200u },
-			.flip = sd::FlipType::Vertical,
-			.rotation = 0.0f,
-			.pivot = sd::NullOpt,
-			.texture = &m_textures["crumble"],
-			.subTextureArea = sd::NullOpt,
-			.enabledColourMod = sd::colours::White,
-			.disabledColourMod = sd::colours::Red,
-			.hoverColourMod = sd::colours::Orange,
-			.renderer = &GetRenderer(),
-		}, sd::ui::Anchor::CentreLeft, sd::IVec2{ 40, 0 });
-
-		m_canvas.AttachComponent<sd::ui::Label>("plus", sd::ui::Label::CreateInfo{
-			.textCache = &m_textCache,
-			.textScale = 0.75f,
-			.flip = sd::FlipType::None,
-			.rotation = 0.0f,
-			.pivot = sd::NullOpt,
-			.enabledColour = sd::colours::Azure,
-			.disabledColour = sd::colours::Purple,
-		}, "+");
-
-		m_canvas.AttachComponent<sd::ui::Checkbox>("tick", sd::ui::Checkbox::CreateInfo{
-			.size = sd::UVec2{ 64u, 64u },
-			.flip = sd::FlipType::None,
-			.rotation = 0.0f,
-			.pivot = sd::NullOpt,
-			.texture = &m_textures["checkbox"],
-			.subTextureArea = sd::NullOpt,
-			.checkOverlayTexture = &m_textures["tick"],
-			.checkOverlaySubTextureArea = sd::NullOpt,
-			.enabledColourMod = sd::colours::White,
-			.disabledColourMod = sd::colours::Grey,
-			.renderer = &GetRenderer(),
-		}, sd::ui::Anchor::TopRight, sd::IVec2{ -50, 50 });
-
 		m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
 		m_device.Open();
 
@@ -341,18 +292,7 @@ public:
 			{
 				m_colourAnimator.SkipToFrame(16u);
 			}
-
-			if (GetKeyboardState().IsKeyDown(sd::KeyCode::L))
-			{
-				m_canvas.SetEnabled(false);
-			}
-			else if (GetKeyboardState().IsKeyUp(sd::KeyCode::L))
-			{
-				m_canvas.SetEnabled(true);
-			}
 		}
-
-		m_canvas.ProcessInput();
 	}
 
 	virtual void Update(const sd::f32 deltaTime) override
@@ -378,8 +318,6 @@ public:
 				m_source = GetSoundSystem().PlaySound(m_chunkSound);
 			}
 		}
-
-		m_canvas.Update(deltaTime);
 	}
 
 	virtual void LateUpdate(const sd::f32 deltaTime) override { }
@@ -520,7 +458,6 @@ public:
 			GetCamera()
 		);
 
-		m_canvas.Render(renderer);
 		m_particles.RenderOnScreen(renderer);
 	}
 
@@ -540,8 +477,6 @@ public:
 				GetWindow().SetBorderless(false);
 			}
 		}
-
-		m_canvas.PollEvent(event);
 	}
 
 	virtual void OnGameControllerAdded(sd::GameController& gameController) override
