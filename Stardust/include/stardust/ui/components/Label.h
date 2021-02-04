@@ -10,14 +10,15 @@
 #include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/FlipType.h"
 #include "stardust/graphics/renderer/Renderer.h"
+#include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/Colour.h"
 #include "stardust/math/Math.h"
 #include "stardust/scene/components/ScreenTransformComponent.h"
 #include "stardust/scene/components/SpriteComponent.h"
 #include "stardust/text/TextCache.h"
 #include "stardust/text/Text.h"
-#include "stardust/ui/Anchor.h"
 #include "stardust/ui/canvas/Canvas.h"
+#include "stardust/ui/Anchor.h"
 
 namespace stardust
 {

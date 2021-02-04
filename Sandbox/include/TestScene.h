@@ -524,6 +524,8 @@ public:
 				GetWindow().SetBorderless(false);
 			}
 		}
+
+		m_canvas.PollEvent(event);
 	}
 
 	virtual void OnGameControllerAdded(sd::GameController& gameController) override
