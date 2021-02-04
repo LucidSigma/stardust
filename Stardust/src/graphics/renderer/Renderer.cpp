@@ -477,27 +477,6 @@ namespace stardust
 		}
 	}
 
-	[[nodiscard]] Renderer::PixelReadData Renderer::ReadPixels() const
-	{
-		const auto [viewportTopLeft, viewportSize] = GetViewportRect();
-
-		constexpr usize PixelChannelCount = 4u;
-		Vector<ubyte> imageData(PixelChannelCount * viewportSize.x * viewportSize.y);
-
-		glReadPixels(
-			viewportTopLeft.x, viewportTopLeft.y,
-			viewportSize.x, viewportSize.y,
-			GL_RGBA, GL_UNSIGNED_BYTE,
-			imageData.data()
-		);
-
-		return PixelReadData{
-			.pixels = std::move(imageData),
-			.extent = UVec2{ viewportSize.x, viewportSize.y },
-			.channelCount = PixelChannelCount,
-		};
-	}
-
 	[[nodiscard]] Pair<UVec2, UVec2> Renderer::GetViewportRect() const
 	{
 		const UVec2 windowSize = m_window->GetDrawableSize();

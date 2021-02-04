@@ -108,7 +108,6 @@ namespace stardust
 
 		String m_baseDirectory;
 		String m_preferenceDirectory;
-		String m_screenshotDirectory;
 
 		Optional<ExitCallback> m_onExit = NullOpt;
 		Optional<InitialiseCallback> m_onInitialise = NullOpt;
@@ -143,8 +142,6 @@ namespace stardust
 		inline bool IsRunning() const noexcept { return m_isRunning; }
 		inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
 		inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
-
-		void CaptureScreenshot() const;
 
 		template <typename T>
 		void SetGlobalSceneData(const String& dataName, const T& data)

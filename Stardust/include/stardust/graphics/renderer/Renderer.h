@@ -46,14 +46,6 @@ namespace stardust
 			Optional<UVec2> virtualSize = NullOpt;
 		};
 
-		struct PixelReadData
-		{
-			Vector<ubyte> pixels;
-
-			UVec2 extent;
-			usize channelCount;
-		};
-
 	private:
 		struct BatchVertex
 		{
@@ -144,8 +136,6 @@ namespace stardust
 		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::Sprite& sprite);
 
 		void SetAntiAliasing(const bool enableAntiAliasing) const;
-
-		[[nodiscard]] PixelReadData ReadPixels() const;
 
 		inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }
 		inline const Vec2& GetVirtualScale() const noexcept { return m_virtualScale; }

@@ -6,7 +6,6 @@
 #include <glad/glad.h>
 #include <SDL2/SDL_ttf.h>
 #include <stb/stb_image.h>
-#include <stb/stb_image_write.h>
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
@@ -94,35 +93,6 @@ namespace stardust
 		return SDL_GetPlatform();
 	}
 
-	void Application::CaptureScreenshot() const
-	{
-		const Renderer::PixelReadData pixelReadData = m_renderer.ReadPixels();
-
-		const u64 currentTime = static_cast<u64>(std::chrono::system_clock::now().time_since_epoch().count());
-		const String screenshotFilename = m_screenshotDirectory + "/screenshot_" + std::to_string(currentTime) + ".png";
-
-		const i32 screenshotWriteResult = stbi_write_png(
-			screenshotFilename.c_str(),
-			static_cast<i32>(pixelReadData.extent.x), static_cast<i32>(pixelReadData.extent.y), static_cast<i32>(pixelReadData.channelCount),
-			pixelReadData.pixels.data(),
-			static_cast<i32>(pixelReadData.extent.x * pixelReadData.channelCount)
-		);
-
-		if (screenshotWriteResult == 0)
-		{
-			message_box::Show(
-				std::string_view(m_locale["engine"]["warnings"]["titles"]["screenshot"]),
-				std::string_view(m_locale["engine"]["warnings"]["bodies"]["screenshot"]),
-				message_box::Type::Warning
-			);
-			Log::EngineWarn("Failed to take screenshot.");
-		}
-		else [[likely]]
-		{
-			Log::EngineTrace("Screenshot captured at {}.", screenshotFilename);
-		}
-	}
-
 	void Application::RemoveFromGlobalSceneData(const String& dataName)
 	{
 		m_globalSceneData.erase(dataName);
@@ -196,7 +166,6 @@ namespace stardust
 		}
 
 		stbi_set_flip_vertically_on_load(true);
-		stbi_flip_vertically_on_write(true);
 
 		m_didInitialiseSuccessfully = true;
 	}
@@ -222,16 +191,6 @@ namespace stardust
 			Log::EngineError("Failed to get preference directory.");
 
 			return Status::Fail;
-		}
-
-		m_screenshotDirectory = m_preferenceDirectory + "screenshots";
-
-		if (!filesystem::IsDirectory(m_screenshotDirectory))
-		{
-			if (filesystem::CreateDirectory(m_screenshotDirectory) == Status::Fail)
-			{
-				Log::EngineWarn("Failed to create screenshot directory.");
-			}
 		}
 
 		Log::EngineInfo("Filesystem initialised.");
@@ -661,20 +620,6 @@ namespace stardust
 				}
 
 				Input::RemoveGameController(event.cdevice.which);
-
-				break;
-
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_F2:
-					CaptureScreenshot();
-
-					break;
-
-				default:
-					break;
-				}
 
 				break;
 
