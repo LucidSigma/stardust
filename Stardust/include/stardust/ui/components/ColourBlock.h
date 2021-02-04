@@ -4,8 +4,8 @@
 
 #include "stardust/ui/components/UIComponent.h"
 
-#include "stardust/data/Types.h"
 #include "stardust/data/MathTypes.h"
+#include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/Colour.h"
 #include "stardust/math/Math.h"
