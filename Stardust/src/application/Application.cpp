@@ -18,6 +18,7 @@
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/Input.h"
 #include "stardust/physics/world/World.h"
+#include "stardust/window/cursor/Cursor.h"
 
 namespace stardust
 {
@@ -36,6 +37,7 @@ namespace stardust
 		m_renderer.Destroy();
 		m_openGLContext.Destroy();
 		m_window.Destroy();
+		ResetCursor();
 
 		vfs::Quit();
 

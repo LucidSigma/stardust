@@ -112,6 +112,7 @@
 #include "utility/tasks/Task.h"
 #include "utility/Utility.h"
 
+#include "window/cursor/Cursor.h"
 #include "window/Window.h"
 
 namespace sd = stardust;

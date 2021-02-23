@@ -53,6 +53,8 @@ public:
 
 	[[nodiscard]] virtual sd::Status OnLoad() override
 	{
+		sd::SetCursor(sd::CursorType::No);
+
 		GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
 
 		const auto textures = sd::vfs::GetAllFilesInDirectory("assets/textures");
