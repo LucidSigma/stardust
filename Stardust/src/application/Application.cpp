@@ -594,7 +594,7 @@ namespace stardust
 
 		while (SDL_PollEvent(&event) != 0)
 		{
-			switch (static_cast<EventType>(event.type))
+			switch (GetEventType(event))
 			{
 			case EventType::Window:
 				ProcessWindowEvents(event.window);
@@ -641,7 +641,7 @@ namespace stardust
 
 	void Application::ProcessWindowEvents(const WindowEvent& windowEvent)
 	{
-		switch (static_cast<WindowEventType>(windowEvent.event))
+		switch (GetWindowEventType(windowEvent))
 		{
 		case WindowEventType::SizeChange:
 			m_window.ProcessResize(UVec2{ windowEvent.data1, windowEvent.data2 });

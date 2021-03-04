@@ -463,9 +463,9 @@ public:
 		m_particles.RenderOnScreen(renderer);
 	}
 
-	virtual void PollEvent(const SDL_Event& event) override
+	virtual void PollEvent(const sd::Event& event) override
 	{
-		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F11)
+		if (sd::GetEventType(event) == sd::EventType::KeyDown && event.key.keysym.sym == SDLK_F11)
 		{
 			if (!GetWindow().IsFullscreen())
 			{

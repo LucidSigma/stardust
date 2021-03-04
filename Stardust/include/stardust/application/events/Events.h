@@ -100,14 +100,17 @@ namespace stardust
 		Disconnect = SDL_DISPLAYEVENT_DISCONNECTED,
 	};
 
+	[[nodiscard]] inline EventType GetEventType(const Event& event) noexcept { return static_cast<EventType>(event.type); }
+	[[nodiscard]] inline WindowEventType GetWindowEventType(const WindowEvent& windowEvent) noexcept { return static_cast<WindowEventType>(windowEvent.event); }
+	[[nodiscard]] inline DisplayEventType GetDisplayEventType(const DisplayEvent& displayEvent) noexcept { return static_cast<DisplayEventType>(displayEvent.event); }
 
 	[[nodiscard]] extern bool IsEventEnqueued(const EventType eventType) noexcept;
 
 	[[nodiscard]] extern bool IsEventTypeEnabled(const EventType eventType) noexcept;
 	extern void SetEventState(const EventType eventType, const bool isEnabled) noexcept;
 
-	Event WaitForEvent();
-	Optional<Event> WaitForEvent(const u32 millisecondTimeout = 0u);
+	extern Event WaitForEvent();
+	extern Optional<Event> WaitForEvent(const u32 millisecondTimeout = 0u);
 }
 
 #endif
