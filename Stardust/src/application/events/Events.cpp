@@ -17,19 +17,25 @@ namespace stardust
 		SDL_EventState(static_cast<SDL_EventType>(eventType), isEnabled ? SDL_ENABLE : SDL_DISABLE);
 	}
 
-	Event WaitForEvent(const u32 millisecondTimeout)
+	Event WaitForEvent()
+	{
+		Event event{ };
+		SDL_WaitEvent(&event);
+
+		return event;
+	}
+
+	Optional<Event> WaitForEvent(const u32 millisecondTimeout)
 	{
 		Event event{ };
 		
-		if (millisecondTimeout == 0u)
+		if (SDL_WaitEventTimeout(&event, static_cast<i32>(millisecondTimeout)) == 0)
 		{
-			SDL_WaitEvent(&event);
+			return NullOpt;
 		}
 		else
 		{
-			SDL_WaitEventTimeout(&event, static_cast<i32>(millisecondTimeout));
+			return event;
 		}
-
-		return event;
 	}
 }

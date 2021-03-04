@@ -6,8 +6,8 @@
 #include "stardust/utility/interfaces/INonmovable.h"
 
 #include <entt/entt.hpp>
-#include <SDL2/SDL.h>
 
+#include "stardust/application/events/Events.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/Renderer.h"
@@ -43,7 +43,7 @@ namespace stardust
 
 		virtual void Render(Renderer& renderer) = 0;
 
-		inline virtual void PollEvent(const SDL_Event& event) { }
+		inline virtual void PollEvent(const Event& event) { }
 		inline virtual void OnGameControllerAdded(GameController& gameController) { }
 		inline virtual void OnGameControllerRemoved(const GameController& gameController) { }
 

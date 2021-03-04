@@ -68,17 +68,17 @@ namespace stardust
 	enum class WindowEventType
 		: std::underlying_type_t<SDL_WindowEventID>
 	{
-		Shown = SDL_WINDOWEVENT_SHOWN,
-		Hidden = SDL_WINDOWEVENT_HIDDEN,
-		Exposed = SDL_WINDOWEVENT_EXPOSED,
+		Show = SDL_WINDOWEVENT_SHOWN,
+		Hide = SDL_WINDOWEVENT_HIDDEN,
+		Expose = SDL_WINDOWEVENT_EXPOSED,
 
 		Moved = SDL_WINDOWEVENT_MOVED,
 		ExternalResize = SDL_WINDOWEVENT_RESIZED,
 		SizeChange = SDL_WINDOWEVENT_SIZE_CHANGED,
 
-		Minimised = SDL_WINDOWEVENT_MINIMIZED,
-		Maximised = SDL_WINDOWEVENT_MAXIMIZED,
-		Restored = SDL_WINDOWEVENT_RESTORED,
+		Minimise = SDL_WINDOWEVENT_MINIMIZED,
+		Maximise = SDL_WINDOWEVENT_MAXIMIZED,
+		Restore = SDL_WINDOWEVENT_RESTORED,
 
 		MouseEnter = SDL_WINDOWEVENT_ENTER,
 		MouseLeave = SDL_WINDOWEVENT_LEAVE,
@@ -106,7 +106,8 @@ namespace stardust
 	[[nodiscard]] extern bool IsEventTypeEnabled(const EventType eventType) noexcept;
 	extern void SetEventState(const EventType eventType, const bool isEnabled) noexcept;
 
-	Event WaitForEvent(const u32 millisecondTimeout = 0u);
+	Event WaitForEvent();
+	Optional<Event> WaitForEvent(const u32 millisecondTimeout = 0u);
 }
 
 #endif

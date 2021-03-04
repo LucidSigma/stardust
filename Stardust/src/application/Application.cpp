@@ -4,6 +4,7 @@
 #include <utility>
 
 #include <glad/glad.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <stb/stb_image.h>
 
@@ -587,25 +588,25 @@ namespace stardust
 		m_window.Present();
 	}
 
-	void Application::PollEvents(SDL_Event& event)
+	void Application::PollEvents(Event& event)
 	{
 		Input::ResetScrollState();
 
 		while (SDL_PollEvent(&event) != 0)
 		{
-			switch (event.type)
+			switch (static_cast<EventType>(event.type))
 			{
-			case SDL_WINDOWEVENT:
+			case EventType::Window:
 				ProcessWindowEvents(event.window);
 
 				break;
 
-			case SDL_MOUSEWHEEL:
+			case EventType::MouseScroll:
 				Input::UpdateScrollState(event.wheel.y);
 
 				break;
 
-			case SDL_CONTROLLERDEVICEADDED:
+			case EventType::GameControllerDeviceAdd:
 				if (const ObserverPtr<GameController> gameController = Input::AddGameController(event.cdevice.which, m_locale);
 					gameController != nullptr)
 				{
@@ -614,7 +615,7 @@ namespace stardust
 				
 				break;
 
-			case SDL_CONTROLLERDEVICEREMOVED:
+			case EventType::GameControllerDeviceRemove:
 				if (const ObserverPtr<const GameController> gameController = Input::GetGameController(event.cdevice.which);
 					gameController != nullptr)
 				{
@@ -625,7 +626,7 @@ namespace stardust
 
 				break;
 
-			case SDL_QUIT:
+			case EventType::Quit:
 				m_isRunning = false;
 
 				break;
@@ -638,24 +639,24 @@ namespace stardust
 		}
 	}
 
-	void Application::ProcessWindowEvents(const SDL_WindowEvent& windowEvent)
+	void Application::ProcessWindowEvents(const WindowEvent& windowEvent)
 	{
-		switch (windowEvent.event)
+		switch (static_cast<WindowEventType>(windowEvent.event))
 		{
-		case SDL_WINDOWEVENT_SIZE_CHANGED:
+		case WindowEventType::SizeChange:
 			m_window.ProcessResize(UVec2{ windowEvent.data1, windowEvent.data2 });
 			m_renderer.ProcessResize();
 			m_camera.Refresh();
 
 			break;
 
-		case SDL_WINDOWEVENT_MINIMIZED:
-		case SDL_WINDOWEVENT_FOCUS_LOST:
+		case WindowEventType::Minimise:
+		case WindowEventType::KeyboardFocusLoss:
 			m_hasWindowFocus = false;
 
 			break;
 
-		case SDL_WINDOWEVENT_FOCUS_GAINED:
+		case WindowEventType::KeyboardFocusGain:
 			m_hasWindowFocus = true;
 
 			if (Input::IsMouseInRelativeMode())

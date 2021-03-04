@@ -10,8 +10,8 @@
 #include <functional>
 
 #include <entt/entt.hpp>
-#include <SDL2/SDL.h>
 
+#include "stardust/application/events/Events.h"
 #include "stardust/audio/volume/VolumeManager.h"
 #include "stardust/audio/SoundSystem.h"
 #include "stardust/camera/Camera2D.h"
@@ -182,8 +182,8 @@ namespace stardust
 		void LateUpdate();
 		void Render();
 
-		void PollEvents(SDL_Event& event);
-		void ProcessWindowEvents(const SDL_WindowEvent& windowEvent);
+		void PollEvents(Event& event);
+		void ProcessWindowEvents(const WindowEvent& windowEvent);
 
 		void UpdateTime(f64& timeAccumulator);
 		void UpdateSceneQueue();

@@ -51,7 +51,7 @@ public:
 
 	virtual void Render(sd::Renderer& renderer) override;
 
-	virtual void PollEvent(const SDL_Event& event) override;
+	virtual void PollEvent(const sd::Event& event) override;
 	virtual void OnGameControllerAdded(sd::GameController& gameController) override;
 	virtual void OnGameControllerRemoved(const sd::GameController& gameController) override;
 };
