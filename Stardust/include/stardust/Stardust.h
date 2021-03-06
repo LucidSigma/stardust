@@ -34,8 +34,9 @@
 #include "debug/logging/Log.h"
 #include "debug/message_box/MessageBox.h"
 
-#include "filesystem/Filesystem.h"
+#include "filesystem/shared_object/SharedObject.h"
 #include "filesystem/vfs/VFS.h"
+#include "filesystem/Filesystem.h"
 
 #include "graphics/backend/OpenGL.h"
 #include "graphics/backend/OpenGLContext.h"
