@@ -87,9 +87,12 @@ namespace stardust
 	template <typename... Types>
 	using Tuple = std::tuple<Types...>;
 
-	[[nodiscard]] extern Vector<String> SplitString(const String& string, const char delimiter = ' ');
-	[[nodiscard]] extern String MakeUpper(String string);
-	[[nodiscard]] extern String MakeLower(String string);
+	namespace string
+	{
+		[[nodiscard]] extern Vector<String> SplitString(const String& string, const char delimiter = ' ');
+		[[nodiscard]] extern String MakeUpper(String string);
+		[[nodiscard]] extern String MakeLower(String string);
+	}
 }
 
 #endif

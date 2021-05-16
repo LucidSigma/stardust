@@ -15,7 +15,7 @@ namespace stardust
 		logSinks[0]->set_pattern("%^[%T] %n: %v%$");
 		logSinks[1]->set_pattern("[%T] [%l] %n: %v");
 
-		const String clientLoggerName = MakeUpper(applicationName.data());
+		const String clientLoggerName = string::MakeUpper(applicationName.data());
 
 		s_engineLogger = std::make_shared<spdlog::logger>("STARDUST", std::cbegin(logSinks), std::cend(logSinks));
 		spdlog::register_logger(s_engineLogger);

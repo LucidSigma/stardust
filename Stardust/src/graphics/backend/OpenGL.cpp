@@ -40,7 +40,7 @@ namespace stardust
 
 		void InitialiseDebugCallback()
 		{
-			const String vendorName = MakeLower(String(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
+			const String vendorName = string::MakeLower(String(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
 			isNvidiaGPU = vendorName.find("nvidia") != String::npos;
 
 			glDebugMessageCallback(DebugMessageCallback, nullptr);

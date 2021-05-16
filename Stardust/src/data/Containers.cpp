@@ -6,46 +6,49 @@
 
 namespace stardust
 {
-	[[nodiscard]] Vector<String> SplitString(const String& string, const char delimiter)
+	namespace string
 	{
-		String currentToken;
-		std::istringstream reader(string);
-
-		Vector<String> tokens;
-
-		while (std::getline(reader, currentToken, delimiter))
+		[[nodiscard]] Vector<String> SplitString(const String& string, const char delimiter)
 		{
-			tokens.push_back(currentToken);
+			String currentToken;
+			std::istringstream reader(string);
+
+			Vector<String> tokens;
+
+			while (std::getline(reader, currentToken, delimiter))
+			{
+				tokens.push_back(currentToken);
+			}
+
+			return tokens;
 		}
 
-		return tokens;
-	}
-
-	[[nodiscard]] String MakeUpper(String string)
-	{
-		std::transform(
-			std::cbegin(string), std::cend(string),
-			std::begin(string),
-			[](const char letter) -> char
+		[[nodiscard]] String MakeUpper(String string)
+		{
+			std::transform(
+				std::cbegin(string), std::cend(string),
+				std::begin(string),
+				[](const char letter) -> char
 			{
 				return static_cast<char>(std::toupper(static_cast<unsigned char>(letter), std::locale()));
 			}
-		);
+			);
 
-		return string;
-	}
+			return string;
+		}
 
-	[[nodiscard]] String MakeLower(String string)
-	{
-		std::transform(
-			std::cbegin(string), std::cend(string),
-			std::begin(string),
-			[](const char letter) -> char
+		[[nodiscard]] String MakeLower(String string)
+		{
+			std::transform(
+				std::cbegin(string), std::cend(string),
+				std::begin(string),
+				[](const char letter) -> char
 			{
 				return static_cast<char>(std::tolower(static_cast<unsigned char>(letter), std::locale()));
 			}
-		);
+			);
 
-		return string;
+			return string;
+		}
 	}
 }

@@ -18,11 +18,11 @@ namespace stardust
 
 			for (const SDL_Locale* currentLocale = preferredLocales; currentLocale != nullptr && currentLocale->language != nullptr; ++currentLocale)
 			{
-				String currentLocaleString = MakeLower(currentLocale->language);
+				String currentLocaleString = string::MakeLower(currentLocale->language);
 
 				if (currentLocale->country != nullptr && currentLocale->country != "")
 				{
-					currentLocaleString += "_" + MakeLower(currentLocale->country);
+					currentLocaleString += "_" + string::MakeLower(currentLocale->country);
 				}
 
 				preferredLocaleStrings.push_back(currentLocaleString);
