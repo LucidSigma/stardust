@@ -26,11 +26,6 @@ namespace stardust
 {
 	namespace opengl
 	{
-		namespace
-		{
-			bool isNvidiaGPU = false;
-		}
-
 		[[nodiscard]] Status InitialiseLoader()
 		{
 			return gladLoadGLLoader(static_cast<GLADloadproc>(SDL_GL_GetProcAddress)) != 0
@@ -40,17 +35,12 @@ namespace stardust
 
 		void InitialiseDebugCallback()
 		{
-			const String vendorName = string::MakeLower(String(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
-			isNvidiaGPU = vendorName.find("nvidia") != String::npos;
-
 			glDebugMessageCallback(DebugMessageCallback, nullptr);
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		}
 
 		void __cdecl DebugMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const GLchar* message, const void* userParams) noexcept
 		{
-			constexpr GLuint ScreenshotFalsePositiveErrorID = 131'154u;
-
 			switch (severity)
 			{
 			case GL_DEBUG_SEVERITY_HIGH:
@@ -59,10 +49,7 @@ namespace stardust
 				break;
 
 			case GL_DEBUG_SEVERITY_MEDIUM:
-				if (!isNvidiaGPU || (isNvidiaGPU && id != ScreenshotFalsePositiveErrorID))
-				{
-					Log::EngineWarn("[OPENGL WARNING]: {}", message);
-				}
+				Log::EngineWarn("[OPENGL WARNING]: {}", message);
 
 				break;
 
