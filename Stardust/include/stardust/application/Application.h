@@ -90,7 +90,7 @@ namespace stardust
 
 		Camera2D m_camera;
 
-		f64 m_fixedTimestep = 0.0f;
+		f64 m_fixedTimestep = 0.0;
 		f32 m_deltaTime = 0.0f;
 		std::chrono::time_point<std::chrono::high_resolution_clock> m_ticksCount;
 		f64 m_elapsedTime = 0.0;

@@ -51,7 +51,7 @@ namespace stardust
 		InitialiseScenes();
 
 		SDL_Event event{ };
-		f64 timeAccumulator = 0.0f;
+		f64 timeAccumulator = 0.0;
 		m_ticksCount = std::chrono::high_resolution_clock::now();
 
 		while (m_isRunning)
