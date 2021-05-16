@@ -14,7 +14,7 @@ namespace stardust
 	private:
 		using Clock = std::chrono::high_resolution_clock;
 
-		static constexpr u64 s_Precision = Clock::period::den;
+		static constexpr u64 s_Precision = static_cast<u64>(Clock::period::den);
 
 		static constexpr bool s_CanCountMicroseconds = std::ratio_greater_equal_v<std::micro, Clock::period>;
 		static constexpr bool s_CanCountNanoseconds = std::ratio_greater_equal_v<std::nano, Clock::period>;
