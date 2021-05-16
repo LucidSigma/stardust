@@ -9,29 +9,29 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct ScreenTransform
-		{
-			IVec2 position;
+    namespace components
+    {
+        struct ScreenTransform
+        {
+            IVec2 position;
 
-			UVec2 size;
-			FlipType flip;
+            UVec2 size;
+            FlipType flip;
 
-			f32 rotation;
-			Optional<IVec2> pivot;
+            f32 rotation;
+            Optional<IVec2> pivot;
 
-			ScreenTransform()
-				: position(IVec2Zero), size(UVec2Zero), flip(FlipType::None), rotation(0.0f), pivot(NullOpt)
-			{ }
+            ScreenTransform()
+                : position(IVec2Zero), size(UVec2Zero), flip(FlipType::None), rotation(0.0f), pivot(NullOpt)
+            { }
 
-			explicit ScreenTransform(const IVec2& position, const UVec2& size = UVec2Zero, const FlipType flip = FlipType::None, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt)
-				: position(position), size(size), flip(flip), rotation(rotation), pivot(pivot)
-			{ }
+            explicit ScreenTransform(const IVec2& position, const UVec2& size = UVec2Zero, const FlipType flip = FlipType::None, const f32 rotation = 0.0f, const Optional<IVec2>& pivot = NullOpt)
+                : position(position), size(size), flip(flip), rotation(rotation), pivot(pivot)
+            { }
 
-			~ScreenTransform() noexcept = default;
-		};
-	}
+            ~ScreenTransform() noexcept = default;
+        };
+    }
 }
 
 #endif

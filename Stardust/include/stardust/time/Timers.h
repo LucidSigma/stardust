@@ -8,11 +8,11 @@
 
 namespace stardust
 {
-	using TimerID = SDL_TimerID;
-	using TimerCallback = SDL_TimerCallback;
+    using TimerID = SDL_TimerID;
+    using TimerCallback = SDL_TimerCallback;
 
-	TimerID AddTimer(const u32 millisecondDelay, const TimerCallback callback, void* const parameter);
-	bool RemoveTimer(const TimerID timerID);
+    TimerID AddTimer(const u32 millisecondDelay, const TimerCallback callback, void* const parameter);
+    bool RemoveTimer(const TimerID timerID);
 }
 
 #endif

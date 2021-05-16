@@ -2,13 +2,13 @@
 
 namespace stardust
 {
-	TimerID AddTimer(const u32 millisecondDelay, const TimerCallback callback, void* const parameter)
-	{
-		return SDL_AddTimer(millisecondDelay, callback, parameter);
-	}
+    TimerID AddTimer(const u32 millisecondDelay, const TimerCallback callback, void* const parameter)
+    {
+        return SDL_AddTimer(millisecondDelay, callback, parameter);
+    }
 
-	bool RemoveTimer(const TimerID timerID)
-	{
-		return SDL_RemoveTimer(timerID) == SDL_TRUE;
-	}
+    bool RemoveTimer(const TimerID timerID)
+    {
+        return SDL_RemoveTimer(timerID) == SDL_TRUE;
+    }
 }

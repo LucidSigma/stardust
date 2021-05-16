@@ -6,12 +6,12 @@
 
 namespace stardust
 {
-	namespace utility
-	{
-		extern void OpenURL(const StringView& url);
-	}
+    namespace utility
+    {
+        extern void OpenURL(const StringView& url);
+    }
 
-	namespace util = utility;
+    namespace util = utility;
 }
 
 #endif

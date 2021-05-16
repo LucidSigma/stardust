@@ -7,23 +7,23 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct Animated
-		{
-			ObserverPtr<const Animator> animator;
+    namespace components
+    {
+        struct Animated
+        {
+            ObserverPtr<const Animator> animator;
 
-			Animated()
-				: animator(nullptr)
-			{ }
+            Animated()
+                : animator(nullptr)
+            { }
 
-			Animated(const Animator& animator)
-				: animator(&animator)
-			{ }
+            Animated(const Animator& animator)
+                : animator(&animator)
+            { }
 
-			~Animated() noexcept = default;
-		};
-	}
+            ~Animated() noexcept = default;
+        };
+    }
 }
 
 #endif

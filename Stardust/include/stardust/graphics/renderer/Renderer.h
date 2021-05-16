@@ -29,149 +29,149 @@
 
 namespace stardust
 {
-	class Renderer
-		: private INoncopyable, private INonmovable
-	{
-	public:
-		enum class PolygonMode
-			: GLenum
-		{
-			Filled = GL_FILL,
-			Outline = GL_LINE,
-		};
+    class Renderer
+        : private INoncopyable, private INonmovable
+    {
+    public:
+        enum class PolygonMode
+            : GLenum
+        {
+            Filled = GL_FILL,
+            Outline = GL_LINE,
+        };
 
-		struct CreateInfo
-		{
-			ObserverPtr<Window> window = nullptr;
-			Optional<UVec2> virtualSize = NullOpt;
-		};
+        struct CreateInfo
+        {
+            ObserverPtr<Window> window = nullptr;
+            Optional<UVec2> virtualSize = NullOpt;
+        };
 
-	private:
-		struct BatchVertex
-		{
-			Vec2 position;
-			Vec4 colour;
-			Vec2 textureCoordinates;
-			f32 textureIndex;
-		};
+    private:
+        struct BatchVertex
+        {
+            Vec2 position;
+            Vec4 colour;
+            Vec2 textureCoordinates;
+            f32 textureIndex;
+        };
 
-		static constexpr usize s_MaxQuadsPerBatch = 4'000u;
-		static constexpr usize s_MaxVerticesPerBatch = s_MaxQuadsPerBatch * 4u;
-		static constexpr usize s_MaxIndicesPerBatch = s_MaxQuadsPerBatch * 6u;
+        static constexpr usize s_MaxQuadsPerBatch = 4'000u;
+        static constexpr usize s_MaxVerticesPerBatch = s_MaxQuadsPerBatch * 4u;
+        static constexpr usize s_MaxIndicesPerBatch = s_MaxQuadsPerBatch * 6u;
 
-		static constexpr u32 s_BlankTextureSlot = 0u;
+        static constexpr u32 s_BlankTextureSlot = 0u;
 
-		ObserverPtr<Window> m_window = nullptr;
+        ObserverPtr<Window> m_window = nullptr;
 
-		UVec2 m_virtualSize = UVec2Zero;
-		Vec2 m_virtualScale = Vec2One;
-		f32 m_virtualAspectRatio = 0.0f;
+        UVec2 m_virtualSize = UVec2Zero;
+        Vec2 m_virtualScale = Vec2One;
+        f32 m_virtualAspectRatio = 0.0f;
 
-		VertexLayout m_worldVertexLayout;
-		VertexBuffer m_worldVertexBuffer;
-		IndexBuffer m_worldIndexBuffer;
+        VertexLayout m_worldVertexLayout;
+        VertexBuffer m_worldVertexBuffer;
+        IndexBuffer m_worldIndexBuffer;
 
-		VertexLayout m_screenVertexLayout;
-		VertexBuffer m_screenVertexBuffer;
-		IndexBuffer m_screenIndexBuffer;
+        VertexLayout m_screenVertexLayout;
+        VertexBuffer m_screenVertexBuffer;
+        IndexBuffer m_screenIndexBuffer;
 
-		ShaderProgram m_batchShader;
-		Texture m_blankTexture;
+        ShaderProgram m_batchShader;
+        Texture m_blankTexture;
 
-		Vector<BatchVertex> m_worldQuadBuffer{ };
-		BatchVertex* m_worldQuadBufferPtr = nullptr;
+        Vector<BatchVertex> m_worldQuadBuffer{ };
+        BatchVertex* m_worldQuadBufferPtr = nullptr;
 
-		Vector<BatchVertex> m_screenQuadBuffer{ };
-		BatchVertex* m_screenQuadBufferPtr = nullptr;
+        Vector<BatchVertex> m_screenQuadBuffer{ };
+        BatchVertex* m_screenQuadBufferPtr = nullptr;
 
-		u32 m_worldIndexCount = 0u;
-		u32 m_screenIndexCount = 0u;
+        u32 m_worldIndexCount = 0u;
+        u32 m_screenIndexCount = 0u;
 
-		usize m_maxTextureUnits = 32u;
+        usize m_maxTextureUnits = 32u;
 
-		Vector<ObserverPtr<const Texture>> m_worldTextureSlots{ nullptr };
-		usize m_worldTextureSlotIndex = 1u;
+        Vector<ObserverPtr<const Texture>> m_worldTextureSlots{ nullptr };
+        usize m_worldTextureSlotIndex = 1u;
 
-		Vector<ObserverPtr<const Texture>> m_screenTextureSlots{ nullptr };
-		usize m_screenTextureSlotIndex = 1u;
+        Vector<ObserverPtr<const Texture>> m_screenTextureSlots{ nullptr };
+        usize m_screenTextureSlotIndex = 1u;
 
-		Mat4 m_screenProjectionMatrix{ 1.0f };
+        Mat4 m_screenProjectionMatrix{ 1.0f };
 
-		bool m_isValid = false;
+        bool m_isValid = false;
 
-	public:
-		Renderer() = default;
-		explicit Renderer(const CreateInfo& createInfo);
-		~Renderer() noexcept;
+    public:
+        Renderer() = default;
+        explicit Renderer(const CreateInfo& createInfo);
+        ~Renderer() noexcept;
 
-		void Initialise(const CreateInfo& createInfo);
-		void Destroy() noexcept;
+        void Initialise(const CreateInfo& createInfo);
+        void Destroy() noexcept;
 
-		void ProcessResize();
-		void SetVirtualSize(const UVec2& virtualSize);
+        void ProcessResize();
+        void SetVirtualSize(const UVec2& virtualSize);
 
-		void SetPolygonMode(const PolygonMode polygonMode) const;
-		void SetClearColour(const Colour& colour) const;
-		void Clear() const;
+        void SetPolygonMode(const PolygonMode polygonMode) const;
+        void SetClearColour(const Colour& colour) const;
+        void Clear() const;
 
-		void BeginFrame();
-		void EndFrame(const Camera2D& camera);
+        void BeginFrame();
+        void EndFrame(const Camera2D& camera);
 
-		void NewWorldBatch(const Camera2D& camera);
-		void NewScreenBatch();
+        void NewWorldBatch(const Camera2D& camera);
+        void NewScreenBatch();
 
-		void DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera);
-		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
-		void DrawWorldRect(const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
-		void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera);
+        void DrawWorldRect(const components::Transform& transform, const Colour& colour, const Camera2D& camera);
+        void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
+        void DrawWorldRect(const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
+        void DrawWorldRect(const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera);
 
-		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const Colour& colour, const Camera2D& camera);
-		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
-		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
-		void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera);
+        void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const Colour& colour, const Camera2D& camera);
+        void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const Colour& colour, const Camera2D& camera);
+        void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
+        void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera);
 
-		void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
-		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
-		void DrawScreenRect(const components::ScreenTransform& transform, const components::Sprite& sprite);
-		void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::Sprite& sprite);
-		
-		void SetScissorRect(const IVec2& topLeft, const UVec2& size) const;
-		void ResetScissorRect() const;
+        void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
+        void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
+        void DrawScreenRect(const components::ScreenTransform& transform, const components::Sprite& sprite);
+        void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::Sprite& sprite);
+        
+        void SetScissorRect(const IVec2& topLeft, const UVec2& size) const;
+        void ResetScissorRect() const;
 
-		void SetAntiAliasing(const bool enableAntiAliasing) const;
+        void SetAntiAliasing(const bool enableAntiAliasing) const;
 
-		inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }
-		inline const Vec2& GetVirtualScale() const noexcept { return m_virtualScale; }
-		inline f32 GetVirtualAspectRatio() const noexcept { return m_virtualAspectRatio; }
+        inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }
+        inline const Vec2& GetVirtualScale() const noexcept { return m_virtualScale; }
+        inline f32 GetVirtualAspectRatio() const noexcept { return m_virtualAspectRatio; }
 
-		inline const Mat4& GetScreenProjectionMatrix() const noexcept { return m_screenProjectionMatrix; }
+        inline const Mat4& GetScreenProjectionMatrix() const noexcept { return m_screenProjectionMatrix; }
 
-		[[nodiscard]] Pair<UVec2, UVec2> GetViewportRect() const;
-		inline const Window& GetWindow() const noexcept { return *m_window; }
+        [[nodiscard]] Pair<UVec2, UVec2> GetViewportRect() const;
+        inline const Window& GetWindow() const noexcept { return *m_window; }
 
-		inline bool IsValid() const noexcept { return m_isValid; }
+        inline bool IsValid() const noexcept { return m_isValid; }
 
-	private:
-		void InitialiseVertexObjects();
-		void InitialiseShaders();
-		void InitialiseTextureIndices();
+    private:
+        void InitialiseVertexObjects();
+        void InitialiseShaders();
+        void InitialiseTextureIndices();
 
-		void BeginWorldBatch();
-		void EndWorldBatch();
-		void FlushWorldBatch(const Camera2D& camera);
+        void BeginWorldBatch();
+        void EndWorldBatch();
+        void FlushWorldBatch(const Camera2D& camera);
 
-		void BeginScreenBatch();
-		void EndScreenBatch();
-		void FlushScreenBatch();
+        void BeginScreenBatch();
+        void EndScreenBatch();
+        void FlushScreenBatch();
 
-		[[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
-		[[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
+        [[nodiscard]] Mat4 CreateWorldModelMatrix(const Vec2& position, const Vec2& scale, const f32 rotation, const Optional<Vec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
+        [[nodiscard]] Mat4 CreateScreenModelMatrix(const Vec2& position, const Vec2& size, const FlipType flip, const f32 rotation, const Optional<IVec2>& pivot, const Optional<Vec2>& shear = NullOpt) const;
 
-		void GenerateRect(const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
-		void GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
+        void GenerateRect(const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
+        void GenerateQuad(const Quad& quad, const Mat4& modelMatrix, const Colour& colour, const TextureCoordinatePair& textureCoordinates, const f32 textureIndex, BatchVertex*& bufferPtr, u32& indexCount);
 
-		void UpdateScreenProjectionMatrix();
-	};
+        void UpdateScreenProjectionMatrix();
+    };
 }
 
 #endif

@@ -14,8 +14,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # External CMake modules.
 if(WIN32)
-	set(SDL2_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2-2.0.14/cmake")
-	set(SDL2_TTF_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2_ttf-2.0.15/cmake")
+    set(SDL2_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2-2.0.14/cmake")
+    set(SDL2_TTF_DIR "${PROJECT_SOURCE_DIR}/dep/SDL2_ttf-2.0.15/cmake")
 endif()
 
 find_package(SDL2 REQUIRED)
@@ -27,7 +27,7 @@ find_package(GLM REQUIRED)
 find_package(OpenGL REQUIRED)
 
 if(NOT OPENGL_FOUND)
-	message(FATAL_ERROR "Could not find OpenGL libraries.")
+    message(FATAL_ERROR "Could not find OpenGL libraries.")
 endif()
 
 # Header-only dependencies.

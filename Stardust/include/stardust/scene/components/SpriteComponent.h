@@ -10,29 +10,29 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct Sprite
-		{
-			ObserverPtr<const Texture> texture;
-			Optional<TextureCoordinatePair> subTextureArea;
-			Colour colourMod;
+    namespace components
+    {
+        struct Sprite
+        {
+            ObserverPtr<const Texture> texture;
+            Optional<TextureCoordinatePair> subTextureArea;
+            Colour colourMod;
 
-			Sprite()
-				: texture(nullptr), subTextureArea(NullOpt), colourMod(colours::White)
-			{ }
+            Sprite()
+                : texture(nullptr), subTextureArea(NullOpt), colourMod(colours::White)
+            { }
 
-			Sprite(const Texture& texture, const Optional<TextureCoordinatePair>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
-				: texture(&texture), subTextureArea(subtextureArea), colourMod(colourMod)
-			{ }
+            Sprite(const Texture& texture, const Optional<TextureCoordinatePair>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
+                : texture(&texture), subTextureArea(subtextureArea), colourMod(colourMod)
+            { }
 
-			Sprite(ObserverPtr<const Texture> texture, const Optional<TextureCoordinatePair>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
-				: texture(texture), subTextureArea(subtextureArea), colourMod(colourMod)
-			{ }
+            Sprite(ObserverPtr<const Texture> texture, const Optional<TextureCoordinatePair>& subtextureArea = NullOpt, const Colour colourMod = colours::White)
+                : texture(texture), subTextureArea(subtextureArea), colourMod(colourMod)
+            { }
 
-			~Sprite() noexcept = default;
-		};
-	}
+            ~Sprite() noexcept = default;
+        };
+    }
 }
 
 #endif

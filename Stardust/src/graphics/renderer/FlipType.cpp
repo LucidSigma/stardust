@@ -4,32 +4,32 @@
 
 namespace stardust
 {
-	Vec2 GetScaleFromFlipType(const FlipType flipType) noexcept
-	{
-		Vec2 flipScale = Vec2One;
+    Vec2 GetScaleFromFlipType(const FlipType flipType) noexcept
+    {
+        Vec2 flipScale = Vec2One;
 
-		switch (flipType)
-		{
-		case FlipType::Horizontal:
-			flipScale.x *= -1.0f;
+        switch (flipType)
+        {
+        case FlipType::Horizontal:
+            flipScale.x *= -1.0f;
 
-			break;
+            break;
 
-		case FlipType::Vertical:
-			flipScale.y *= -1.0f;
+        case FlipType::Vertical:
+            flipScale.y *= -1.0f;
 
-			break;
+            break;
 
-		case FlipType::Both:
-			flipScale *= -1.0f;
+        case FlipType::Both:
+            flipScale *= -1.0f;
 
-			break;
+            break;
 
-		case FlipType::None:
-		default:
-			break;
-		}
+        case FlipType::None:
+        default:
+            break;
+        }
 
-		return flipScale;
-	}
+        return flipScale;
+    }
 }

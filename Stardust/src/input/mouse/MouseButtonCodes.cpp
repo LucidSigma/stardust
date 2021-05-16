@@ -2,27 +2,27 @@
 
 namespace stardust
 {
-	[[nodiscard]] String MouseButtonToString(const MouseButton mouseButton)
-	{
-		switch (mouseButton)
-		{
-		case MouseButton::Left:
-			return "MouseLeft";
+    [[nodiscard]] String MouseButtonToString(const MouseButton mouseButton)
+    {
+        switch (mouseButton)
+        {
+        case MouseButton::Left:
+            return "MouseLeft";
 
-		case MouseButton::Middle:
-			return "MouseMiddle";
+        case MouseButton::Middle:
+            return "MouseMiddle";
 
-		case MouseButton::Right:
-			return "MouseRight";
+        case MouseButton::Right:
+            return "MouseRight";
 
-		case MouseButton::Thumb1:
-			return "MouseThumb1";
+        case MouseButton::Thumb1:
+            return "MouseThumb1";
 
-		case MouseButton::Thumb2:
-			return "MouseThumb2";
+        case MouseButton::Thumb2:
+            return "MouseThumb2";
 
-		default:
-			return "";
-		}
-	}
+        default:
+            return "";
+        }
+    }
 }

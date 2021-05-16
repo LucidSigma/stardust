@@ -9,22 +9,22 @@
 
 namespace stardust
 {
-	class Config
-	{
-	private:
-		String m_filepath;
-		nlohmann::json m_data;
+    class Config
+    {
+    private:
+        String m_filepath;
+        nlohmann::json m_data;
 
-	public:
-		Config() = default;
-		~Config() noexcept = default;
+    public:
+        Config() = default;
+        ~Config() noexcept = default;
 
-		[[nodiscard]] Status Initialise(const StringView& preferenceDirectory, const StringView& defaultConfigFilepath);
-		[[nodiscard]] Status Save() const;
+        [[nodiscard]] Status Initialise(const StringView& preferenceDirectory, const StringView& defaultConfigFilepath);
+        [[nodiscard]] Status Save() const;
 
-		inline auto& operator [](const StringView& configType) { return m_data[configType.data()]; }
-		inline const auto& operator [](const StringView& configType) const { return m_data[configType.data()]; }
-	};
+        inline auto& operator [](const StringView& configType) { return m_data[configType.data()]; }
+        inline const auto& operator [](const StringView& configType) const { return m_data[configType.data()]; }
+    };
 }
 
 #endif

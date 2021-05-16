@@ -7,23 +7,23 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct ParticleGenerator
-		{
-			ObserverPtr<ParticleSystem> particleSystem;
+    namespace components
+    {
+        struct ParticleGenerator
+        {
+            ObserverPtr<ParticleSystem> particleSystem;
 
-			ParticleGenerator()
-				: particleSystem(nullptr)
-			{ }
+            ParticleGenerator()
+                : particleSystem(nullptr)
+            { }
 
-			explicit ParticleGenerator(ParticleSystem& particleSystem)
-				: particleSystem(&particleSystem)
-			{ }
+            explicit ParticleGenerator(ParticleSystem& particleSystem)
+                : particleSystem(&particleSystem)
+            { }
 
-			~ParticleGenerator() noexcept = default;
-		};
-	}
+            ~ParticleGenerator() noexcept = default;
+        };
+    }
 }
 
 #endif

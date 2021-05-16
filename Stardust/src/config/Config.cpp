@@ -10,82 +10,82 @@
 
 namespace stardust
 {
-	[[nodiscard]] Status Config::Initialise(const StringView& preferenceDirectory, const StringView& defaultConfigFilepath)
-	{
-		const String configDirectory = String(preferenceDirectory) + "config";
+    [[nodiscard]] Status Config::Initialise(const StringView& preferenceDirectory, const StringView& defaultConfigFilepath)
+    {
+        const String configDirectory = String(preferenceDirectory) + "config";
 
-		if (!filesystem::DoesFileExist(configDirectory))
-		{
-			if (filesystem::CreateDirectory(configDirectory) != Status::Success)
-			{
-				return Status::Fail;
-			}
-		}
+        if (!filesystem::DoesFileExist(configDirectory))
+        {
+            if (filesystem::CreateDirectory(configDirectory) != Status::Success)
+            {
+                return Status::Fail;
+            }
+        }
 
-		const String configFilepath = String(configDirectory) + "/config.json";
-		bool doesConfigFileExist = filesystem::DoesFileExist(configFilepath);
+        const String configFilepath = String(configDirectory) + "/config.json";
+        bool doesConfigFileExist = filesystem::DoesFileExist(configFilepath);
 
-		if (!doesConfigFileExist)
-		{
-			Log::EngineWarn("config.json not found; copying from default.");
+        if (!doesConfigFileExist)
+        {
+            Log::EngineWarn("config.json not found; copying from default.");
 
-			const auto defaultConfigData = vfs::ReadFileData(defaultConfigFilepath);
+            const auto defaultConfigData = vfs::ReadFileData(defaultConfigFilepath);
 
-			if (defaultConfigData.empty())
-			{
-				return Status::Fail;
-			}
+            if (defaultConfigData.empty())
+            {
+                return Status::Fail;
+            }
 
-			String defaultConfigString(
-				reinterpret_cast<const char*>(defaultConfigData.data()),
-				reinterpret_cast<const char*>(defaultConfigData.data() + defaultConfigData.size())
-			);
+            String defaultConfigString(
+                reinterpret_cast<const char*>(defaultConfigData.data()),
+                reinterpret_cast<const char*>(defaultConfigData.data() + defaultConfigData.size())
+            );
 
-		#ifdef WIN32
-			defaultConfigString.erase(std::remove(std::begin(defaultConfigString), std::end(defaultConfigString), '\r'), std::cend(defaultConfigString));
-		#endif
+        #ifdef WIN32
+            defaultConfigString.erase(std::remove(std::begin(defaultConfigString), std::end(defaultConfigString), '\r'), std::cend(defaultConfigString));
+        #endif
 
-			if (filesystem::WriteToFile(configFilepath, defaultConfigString) != Status::Success)
-			{
-				return Status::Fail;
-			}
-		}
+            if (filesystem::WriteToFile(configFilepath, defaultConfigString) != Status::Success)
+            {
+                return Status::Fail;
+            }
+        }
 
-		const String configFileData = filesystem::ReadFile(configFilepath);
-		m_data = nlohmann::json::parse(configFileData, nullptr, false);
-		m_filepath = configFilepath;
+        const String configFileData = filesystem::ReadFile(configFilepath);
+        m_data = nlohmann::json::parse(configFileData, nullptr, false);
+        m_filepath = configFilepath;
 
-		if (m_data.is_discarded())
-		{
-			return Status::Fail;
-		}
+        if (m_data.is_discarded())
+        {
+            return Status::Fail;
+        }
 
-		if (!doesConfigFileExist)
-		{
-			String preferredLocale = "en_gb";
-			const auto& preferredLocales = Locale::GetSystemPreferredLocales();
+        if (!doesConfigFileExist)
+        {
+            String preferredLocale = "en_gb";
+            const auto& preferredLocales = Locale::GetSystemPreferredLocales();
 
-			for (const auto& locale : preferredLocales)
-			{
-				if (vfs::IsDirectory("locales/" + locale))
-				{
-					preferredLocale = locale;
-					Log::EngineWarn("Locale {} loaded from system preferences.", preferredLocale);
+            for (const auto& locale : preferredLocales)
+            {
+                if (vfs::IsDirectory("locales/" + locale))
+                {
+                    preferredLocale = locale;
+                    Log::EngineWarn("Locale {} loaded from system preferences.", preferredLocale);
 
-					break;
-				}
-			}
+                    break;
+                }
+            }
 
-			m_data["locale"] = preferredLocale;
-			
-			return Save();
-		}
+            m_data["locale"] = preferredLocale;
+            
+            return Save();
+        }
 
-		return Status::Success;
-	}
+        return Status::Success;
+    }
 
-	[[nodiscard]] Status Config::Save() const
-	{
-		return filesystem::WriteToFile(m_filepath, m_data);
-	}
+    [[nodiscard]] Status Config::Save() const
+    {
+        return filesystem::WriteToFile(m_filepath, m_data);
+    }
 }

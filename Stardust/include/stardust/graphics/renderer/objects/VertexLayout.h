@@ -14,71 +14,71 @@
 
 namespace stardust
 {
-	class VertexLayout
-		: private INoncopyable
-	{
-	public:
-		struct Attribute
-		{
-			u32 elementCount;
-			GLenum dataType;
-			bool isNormalised;
-		};
+    class VertexLayout
+        : private INoncopyable
+    {
+    public:
+        struct Attribute
+        {
+            u32 elementCount;
+            GLenum dataType;
+            bool isNormalised;
+        };
 
-		enum class DrawMode
-			: GLenum
-		{
-			Points = GL_POINTS,
-			Lines = GL_LINES,
-			LineLoop = GL_LINE_LOOP,
-			LineStrip = GL_LINE_STRIP,
-			Triangles = GL_TRIANGLES,
-			TriangleStrip = GL_TRIANGLE_STRIP,
-			TriangleFan = GL_TRIANGLE_FAN,
-			Patches = GL_PATCHES,
-		};
+        enum class DrawMode
+            : GLenum
+        {
+            Points = GL_POINTS,
+            Lines = GL_LINES,
+            LineLoop = GL_LINE_LOOP,
+            LineStrip = GL_LINE_STRIP,
+            Triangles = GL_TRIANGLES,
+            TriangleStrip = GL_TRIANGLE_STRIP,
+            TriangleFan = GL_TRIANGLE_FAN,
+            Patches = GL_PATCHES,
+        };
 
-	private:
-		struct AttributeState
-		{
-			Attribute attribute;
-			usize offset;
-		};
+    private:
+        struct AttributeState
+        {
+            Attribute attribute;
+            usize offset;
+        };
 
-		GLuint m_id = 0u;
+        GLuint m_id = 0u;
 
-		Vector<ReferenceWrapper<const VertexBuffer>> m_vertexBuffers{ };
-		Queue<AttributeState> m_attributes{ };
-		usize m_vertexSize = 0u;
+        Vector<ReferenceWrapper<const VertexBuffer>> m_vertexBuffers{ };
+        Queue<AttributeState> m_attributes{ };
+        usize m_vertexSize = 0u;
 
-	public:
-		VertexLayout() = default;
+    public:
+        VertexLayout() = default;
 
-		VertexLayout(VertexLayout&& other) noexcept;
-		VertexLayout& operator =(VertexLayout&& other) noexcept;
+        VertexLayout(VertexLayout&& other) noexcept;
+        VertexLayout& operator =(VertexLayout&& other) noexcept;
 
-		~VertexLayout() noexcept;
+        ~VertexLayout() noexcept;
 
-		VertexLayout& AddAttribute(const Attribute& attribute);
-		VertexLayout& AddVertexBuffer(const VertexBuffer& vertexBuffer);
-		void Initialise();
+        VertexLayout& AddAttribute(const Attribute& attribute);
+        VertexLayout& AddVertexBuffer(const VertexBuffer& vertexBuffer);
+        void Initialise();
 
-		void Destroy() noexcept;
+        void Destroy() noexcept;
 
-		inline bool IsValid() const noexcept { return m_id != 0u; }
+        inline bool IsValid() const noexcept { return m_id != 0u; }
 
-		void Bind() const;
-		void Unbind() const;
+        void Bind() const;
+        void Unbind() const;
 
-		void Draw(const u32 count, const u32 offset = 0u, const DrawMode drawMode = DrawMode::Triangles) const;
-		void DrawIndexed(const IndexBuffer& indexBuffer, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
-		void DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
+        void Draw(const u32 count, const u32 offset = 0u, const DrawMode drawMode = DrawMode::Triangles) const;
+        void DrawIndexed(const IndexBuffer& indexBuffer, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
+        void DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
 
-		inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
+        inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 
-	private:
-		[[nodiscard]] static usize GetDataTypeSize(const GLenum dataType);
-	};
+    private:
+        [[nodiscard]] static usize GetDataTypeSize(const GLenum dataType);
+    };
 }
 
 #endif

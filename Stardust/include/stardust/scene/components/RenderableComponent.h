@@ -7,23 +7,23 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct Renderable
-		{
-			ObserverPtr<const SortingLayer> sortingLayer;
+    namespace components
+    {
+        struct Renderable
+        {
+            ObserverPtr<const SortingLayer> sortingLayer;
 
-			Renderable()
-				: sortingLayer(nullptr)
-			{ }
+            Renderable()
+                : sortingLayer(nullptr)
+            { }
 
-			explicit Renderable(const SortingLayer& sortingLayer )
-				: sortingLayer(&sortingLayer)
-			{ }
+            explicit Renderable(const SortingLayer& sortingLayer )
+                : sortingLayer(&sortingLayer)
+            { }
 
-			~Renderable() noexcept = default;
-		};
-	}
+            ~Renderable() noexcept = default;
+        };
+    }
 }
 
 #endif

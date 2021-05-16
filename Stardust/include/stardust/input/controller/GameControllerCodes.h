@@ -12,40 +12,40 @@
 
 namespace stardust
 {
-	enum class GameControllerButton
-		: std::underlying_type_t<SDL_GameControllerButton>
-	{
-		DPadUp = SDL_CONTROLLER_BUTTON_DPAD_UP,
-		DPadDown = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-		DPadLeft = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-		DPadRight = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+    enum class GameControllerButton
+        : std::underlying_type_t<SDL_GameControllerButton>
+    {
+        DPadUp = SDL_CONTROLLER_BUTTON_DPAD_UP,
+        DPadDown = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+        DPadLeft = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+        DPadRight = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
 
-		A = SDL_CONTROLLER_BUTTON_A,
-		B = SDL_CONTROLLER_BUTTON_B,
-		X = SDL_CONTROLLER_BUTTON_X,
-		Y = SDL_CONTROLLER_BUTTON_Y,
+        A = SDL_CONTROLLER_BUTTON_A,
+        B = SDL_CONTROLLER_BUTTON_B,
+        X = SDL_CONTROLLER_BUTTON_X,
+        Y = SDL_CONTROLLER_BUTTON_Y,
 
-		Back = SDL_CONTROLLER_BUTTON_BACK,
-		Guide = SDL_CONTROLLER_BUTTON_GUIDE,
-		Start = SDL_CONTROLLER_BUTTON_START,
+        Back = SDL_CONTROLLER_BUTTON_BACK,
+        Guide = SDL_CONTROLLER_BUTTON_GUIDE,
+        Start = SDL_CONTROLLER_BUTTON_START,
 
-		LeftStick = SDL_CONTROLLER_BUTTON_LEFTSTICK,
-		RightStick = SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-		LeftShoulder = SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		RightShoulder = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+        LeftStick = SDL_CONTROLLER_BUTTON_LEFTSTICK,
+        RightStick = SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+        LeftShoulder = SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+        RightShoulder = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
 
-		Paddle1 = SDL_CONTROLLER_BUTTON_PADDLE1,
-		Paddle2 = SDL_CONTROLLER_BUTTON_PADDLE2,
-		Paddle3 = SDL_CONTROLLER_BUTTON_PADDLE3,
-		Paddle4 = SDL_CONTROLLER_BUTTON_PADDLE4,
+        Paddle1 = SDL_CONTROLLER_BUTTON_PADDLE1,
+        Paddle2 = SDL_CONTROLLER_BUTTON_PADDLE2,
+        Paddle3 = SDL_CONTROLLER_BUTTON_PADDLE3,
+        Paddle4 = SDL_CONTROLLER_BUTTON_PADDLE4,
 
-		Misc = SDL_CONTROLLER_BUTTON_MISC1,
-		Touchpad = SDL_CONTROLLER_BUTTON_TOUCHPAD,
-	};
+        Misc = SDL_CONTROLLER_BUTTON_MISC1,
+        Touchpad = SDL_CONTROLLER_BUTTON_TOUCHPAD,
+    };
 
-	constexpr usize GameControllerButtonCount = magic_enum::enum_count<GameControllerButton>();
+    constexpr usize GameControllerButtonCount = magic_enum::enum_count<GameControllerButton>();
 
-	[[nodiscard]] String GameControllerButtonToString(const GameControllerButton controllerButton, const bool usePSnames = false);
+    [[nodiscard]] String GameControllerButtonToString(const GameControllerButton controllerButton, const bool usePSnames = false);
 }
 
 #endif

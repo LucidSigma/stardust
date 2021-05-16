@@ -6,8 +6,8 @@ file(GLOB_RECURSE SANDBOX_SOURCE_FILES "src/*.cpp")
 add_executable(Sandbox ${SANDBOX_SOURCE_FILES} ${SANDBOX_HEADER_FILES})
 
 target_include_directories(Sandbox PUBLIC
-	"${CMAKE_CURRENT_LIST_DIR}/include"
-	"${PROJECT_SOURCE_DIR}/Stardust/include"
+    "${CMAKE_CURRENT_LIST_DIR}/include"
+    "${PROJECT_SOURCE_DIR}/Stardust/include"
 )
 
 target_link_libraries(Sandbox PUBLIC Stardust)

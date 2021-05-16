@@ -17,106 +17,106 @@
 
 namespace stardust
 {
-	using KeyFrame = u32;
+    using KeyFrame = u32;
 
-	class Animation
-	{
-	public:
-		using Event = std::function<void()>;
+    class Animation
+    {
+    public:
+        using Event = std::function<void()>;
 
-	private:
-		inline static HashMap<String, EasingFunction> s_customEasingFunctions{ };
+    private:
+        inline static HashMap<String, EasingFunction> s_customEasingFunctions{ };
 
-		Vector<Pair<KeyFrame, TextureCoordinatePair>> m_spriteFrames{ };
-		Vector<Pair<KeyFrame, Vec2>> m_positionOffsetFrames{ };
-		Vector<Pair<KeyFrame, Quaternion>> m_rotationFrames{ };
-		Vector<Pair<KeyFrame, Vec2>> m_scaleFrames{ };
-		Vector<Pair<KeyFrame, Vec2>> m_shearFrames{ };
-		Vector<Pair<KeyFrame, Colour>> m_colourFrames{ };
+        Vector<Pair<KeyFrame, TextureCoordinatePair>> m_spriteFrames{ };
+        Vector<Pair<KeyFrame, Vec2>> m_positionOffsetFrames{ };
+        Vector<Pair<KeyFrame, Quaternion>> m_rotationFrames{ };
+        Vector<Pair<KeyFrame, Vec2>> m_scaleFrames{ };
+        Vector<Pair<KeyFrame, Vec2>> m_shearFrames{ };
+        Vector<Pair<KeyFrame, Colour>> m_colourFrames{ };
 
-		EasingFunction m_positionOffsetEasing = easings::EaseLinear;
-		EasingFunction m_rotationEasing = easings::EaseLinear;
-		EasingFunction m_scaleEasing = easings::EaseLinear;
-		EasingFunction m_shearEasing = easings::EaseLinear;
-		EasingFunction m_colourEasing = easings::EaseLinear;
+        EasingFunction m_positionOffsetEasing = easings::EaseLinear;
+        EasingFunction m_rotationEasing = easings::EaseLinear;
+        EasingFunction m_scaleEasing = easings::EaseLinear;
+        EasingFunction m_shearEasing = easings::EaseLinear;
+        EasingFunction m_colourEasing = easings::EaseLinear;
 
-		HashMap<KeyFrame, Vector<Event>> m_eventCallbacks{ };
+        HashMap<KeyFrame, Vector<Event>> m_eventCallbacks{ };
 
-		KeyFrame m_currentKeyFrame = 0u;
-		KeyFrame m_maxKeyFrame = 0u;
+        KeyFrame m_currentKeyFrame = 0u;
+        KeyFrame m_maxKeyFrame = 0u;
 
-		usize m_currentSpriteIndex = 0u;
-		usize m_currentPositionOffsetIndex = 0u;
-		usize m_currentRotationIndex = 0u;
-		usize m_currentScaleIndex = 0u;
-		usize m_currentShearIndex = 0u;
-		usize m_currentColourIndex = 0u;
+        usize m_currentSpriteIndex = 0u;
+        usize m_currentPositionOffsetIndex = 0u;
+        usize m_currentRotationIndex = 0u;
+        usize m_currentScaleIndex = 0u;
+        usize m_currentShearIndex = 0u;
+        usize m_currentColourIndex = 0u;
 
-		u32 m_fps = 0u;
-		f32 m_secondsPerFrame = 0.0f;
+        u32 m_fps = 0u;
+        f32 m_secondsPerFrame = 0.0f;
 
-		bool m_didLoadSuccessfully = false;
+        bool m_didLoadSuccessfully = false;
 
-	public:
-		static void AddCustomEasingFunction(const String& name, const EasingFunction& easingFunction);
+    public:
+        static void AddCustomEasingFunction(const String& name, const EasingFunction& easingFunction);
 
-		Animation() = default;
-		explicit Animation(const StringView& filepath);
-		Animation(const StringView& filepath, const TextureAtlas& textureAtlas);
-		~Animation() noexcept = default;
+        Animation() = default;
+        explicit Animation(const StringView& filepath);
+        Animation(const StringView& filepath, const TextureAtlas& textureAtlas);
+        ~Animation() noexcept = default;
 
-		void Initialise(const StringView& filepath);
-		void Initialise(const StringView& filepath, const TextureAtlas& textureAtlas);
+        void Initialise(const StringView& filepath);
+        void Initialise(const StringView& filepath, const TextureAtlas& textureAtlas);
 
-		void AddEvent(const KeyFrame keyFrame, const Event& event);
+        void AddEvent(const KeyFrame keyFrame, const Event& event);
 
-		void Step();
+        void Step();
 
-		[[nodiscard]] const TextureCoordinatePair& GetSprite() const;
-		[[nodiscard]] Vec2 GetPositionOffset(const f32 frameInterpolation) const;
-		[[nodiscard]] f32 GetRotation(const f32 frameInterpolation) const;
-		[[nodiscard]] Vec2 GetScale(const f32 frameInterpolation) const;
-		[[nodiscard]] Vec2 GetShear(const f32 frameInterpolation) const;
-		[[nodiscard]] Colour GetColour(const f32 frameInterpolation) const;
+        [[nodiscard]] const TextureCoordinatePair& GetSprite() const;
+        [[nodiscard]] Vec2 GetPositionOffset(const f32 frameInterpolation) const;
+        [[nodiscard]] f32 GetRotation(const f32 frameInterpolation) const;
+        [[nodiscard]] Vec2 GetScale(const f32 frameInterpolation) const;
+        [[nodiscard]] Vec2 GetShear(const f32 frameInterpolation) const;
+        [[nodiscard]] Colour GetColour(const f32 frameInterpolation) const;
 
-		void Reset();
+        void Reset();
 
-		KeyFrame GetCurrentKeyFrame() const noexcept { return m_currentKeyFrame; }
-		u32 GetFrameCount() const noexcept { return m_maxKeyFrame; }
-		u32 GetFPS() const noexcept { return m_fps; }
-		f32 GetSecondsPerFrame() const noexcept { return m_secondsPerFrame; }
+        KeyFrame GetCurrentKeyFrame() const noexcept { return m_currentKeyFrame; }
+        u32 GetFrameCount() const noexcept { return m_maxKeyFrame; }
+        u32 GetFPS() const noexcept { return m_fps; }
+        f32 GetSecondsPerFrame() const noexcept { return m_secondsPerFrame; }
 
-		inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
+        inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
 
-	private:
-		[[nodiscard]] static Optional<EasingFunction> GetEasingFunction(const String& name);
+    private:
+        [[nodiscard]] static Optional<EasingFunction> GetEasingFunction(const String& name);
 
-		void LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas);
-		void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas, const StringView& filepath);
-		void LoadEasings(const nlohmann::json& data, const StringView& filepath);
-		void AddDefaultKeyFrames();
+        void LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas);
+        void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas, const StringView& filepath);
+        void LoadEasings(const nlohmann::json& data, const StringView& filepath);
+        void AddDefaultKeyFrames();
 
-		template <typename T>
-		void StepAttribute(const Vector<Pair<KeyFrame, T>> keyFrames, usize& currentIndex)
-		{
-			if (keyFrames.size() <= 1u)
-			{
-				return;
-			}
+        template <typename T>
+        void StepAttribute(const Vector<Pair<KeyFrame, T>> keyFrames, usize& currentIndex)
+        {
+            if (keyFrames.size() <= 1u)
+            {
+                return;
+            }
 
-			const KeyFrame nextFrame = currentIndex == keyFrames.size() - 1u
-				? 0u
-				: keyFrames[currentIndex + 1u].first;
+            const KeyFrame nextFrame = currentIndex == keyFrames.size() - 1u
+                ? 0u
+                : keyFrames[currentIndex + 1u].first;
 
-			if (m_currentKeyFrame == nextFrame)
-			{
-				++currentIndex;
-				currentIndex %= keyFrames.size();
-			}
-		}
+            if (m_currentKeyFrame == nextFrame)
+            {
+                ++currentIndex;
+                currentIndex %= keyFrames.size();
+            }
+        }
 
-		[[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation, const EasingFunction& easingFunction) const;
-	};
+        [[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation, const EasingFunction& easingFunction) const;
+    };
 }
 
 #endif

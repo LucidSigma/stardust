@@ -6,19 +6,19 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct Tag
-		{
-			String name;
+    namespace components
+    {
+        struct Tag
+        {
+            String name;
 
-			explicit Tag(const String& name = "")
-				: name(name)
-			{ }
+            explicit Tag(const String& name = "")
+                : name(name)
+            { }
 
-			~Tag() noexcept = default;
-		};
-	}
+            ~Tag() noexcept = default;
+        };
+    }
 }
 
 #endif

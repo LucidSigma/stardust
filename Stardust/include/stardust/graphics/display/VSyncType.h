@@ -4,12 +4,12 @@
 
 namespace stardust
 {
-	enum class VSyncType
-	{
-		None = 0,
-		Regular = 1,
-		Adaptive = -1,
-	};
+    enum class VSyncType
+    {
+        None = 0,
+        Regular = 1,
+        Adaptive = -1,
+    };
 }
 
 #endif

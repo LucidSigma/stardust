@@ -15,145 +15,145 @@
 
 namespace stardust
 {
-	namespace text
-	{
-		struct OutlineInfo
-		{
-			u32 thickness;
+    namespace text
+    {
+        struct OutlineInfo
+        {
+            u32 thickness;
 
-			Colour innerColour;
-			Colour outerColour;
+            Colour innerColour;
+            Colour outerColour;
 
-			[[nodiscard]] bool operator ==(const OutlineInfo&) const noexcept = default;
-			[[nodiscard]] bool operator !=(const OutlineInfo&) const noexcept = default;
-		};
+            [[nodiscard]] bool operator ==(const OutlineInfo&) const noexcept = default;
+            [[nodiscard]] bool operator !=(const OutlineInfo&) const noexcept = default;
+        };
 
-		struct TextInfo
-		{
-			String text;
+        struct TextInfo
+        {
+            String text;
 
-			Optional<OutlineInfo> outline = NullOpt;
-			Optional<u32> wrapLength = NullOpt;
+            Optional<OutlineInfo> outline = NullOpt;
+            Optional<u32> wrapLength = NullOpt;
 
-			[[nodiscard]] bool operator ==(const TextInfo&) const noexcept = default;
-			[[nodiscard]] bool operator !=(const TextInfo&) const noexcept = default;
-		};
+            [[nodiscard]] bool operator ==(const TextInfo&) const noexcept = default;
+            [[nodiscard]] bool operator !=(const TextInfo&) const noexcept = default;
+        };
 
-		struct UTF16TextInfo
-		{
-			UTF16String text;
+        struct UTF16TextInfo
+        {
+            UTF16String text;
 
-			Optional<OutlineInfo> outline = NullOpt;
-			Optional<u32> wrapLength = NullOpt;
+            Optional<OutlineInfo> outline = NullOpt;
+            Optional<u32> wrapLength = NullOpt;
 
-			[[nodiscard]] bool operator ==(const UTF16TextInfo&) const noexcept = default;
-			[[nodiscard]] bool operator !=(const UTF16TextInfo&) const noexcept = default;
-		};
+            [[nodiscard]] bool operator ==(const UTF16TextInfo&) const noexcept = default;
+            [[nodiscard]] bool operator !=(const UTF16TextInfo&) const noexcept = default;
+        };
 
-		struct GlyphInfo
-		{
-			char glyph;
-			Optional<OutlineInfo> outline = NullOpt;
+        struct GlyphInfo
+        {
+            char glyph;
+            Optional<OutlineInfo> outline = NullOpt;
 
-			[[nodiscard]] bool operator ==(const GlyphInfo&) const noexcept = default;
-			[[nodiscard]] bool operator !=(const GlyphInfo&) const noexcept = default;
-		};
+            [[nodiscard]] bool operator ==(const GlyphInfo&) const noexcept = default;
+            [[nodiscard]] bool operator !=(const GlyphInfo&) const noexcept = default;
+        };
 
-		struct UTF16GlyphInfo
-		{
-			char16_t glyph;
-			Optional<OutlineInfo> outline = NullOpt;
+        struct UTF16GlyphInfo
+        {
+            char16_t glyph;
+            Optional<OutlineInfo> outline = NullOpt;
 
-			[[nodiscard]] bool operator ==(const UTF16GlyphInfo&) const noexcept = default;
-			[[nodiscard]] bool operator !=(const UTF16GlyphInfo&) const noexcept = default;
-		};
+            [[nodiscard]] bool operator ==(const UTF16GlyphInfo&) const noexcept = default;
+            [[nodiscard]] bool operator !=(const UTF16GlyphInfo&) const noexcept = default;
+        };
 
-		[[nodiscard]] extern Texture RenderGlyph(const Font& font, const GlyphInfo& glyphInfo, const Sampler& sampler = Sampler{ });
-		[[nodiscard]] extern Texture RenderGlyph(const Font& font, const UTF16GlyphInfo& glyphInfo, const Sampler& sampler = Sampler{ });
-		[[nodiscard]] extern Texture RenderText(const Font& font, const TextInfo& textInfo, const Sampler& sampler = Sampler{ });
-		[[nodiscard]] extern Texture RenderText(const Font& font, const UTF16TextInfo& textInfo, const Sampler& sampler = Sampler{ });
+        [[nodiscard]] extern Texture RenderGlyph(const Font& font, const GlyphInfo& glyphInfo, const Sampler& sampler = Sampler{ });
+        [[nodiscard]] extern Texture RenderGlyph(const Font& font, const UTF16GlyphInfo& glyphInfo, const Sampler& sampler = Sampler{ });
+        [[nodiscard]] extern Texture RenderText(const Font& font, const TextInfo& textInfo, const Sampler& sampler = Sampler{ });
+        [[nodiscard]] extern Texture RenderText(const Font& font, const UTF16TextInfo& textInfo, const Sampler& sampler = Sampler{ });
 
-		[[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler = Sampler{ });
-		[[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char16_t glyph, const Colour& colour, const Sampler& sampler = Sampler{ });
-		[[nodiscard]] extern Texture RenderTextQuick(const Font& font, const String& text, const Colour& colour, const Sampler& sampler = Sampler{ });
-		[[nodiscard]] extern Texture RenderTextQuick(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler = Sampler{ });
-	}
+        [[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char glyph, const Colour& colour, const Sampler& sampler = Sampler{ });
+        [[nodiscard]] extern Texture RenderGlyphQuick(const Font& font, const char16_t glyph, const Colour& colour, const Sampler& sampler = Sampler{ });
+        [[nodiscard]] extern Texture RenderTextQuick(const Font& font, const String& text, const Colour& colour, const Sampler& sampler = Sampler{ });
+        [[nodiscard]] extern Texture RenderTextQuick(const Font& font, const UTF16String& text, const Colour& colour, const Sampler& sampler = Sampler{ });
+    }
 }
 
 namespace std
 {
-	template <>
-	struct hash<stardust::text::OutlineInfo>
-	{
-		[[nodiscard]] inline std::size_t operator ()(const stardust::text::OutlineInfo& outlineInfo) const noexcept
-		{
-			std::size_t seed = 0u;
+    template <>
+    struct hash<stardust::text::OutlineInfo>
+    {
+        [[nodiscard]] inline std::size_t operator ()(const stardust::text::OutlineInfo& outlineInfo) const noexcept
+        {
+            std::size_t seed = 0u;
 
-			glm::detail::hash_combine(seed, std::hash<stardust::u32>()(outlineInfo.thickness));
-			glm::detail::hash_combine(seed, std::hash<stardust::Colour>()(outlineInfo.innerColour));
-			glm::detail::hash_combine(seed, std::hash<stardust::Colour>()(outlineInfo.outerColour));
+            glm::detail::hash_combine(seed, std::hash<stardust::u32>()(outlineInfo.thickness));
+            glm::detail::hash_combine(seed, std::hash<stardust::Colour>()(outlineInfo.innerColour));
+            glm::detail::hash_combine(seed, std::hash<stardust::Colour>()(outlineInfo.outerColour));
 
-			return seed;
-		}
-	};
+            return seed;
+        }
+    };
 
-	template <>
-	struct hash<stardust::text::TextInfo>
-	{
-		[[nodiscard]] inline std::size_t operator ()(const stardust::text::TextInfo& textInfo) const noexcept
-		{
-			std::size_t seed = 0u;
+    template <>
+    struct hash<stardust::text::TextInfo>
+    {
+        [[nodiscard]] inline std::size_t operator ()(const stardust::text::TextInfo& textInfo) const noexcept
+        {
+            std::size_t seed = 0u;
 
-			glm::detail::hash_combine(seed, std::hash<stardust::String>()(textInfo.text));
-			glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(textInfo.outline));
-			glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::u32>>()(textInfo.wrapLength));
+            glm::detail::hash_combine(seed, std::hash<stardust::String>()(textInfo.text));
+            glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(textInfo.outline));
+            glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::u32>>()(textInfo.wrapLength));
 
-			return seed;
-		}
-	};
+            return seed;
+        }
+    };
 
-	template <>
-	struct hash<stardust::text::UTF16TextInfo>
-	{
-		[[nodiscard]] inline std::size_t operator ()(const stardust::text::UTF16TextInfo& textInfo) const noexcept
-		{
-			std::size_t seed = 0u;
+    template <>
+    struct hash<stardust::text::UTF16TextInfo>
+    {
+        [[nodiscard]] inline std::size_t operator ()(const stardust::text::UTF16TextInfo& textInfo) const noexcept
+        {
+            std::size_t seed = 0u;
 
-			glm::detail::hash_combine(seed, std::hash<stardust::UTF16String>()(textInfo.text));
-			glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(textInfo.outline));
-			glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::u32>>()(textInfo.wrapLength));
+            glm::detail::hash_combine(seed, std::hash<stardust::UTF16String>()(textInfo.text));
+            glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(textInfo.outline));
+            glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::u32>>()(textInfo.wrapLength));
 
-			return seed;
-		}
-	};
+            return seed;
+        }
+    };
 
-	template <>
-	struct hash<stardust::text::GlyphInfo>
-	{
-		[[nodiscard]] inline std::size_t operator ()(const stardust::text::GlyphInfo& glyphInfo) const noexcept
-		{
-			std::size_t seed = 0u;
+    template <>
+    struct hash<stardust::text::GlyphInfo>
+    {
+        [[nodiscard]] inline std::size_t operator ()(const stardust::text::GlyphInfo& glyphInfo) const noexcept
+        {
+            std::size_t seed = 0u;
 
-			glm::detail::hash_combine(seed, std::hash<char>()(glyphInfo.glyph));
-			glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(glyphInfo.outline));
+            glm::detail::hash_combine(seed, std::hash<char>()(glyphInfo.glyph));
+            glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(glyphInfo.outline));
 
-			return seed;
-		}
-	};
+            return seed;
+        }
+    };
 
-	template <>
-	struct hash<stardust::text::UTF16GlyphInfo>
-	{
-		[[nodiscard]] inline std::size_t operator ()(const stardust::text::UTF16GlyphInfo& glyphInfo) const noexcept
-		{
-			std::size_t seed = 0u;
+    template <>
+    struct hash<stardust::text::UTF16GlyphInfo>
+    {
+        [[nodiscard]] inline std::size_t operator ()(const stardust::text::UTF16GlyphInfo& glyphInfo) const noexcept
+        {
+            std::size_t seed = 0u;
 
-			glm::detail::hash_combine(seed, std::hash<char32_t>()(glyphInfo.glyph));
-			glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(glyphInfo.outline));
+            glm::detail::hash_combine(seed, std::hash<char32_t>()(glyphInfo.glyph));
+            glm::detail::hash_combine(seed, std::hash<stardust::Optional<stardust::text::OutlineInfo>>()(glyphInfo.outline));
 
-			return seed;
-		}
-	};
+            return seed;
+        }
+    };
 }
 
 #endif

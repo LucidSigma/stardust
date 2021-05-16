@@ -7,28 +7,28 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct ShearTransform
-		{
-			f32 xShear;
-			f32 yShear;
+    namespace components
+    {
+        struct ShearTransform
+        {
+            f32 xShear;
+            f32 yShear;
 
-			ShearTransform()
-				: xShear(0.0f), yShear(0.0f)
-			{ }
+            ShearTransform()
+                : xShear(0.0f), yShear(0.0f)
+            { }
 
-			explicit ShearTransform(const f32 xShear, const f32 yShear = 0.0f)
-				: xShear(xShear), yShear(yShear)
-			{ }
+            explicit ShearTransform(const f32 xShear, const f32 yShear = 0.0f)
+                : xShear(xShear), yShear(yShear)
+            { }
 
-			explicit ShearTransform(const Vec2 shear)
-				: xShear(shear.x), yShear(shear.y)
-			{ }
+            explicit ShearTransform(const Vec2 shear)
+                : xShear(shear.x), yShear(shear.y)
+            { }
 
-			~ShearTransform() noexcept = default;
-		};
-	}
+            ~ShearTransform() noexcept = default;
+        };
+    }
 }
 
 #endif

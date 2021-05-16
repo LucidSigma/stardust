@@ -4,16 +4,16 @@
 
 namespace stardust
 {
-	class INoncopyable
-	{
-	protected:
-		INoncopyable() = default;
+    class INoncopyable
+    {
+    protected:
+        INoncopyable() = default;
 
-		INoncopyable(const INoncopyable&) = delete;
-		INoncopyable& operator =(const INoncopyable&) = delete;
+        INoncopyable(const INoncopyable&) = delete;
+        INoncopyable& operator =(const INoncopyable&) = delete;
 
-		~INoncopyable() noexcept = default;
-	};
+        ~INoncopyable() noexcept = default;
+    };
 }
 
 #endif

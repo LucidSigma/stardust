@@ -12,13 +12,13 @@
 
 namespace stardust
 {
-	namespace opengl
-	{
-		[[nodiscard]] extern Status InitialiseLoader();
-		extern void InitialiseDebugCallback();
+    namespace opengl
+    {
+        [[nodiscard]] extern Status InitialiseLoader();
+        extern void InitialiseDebugCallback();
 
-		extern void __cdecl DebugMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const GLchar* message, const void* userParams) noexcept;
-	}
+        extern void __cdecl DebugMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const GLchar* message, const void* userParams) noexcept;
+    }
 }
 
 #ifndef WIN32

@@ -4,30 +4,30 @@
 
 namespace stardust
 {
-	enum class AxisType
-	{
-		WSKeys,
-		ADKeys,
-		UpDownKeys,
-		LeftRightKeys,
-		MouseX,
-		MouseY,
-		MouseScroll,
-		ControllerDPadX,
-		ControllerDPadY,
-		ControllerLeftX,
-		ControllerLeftY,
-		ControllerRightX,
-		ControllerRightY,
-		ControllerLeftTrigger,
-		ControllerRightTrigger,
-		ControllerGyroX,
-		ControllerGyroY,
-		ControllerGyroZ,
-		ControllerAccelX,
-		ControllerAccelY,
-		ControllerAccelZ,
-	};
+    enum class AxisType
+    {
+        WSKeys,
+        ADKeys,
+        UpDownKeys,
+        LeftRightKeys,
+        MouseX,
+        MouseY,
+        MouseScroll,
+        ControllerDPadX,
+        ControllerDPadY,
+        ControllerLeftX,
+        ControllerLeftY,
+        ControllerRightX,
+        ControllerRightY,
+        ControllerLeftTrigger,
+        ControllerRightTrigger,
+        ControllerGyroX,
+        ControllerGyroY,
+        ControllerGyroZ,
+        ControllerAccelX,
+        ControllerAccelY,
+        ControllerAccelZ,
+    };
 }
 
 #endif

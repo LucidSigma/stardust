@@ -4,11 +4,11 @@
 
 namespace stardust
 {
-	namespace utility
-	{
-		void OpenURL(const StringView& url)
-		{
-			SDL_OpenURL(url.data());
-		}
-	}
+    namespace utility
+    {
+        void OpenURL(const StringView& url)
+        {
+            SDL_OpenURL(url.data());
+        }
+    }
 }

@@ -29,165 +29,165 @@
 
 namespace stardust
 {
-	class Application final
-		: private INoncopyable, private INonmovable
-	{
-	public:
-		using InitialiseCallback = std::function<Status(Application&)>;
-		using ExitCallback = std::function<void(Application&)>;
+    class Application final
+        : private INoncopyable, private INonmovable
+    {
+    public:
+        using InitialiseCallback = std::function<Status(Application&)>;
+        using ExitCallback = std::function<void(Application&)>;
 
-		struct FilesystemInfo
-		{
-			const char* argv0;
+        struct FilesystemInfo
+        {
+            const char* argv0;
 
-			StringView assetsArchive;
-			StringView localesArchive;
-		};
+            StringView assetsArchive;
+            StringView localesArchive;
+        };
 
-		struct FilepathsInfo
-		{
-			StringView defaultConfigFilepath;
-			StringView windowIconFile;
-		};
+        struct FilepathsInfo
+        {
+            StringView defaultConfigFilepath;
+            StringView windowIconFile;
+        };
 
-		struct PhysicsInfo
-		{
-			f64 fixedTimestep;
+        struct PhysicsInfo
+        {
+            f64 fixedTimestep;
 
-			u32 velocityIterations;
-			u32 positionIterations;
-		};
+            u32 velocityIterations;
+            u32 positionIterations;
+        };
 
-		struct CreateInfo
-		{
-			StringView applicationName;
-			StringView organisationName;
-			StringView windowTitle;
+        struct CreateInfo
+        {
+            StringView applicationName;
+            StringView organisationName;
+            StringView windowTitle;
 
-			bool allowResizableWindow;
+            bool allowResizableWindow;
 
-			FilesystemInfo filesystem;
-			FilepathsInfo filepaths;
+            FilesystemInfo filesystem;
+            FilepathsInfo filepaths;
 
-			PhysicsInfo physicsInfo;
+            PhysicsInfo physicsInfo;
 
-			Optional<InitialiseCallback> initialiseCallback;
-			Optional<ExitCallback> exitCallback;
-		};
+            Optional<InitialiseCallback> initialiseCallback;
+            Optional<ExitCallback> exitCallback;
+        };
 
-	private:
-		bool m_didInitialiseSuccessfully = false;
+    private:
+        bool m_didInitialiseSuccessfully = false;
 
-		Config m_config;
-		Locale m_locale;
+        Config m_config;
+        Locale m_locale;
 
-		Window m_window;
-		OpenGLContext m_openGLContext;
-		Renderer m_renderer;
-		bool m_hasWindowFocus = true;
+        Window m_window;
+        OpenGLContext m_openGLContext;
+        Renderer m_renderer;
+        bool m_hasWindowFocus = true;
 
-		std::atomic_bool m_isRunning = true;
+        std::atomic_bool m_isRunning = true;
 
-		Camera2D m_camera;
+        Camera2D m_camera;
 
-		f64 m_fixedTimestep = 0.0;
-		f32 m_deltaTime = 0.0f;
-		std::chrono::time_point<std::chrono::high_resolution_clock> m_ticksCount;
-		f64 m_elapsedTime = 0.0;
+        f64 m_fixedTimestep = 0.0;
+        f32 m_deltaTime = 0.0f;
+        std::chrono::time_point<std::chrono::high_resolution_clock> m_ticksCount;
+        f64 m_elapsedTime = 0.0;
 
-		InputManager m_inputManager;
-		SceneManager m_sceneManager;
-		bool m_isCurrentSceneFinished = false;
+        InputManager m_inputManager;
+        SceneManager m_sceneManager;
+        bool m_isCurrentSceneFinished = false;
 
-		entt::registry m_entityRegistry{ };
-		ScriptEngine m_scriptEngine;
-		SoundSystem m_soundSystem;
-		VolumeManager m_volumeManager;
+        entt::registry m_entityRegistry{ };
+        ScriptEngine m_scriptEngine;
+        SoundSystem m_soundSystem;
+        VolumeManager m_volumeManager;
 
-		HashMap<String, Any> m_globalSceneData{ };
+        HashMap<String, Any> m_globalSceneData{ };
 
-		String m_baseDirectory;
-		String m_preferenceDirectory;
+        String m_baseDirectory;
+        String m_preferenceDirectory;
 
-		Optional<ExitCallback> m_onExit = NullOpt;
-		Optional<InitialiseCallback> m_onInitialise = NullOpt;
+        Optional<ExitCallback> m_onExit = NullOpt;
+        Optional<InitialiseCallback> m_onInitialise = NullOpt;
 
-	public:
-		explicit Application(const CreateInfo& createInfo);
-		~Application() noexcept;
+    public:
+        explicit Application(const CreateInfo& createInfo);
+        ~Application() noexcept;
 
-		void Run();
+        void Run();
 
-		void FinishCurrentScene() noexcept;
-		void ForceQuit() noexcept;
+        void FinishCurrentScene() noexcept;
+        void ForceQuit() noexcept;
 
-		inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
+        inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
 
-		inline Config& GetConfig() noexcept { return m_config; }
-		inline Locale& GetLocale() noexcept { return m_locale; }
+        inline Config& GetConfig() noexcept { return m_config; }
+        inline Locale& GetLocale() noexcept { return m_locale; }
 
-		inline Window& GetWindow() noexcept { return m_window; }
-		inline Renderer& GetRenderer() noexcept { return m_renderer; }
-		inline Camera2D& GetCamera() noexcept { return m_camera; }
-		inline InputManager& GetInputManager() noexcept { return m_inputManager; }
-		inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
+        inline Window& GetWindow() noexcept { return m_window; }
+        inline Renderer& GetRenderer() noexcept { return m_renderer; }
+        inline Camera2D& GetCamera() noexcept { return m_camera; }
+        inline InputManager& GetInputManager() noexcept { return m_inputManager; }
+        inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 
-		inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
-		inline ScriptEngine& GetScriptEngine() noexcept { return m_scriptEngine; }
-		inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
-		inline VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
+        inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+        inline ScriptEngine& GetScriptEngine() noexcept { return m_scriptEngine; }
+        inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
+        inline VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
 
-		[[nodiscard]] String GetPlatformName() const;
+        [[nodiscard]] String GetPlatformName() const;
 
-		inline bool IsRunning() const noexcept { return m_isRunning; }
-		inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
-		inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
+        inline bool IsRunning() const noexcept { return m_isRunning; }
+        inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
+        inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
 
-		template <typename T>
-		void SetGlobalSceneData(const String& dataName, const T& data)
-		{
-			m_globalSceneData[dataName] = data;
-		}
+        template <typename T>
+        void SetGlobalSceneData(const String& dataName, const T& data)
+        {
+            m_globalSceneData[dataName] = data;
+        }
 
-		template <typename T>
-		[[nodiscard]] T GetFromGlobalSceneData(const String& dataName)
-		{
-			return std::any_cast<T>(m_globalSceneData[dataName]);
-		}
+        template <typename T>
+        [[nodiscard]] T GetFromGlobalSceneData(const String& dataName)
+        {
+            return std::any_cast<T>(m_globalSceneData[dataName]);
+        }
 
-		void RemoveFromGlobalSceneData(const String& dataName);
+        void RemoveFromGlobalSceneData(const String& dataName);
 
-		inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
+        inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
-		inline const String& GetBaseDirectory() const noexcept { return m_baseDirectory; }
-		inline const String& GetPreferenceDirectory() const noexcept { return m_preferenceDirectory; }
+        inline const String& GetBaseDirectory() const noexcept { return m_baseDirectory; }
+        inline const String& GetPreferenceDirectory() const noexcept { return m_preferenceDirectory; }
 
-	private:
-		void Initialise(const CreateInfo& createInfo);
-		[[nodiscard]] Status InitialiseFilesystem(const CreateInfo& createInfo);
-		[[nodiscard]] Status InitialiseConfig(const CreateInfo& createInfo);
-		[[nodiscard]] Status InitialiseLocale(const CreateInfo&);
-		[[nodiscard]] Status InitialiseSoundSystem(const CreateInfo&);
-		[[nodiscard]] Status InitialiseSDL(const CreateInfo&);
-		[[nodiscard]] Status InitialiseWindow(const CreateInfo& createInfo);
-		[[nodiscard]] Status InitialiseOpenGL(const CreateInfo&);
-		[[nodiscard]] Status InitialiseRenderer(const CreateInfo&);
-		[[nodiscard]] Status InitialiseTextSystem(const CreateInfo&);
-		[[nodiscard]] Status InitialiseScriptEngine(const CreateInfo&);
-		void InitialiseScenes();
+    private:
+        void Initialise(const CreateInfo& createInfo);
+        [[nodiscard]] Status InitialiseFilesystem(const CreateInfo& createInfo);
+        [[nodiscard]] Status InitialiseConfig(const CreateInfo& createInfo);
+        [[nodiscard]] Status InitialiseLocale(const CreateInfo&);
+        [[nodiscard]] Status InitialiseSoundSystem(const CreateInfo&);
+        [[nodiscard]] Status InitialiseSDL(const CreateInfo&);
+        [[nodiscard]] Status InitialiseWindow(const CreateInfo& createInfo);
+        [[nodiscard]] Status InitialiseOpenGL(const CreateInfo&);
+        [[nodiscard]] Status InitialiseRenderer(const CreateInfo&);
+        [[nodiscard]] Status InitialiseTextSystem(const CreateInfo&);
+        [[nodiscard]] Status InitialiseScriptEngine(const CreateInfo&);
+        void InitialiseScenes();
 
-		void FixedUpdate();
-		void ProcessInput();
-		void Update();
-		void LateUpdate();
-		void Render();
+        void FixedUpdate();
+        void ProcessInput();
+        void Update();
+        void LateUpdate();
+        void Render();
 
-		void PollEvents(Event& event);
-		void ProcessWindowEvents(const WindowEvent& windowEvent);
+        void PollEvents(Event& event);
+        void ProcessWindowEvents(const WindowEvent& windowEvent);
 
-		void UpdateTime(f64& timeAccumulator);
-		void UpdateSceneQueue();
-	};
+        void UpdateTime(f64& timeAccumulator);
+        void UpdateSceneQueue();
+    };
 }
 
 #endif

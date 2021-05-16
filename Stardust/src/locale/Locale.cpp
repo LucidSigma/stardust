@@ -9,106 +9,106 @@
 
 namespace stardust
 {
-	const Vector<String>& Locale::GetSystemPreferredLocales()
-	{
-		if (s_systemPreferredLocales.empty())
-		{
-			Vector<String> preferredLocaleStrings{ };
-			SDL_Locale* preferredLocales = SDL_GetPreferredLocales();
+    const Vector<String>& Locale::GetSystemPreferredLocales()
+    {
+        if (s_systemPreferredLocales.empty())
+        {
+            Vector<String> preferredLocaleStrings{ };
+            SDL_Locale* preferredLocales = SDL_GetPreferredLocales();
 
-			for (const SDL_Locale* currentLocale = preferredLocales; currentLocale != nullptr && currentLocale->language != nullptr; ++currentLocale)
-			{
-				String currentLocaleString = string::MakeLower(currentLocale->language);
+            for (const SDL_Locale* currentLocale = preferredLocales; currentLocale != nullptr && currentLocale->language != nullptr; ++currentLocale)
+            {
+                String currentLocaleString = string::MakeLower(currentLocale->language);
 
-				if (currentLocale->country != nullptr && currentLocale->country != "")
-				{
-					currentLocaleString += "_" + string::MakeLower(currentLocale->country);
-				}
+                if (currentLocale->country != nullptr && currentLocale->country != "")
+                {
+                    currentLocaleString += "_" + string::MakeLower(currentLocale->country);
+                }
 
-				preferredLocaleStrings.push_back(currentLocaleString);
-			}
+                preferredLocaleStrings.push_back(currentLocaleString);
+            }
 
-			SDL_free(preferredLocales);
-			preferredLocales = nullptr;
+            SDL_free(preferredLocales);
+            preferredLocales = nullptr;
 
-			s_systemPreferredLocales = preferredLocaleStrings;
-		}
+            s_systemPreferredLocales = preferredLocaleStrings;
+        }
 
-		return s_systemPreferredLocales;
-	}
+        return s_systemPreferredLocales;
+    }
 
-	void Locale::Initialise(const StringView& baseLocaleDirectory)
-	{
-		m_baseLocaleDirectory = baseLocaleDirectory;
-	}
+    void Locale::Initialise(const StringView& baseLocaleDirectory)
+    {
+        m_baseLocaleDirectory = baseLocaleDirectory;
+    }
 
-	[[nodiscard]] Status Locale::SetLocale(const String& localeName)
-	{
-		const String localeDirectory = m_baseLocaleDirectory + "/" + localeName;
+    [[nodiscard]] Status Locale::SetLocale(const String& localeName)
+    {
+        const String localeDirectory = m_baseLocaleDirectory + "/" + localeName;
 
-		if (!vfs::IsDirectory(localeDirectory))
-		{
-			return Status::Fail;
-		}
+        if (!vfs::IsDirectory(localeDirectory))
+        {
+            return Status::Fail;
+        }
 
-		const auto localeFiles = vfs::GetAllFilesInDirectory(localeDirectory);
+        const auto localeFiles = vfs::GetAllFilesInDirectory(localeDirectory);
 
-		if (localeFiles.empty())
-		{
-			return Status::Fail;
-		}
+        if (localeFiles.empty())
+        {
+            return Status::Fail;
+        }
 
-		nlohmann::json localeAccumulator{ };
+        nlohmann::json localeAccumulator{ };
 
-		for (const auto& localeFile : localeFiles)
-		{
-			if (filesystem::GetFileExtension(localeFile) == ".json")
-			{
-				const auto localeSubdata = LoadLocaleFile(localeFile);
+        for (const auto& localeFile : localeFiles)
+        {
+            if (filesystem::GetFileExtension(localeFile) == ".json")
+            {
+                const auto localeSubdata = LoadLocaleFile(localeFile);
 
-				if (!localeSubdata.has_value())
-				{
-					return Status::Fail;
-				}
+                if (!localeSubdata.has_value())
+                {
+                    return Status::Fail;
+                }
 
-				localeAccumulator.merge_patch(*localeSubdata);
+                localeAccumulator.merge_patch(*localeSubdata);
 
-				if (localeAccumulator.is_discarded())
-				{
-					return Status::Fail;
-				}
-			}
-		}
+                if (localeAccumulator.is_discarded())
+                {
+                    return Status::Fail;
+                }
+            }
+        }
 
-		m_currentLocale = std::move(localeAccumulator);
-		m_currentLocaleName = localeName;
+        m_currentLocale = std::move(localeAccumulator);
+        m_currentLocaleName = localeName;
 
-		return Status::Success;
-	}
+        return Status::Success;
+    }
 
-	[[nodiscard]] Optional<nlohmann::json> Locale::LoadLocaleFile(const String& filepath) const
-	{
-		const Vector<ubyte> localeData = vfs::ReadFileData(filepath);
+    [[nodiscard]] Optional<nlohmann::json> Locale::LoadLocaleFile(const String& filepath) const
+    {
+        const Vector<ubyte> localeData = vfs::ReadFileData(filepath);
 
-		if (localeData.empty())
-		{
-			return NullOpt;
-		}
+        if (localeData.empty())
+        {
+            return NullOpt;
+        }
 
-		const nlohmann::json locale = nlohmann::json::parse(
-			reinterpret_cast<const unsigned char*>(localeData.data()),
-			reinterpret_cast<const unsigned char*>(localeData.data()) + localeData.size(),
-			nullptr,
-			false
-		);
+        const nlohmann::json locale = nlohmann::json::parse(
+            reinterpret_cast<const unsigned char*>(localeData.data()),
+            reinterpret_cast<const unsigned char*>(localeData.data()) + localeData.size(),
+            nullptr,
+            false
+        );
 
-		if (locale.is_discarded())
-		{
-			return NullOpt;
-		}
-		else
-		{
-			return locale;
-		}
-	}
+        if (locale.is_discarded())
+        {
+            return NullOpt;
+        }
+        else
+        {
+            return locale;
+        }
+    }
 }

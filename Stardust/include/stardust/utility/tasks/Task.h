@@ -8,15 +8,15 @@
 
 namespace stardust
 {
-	template <
-		typename Threads = psched::threads<3u>,
-		typename Queues = psched::queues<3u, psched::maintain_size<100u, psched::discard::oldest_task>>,
-		typename AgingPolicy = psched::aging_policy<psched::task_starvation_after<std::chrono::milliseconds, 250u>, psched::increment_priority_by<1u>>
-	>
-	using Scheduler = psched::PriorityScheduler<Threads, Queues, AgingPolicy>;
+    template <
+        typename Threads = psched::threads<3u>,
+        typename Queues = psched::queues<3u, psched::maintain_size<100u, psched::discard::oldest_task>>,
+        typename AgingPolicy = psched::aging_policy<psched::task_starvation_after<std::chrono::milliseconds, 250u>, psched::increment_priority_by<1u>>
+    >
+    using Scheduler = psched::PriorityScheduler<Threads, Queues, AgingPolicy>;
 
-	using Task = psched::Task;
-	using TaskStats = psched::TaskStats;
+    using Task = psched::Task;
+    using TaskStats = psched::TaskStats;
 }
 
 #endif

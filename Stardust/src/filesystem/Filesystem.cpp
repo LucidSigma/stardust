@@ -6,263 +6,263 @@
 
 namespace stardust
 {
-	namespace filesystem
-	{
-		[[nodiscard]] Vector<String> GetAllFilesInDirectory(const StringView& directory)
-		{
-			Vector<String> files{ };
+    namespace filesystem
+    {
+        [[nodiscard]] Vector<String> GetAllFilesInDirectory(const StringView& directory)
+        {
+            Vector<String> files{ };
 
-			for (const auto& file : std::filesystem::directory_iterator(directory))
-			{
-				if (!file.is_directory())
-				{
-					files.push_back(file.path().string());
-				}
-			}
+            for (const auto& file : std::filesystem::directory_iterator(directory))
+            {
+                if (!file.is_directory())
+                {
+                    files.push_back(file.path().string());
+                }
+            }
 
-			return files;
-		}
+            return files;
+        }
 
-		[[nodiscard]] Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory)
-		{
-			Vector<String> files{ };
+        [[nodiscard]] Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory)
+        {
+            Vector<String> files{ };
 
-			for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
-			{
-				if (!file.is_directory())
-				{
-					files.push_back(file.path().string());
-				}
-			}
+            for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
+            {
+                if (!file.is_directory())
+                {
+                    files.push_back(file.path().string());
+                }
+            }
 
-			return files;
-		}
+            return files;
+        }
 
-		[[nodiscard]] Vector<String> GetAllFileNamesInDirectory(const StringView& directory)
-		{
-			Vector<String> files{ };
+        [[nodiscard]] Vector<String> GetAllFileNamesInDirectory(const StringView& directory)
+        {
+            Vector<String> files{ };
 
-			for (const auto& file : std::filesystem::directory_iterator(directory))
-			{
-				if (!file.is_directory())
-				{
-					files.push_back(file.path().filename().string());
-				}
-			}
+            for (const auto& file : std::filesystem::directory_iterator(directory))
+            {
+                if (!file.is_directory())
+                {
+                    files.push_back(file.path().filename().string());
+                }
+            }
 
-			return files;
-		}
+            return files;
+        }
 
-		[[nodiscard]] Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory)
-		{
-			Vector<String> files{ };
+        [[nodiscard]] Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory)
+        {
+            Vector<String> files{ };
 
-			for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
-			{
-				if (!file.is_directory())
-				{
-					files.push_back(file.path().filename().string());
-				}
-			}
+            for (const auto& file : std::filesystem::recursive_directory_iterator(directory))
+            {
+                if (!file.is_directory())
+                {
+                    files.push_back(file.path().filename().string());
+                }
+            }
 
-			return files;
-		}
+            return files;
+        }
 
-		[[nodiscard]] bool DoesFileExist(const StringView& filepath)
-		{
-			return std::filesystem::exists(filepath);
-		}
+        [[nodiscard]] bool DoesFileExist(const StringView& filepath)
+        {
+            return std::filesystem::exists(filepath);
+        }
 
-		[[nodiscard]] bool IsDirectory(const StringView& filepath)
-		{
-			return std::filesystem::is_directory(filepath);
-		}
+        [[nodiscard]] bool IsDirectory(const StringView& filepath)
+        {
+            return std::filesystem::is_directory(filepath);
+        }
 
-		[[nodiscard]] String GetParentFilepath(const StringView& filepath)
-		{
-			return std::filesystem::path(filepath).parent_path().string();
-		}
+        [[nodiscard]] String GetParentFilepath(const StringView& filepath)
+        {
+            return std::filesystem::path(filepath).parent_path().string();
+        }
 
-		[[nodiscard]] String GetFilenameFromDirectory(const StringView& filepath)
-		{
-			return std::filesystem::path(filepath).filename().string();
-		}
+        [[nodiscard]] String GetFilenameFromDirectory(const StringView& filepath)
+        {
+            return std::filesystem::path(filepath).filename().string();
+        }
 
-		[[nodiscard]] String GetFileStem(const StringView& filename)
-		{
-			return std::filesystem::path(filename).stem().string();
-		}
+        [[nodiscard]] String GetFileStem(const StringView& filename)
+        {
+            return std::filesystem::path(filename).stem().string();
+        }
 
-		[[nodiscard]] String GetFileExtension(const StringView& filename)
-		{
-			return std::filesystem::path(filename).extension().string();
-		}
+        [[nodiscard]] String GetFileExtension(const StringView& filename)
+        {
+            return std::filesystem::path(filename).extension().string();
+        }
 
-		[[nodiscard]] Status CreateDirectory(const StringView& path)
-		{
-			return std::filesystem::create_directory(path)
-				? Status::Success
-				: Status::Fail;
-		}
+        [[nodiscard]] Status CreateDirectory(const StringView& path)
+        {
+            return std::filesystem::create_directory(path)
+                ? Status::Success
+                : Status::Fail;
+        }
 
-		[[nodiscard]] String ReadFile(const StringView& filepath)
-		{
-			std::ifstream file(filepath);
+        [[nodiscard]] String ReadFile(const StringView& filepath)
+        {
+            std::ifstream file(filepath);
 
-			if (!file.is_open())
-			{
-				return "";
-			}
+            if (!file.is_open())
+            {
+                return "";
+            }
 
-			std::ostringstream fileDataStream;
-			fileDataStream << file.rdbuf();
-			file.close();
+            std::ostringstream fileDataStream;
+            fileDataStream << file.rdbuf();
+            file.close();
 
-			return fileDataStream.str();
-		}
+            return fileDataStream.str();
+        }
 
-		[[nodiscard]] Vector<String> ReadFileLines(const StringView& filepath)
-		{
-			std::ifstream file(filepath);
+        [[nodiscard]] Vector<String> ReadFileLines(const StringView& filepath)
+        {
+            std::ifstream file(filepath);
 
-			if (!file.is_open())
-			{
-				return { };
-			}
+            if (!file.is_open())
+            {
+                return { };
+            }
 
-			Vector<String> fileLines{ };
-			String currentLine;
+            Vector<String> fileLines{ };
+            String currentLine;
 
-			while (std::getline(file, currentLine))
-			{
-				fileLines.push_back(currentLine);
-			}
+            while (std::getline(file, currentLine))
+            {
+                fileLines.push_back(currentLine);
+            }
 
-			return fileLines;
-		}
+            return fileLines;
+        }
 
-		[[nodiscard]] Vector<ubyte> ReadFileBytes(const StringView& filepath)
-		{
-			std::basic_ifstream<ubyte> file(filepath, std::ios_base::in | std::ios_base::binary);
+        [[nodiscard]] Vector<ubyte> ReadFileBytes(const StringView& filepath)
+        {
+            std::basic_ifstream<ubyte> file(filepath, std::ios_base::in | std::ios_base::binary);
 
-			if (!file.is_open())
-			{
-				return { };
-			}
+            if (!file.is_open())
+            {
+                return { };
+            }
 
-			return Vector<ubyte>(
-				std::istreambuf_iterator<ubyte>(file),
-				std::istreambuf_iterator<ubyte>()
-			);
-		}
+            return Vector<ubyte>(
+                std::istreambuf_iterator<ubyte>(file),
+                std::istreambuf_iterator<ubyte>()
+            );
+        }
 
-		[[nodiscard]] Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data)
-		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+        [[nodiscard]] Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-			if (!outputFile.is_open())
-			{
-				return Status::Fail;
-			}
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
 
-			outputFile << data.data();
-			outputFile.close();
+            outputFile << data.data();
+            outputFile.close();
 
-			return Status::Success;
-		}
+            return Status::Success;
+        }
 
-		[[nodiscard]] Status WriteToFile(const StringView& filepath, const String& data)
-		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::trunc);
+        [[nodiscard]] Status WriteToFile(const StringView& filepath, const String& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::trunc);
 
-			if (!outputFile.is_open())
-			{
-				return Status::Fail;
-			}
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
 
-			outputFile << data;
-			outputFile.close();
+            outputFile << data;
+            outputFile.close();
 
-			return Status::Success;
-		}
+            return Status::Success;
+        }
 
-		[[nodiscard]] Status WriteToFile(const StringView& filepath, const nlohmann::json& data)
-		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::trunc);
+        [[nodiscard]] Status WriteToFile(const StringView& filepath, const nlohmann::json& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::trunc);
 
-			if (!outputFile.is_open())
-			{
-				return Status::Fail;
-			}
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
 
-			outputFile << data;
-			outputFile.close();
+            outputFile << data;
+            outputFile.close();
 
-			return Status::Success;
-		}
+            return Status::Success;
+        }
 
-		[[nodiscard]] Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data)
-		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
+        [[nodiscard]] Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
 
-			if (!outputFile.is_open())
-			{
-				return Status::Fail;
-			}
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
 
-			outputFile << data.data();
-			outputFile.close();
+            outputFile << data.data();
+            outputFile.close();
 
-			return Status::Success;
-		}
+            return Status::Success;
+        }
 
-		[[nodiscard]] Status AppendToFile(const StringView& filepath, const String& data)
-		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
+        [[nodiscard]] Status AppendToFile(const StringView& filepath, const String& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
 
-			if (!outputFile.is_open())
-			{
-				return Status::Fail;
-			}
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
 
-			outputFile << data;
-			outputFile.close();
+            outputFile << data;
+            outputFile.close();
 
-			return Status::Success;
-		}
+            return Status::Success;
+        }
 
-		[[nodiscard]] Status AppendToFile(const StringView& filepath, const nlohmann::json& data)
-		{
-			std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
+        [[nodiscard]] Status AppendToFile(const StringView& filepath, const nlohmann::json& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
 
-			if (!outputFile.is_open())
-			{
-				return Status::Fail;
-			}
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
 
-			outputFile << data;
-			outputFile.close();
+            outputFile << data;
+            outputFile.close();
 
-			return Status::Success;
-		}
+            return Status::Success;
+        }
 
-		[[nodiscard]] Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data)
-		{
-			const Vector<ubyte> messagePackData = nlohmann::json::to_msgpack(data);
-			
-			return WriteToFile(filepath, messagePackData);
-		}
+        [[nodiscard]] Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data)
+        {
+            const Vector<ubyte> messagePackData = nlohmann::json::to_msgpack(data);
+            
+            return WriteToFile(filepath, messagePackData);
+        }
 
-		[[nodiscard]] nlohmann::json ReadMessagePack(const StringView& filepath)
-		{
-			const Vector<ubyte> messagePackData = ReadFileBytes(filepath);
+        [[nodiscard]] nlohmann::json ReadMessagePack(const StringView& filepath)
+        {
+            const Vector<ubyte> messagePackData = ReadFileBytes(filepath);
 
-			if (messagePackData.empty())
-			{
-				return nlohmann::json{ };
-			}
+            if (messagePackData.empty())
+            {
+                return nlohmann::json{ };
+            }
 
-			return nlohmann::json::from_msgpack(messagePackData, false, false);
-		}
-	}
+            return nlohmann::json::from_msgpack(messagePackData, false, false);
+        }
+    }
 }

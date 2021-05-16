@@ -15,7 +15,7 @@
 
 namespace stardust
 {
-	namespace comp = components;
+    namespace comp = components;
 }
 
 #endif

@@ -9,19 +9,19 @@
 
 namespace stardust
 {
-	namespace physics
-	{
-		struct RaycastHit
-		{
-			Collider collider;
+    namespace physics
+    {
+        struct RaycastHit
+        {
+            Collider collider;
 
-			f32 distance;
-			f32 fraction;
+            f32 distance;
+            f32 fraction;
 
-			Vec2 normal;
-			Vec2 point;
-		};
-	}
+            Vec2 normal;
+            Vec2 point;
+        };
+    }
 }
 
 #endif

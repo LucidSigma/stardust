@@ -7,23 +7,23 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct TilemapLayer
-		{
-			ObserverPtr<Tilemap::Layer> layer;
+    namespace components
+    {
+        struct TilemapLayer
+        {
+            ObserverPtr<Tilemap::Layer> layer;
 
-			TilemapLayer()
-				: layer(nullptr)
-			{ }
+            TilemapLayer()
+                : layer(nullptr)
+            { }
 
-			explicit TilemapLayer(Tilemap::Layer& layer)
-				: layer(&layer)
-			{ }
+            explicit TilemapLayer(Tilemap::Layer& layer)
+                : layer(&layer)
+            { }
 
-			~TilemapLayer() noexcept = default;
-		};
-	}
+            ~TilemapLayer() noexcept = default;
+        };
+    }
 }
 
 #endif

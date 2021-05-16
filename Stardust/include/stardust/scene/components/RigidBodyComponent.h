@@ -7,27 +7,27 @@
 
 namespace stardust
 {
-	namespace components
-	{
-		struct RigidBody
-		{
-			ObserverPtr<physics::Body> handle;
+    namespace components
+    {
+        struct RigidBody
+        {
+            ObserverPtr<physics::Body> handle;
 
-			RigidBody()
-				: handle(nullptr)
-			{ }
+            RigidBody()
+                : handle(nullptr)
+            { }
 
-			explicit RigidBody(physics::Body& handle)
-				: handle(&handle)
-			{ }
+            explicit RigidBody(physics::Body& handle)
+                : handle(&handle)
+            { }
 
-			explicit RigidBody(ObserverPtr<physics::Body> handle)
-				: handle(handle)
-			{ }
+            explicit RigidBody(ObserverPtr<physics::Body> handle)
+                : handle(handle)
+            { }
 
-			~RigidBody() noexcept = default;
-		};
-	}
+            ~RigidBody() noexcept = default;
+        };
+    }
 }
 
 #endif

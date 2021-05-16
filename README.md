@@ -36,25 +36,25 @@ Once I have created a few demo games and solidified the API enough, I will begin
 #include <stardust/Stardust.h>
 
 class ExampleScene final
-	: public sd::Scene
+    : public sd::Scene
 {
 public:
-	ExampleScene(sd::Application& application, const sd::String& name);
-	virtual ~ExampleScene() noexcept override = default;
+    ExampleScene(sd::Application& application, const sd::String& name);
+    virtual ~ExampleScene() noexcept override = default;
 
-	[[nodiscard]] virtual sd::Status OnLoad() override;
-	virtual void OnUnload() noexcept override;
+    [[nodiscard]] virtual sd::Status OnLoad() override;
+    virtual void OnUnload() noexcept override;
 
-	virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override;
-	virtual void ProcessInput() override;
-	virtual void Update(const sd::f32 deltaTime) override;
-	virtual void LateUpdate(const sd::f32 deltaTime) override;
+    virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override;
+    virtual void ProcessInput() override;
+    virtual void Update(const sd::f32 deltaTime) override;
+    virtual void LateUpdate(const sd::f32 deltaTime) override;
 
-	virtual void Render(sd::Renderer& renderer) override;
+    virtual void Render(sd::Renderer& renderer) override;
 
-	virtual void PollEvent(const sd::Event& event) override;
-	virtual void OnGameControllerAdded(sd::GameController& gameController) override;
-	virtual void OnGameControllerRemoved(const sd::GameController& gameController) override;
+    virtual void PollEvent(const sd::Event& event) override;
+    virtual void OnGameControllerAdded(sd::GameController& gameController) override;
+    virtual void OnGameControllerRemoved(const sd::GameController& gameController) override;
 };
 
 #endif
@@ -63,7 +63,7 @@ public:
 ## Dependencies
 ### Window/Input
 * [SDL2](https://www.libsdl.org/)
-	* [SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB)
+    * [SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB)
 
 ### Graphics
 * [Glad](https://glad.dav1d.de/)
@@ -71,8 +71,8 @@ public:
 
 ### Audio
 * [SoLoud](https://sol.gfxile.net/soloud/)
-	* [dr_libs](https://github.com/mackron/dr_libs)
-	* [stb_vorbis](https://github.com/nothings/stb/blob/master/stb_vorbis.c)
+    * [dr_libs](https://github.com/mackron/dr_libs)
+    * [stb_vorbis](https://github.com/nothings/stb/blob/master/stb_vorbis.c)
 
 ### Data
 * [concurrentqueue](https://github.com/cameron314/concurrentqueue)
@@ -84,8 +84,8 @@ public:
 ### Assets
 * [PhysFS](https://icculus.org/physfs/)
 * [SDL_ttf](https://www.libsdl.org/projects/SDL_ttf/)
-	* [FreeType](https://www.freetype.org/)
-	* [zlib](https://zlib.net/)
+    * [FreeType](https://www.freetype.org/)
+    * [zlib](https://zlib.net/)
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
 
 ### Mathematics

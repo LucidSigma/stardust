@@ -12,30 +12,30 @@
 
 namespace stardust
 {
-	class OpenGLContext
-		: private INoncopyable
-	{
-	private:
-		SDL_GLContext m_handle = nullptr;
-		ObserverPtr<const Window> m_window = nullptr;
+    class OpenGLContext
+        : private INoncopyable
+    {
+    private:
+        SDL_GLContext m_handle = nullptr;
+        ObserverPtr<const Window> m_window = nullptr;
 
-	public:
-		OpenGLContext() = default;
-		explicit OpenGLContext(const Window& window);
+    public:
+        OpenGLContext() = default;
+        explicit OpenGLContext(const Window& window);
 
-		OpenGLContext(OpenGLContext&& other) noexcept;
-		OpenGLContext& operator =(OpenGLContext&& other) noexcept;
+        OpenGLContext(OpenGLContext&& other) noexcept;
+        OpenGLContext& operator =(OpenGLContext&& other) noexcept;
 
-		~OpenGLContext() noexcept;
+        ~OpenGLContext() noexcept;
 
-		void Initialise(const Window& window);
-		void Destroy() noexcept;
+        void Initialise(const Window& window);
+        void Destroy() noexcept;
 
-		Status MakeCurrent() const;
+        Status MakeCurrent() const;
 
-		bool IsValid() const noexcept { return m_handle != nullptr; }
-		[[nodiscard]] inline SDL_GLContext const GetRawHandle() const noexcept { return m_handle; }
-	};
+        bool IsValid() const noexcept { return m_handle != nullptr; }
+        [[nodiscard]] inline SDL_GLContext const GetRawHandle() const noexcept { return m_handle; }
+    };
 }
 
 #endif

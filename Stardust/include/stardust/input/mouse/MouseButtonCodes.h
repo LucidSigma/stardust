@@ -12,19 +12,19 @@
 
 namespace stardust
 {
-	enum class MouseButton
-		: decltype(SDL_BUTTON_LEFT)
-	{
-		Left = SDL_BUTTON_LEFT,
-		Middle = SDL_BUTTON_MIDDLE,
-		Right = SDL_BUTTON_RIGHT,
-		Thumb1 = SDL_BUTTON_X1,
-		Thumb2 = SDL_BUTTON_X2,
-	};
+    enum class MouseButton
+        : decltype(SDL_BUTTON_LEFT)
+    {
+        Left = SDL_BUTTON_LEFT,
+        Middle = SDL_BUTTON_MIDDLE,
+        Right = SDL_BUTTON_RIGHT,
+        Thumb1 = SDL_BUTTON_X1,
+        Thumb2 = SDL_BUTTON_X2,
+    };
 
-	constexpr usize MouseButtonCount = magic_enum::enum_count<MouseButton>();
+    constexpr usize MouseButtonCount = magic_enum::enum_count<MouseButton>();
 
-	[[nodiscard]] String MouseButtonToString(const MouseButton mouseButton);
+    [[nodiscard]] String MouseButtonToString(const MouseButton mouseButton);
 }
 
 #endif

@@ -12,28 +12,28 @@
 
 namespace stardust
 {
-	class SceneManager
-	{
-	private:
-		Queue<UniquePtr<Scene>> m_scenes{ };
+    class SceneManager
+    {
+    private:
+        Queue<UniquePtr<Scene>> m_scenes{ };
 
-	public:
-		SceneManager() = default;
-		~SceneManager() noexcept = default;
+    public:
+        SceneManager() = default;
+        ~SceneManager() noexcept = default;
 
-		template <std::derived_from<Scene> T, typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Args...>>>
-		void PushScene(Args&&... args)
-		{
-			m_scenes.push(std::make_unique<T>(std::forward<Args>(args)...));
-		}
+        template <std::derived_from<Scene> T, typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Args...>>>
+        void PushScene(Args&&... args)
+        {
+            m_scenes.push(std::make_unique<T>(std::forward<Args>(args)...));
+        }
 
-		void PopScene();
+        void PopScene();
 
-		inline const UniquePtr<Scene>& CurrentScene() const { return m_scenes.front(); }
-		inline bool IsEmpty() const noexcept { return m_scenes.empty(); }
+        inline const UniquePtr<Scene>& CurrentScene() const { return m_scenes.front(); }
+        inline bool IsEmpty() const noexcept { return m_scenes.empty(); }
 
-		inline usize GetSceneCount() const noexcept { return m_scenes.size(); }
-	};
+        inline usize GetSceneCount() const noexcept { return m_scenes.size(); }
+    };
 }
 
 #endif

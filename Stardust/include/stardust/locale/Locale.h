@@ -10,31 +10,31 @@
 
 namespace stardust
 {
-	class Locale
-	{
-	private:
-		inline static Vector<String> s_systemPreferredLocales{ };
+    class Locale
+    {
+    private:
+        inline static Vector<String> s_systemPreferredLocales{ };
 
-		String m_baseLocaleDirectory;
+        String m_baseLocaleDirectory;
 
-		nlohmann::json m_currentLocale;
-		String m_currentLocaleName;
+        nlohmann::json m_currentLocale;
+        String m_currentLocaleName;
 
-	public:
-		static const Vector<String>& GetSystemPreferredLocales();
+    public:
+        static const Vector<String>& GetSystemPreferredLocales();
 
-		Locale() = default;
-		~Locale() noexcept = default;
+        Locale() = default;
+        ~Locale() noexcept = default;
 
-		void Initialise(const StringView& baseLocaleDirectory);
-		[[nodiscard]] Status SetLocale(const String& localeName);
+        void Initialise(const StringView& baseLocaleDirectory);
+        [[nodiscard]] Status SetLocale(const String& localeName);
 
-		inline const String& GetCurrentLocaleName() const noexcept { return m_currentLocaleName; }
-		inline const nlohmann::json& operator [](const StringView& localeString) const { return m_currentLocale[localeString.data()]; }
+        inline const String& GetCurrentLocaleName() const noexcept { return m_currentLocaleName; }
+        inline const nlohmann::json& operator [](const StringView& localeString) const { return m_currentLocale[localeString.data()]; }
 
-	private:
-		[[nodiscard]] Optional<nlohmann::json> LoadLocaleFile(const String& filepath) const;
-	};
+    private:
+        [[nodiscard]] Optional<nlohmann::json> LoadLocaleFile(const String& filepath) const;
+    };
 }
 
 #endif

@@ -10,35 +10,35 @@
 
 namespace stardust
 {
-	class SortingLayer
-	{
-	private:
-		inline static u32 s_idCounter = 0u;
+    class SortingLayer
+    {
+    private:
+        inline static u32 s_idCounter = 0u;
 
-		u32 m_id;
-		f32 m_z = 0.0f;
+        u32 m_id;
+        f32 m_z = 0.0f;
 
-		String m_name;
+        String m_name;
 
-	public:
-		explicit SortingLayer(const StringView& name, const f32 z = 0.0f);
-		~SortingLayer() noexcept = default;
+    public:
+        explicit SortingLayer(const StringView& name, const f32 z = 0.0f);
+        ~SortingLayer() noexcept = default;
 
-		bool operator ==(const SortingLayer&) const noexcept = default;
-		bool operator !=(const SortingLayer&) const noexcept = default;
+        bool operator ==(const SortingLayer&) const noexcept = default;
+        bool operator !=(const SortingLayer&) const noexcept = default;
 
-		inline bool operator <(const SortingLayer& other) const noexcept { return m_z < other.m_z; }
-		inline bool operator <=(const SortingLayer& other) const noexcept { return m_z <= other.m_z; }
-		inline bool operator >(const SortingLayer& other) const noexcept { return m_z > other.m_z; }
-		inline bool operator >=(const SortingLayer& other) const noexcept { return m_z >= other.m_z; }
+        inline bool operator <(const SortingLayer& other) const noexcept { return m_z < other.m_z; }
+        inline bool operator <=(const SortingLayer& other) const noexcept { return m_z <= other.m_z; }
+        inline bool operator >(const SortingLayer& other) const noexcept { return m_z > other.m_z; }
+        inline bool operator >=(const SortingLayer& other) const noexcept { return m_z >= other.m_z; }
 
-		inline std::partial_ordering operator <=>(const SortingLayer& other) const noexcept { return m_z <=> other.m_z; }
+        inline std::partial_ordering operator <=>(const SortingLayer& other) const noexcept { return m_z <=> other.m_z; }
 
-		inline u32 GetID() const noexcept { return m_id; }
-		inline f32 GetZ() const noexcept { return m_z; }
+        inline u32 GetID() const noexcept { return m_id; }
+        inline f32 GetZ() const noexcept { return m_z; }
 
-		inline const String& GetName() const noexcept { return m_name; }
-	};
+        inline const String& GetName() const noexcept { return m_name; }
+    };
 }
 
 #endif

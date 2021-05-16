@@ -9,30 +9,30 @@
 
 namespace stardust
 {
-	namespace physics
-	{
-		using Shape = b2Shape;
-		using CollisionLayer = u16;
+    namespace physics
+    {
+        using Shape = b2Shape;
+        using CollisionLayer = u16;
 
-		constexpr CollisionLayer AllLayers = 0xFFFF;
+        constexpr CollisionLayer AllLayers = 0xFFFF;
 
-		enum class ShapeType
-		{
-			Circle = b2Shape::e_circle,
-			Edge = b2Shape::e_edge,
-			Polygon = b2Shape::e_polygon,
-			Chain = b2Shape::e_chain,
-		};
+        enum class ShapeType
+        {
+            Circle = b2Shape::e_circle,
+            Edge = b2Shape::e_edge,
+            Polygon = b2Shape::e_polygon,
+            Chain = b2Shape::e_chain,
+        };
 
-		struct MassData
-		{
-			f32 mass;
-			Vec2 centre;
-			f32 momentOfInertia;
-		};
-	}
+        struct MassData
+        {
+            f32 mass;
+            Vec2 centre;
+            f32 momentOfInertia;
+        };
+    }
 
-	namespace phys = physics;
+    namespace phys = physics;
 }
 
 #endif

@@ -4,113 +4,113 @@
 
 namespace stardust
 {
-	namespace physics
-	{
-		Chain::Chain(const b2ChainShape& shapeHandle)
-			: m_chain(shapeHandle)
-		{ }
+    namespace physics
+    {
+        Chain::Chain(const b2ChainShape& shapeHandle)
+            : m_chain(shapeHandle)
+        { }
 
-		Chain::Chain(const Vector<Vec2>& vertices)
-		{
-			CreateLoop(vertices);
-		}
+        Chain::Chain(const Vector<Vec2>& vertices)
+        {
+            CreateLoop(vertices);
+        }
 
-		Chain::Chain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB)
-		{
-			CreateChain(vertices, ghostVertexA, ghostVertexB);
-		}
+        Chain::Chain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB)
+        {
+            CreateChain(vertices, ghostVertexA, ghostVertexB);
+        }
 
-		void Chain::CreateLoop(const Vector<Vec2>& vertices)
-		{
-			Vector<b2Vec2> convertedVertices(vertices.size());
+        void Chain::CreateLoop(const Vector<Vec2>& vertices)
+        {
+            Vector<b2Vec2> convertedVertices(vertices.size());
 
-			for (usize i = 0u; i < vertices.size(); ++i)
-			{
-				convertedVertices[i] = b2Vec2{ vertices[i].x, vertices[i].y };
-			}
+            for (usize i = 0u; i < vertices.size(); ++i)
+            {
+                convertedVertices[i] = b2Vec2{ vertices[i].x, vertices[i].y };
+            }
 
-			m_chain.CreateLoop(convertedVertices.data(), static_cast<i32>(convertedVertices.size()));
-		}
+            m_chain.CreateLoop(convertedVertices.data(), static_cast<i32>(convertedVertices.size()));
+        }
 
-		void Chain::CreateChain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB)
-		{
-			Vector<b2Vec2> convertedVertices(vertices.size());
+        void Chain::CreateChain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB)
+        {
+            Vector<b2Vec2> convertedVertices(vertices.size());
 
-			for (usize i = 0u; i < vertices.size(); ++i)
-			{
-				convertedVertices[i] = b2Vec2{ vertices[i].x, vertices[i].y };
-			}
+            for (usize i = 0u; i < vertices.size(); ++i)
+            {
+                convertedVertices[i] = b2Vec2{ vertices[i].x, vertices[i].y };
+            }
 
-			m_chain.CreateChain(
-				convertedVertices.data(),
-				static_cast<i32>(convertedVertices.size()),
-				b2Vec2{ ghostVertexA.x, ghostVertexA.y },
-				b2Vec2{ ghostVertexB.x, ghostVertexB.y }
-			);
-		}
+            m_chain.CreateChain(
+                convertedVertices.data(),
+                static_cast<i32>(convertedVertices.size()),
+                b2Vec2{ ghostVertexA.x, ghostVertexA.y },
+                b2Vec2{ ghostVertexB.x, ghostVertexB.y }
+            );
+        }
 
-		void Chain::Clear()
-		{
-			m_chain.Clear();
-		}
+        void Chain::Clear()
+        {
+            m_chain.Clear();
+        }
 
-		[[nodiscard]] Vector<Vec2> Chain::GetVertices() const
-		{
-			Vector<Vec2> vertices(GetVertexCount());
+        [[nodiscard]] Vector<Vec2> Chain::GetVertices() const
+        {
+            Vector<Vec2> vertices(GetVertexCount());
 
-			for (usize i = 0u; i < vertices.size(); ++i)
-			{
-				vertices[i] = Vec2{ m_chain.m_vertices[i].x, m_chain.m_vertices[i].y };
-			}
+            for (usize i = 0u; i < vertices.size(); ++i)
+            {
+                vertices[i] = Vec2{ m_chain.m_vertices[i].x, m_chain.m_vertices[i].y };
+            }
 
-			return vertices;
-		}
+            return vertices;
+        }
 
-		[[nodiscard]] Edge Chain::GetChildEdge(const u32 childEdgeIndex) const
-		{
-			b2EdgeShape edge{ };
-			m_chain.GetChildEdge(&edge, static_cast<i32>(childEdgeIndex));
+        [[nodiscard]] Edge Chain::GetChildEdge(const u32 childEdgeIndex) const
+        {
+            b2EdgeShape edge{ };
+            m_chain.GetChildEdge(&edge, static_cast<i32>(childEdgeIndex));
 
-			return edge;
-		}
+            return edge;
+        }
 
-		[[nodiscard]] Pair<Vec2, Vec2> Chain::GetGhostVertices() const
-		{
-			const Vec2 ghostVertexA{ m_chain.m_prevVertex.x, m_chain.m_prevVertex.y };
-			const Vec2 ghostVertexB{ m_chain.m_nextVertex.x, m_chain.m_nextVertex.y };
+        [[nodiscard]] Pair<Vec2, Vec2> Chain::GetGhostVertices() const
+        {
+            const Vec2 ghostVertexA{ m_chain.m_prevVertex.x, m_chain.m_prevVertex.y };
+            const Vec2 ghostVertexB{ m_chain.m_nextVertex.x, m_chain.m_nextVertex.y };
 
-			return  Pair<Vec2, Vec2>{ ghostVertexA, ghostVertexB };
-		}
+            return  Pair<Vec2, Vec2>{ ghostVertexA, ghostVertexB };
+        }
 
-		[[nodiscard]] bool Chain::TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const
-		{
-			b2Transform transform{ };
-			transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
+        [[nodiscard]] bool Chain::TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const
+        {
+            b2Transform transform{ };
+            transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
 
-			return m_chain.TestPoint(transform, b2Vec2{ point.x, point.y });
-		}
+            return m_chain.TestPoint(transform, b2Vec2{ point.x, point.y });
+        }
 
-		[[nodiscard]] AABB Chain::ComputeEdgeAABB(const Vec2& worldPosition, const f32 rotation, const u32 childEdgeIndex) const
-		{
-			b2Transform transform{ };
-			transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
+        [[nodiscard]] AABB Chain::ComputeEdgeAABB(const Vec2& worldPosition, const f32 rotation, const u32 childEdgeIndex) const
+        {
+            b2Transform transform{ };
+            transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
 
-			b2AABB aabb{ };
-			m_chain.ComputeAABB(&aabb, transform, static_cast<i32>(childEdgeIndex));
+            b2AABB aabb{ };
+            m_chain.ComputeAABB(&aabb, transform, static_cast<i32>(childEdgeIndex));
 
-			return aabb;
-		}
+            return aabb;
+        }
 
-		[[nodiscard]] MassData Chain::ComputeMassData(const f32 density) const
-		{
-			b2MassData massData{ };
-			m_chain.ComputeMass(&massData, density);
+        [[nodiscard]] MassData Chain::ComputeMassData(const f32 density) const
+        {
+            b2MassData massData{ };
+            m_chain.ComputeMass(&massData, density);
 
-			return MassData{
-				.mass = massData.mass,
-				.centre = Vec2{ massData.center.x, massData.center.y },
-				.momentOfInertia = massData.I,
-			};
-		}
-	}
+            return MassData{
+                .mass = massData.mass,
+                .centre = Vec2{ massData.center.x, massData.center.y },
+                .momentOfInertia = massData.I,
+            };
+        }
+    }
 }

@@ -19,131 +19,131 @@
 
 namespace stardust
 {
-	using Tile = u32;
+    using Tile = u32;
 
-	class Tilemap
-	{
-	public:
-		class Layer
-		{
-		public:
-			struct CreateInfo
-			{
-				ObserverPtr<const Tilemap> owner;
+    class Tilemap
+    {
+    public:
+        class Layer
+        {
+        public:
+            struct CreateInfo
+            {
+                ObserverPtr<const Tilemap> owner;
 
-				u32 id;
-				StringView name;
+                u32 id;
+                StringView name;
 
-				UVec2 size;
-				f32 opacity = 1.0f;
+                UVec2 size;
+                f32 opacity = 1.0f;
 
-				Vector<Tile> tiles;
-				bool isVisible;
-			};
+                Vector<Tile> tiles;
+                bool isVisible;
+            };
 
-		private:
-			ObserverPtr<const Tilemap> m_ownerTilemap = nullptr;
+        private:
+            ObserverPtr<const Tilemap> m_ownerTilemap = nullptr;
 
-			u32 m_id = 0u;
-			String m_name;
+            u32 m_id = 0u;
+            String m_name;
 
-			UVec2 m_size = UVec2Zero;
-			f32 m_opacity = 0.0f;
+            UVec2 m_size = UVec2Zero;
+            f32 m_opacity = 0.0f;
 
-			Vector<Tile> m_tileData{ };
-			bool m_isVisible = true;
+            Vector<Tile> m_tileData{ };
+            bool m_isVisible = true;
 
-		public:
-			Layer() = default;
-			explicit Layer(const CreateInfo& createInfo);
-			~Layer() noexcept = default;
+        public:
+            Layer() = default;
+            explicit Layer(const CreateInfo& createInfo);
+            ~Layer() noexcept = default;
 
-			void Initialise(const CreateInfo& createInfo);
+            void Initialise(const CreateInfo& createInfo);
 
-			void Render(Renderer& renderer, const Camera2D& camera) const;
+            void Render(Renderer& renderer, const Camera2D& camera) const;
 
-			inline u32 GetID() const noexcept { return m_id; }
-			inline const String& GetName() const noexcept { return m_name; }
+            inline u32 GetID() const noexcept { return m_id; }
+            inline const String& GetName() const noexcept { return m_name; }
 
-			inline const UVec2& GetSize() const noexcept { return m_size; }
+            inline const UVec2& GetSize() const noexcept { return m_size; }
 
-			inline f32 GetOpacity() const noexcept { return m_opacity; }
-			void SetOpacity(const f32 opacity) noexcept;
+            inline f32 GetOpacity() const noexcept { return m_opacity; }
+            void SetOpacity(const f32 opacity) noexcept;
 
-			[[nodiscard]] Tile GetTile(const u32 x, const u32 y) const;
-			void SetTile(const u32 x, const u32 y, const Tile tile);
+            [[nodiscard]] Tile GetTile(const u32 x, const u32 y) const;
+            void SetTile(const u32 x, const u32 y, const Tile tile);
 
-			[[nodiscard]] inline bool IsVisible() const noexcept { return m_isVisible; }
-			inline void SetVisibility(const bool isVisible) noexcept { m_isVisible = isVisible; }
+            [[nodiscard]] inline bool IsVisible() const noexcept { return m_isVisible; }
+            inline void SetVisibility(const bool isVisible) noexcept { m_isVisible = isVisible; }
 
-			bool operator ==(const Layer&) const noexcept = default;
-			bool operator !=(const Layer&) const noexcept = default;
+            bool operator ==(const Layer&) const noexcept = default;
+            bool operator !=(const Layer&) const noexcept = default;
 
-			inline bool operator <(const Layer& other) const noexcept { return m_id < other.m_id; }
-			inline bool operator <=(const Layer& other) const noexcept { return m_id <= other.m_id; }
-			inline bool operator >(const Layer& other) const noexcept { return m_id > other.m_id; }
-			inline bool operator >=(const Layer& other) const noexcept { return m_id >= other.m_id; }
+            inline bool operator <(const Layer& other) const noexcept { return m_id < other.m_id; }
+            inline bool operator <=(const Layer& other) const noexcept { return m_id <= other.m_id; }
+            inline bool operator >(const Layer& other) const noexcept { return m_id > other.m_id; }
+            inline bool operator >=(const Layer& other) const noexcept { return m_id >= other.m_id; }
 
-			inline std::strong_ordering operator <=>(const Layer& other) const noexcept { return m_id <=> other.m_id; }
-		};
+            inline std::strong_ordering operator <=>(const Layer& other) const noexcept { return m_id <=> other.m_id; }
+        };
 
-	private:
-		static constexpr Tile s_EmptyTile = 0u;
+    private:
+        static constexpr Tile s_EmptyTile = 0u;
 
-		Vec2 m_position = Vec2Zero;
+        Vec2 m_position = Vec2Zero;
 
-		UVec2 m_size = UVec2Zero;
-		Vec2 m_tileSize = Vec2One;
+        UVec2 m_size = UVec2Zero;
+        Vec2 m_tileSize = Vec2One;
 
-		Vector<Layer> m_layers{ };
+        Vector<Layer> m_layers{ };
 
-		HashMap<Tile, TextureCoordinatePair> m_tiles{ };
-		HashMap<Tile, ObserverPtr<const Texture>> m_tileTextureLookup{ };
-		HashMap<String, Tile> m_tileNameLookup{ };
+        HashMap<Tile, TextureCoordinatePair> m_tiles{ };
+        HashMap<Tile, ObserverPtr<const Texture>> m_tileTextureLookup{ };
+        HashMap<String, Tile> m_tileNameLookup{ };
 
-		HashMap<String, Vector<physics::Polygon>> m_objects{ };
+        HashMap<String, Vector<physics::Polygon>> m_objects{ };
 
-		bool m_isValid = false;
+        bool m_isValid = false;
 
-	public:
-		friend class Layer;
+    public:
+        friend class Layer;
 
-		Tilemap() = default;
-		explicit Tilemap(const StringView& filepath);
-		~Tilemap() noexcept = default;
+        Tilemap() = default;
+        explicit Tilemap(const StringView& filepath);
+        ~Tilemap() noexcept = default;
 
-		void Initialise(const StringView& filepath);
+        void Initialise(const StringView& filepath);
 
-		void Render(Renderer& renderer, const Camera2D& camera) const;
+        void Render(Renderer& renderer, const Camera2D& camera) const;
 
-		void AddTiles(const TextureAtlas& textureAtlas);
-		[[nodiscard]] Optional<Tile> GetTileID(const String& name) const;
+        void AddTiles(const TextureAtlas& textureAtlas);
+        [[nodiscard]] Optional<Tile> GetTileID(const String& name) const;
 
-		inline const Vec2& GetPosition() const noexcept { return m_position; }
-		inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
+        inline const Vec2& GetPosition() const noexcept { return m_position; }
+        inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
 
-		inline const UVec2& GetSize() const noexcept { return m_size; }
-		inline void SetSize(const UVec2& size) noexcept { m_size = size; }
-		inline const Vec2& GetTileSize() const noexcept { return m_tileSize; }
-		inline void SetTileSize(const Vec2& tileSize) noexcept { m_tileSize = tileSize; }
+        inline const UVec2& GetSize() const noexcept { return m_size; }
+        inline void SetSize(const UVec2& size) noexcept { m_size = size; }
+        inline const Vec2& GetTileSize() const noexcept { return m_tileSize; }
+        inline void SetTileSize(const Vec2& tileSize) noexcept { m_tileSize = tileSize; }
 
-		inline Vector<Layer>& GetLayers() noexcept { return m_layers; }
-		inline const Vector<Layer>& GetLayers() const noexcept { return m_layers; }
-		[[nodiscard]] ObserverPtr<Layer> GetLayerByID(const u32 layerID) noexcept;
-		[[nodiscard]] ObserverPtr<const Layer> GetLayerByID(const u32 layerID) const noexcept;
-		[[nodiscard]] ObserverPtr<Layer> GetLayerByName(const String layerName) noexcept;
-		[[nodiscard]] ObserverPtr<const Layer> GetLayerByName(const String layerName) const noexcept;
+        inline Vector<Layer>& GetLayers() noexcept { return m_layers; }
+        inline const Vector<Layer>& GetLayers() const noexcept { return m_layers; }
+        [[nodiscard]] ObserverPtr<Layer> GetLayerByID(const u32 layerID) noexcept;
+        [[nodiscard]] ObserverPtr<const Layer> GetLayerByID(const u32 layerID) const noexcept;
+        [[nodiscard]] ObserverPtr<Layer> GetLayerByName(const String layerName) noexcept;
+        [[nodiscard]] ObserverPtr<const Layer> GetLayerByName(const String layerName) const noexcept;
 
-		[[nodiscard]] inline bool HasObjectType(const String& type) const noexcept { return m_objects.contains(type); }
-		[[nodiscard]] const Vector<physics::Polygon>& GetObjects(const String& type = "") const noexcept { return m_objects.at(type); }
-		inline const HashMap<String, Vector<physics::Polygon>>& GetAllObjects() const noexcept { return m_objects; }
+        [[nodiscard]] inline bool HasObjectType(const String& type) const noexcept { return m_objects.contains(type); }
+        [[nodiscard]] const Vector<physics::Polygon>& GetObjects(const String& type = "") const noexcept { return m_objects.at(type); }
+        inline const HashMap<String, Vector<physics::Polygon>>& GetAllObjects() const noexcept { return m_objects; }
 
-		inline bool IsValid() const noexcept { return m_isValid; }
+        inline bool IsValid() const noexcept { return m_isValid; }
 
-	private:
-		[[nodiscard]] nlohmann::json ReadTilemapFile(const StringView& filepath) const;
-		void ParseObjects(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath);
-	};
+    private:
+        [[nodiscard]] nlohmann::json ReadTilemapFile(const StringView& filepath) const;
+        void ParseObjects(const nlohmann::json& objects, const Vec2& tilePixelSize, const StringView& filepath);
+    };
 }
 
 #endif

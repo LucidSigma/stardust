@@ -4,11 +4,11 @@
 
 namespace stardust
 {
-	enum class Status
-	{
-		Success,
-		Fail,
-	};
+    enum class Status
+    {
+        Success,
+        Fail,
+    };
 }
 
 #endif

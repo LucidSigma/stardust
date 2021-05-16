@@ -14,97 +14,97 @@
 
 namespace stardust
 {
-	class ParticleSystem
-	{
-	public:
-		struct ParticleData
-		{
-			Vec2 initialPosition = Vec2Zero;
-			f32 initialRotation = 0.0f;
+    class ParticleSystem
+    {
+    public:
+        struct ParticleData
+        {
+            Vec2 initialPosition = Vec2Zero;
+            f32 initialRotation = 0.0f;
 
-			Vec2 minVelocity = Vec2Zero;
-			Vec2 maxVelocity = Vec2Zero;
-			f32 acceleration = 1.0f;
+            Vec2 minVelocity = Vec2Zero;
+            Vec2 maxVelocity = Vec2Zero;
+            f32 acceleration = 1.0f;
 
-			f32 minAngularVelocity = 0.0f;
-			f32 maxAngularVelocity = 0.0f;
-			f32 angularAcceleration = 1.0f;
+            f32 minAngularVelocity = 0.0f;
+            f32 maxAngularVelocity = 0.0f;
+            f32 angularAcceleration = 1.0f;
 
-			bool isAffectedByGravity = false;
+            bool isAffectedByGravity = false;
 
-			Vec2 minSize = Vec2One;
-			Vec2 maxSize = Vec2One;
-			f32 sizeUpdateMultipler = 1.0f;
-			bool keepAsSquare = false;
-			bool shiftToCentre = false;
+            Vec2 minSize = Vec2One;
+            Vec2 maxSize = Vec2One;
+            f32 sizeUpdateMultipler = 1.0f;
+            bool keepAsSquare = false;
+            bool shiftToCentre = false;
 
-			Colour startColour = colours::White;
-			Colour endColour = colours::White;
-			ObserverPtr<const Texture> texture = nullptr;
-			Optional<TextureCoordinatePair> textureArea = NullOpt;
+            Colour startColour = colours::White;
+            Colour endColour = colours::White;
+            ObserverPtr<const Texture> texture = nullptr;
+            Optional<TextureCoordinatePair> textureArea = NullOpt;
 
-			f32 minLifetime = 0.0f;
-			f32 maxLifetime = 0.0f;
-		};
+            f32 minLifetime = 0.0f;
+            f32 maxLifetime = 0.0f;
+        };
 
-	private:
-		struct Particle
-		{
-			Vec2 position = Vec2Zero;
-			f32 rotation = 0.0f;
+    private:
+        struct Particle
+        {
+            Vec2 position = Vec2Zero;
+            f32 rotation = 0.0f;
 
-			Vec2 velocity = Vec2Zero;
-			f32 acceleration = 1.0f;
+            Vec2 velocity = Vec2Zero;
+            f32 acceleration = 1.0f;
 
-			f32 angularVelocity = 0.0f;
-			f32 angularAcceleration = 1.0f;
+            f32 angularVelocity = 0.0f;
+            f32 angularAcceleration = 1.0f;
 
-			bool isAffectedByGravity = false;
+            bool isAffectedByGravity = false;
 
-			Vec2 size = Vec2One;
-			f32 sizeUpdateMultipler = 1.0f;
+            Vec2 size = Vec2One;
+            f32 sizeUpdateMultipler = 1.0f;
 
-			Colour currentColour = colours::White;
-			Colour startColour = colours::White;
-			Colour endColour = colours::White;
-			ObserverPtr<const Texture> texture = nullptr;
-			Optional<TextureCoordinatePair> textureArea = NullOpt;
+            Colour currentColour = colours::White;
+            Colour startColour = colours::White;
+            Colour endColour = colours::White;
+            ObserverPtr<const Texture> texture = nullptr;
+            Optional<TextureCoordinatePair> textureArea = NullOpt;
 
-			f32 lifetime = 0.0f;
-			f32 lifetimeRemaining = 0.0f;
+            f32 lifetime = 0.0f;
+            f32 lifetimeRemaining = 0.0f;
 
-			bool isActive = false;
-		};
+            bool isActive = false;
+        };
 
-		static constexpr usize s_ParticleCount = 1'000u;
+        static constexpr usize s_ParticleCount = 1'000u;
 
-		Vector<Particle> m_particlePool;
-		usize m_particlePoolIndex = s_ParticleCount - 1u;
-		HashMap<usize, ObserverPtr<Particle>> m_activeParticles{ };
+        Vector<Particle> m_particlePool;
+        usize m_particlePoolIndex = s_ParticleCount - 1u;
+        HashMap<usize, ObserverPtr<Particle>> m_activeParticles{ };
 
-		Vec2 m_gravity = Vec2Zero;
+        Vec2 m_gravity = Vec2Zero;
 
-	public:
-		static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }
+    public:
+        static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }
 
-		ParticleSystem();
-		~ParticleSystem() noexcept = default;
+        ParticleSystem();
+        ~ParticleSystem() noexcept = default;
 
-		void Update(const f32 deltaTime);
-		void RenderInWorld(Renderer& renderer, const Camera2D& camera) const;
-		void RenderOnScreen(Renderer& renderer) const;
+        void Update(const f32 deltaTime);
+        void RenderInWorld(Renderer& renderer, const Camera2D& camera) const;
+        void RenderOnScreen(Renderer& renderer) const;
 
-		void Emit(const ParticleData& particleData);
-		void KillAllParticles();
+        void Emit(const ParticleData& particleData);
+        void KillAllParticles();
 
-		void RepositionAllActiveParticles(const Vec2& relativePosition);
-		void ResizeAllActiveParticles(const f32 relativeScale);
+        void RepositionAllActiveParticles(const Vec2& relativePosition);
+        void ResizeAllActiveParticles(const f32 relativeScale);
 
-		inline usize GetActiveParticleCount() const noexcept { return m_activeParticles.size(); }
+        inline usize GetActiveParticleCount() const noexcept { return m_activeParticles.size(); }
 
-		inline const Vec2& GetGravity() const noexcept { return m_gravity; }
-		inline void SetGravity(const Vec2& gravity) noexcept { m_gravity = gravity; }
-	};
+        inline const Vec2& GetGravity() const noexcept { return m_gravity; }
+        inline void SetGravity(const Vec2& gravity) noexcept { m_gravity = gravity; }
+    };
 }
 
 #endif

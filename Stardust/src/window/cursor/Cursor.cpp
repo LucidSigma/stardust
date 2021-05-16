@@ -2,25 +2,25 @@
 
 namespace stardust
 {
-	namespace
-	{
-		SDL_Cursor* cursor = nullptr;
-	}
+    namespace
+    {
+        SDL_Cursor* cursor = nullptr;
+    }
 
-	void SetCursor(const CursorType cursorType)
-	{
-		if (cursor != nullptr)
-		{
-			ResetCursor();
-		}
+    void SetCursor(const CursorType cursorType)
+    {
+        if (cursor != nullptr)
+        {
+            ResetCursor();
+        }
 
-		cursor = SDL_CreateSystemCursor(static_cast<SDL_SystemCursor>(cursorType));
-		SDL_SetCursor(cursor);
-	}
+        cursor = SDL_CreateSystemCursor(static_cast<SDL_SystemCursor>(cursorType));
+        SDL_SetCursor(cursor);
+    }
 
-	void ResetCursor()
-	{
-		SDL_FreeCursor(cursor);
-		cursor = nullptr;
-	}
+    void ResetCursor()
+    {
+        SDL_FreeCursor(cursor);
+        cursor = nullptr;
+    }
 }
