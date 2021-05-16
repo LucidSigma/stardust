@@ -63,14 +63,14 @@ namespace stardust
 
 	[[nodiscard]] u64 Stopwatch::GetElapsedMilliseconds() const
 	{
-		return GetElapsedTime(1'000u);
+		return GetElapsedTime(static_cast<u64>(std::milli::den));
 	}
 
 	[[nodiscard]] u64 Stopwatch::GetElapsedMicroseconds() const
 	{
 		if constexpr (s_CanCountMicroseconds)
 		{
-			return GetElapsedTime(1'000'000u);
+			return GetElapsedTime(static_cast<u64>(std::micro::den));
 		}
 		else
 		{
@@ -82,7 +82,7 @@ namespace stardust
 	{
 		if constexpr (s_CanCountNanoseconds)
 		{
-			return GetElapsedTime(1'000'000'000u);
+			return GetElapsedTime(static_cast<u64>(std::nano::den));
 		}
 		else
 		{
