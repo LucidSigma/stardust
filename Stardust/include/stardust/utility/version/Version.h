@@ -16,7 +16,7 @@ namespace stardust
 	constexpr VersionInfo Version{
 		.major = 1u,
 		.minor = 0u,
-		.patch = 2u,
+		.patch = 3u,
 	};
 }
 
