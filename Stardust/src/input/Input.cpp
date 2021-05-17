@@ -107,7 +107,7 @@ namespace stardust
         }
 
         GameController gameController(id);
-        const SDL_JoystickID instanceID = SDL_JoystickInstanceID(gameController.GetRawJoystickHandle());
+        const GameControllerID instanceID = SDL_JoystickInstanceID(gameController.GetRawJoystickHandle());
 
         s_gameControllers.emplace(instanceID, std::move(gameController));
 
@@ -132,7 +132,7 @@ namespace stardust
         }
     }
 
-    void Input::RemoveGameController(const SDL_JoystickID instanceID)
+    void Input::RemoveGameController(const GameControllerID instanceID)
     {
         if (s_gameControllers.contains(instanceID))
         {
@@ -213,12 +213,12 @@ namespace stardust
         return s_mouseState;
     }
 
-    [[nodiscard]] bool Input::DoesGameControllerExist(const SDL_JoystickID instanceID)
+    [[nodiscard]] bool Input::DoesGameControllerExist(const GameControllerID instanceID)
     {
         return s_gameControllers.contains(instanceID);
     }
 
-    [[nodiscard]] ObserverPtr<GameController> Input::GetGameController(const SDL_JoystickID instanceID)
+    [[nodiscard]] ObserverPtr<GameController> Input::GetGameController(const GameControllerID instanceID)
     {
         return DoesGameControllerExist(instanceID) ? &s_gameControllers.at(instanceID) : nullptr;
     }
@@ -236,7 +236,7 @@ namespace stardust
         return nullptr;
     }
 
-    [[nodiscard]] const HashMap<SDL_JoystickID, GameController>& Input::GetGameControllers()
+    [[nodiscard]] const HashMap<Input::GameControllerID, GameController>& Input::GetGameControllers()
     {
         return s_gameControllers;
     }

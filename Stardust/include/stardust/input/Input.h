@@ -23,6 +23,9 @@ namespace stardust
     class Input
         : private INoncopyable, private INonmovable
     {
+    public:
+        using GameControllerID = SDL_JoystickID;
+
     private:
         inline static Vector<u8> s_currentKeys{ Vector<u8>(SDL_NUM_SCANCODES, SDL_FALSE) };
         inline static Vector<u8> s_previousKeys{ Vector<u8>(SDL_NUM_SCANCODES, SDL_FALSE) };
@@ -37,7 +40,7 @@ namespace stardust
         inline static bool s_isMouseInRelativeMode = false;
 
         inline static u32 s_maxGameControllers = std::numeric_limits<u32>::max();
-        inline static HashMap<SDL_JoystickID, GameController> s_gameControllers{ };
+        inline static HashMap<GameControllerID, GameController> s_gameControllers{ };
         inline static u32 s_gameControllerDeadzone = 0u;
 
     public:
@@ -60,7 +63,7 @@ namespace stardust
         static void SetGameControllerDeadzone(const u32 gameControllerDeadzone) noexcept;
 
         static ObserverPtr<GameController> AddGameController(const i32 id, const class Locale& locale);
-        static void RemoveGameController(const SDL_JoystickID instanceID);
+        static void RemoveGameController(const GameControllerID instanceID);
         static void RemoveAllGameControllers();
         [[nodiscard]] static usize GetGameControllerCount();
 
@@ -73,10 +76,10 @@ namespace stardust
         [[nodiscard]] static const Keyboard& GetKeyboardState();
         [[nodiscard]] static const Mouse& GetMouseState();
 
-        [[nodiscard]] static bool DoesGameControllerExist(const SDL_JoystickID instanceID);
-        [[nodiscard]] static ObserverPtr<GameController> GetGameController(const SDL_JoystickID instanceID);
+        [[nodiscard]] static bool DoesGameControllerExist(const GameControllerID instanceID);
+        [[nodiscard]] static ObserverPtr<GameController> GetGameController(const GameControllerID instanceID);
         [[nodiscard]] static ObserverPtr<GameController> GetGameControllerByPlayerIndex(const u32 playerIndex);
-        [[nodiscard]] static const HashMap<SDL_JoystickID, GameController>& GetGameControllers();
+        [[nodiscard]] static const HashMap<GameControllerID, GameController>& GetGameControllers();
 
         Input() = delete;
         ~Input() noexcept = delete;
