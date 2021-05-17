@@ -4,6 +4,7 @@
 
 #include <type_traits>
 
+; // Temporary compiler bug workaround.
 #include <magic_enum/magic_enum.hpp>
 #include <SDL2/SDL.h>
 

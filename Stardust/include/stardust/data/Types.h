@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+; // Temporary compiler bug workaround.
 #include <optional>
 #include <variant>
 
