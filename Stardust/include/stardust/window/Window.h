@@ -90,7 +90,7 @@ namespace stardust
 
     public:
         static void SetMinimiseOnFullscreenFocusLoss(const bool minimiseOnFocusLoss);
-        [[nodiscard]] static Status SetVSync(const VSyncType vSyncType);
+        static Status SetVSync(const VSyncType vSyncType);
 
         Window() = default;
         explicit Window(const CreateInfo& createInfo);

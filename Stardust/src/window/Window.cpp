@@ -28,7 +28,7 @@ namespace stardust
         SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, minimiseOnFocusLoss ? "1" : "0", SDL_HINT_OVERRIDE);
     }
 
-    [[nodiscard]] Status Window::SetVSync(const VSyncType vSyncType)
+    Status Window::SetVSync(const VSyncType vSyncType)
     {
         return SDL_GL_SetSwapInterval(static_cast<i32>(vSyncType)) == 0
             ? Status::Success
