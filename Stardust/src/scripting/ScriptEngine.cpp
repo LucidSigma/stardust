@@ -16,7 +16,7 @@ namespace stardust
             inline void FinishCurrentScene() noexcept { application->FinishCurrentScene(); }
             inline void ForceQuit() noexcept { application->ForceQuit(); }
 
-            inline f64 GetElapsedTime() const noexcept { return application->GetElapsedTime(); }
+            [[nodiscard]] inline f64 GetElapsedTime() const noexcept { return application->GetElapsedTime(); }
         };
     }
 

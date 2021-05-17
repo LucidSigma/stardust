@@ -207,7 +207,7 @@ namespace stardust
         return SDL_GameControllerGetJoystick(GetRawHandle());
     }
 
-    bool GameController::GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept
+    [[nodiscard]] bool GameController::GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept
     {
         switch (button)
         {

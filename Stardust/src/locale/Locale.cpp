@@ -9,7 +9,7 @@
 
 namespace stardust
 {
-    const Vector<String>& Locale::GetSystemPreferredLocales()
+    [[nodiscard]] const Vector<String>& Locale::GetSystemPreferredLocales()
     {
         if (s_systemPreferredLocales.empty())
         {

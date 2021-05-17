@@ -48,7 +48,7 @@ namespace stardust
         [[nodiscard]] bool AreAllButtonsPressed(const Vector<MouseButton>& buttons) const;
         [[nodiscard]] bool AreAllButtonsUp(const Vector<MouseButton>& buttons) const;
 
-        inline i32 GetScrollAmount() const noexcept { return m_yScrollAmount; }
+        [[nodiscard]] inline i32 GetScrollAmount() const noexcept { return m_yScrollAmount; }
     };
 }
 

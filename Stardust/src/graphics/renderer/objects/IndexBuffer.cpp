@@ -9,7 +9,7 @@ namespace stardust
         Destroy();
 
         std::swap(m_id, other.m_id);
-        std::swap(m_worldIndexCount, other.m_worldIndexCount);
+        std::swap(m_indexCount, other.m_indexCount);
         std::swap(m_dataType, other.m_dataType);
     }
 
@@ -18,7 +18,7 @@ namespace stardust
         Destroy();
 
         std::swap(m_id, other.m_id);
-        std::swap(m_worldIndexCount, other.m_worldIndexCount);
+        std::swap(m_indexCount, other.m_indexCount);
         std::swap(m_dataType, other.m_dataType);
 
         return *this;
@@ -38,7 +38,7 @@ namespace stardust
             glDeleteBuffers(1, &m_id);
 
             m_id = 0u;
-            m_worldIndexCount = 0u;
+            m_indexCount = 0u;
             m_dataType = GL_UNSIGNED_INT;
         }
     }

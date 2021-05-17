@@ -29,14 +29,14 @@ namespace stardust
         inline void Remove(const String& name) { m_assets.erase(name); }
         inline void Clear() { m_assets.clear(); }
 
-        inline const T& Get(const String& name) const { return *m_assets.at(name); }
-        inline const T& operator [](const String& name) const { return Get(name); }
+        [[nodiscard]] inline const T& Get(const String& name) const { return *m_assets.at(name); }
+        [[nodiscard]] inline const T& operator [](const String& name) const { return Get(name); }
 
-        inline T& Get(const String& name) { return *m_assets.at(name); }
-        inline T& operator [](const String& name) { return Get(name); }
+        [[nodiscard]] inline T& Get(const String& name) { return *m_assets.at(name); }
+        [[nodiscard]] inline T& operator [](const String& name) { return Get(name); }
 
-        inline decltype(m_assets)& GetAssets() { return m_assets; }
-        inline const decltype(m_assets)& GetAssets() const { return m_assets; }
+        [[nodiscard]] inline decltype(m_assets)& GetAssets() { return m_assets; }
+        [[nodiscard]] inline const decltype(m_assets)& GetAssets() const { return m_assets; }
     };
 }
 

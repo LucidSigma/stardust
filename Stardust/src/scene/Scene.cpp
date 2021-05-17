@@ -15,87 +15,87 @@ namespace stardust
         : m_name(name), m_application(application), m_entityRegistry(application.GetEntityRegistry())
     { }
 
-    Application& Scene::GetApplication() noexcept
+    [[nodiscard]] Application& Scene::GetApplication() noexcept
     {
         return m_application;
     }
 
-    const Application& Scene::GetApplication() const noexcept
+    [[nodiscard]] const Application& Scene::GetApplication() const noexcept
     {
         return m_application;
     }
 
-    Window& Scene::GetWindow() noexcept
+    [[nodiscard]] Window& Scene::GetWindow() noexcept
     {
         return m_application.GetWindow();
     }
 
-    const Window& Scene::GetWindow() const noexcept
+    [[nodiscard]] const Window& Scene::GetWindow() const noexcept
     {
         return m_application.GetWindow();
     }
 
-    Renderer& Scene::GetRenderer() noexcept
+    [[nodiscard]] Renderer& Scene::GetRenderer() noexcept
     {
         return m_application.GetRenderer();
     }
 
-    const Renderer& Scene::GetRenderer() const noexcept
+    [[nodiscard]] const Renderer& Scene::GetRenderer() const noexcept
     {
         return m_application.GetRenderer();
     }
 
-    Camera2D& Scene::GetCamera() noexcept
+    [[nodiscard]] Camera2D& Scene::GetCamera() noexcept
     {
         return m_application.GetCamera();
     }
 
-    const Camera2D& Scene::GetCamera() const noexcept
+    [[nodiscard]] const Camera2D& Scene::GetCamera() const noexcept
     {
         return m_application.GetCamera();
     }
 
-    InputManager& Scene::GetInputManager() noexcept
+    [[nodiscard]] InputManager& Scene::GetInputManager() noexcept
     {
         return m_application.GetInputManager();
     }
 
-    const InputManager& Scene::GetInputManager() const noexcept
+    [[nodiscard]] const InputManager& Scene::GetInputManager() const noexcept
     {
         return m_application.GetInputManager();
     }
 
-    SceneManager& Scene::GetSceneManager() noexcept
+    [[nodiscard]] SceneManager& Scene::GetSceneManager() noexcept
     {
         return m_application.GetSceneManager();
     }
 
-    const SceneManager& Scene::GetSceneManager() const noexcept
+    [[nodiscard]] const SceneManager& Scene::GetSceneManager() const noexcept
     {
         return m_application.GetSceneManager();
     }
 
-    ScriptEngine& Scene::GetScriptEngine() noexcept
+    [[nodiscard]] ScriptEngine& Scene::GetScriptEngine() noexcept
     {
         return m_application.GetScriptEngine();
     }
 
-    const ScriptEngine& Scene::GetScriptEngine() const noexcept
+    [[nodiscard]] const ScriptEngine& Scene::GetScriptEngine() const noexcept
     {
         return m_application.GetScriptEngine();
     }
 
-    SoundSystem& Scene::GetSoundSystem() noexcept
+    [[nodiscard]] SoundSystem& Scene::GetSoundSystem() noexcept
     {
         return m_application.GetSoundSystem();
     }
 
-    const SoundSystem& Scene::GetSoundSystem() const noexcept
+    [[nodiscard]] const SoundSystem& Scene::GetSoundSystem() const noexcept
     {
         return m_application.GetSoundSystem();
     }
 
-    f64 Scene::GetElapsedTime() const noexcept
+    [[nodiscard]] f64 Scene::GetElapsedTime() const noexcept
     {
         return m_application.GetElapsedTime();
     }

@@ -31,9 +31,9 @@ namespace stardust
         void Initialise(const Window& window);
         void Destroy() noexcept;
 
-        Status MakeCurrent() const;
+        [[nodiscard]] Status MakeCurrent() const;
 
-        bool IsValid() const noexcept { return m_handle != nullptr; }
+        [[nodiscard]] bool IsValid() const noexcept { return m_handle != nullptr; }
         [[nodiscard]] inline SDL_GLContext const GetRawHandle() const noexcept { return m_handle; }
     };
 }

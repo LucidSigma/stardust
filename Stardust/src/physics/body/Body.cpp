@@ -167,7 +167,7 @@ namespace stardust
             return Vec2{ linearVelocity.x, linearVelocity.y };
         }
 
-        bool Body::IsEnabled() const
+        [[nodiscard]] bool Body::IsEnabled() const
         {
             return m_handle->IsEnabled();
         }
@@ -177,12 +177,12 @@ namespace stardust
             m_handle->SetEnabled(isEnabled);
         }
 
-        bool Body::IsAwake() const
+        [[nodiscard]] bool Body::IsAwake() const
         {
             return m_handle->IsAwake();
         }
 
-        bool Body::CanSleep() const
+        [[nodiscard]] bool Body::CanSleep() const
         {
             return m_handle->IsSleepingAllowed();
         }
@@ -192,7 +192,7 @@ namespace stardust
             m_handle->SetSleepingAllowed(canSleep);
         }
 
-        Body::Type Body::GetType() const
+        [[nodiscard]] Body::Type Body::GetType() const
         {
             return static_cast<Type>(m_handle->GetType());
         }
@@ -202,7 +202,7 @@ namespace stardust
             m_handle->SetType(static_cast<b2BodyType>(type));
         }
 
-        bool Body::IsBullet() const
+        [[nodiscard]] bool Body::IsBullet() const
         {
             return m_handle->IsBullet();
         }
@@ -234,7 +234,7 @@ namespace stardust
             m_handle->SetTransform(m_handle->GetPosition(), -glm::radians(rotation));
         }
 
-        bool Body::HasFixedRotation() const
+        [[nodiscard]] bool Body::HasFixedRotation() const
         {
             return m_handle->IsFixedRotation();
         }
@@ -256,7 +256,7 @@ namespace stardust
             m_handle->SetLinearVelocity(b2Vec2{ linearVelocity.x, linearVelocity.y });
         }
 
-        f32 Body::GetAngularVelocity() const
+        [[nodiscard]] f32 Body::GetAngularVelocity() const
         {
             return m_handle->GetAngularVelocity();
         }
@@ -266,7 +266,7 @@ namespace stardust
             m_handle->SetAngularVelocity(angularVelocity);
         }
 
-        f32 Body::GetLinearDamping() const
+        [[nodiscard]] f32 Body::GetLinearDamping() const
         {
             return m_handle->GetLinearDamping();
         }
@@ -276,7 +276,7 @@ namespace stardust
             m_handle->SetLinearDamping(linearDamping);
         }
 
-        f32 Body::GetAngularDamping() const
+        [[nodiscard]] f32 Body::GetAngularDamping() const
         {
             return m_handle->GetAngularDamping();
         }
@@ -286,7 +286,7 @@ namespace stardust
             m_handle->SetAngularDamping(angularDamping);
         }
 
-        f32 Body::GetGravityScale() const
+        [[nodiscard]] f32 Body::GetGravityScale() const
         {
             return m_handle->GetGravityScale();
         }
@@ -296,12 +296,12 @@ namespace stardust
             m_handle->SetGravityScale(gravityScale);
         }
         
-        f32 Body::GetMass() const
+        [[nodiscard]] f32 Body::GetMass() const
         {
             return m_handle->GetMass();
         }
 
-        f32 Body::GetInertia() const
+        [[nodiscard]] f32 Body::GetInertia() const
         {
             return m_handle->GetInertia();
         }

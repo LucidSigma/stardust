@@ -30,17 +30,17 @@ namespace stardust
             [[nodiscard]] Vec2 GetPosition() const noexcept;
             void SetPosition(const Vec2& position) noexcept;
             
-            inline f32 GetRadius() const noexcept { return m_circle.m_radius; }
-            inline void SetRadius(const f32 radius) noexcept { m_circle.m_radius = radius; }
+            [[nodiscard]] inline f32 GetRadius() const noexcept { return m_circle.m_radius; }
+            [[nodiscard]] inline void SetRadius(const f32 radius) noexcept { m_circle.m_radius = radius; }
 
             [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
             [[nodiscard]] AABB ComputeAABB(const Vec2& worldPosition, const f32 rotation) const;
             [[nodiscard]] MassData ComputeMassData(const f32 density) const;
 
-            inline operator ObserverPtr<b2Shape>() noexcept { return &m_circle; }
-            inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_circle; }
-            inline operator ObserverPtr<b2CircleShape>() noexcept { return &m_circle; }
-            inline operator ObserverPtr<const b2CircleShape>() const noexcept { return &m_circle; }
+            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_circle; }
+            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_circle; }
+            [[nodiscard]] inline operator ObserverPtr<b2CircleShape>() noexcept { return &m_circle; }
+            [[nodiscard]] inline operator ObserverPtr<const b2CircleShape>() const noexcept { return &m_circle; }
         };
     }
 }

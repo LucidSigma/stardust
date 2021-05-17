@@ -34,20 +34,20 @@ namespace stardust
             void Clear();
 
             [[nodiscard]] Vector<Vec2> GetVertices() const;
-            inline u32 GetVertexCount() const noexcept { return static_cast<u32>(m_chain.m_count); }
+            [[nodiscard]] inline u32 GetVertexCount() const noexcept { return static_cast<u32>(m_chain.m_count); }
             [[nodiscard]] Pair<Vec2, Vec2> GetGhostVertices() const;
 
             [[nodiscard]] Edge GetChildEdge(const u32 childEdgeIndex) const;
-            inline u32 GetChildEdgeCount() const noexcept { return static_cast<u32>(m_chain.GetChildCount()); }			
+            [[nodiscard]] inline u32 GetChildEdgeCount() const noexcept { return static_cast<u32>(m_chain.GetChildCount()); }
 
             [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
             [[nodiscard]] AABB ComputeEdgeAABB(const Vec2& worldPosition, const f32 rotation, const u32 childEdgeIndex) const;
             [[nodiscard]] MassData ComputeMassData(const f32 density) const;
 
-            inline operator ObserverPtr<b2Shape>() noexcept { return &m_chain; }
-            inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_chain; }
-            inline operator ObserverPtr<b2ChainShape>() noexcept { return &m_chain; }
-            inline operator ObserverPtr<const b2ChainShape>() const noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPtr<b2ChainShape>() noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPtr<const b2ChainShape>() const noexcept { return &m_chain; }
         };
     }
 }

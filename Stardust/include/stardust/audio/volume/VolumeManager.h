@@ -32,8 +32,8 @@ namespace stardust
 
         [[nodiscard]] inline f32 operator [](const String& volumeName) const { return GetVolume(volumeName); }
 
-        inline HashMap<String, f32>& GetVolumes() noexcept { return m_volumes; }
-        inline const HashMap<String, f32>& GetVolumes() const noexcept { return m_volumes; }
+        [[nodiscard]] inline HashMap<String, f32>& GetVolumes() noexcept { return m_volumes; }
+        [[nodiscard]] inline const HashMap<String, f32>& GetVolumes() const noexcept { return m_volumes; }
     };
 }
 

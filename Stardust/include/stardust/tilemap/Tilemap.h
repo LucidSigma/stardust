@@ -62,12 +62,12 @@ namespace stardust
 
             void Render(Renderer& renderer, const Camera2D& camera) const;
 
-            inline u32 GetID() const noexcept { return m_id; }
-            inline const String& GetName() const noexcept { return m_name; }
+            [[nodiscard]] inline u32 GetID() const noexcept { return m_id; }
+            [[nodiscard]] inline const String& GetName() const noexcept { return m_name; }
 
-            inline const UVec2& GetSize() const noexcept { return m_size; }
+            [[nodiscard]] inline const UVec2& GetSize() const noexcept { return m_size; }
 
-            inline f32 GetOpacity() const noexcept { return m_opacity; }
+            [[nodiscard]] inline f32 GetOpacity() const noexcept { return m_opacity; }
             void SetOpacity(const f32 opacity) noexcept;
 
             [[nodiscard]] Tile GetTile(const u32 x, const u32 y) const;
@@ -76,15 +76,15 @@ namespace stardust
             [[nodiscard]] inline bool IsVisible() const noexcept { return m_isVisible; }
             inline void SetVisibility(const bool isVisible) noexcept { m_isVisible = isVisible; }
 
-            bool operator ==(const Layer&) const noexcept = default;
-            bool operator !=(const Layer&) const noexcept = default;
+            [[nodiscard]] bool operator ==(const Layer&) const noexcept = default;
+            [[nodiscard]] bool operator !=(const Layer&) const noexcept = default;
 
-            inline bool operator <(const Layer& other) const noexcept { return m_id < other.m_id; }
-            inline bool operator <=(const Layer& other) const noexcept { return m_id <= other.m_id; }
-            inline bool operator >(const Layer& other) const noexcept { return m_id > other.m_id; }
-            inline bool operator >=(const Layer& other) const noexcept { return m_id >= other.m_id; }
+            [[nodiscard]] inline bool operator <(const Layer& other) const noexcept { return m_id < other.m_id; }
+            [[nodiscard]] inline bool operator <=(const Layer& other) const noexcept { return m_id <= other.m_id; }
+            [[nodiscard]] inline bool operator >(const Layer& other) const noexcept { return m_id > other.m_id; }
+            [[nodiscard]] inline bool operator >=(const Layer& other) const noexcept { return m_id >= other.m_id; }
 
-            inline std::strong_ordering operator <=>(const Layer& other) const noexcept { return m_id <=> other.m_id; }
+            [[nodiscard]] inline std::strong_ordering operator <=>(const Layer& other) const noexcept { return m_id <=> other.m_id; }
         };
 
     private:
@@ -119,16 +119,16 @@ namespace stardust
         void AddTiles(const TextureAtlas& textureAtlas);
         [[nodiscard]] Optional<Tile> GetTileID(const String& name) const;
 
-        inline const Vec2& GetPosition() const noexcept { return m_position; }
+        [[nodiscard]] inline const Vec2& GetPosition() const noexcept { return m_position; }
         inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
 
-        inline const UVec2& GetSize() const noexcept { return m_size; }
+        [[nodiscard]] inline const UVec2& GetSize() const noexcept { return m_size; }
         inline void SetSize(const UVec2& size) noexcept { m_size = size; }
-        inline const Vec2& GetTileSize() const noexcept { return m_tileSize; }
+        [[nodiscard]] inline const Vec2& GetTileSize() const noexcept { return m_tileSize; }
         inline void SetTileSize(const Vec2& tileSize) noexcept { m_tileSize = tileSize; }
 
-        inline Vector<Layer>& GetLayers() noexcept { return m_layers; }
-        inline const Vector<Layer>& GetLayers() const noexcept { return m_layers; }
+        [[nodiscard]] inline Vector<Layer>& GetLayers() noexcept { return m_layers; }
+        [[nodiscard]] inline const Vector<Layer>& GetLayers() const noexcept { return m_layers; }
         [[nodiscard]] ObserverPtr<Layer> GetLayerByID(const u32 layerID) noexcept;
         [[nodiscard]] ObserverPtr<const Layer> GetLayerByID(const u32 layerID) const noexcept;
         [[nodiscard]] ObserverPtr<Layer> GetLayerByName(const String layerName) noexcept;
@@ -136,9 +136,9 @@ namespace stardust
 
         [[nodiscard]] inline bool HasObjectType(const String& type) const noexcept { return m_objects.contains(type); }
         [[nodiscard]] const Vector<physics::Polygon>& GetObjects(const String& type = "") const noexcept { return m_objects.at(type); }
-        inline const HashMap<String, Vector<physics::Polygon>>& GetAllObjects() const noexcept { return m_objects; }
+        [[nodiscard]] inline const HashMap<String, Vector<physics::Polygon>>& GetAllObjects() const noexcept { return m_objects; }
 
-        inline bool IsValid() const noexcept { return m_isValid; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_isValid; }
 
     private:
         [[nodiscard]] nlohmann::json ReadTilemapFile(const StringView& filepath) const;

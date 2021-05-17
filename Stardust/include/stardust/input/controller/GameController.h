@@ -124,31 +124,31 @@ namespace stardust
         [[nodiscard]] bool AreAllButtonsPressed(const Vector<GameControllerButton>& buttons) const;
         [[nodiscard]] bool AreAllButtonsUp(const Vector<GameControllerButton>& buttons) const;
 
-        inline bool CanRumble() const noexcept { return m_canRumble; }
+        [[nodiscard]] inline bool CanRumble() const noexcept { return m_canRumble; }
         void Rumble(const f32 lowFrequency, const f32 highFrequency, const u32 milliseconds) const;
         void StopRumbling() const;
 
-        inline bool CanRumbleTriggers() const noexcept { return m_canRumbleTriggers; }
+        [[nodiscard]] inline bool CanRumbleTriggers() const noexcept { return m_canRumbleTriggers; }
         void RumbleTriggers(const f32 leftIntensity, const f32 rightIntensity, const u32 milliseconds) const;
         void StopRumblingTriggers() const;
 
-        inline bool HasLED() const noexcept { return m_hasLED; }
+        [[nodiscard]] inline bool HasLED() const noexcept { return m_hasLED; }
         void SetLED(const Colour& colour) const;
 
-        inline bool HasTouchpad() const noexcept { return m_hasTouchpad; }
+        [[nodiscard]] inline bool HasTouchpad() const noexcept { return m_hasTouchpad; }
         [[nodiscard]] u32 GetSupportedTouchpadFingerCount() const;
 
-        inline bool HasAccelerometer() const noexcept { return m_hasAccelerometer; }
-        inline const Vec3& GetAccelerometerData() const noexcept { return m_accelerometerState; }
-        inline bool HasGyroscope() const noexcept { return m_hasGyroscope; }
-        inline const Vec3& GetGyroscopeData() const noexcept { return m_gyroscopeState; }
+        [[nodiscard]] inline bool HasAccelerometer() const noexcept { return m_hasAccelerometer; }
+        [[nodiscard]] inline const Vec3& GetAccelerometerData() const noexcept { return m_accelerometerState; }
+        [[nodiscard]] inline bool HasGyroscope() const noexcept { return m_hasGyroscope; }
+        [[nodiscard]] inline const Vec3& GetGyroscopeData() const noexcept { return m_gyroscopeState; }
 
-        inline i32 GetID() const noexcept { return m_id; }
-        inline const Axes& GetAxes() const noexcept { return m_axes; }
-        inline const Vector<TouchpadFingerInfo>& GetTouchpadFingers() const noexcept { return m_touchpadFingers; }
+        [[nodiscard]] inline i32 GetID() const noexcept { return m_id; }
+        [[nodiscard]] inline const Axes& GetAxes() const noexcept { return m_axes; }
+        [[nodiscard]] inline const Vector<TouchpadFingerInfo>& GetTouchpadFingers() const noexcept { return m_touchpadFingers; }
 
-        inline u32 GetPlayerIndex() const noexcept { return m_playerIndex; }
-        inline void SetPlayerIndex(const u32 playerIndex) noexcept { m_playerIndex = playerIndex; }
+        [[nodiscard]] inline u32 GetPlayerIndex() const noexcept { return m_playerIndex; }
+        [[nodiscard]] inline void SetPlayerIndex(const u32 playerIndex) noexcept { m_playerIndex = playerIndex; }
 
         [[nodiscard]] String GetName() const;
 
@@ -156,7 +156,7 @@ namespace stardust
         [[nodiscard]] SDL_Joystick* const GetRawJoystickHandle() const;
 
     private:
-        static bool GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept;
+        [[nodiscard]] static bool GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept;
     
         void UpdateButtons();
         void UpdateAxes();

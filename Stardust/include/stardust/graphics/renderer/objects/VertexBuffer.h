@@ -48,7 +48,7 @@ namespace stardust
         void Initialise(const usize size, const BufferUsage usage = BufferUsage::Static);
         void Destroy() noexcept;
 
-        inline bool IsValid() const noexcept { return m_id != 0u; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_id != 0u; }
 
         void Bind() const;
         void Unbind() const;
@@ -61,7 +61,7 @@ namespace stardust
             Unbind();
         }
 
-        inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
+        [[nodiscard]] inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
     };
 }
 

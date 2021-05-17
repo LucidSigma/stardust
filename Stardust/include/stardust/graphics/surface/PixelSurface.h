@@ -44,18 +44,18 @@ namespace stardust
         void Initialise(const u32 width, const u32 height, const u32 channelCount, void* const pixels);
         void Destroy() noexcept;
 
-        inline bool IsValid() const noexcept { return m_handle != nullptr; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
         void Lock();
         void Unlock();
-        inline bool IsLocked() const noexcept { return m_isLocked; }
+        [[nodiscard]] inline bool IsLocked() const noexcept { return m_isLocked; }
 
         void Blit(const PixelSurface& source, const Optional<Pair<IVec2, UVec2>>& sourceArea, const IVec2& destinationPosition) const;
 
         [[nodiscard]] UVec2 GetSize() const;
-        u32 GetPitch() const;
-        u32 GetFormat() const;
-        void* GetPixels() const;
+        [[nodiscard]] u32 GetPitch() const;
+        [[nodiscard]] u32 GetFormat() const;
+        [[nodiscard]] void* GetPixels() const;
 
         [[nodiscard]] inline SDL_Surface* const GetRawHandle() const noexcept { return m_handle.get(); }
     };

@@ -39,7 +39,7 @@ namespace stardust
         SoundSource& operator =(SoundSource&& other) noexcept;
         ~SoundSource() noexcept = default;
 
-        inline bool HasValidHandle() const noexcept { return m_soundSystem != nullptr; }
+        [[nodiscard]] inline bool HasValidHandle() const noexcept { return m_soundSystem != nullptr; }
 
         void Pause() const;
         void Resume() const;
@@ -86,23 +86,23 @@ namespace stardust
         void OscillateRelativePlaySpeed(const f32 toRelativePlaySpeed, const f32 fromRelativePlaySpeed, const f32 frequency);
         void ResetRelativePlaySpeedOscillation();
 
-        inline const Vec3& GetPosition() const noexcept { return m_position; }
+        [[nodiscard]] inline const Vec3& GetPosition() const noexcept { return m_position; }
         void SetPosition(const Vec3& position);
-        inline const Vec3& GetVelocity() const noexcept { return m_velocity; }
+        [[nodiscard]] inline const Vec3& GetVelocity() const noexcept { return m_velocity; }
         void SetVelocity(const Vec3& velocity);
 
-        inline f32 GetMinDistance() const noexcept { return m_minDistance; }
+        [[nodiscard]] inline f32 GetMinDistance() const noexcept { return m_minDistance; }
         void SetMinDistance(const f32 minDistance);
-        inline f32 GetMaxDistance() const noexcept { return m_maxDistance; }
+        [[nodiscard]] inline f32 GetMaxDistance() const noexcept { return m_maxDistance; }
         void SetMaxDistance(const f32 maxDistance);
 
-        inline InaudibleBehaviour GetInaudibleBehaviour() const noexcept { return m_inaudibleBehaviour; }
+        [[nodiscard]] inline InaudibleBehaviour GetInaudibleBehaviour() const noexcept { return m_inaudibleBehaviour; }
         void SetInaudibleBehaviour(const InaudibleBehaviour inaudibleBehaviour);
 
         [[nodiscard]] bool IsProtected() const;
         void SetProtection(const bool isProtected);
 
-        inline SoLoud::handle GetRawHandle() const noexcept { return m_handle; }
+        [[nodiscard]] inline SoLoud::handle GetRawHandle() const noexcept { return m_handle; }
     };
 }
 

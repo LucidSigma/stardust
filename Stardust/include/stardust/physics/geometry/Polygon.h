@@ -21,7 +21,7 @@ namespace stardust
             b2PolygonShape m_polygon{ };
 
         public:
-            static constexpr u32 GetMaxVertices() noexcept { return b2_maxPolygonVertices; }
+            [[nodiscard]] static constexpr u32 GetMaxVertices() noexcept { return b2_maxPolygonVertices; }
 
             Polygon() = default;
             Polygon(const b2PolygonShape& shapeHandle);
@@ -35,7 +35,7 @@ namespace stardust
             [[nodiscard]] Vec2 GetCentroid() const noexcept;
             [[nodiscard]] Vector<Vec2> GetVertices() const;
             [[nodiscard]] Vector<Vec2> GetNormals() const;
-            inline u32 GetVertexCount() const noexcept { return static_cast<u32>(m_polygon.m_count); }
+            [[nodiscard]] inline u32 GetVertexCount() const noexcept { return static_cast<u32>(m_polygon.m_count); }
 
             [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
             [[nodiscard]] AABB ComputeAABB(const Vec2& worldPosition, const f32 rotation) const;
@@ -43,10 +43,10 @@ namespace stardust
 
             [[nodiscard]] bool IsConvex() const;
 
-            inline operator ObserverPtr<b2Shape>() noexcept { return &m_polygon; }
-            inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_polygon; }
-            inline operator ObserverPtr<b2PolygonShape>() noexcept { return &m_polygon; }
-            inline operator ObserverPtr<const b2PolygonShape>() const noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPtr<b2PolygonShape>() noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPtr<const b2PolygonShape>() const noexcept { return &m_polygon; }
         };
     }
 }

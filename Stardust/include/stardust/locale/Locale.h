@@ -21,7 +21,7 @@ namespace stardust
         String m_currentLocaleName;
 
     public:
-        static const Vector<String>& GetSystemPreferredLocales();
+        [[nodiscard]] static const Vector<String>& GetSystemPreferredLocales();
 
         Locale() = default;
         ~Locale() noexcept = default;
@@ -29,8 +29,8 @@ namespace stardust
         void Initialise(const StringView& baseLocaleDirectory);
         [[nodiscard]] Status SetLocale(const String& localeName);
 
-        inline const String& GetCurrentLocaleName() const noexcept { return m_currentLocaleName; }
-        inline const nlohmann::json& operator [](const StringView& localeString) const { return m_currentLocale[localeString.data()]; }
+        [[nodiscard]] inline const String& GetCurrentLocaleName() const noexcept { return m_currentLocaleName; }
+        [[nodiscard]] inline const nlohmann::json& operator [](const StringView& localeString) const { return m_currentLocale[localeString.data()]; }
 
     private:
         [[nodiscard]] Optional<nlohmann::json> LoadLocaleFile(const String& filepath) const;

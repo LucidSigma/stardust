@@ -55,10 +55,10 @@ namespace stardust
         void Bind(const i32 index = 0) const;
         void Unbind() const;
 
-        inline bool IsValid() const noexcept { return m_id != 0u && m_isValid; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_id != 0u && m_isValid; }
 
-        inline GLuint GetID() const noexcept { return m_id; }
-        inline const UVec2& GetSize() const noexcept { return m_size; }
+        [[nodiscard]] inline GLuint GetID() const noexcept { return m_id; }
+        [[nodiscard]] inline const UVec2& GetSize() const noexcept { return m_size; }
 
     private:
         [[nodiscard]] static SDL_Surface* FlipSurface(const SDL_Surface* const surface);

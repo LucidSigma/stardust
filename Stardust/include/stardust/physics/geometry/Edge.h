@@ -33,16 +33,16 @@ namespace stardust
             [[nodiscard]] Pair<Vec2, Vec2> GetVertices() const;
             [[nodiscard]] Pair<Vec2, Vec2> GetGhostVertices() const;
 
-            inline bool IsOneSided() const noexcept { return m_edge.m_oneSided; }
+            [[nodiscard]] inline bool IsOneSided() const noexcept { return m_edge.m_oneSided; }
 
             [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
             [[nodiscard]] AABB ComputeAABB(const Vec2& worldPosition, const f32 rotation) const;
             [[nodiscard]] MassData ComputeMassData(const f32 density) const;
 
-            inline operator ObserverPtr<b2Shape>() noexcept { return &m_edge; }
-            inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_edge; }
-            inline operator ObserverPtr<b2EdgeShape>() noexcept { return &m_edge; }
-            inline operator ObserverPtr<const b2EdgeShape>() const noexcept { return &m_edge; }
+            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_edge; }
+            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_edge; }
+            [[nodiscard]] inline operator ObserverPtr<b2EdgeShape>() noexcept { return &m_edge; }
+            [[nodiscard]] inline operator ObserverPtr<const b2EdgeShape>() const noexcept { return &m_edge; }
         };
     }
 }

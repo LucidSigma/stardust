@@ -73,7 +73,7 @@ namespace stardust
 
             void Initialise(const class World& world, const CreateInfo& createInfo);
 
-            inline bool IsValid() const noexcept { return m_handle != nullptr; }
+            [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
             void ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const;
             void ApplyForceToCentre(const Vec2& force, const bool wakeUp) const;
@@ -88,7 +88,7 @@ namespace stardust
 
             Collider AddCollider(const Collider::CreateInfo& colliderInfo);
             void RemoveCollider(const Collider& collider);
-            inline const HashSet<Collider>& GetColliders() const { return m_colliders; }
+            [[nodiscard]] inline const HashSet<Collider>& GetColliders() const { return m_colliders; }
             [[nodiscard]] inline const Collider& GetFirstCollider() const { return *std::cbegin(m_colliders); }
             [[nodiscard]] inline bool HasColliders() const noexcept { return !m_colliders.empty(); }
             [[nodiscard]] inline bool HasCollider(const Collider& collider) const { return m_colliders.contains(collider); }
@@ -103,16 +103,16 @@ namespace stardust
             [[nodiscard]] Vec2 GetLinearVelocityFromWorldPoint(const Vec2& worldPoint) const;
             [[nodiscard]] Vec2 GetLinearVelocityFromLocalPoint(const Vec2& localPoint) const;
 
-            bool IsEnabled() const;
+            [[nodiscard]] bool IsEnabled() const;
             void SetEnabled(const bool isEnabled) const;
-            bool IsAwake() const;
-            bool CanSleep() const;
+            [[nodiscard]] bool IsAwake() const;
+            [[nodiscard]] bool CanSleep() const;
             void SetAllowSleeping(const bool canSleep) const;
 
-            Type GetType() const;
+            [[nodiscard]] Type GetType() const;
             void SetType(const Type type) const;
 
-            bool IsBullet() const;
+            [[nodiscard]] bool IsBullet() const;
             void SetBullet(const bool isBullet) const;
 
             [[nodiscard]] Vec2 GetPosition() const;
@@ -120,30 +120,30 @@ namespace stardust
             [[nodiscard]] f32 GetRotation() const;
             void SetRotation(const f32 rotation) const;
 
-            bool HasFixedRotation() const;
+            [[nodiscard]] bool HasFixedRotation() const;
             void SetFixedRotation(const bool hasFixedRotation) const;
 
             [[nodiscard]] Vec2 GetLinearVelocity() const;
             void SetLinearVelocity(const Vec2& linearVelocity) const;
-            f32 GetAngularVelocity() const;
+            [[nodiscard]] f32 GetAngularVelocity() const;
             void SetAngularVelocity(const f32 angularVelocity) const;
 
-            f32 GetLinearDamping() const;
+            [[nodiscard]] f32 GetLinearDamping() const;
             void SetLinearDamping(const f32 linearDamping) const;
-            f32 GetAngularDamping() const;
+            [[nodiscard]] f32 GetAngularDamping() const;
             void SetAngularDamping(const f32 angularDamping) const;
 
-            f32 GetGravityScale() const;
+            [[nodiscard]] f32 GetGravityScale() const;
             void SetGravityScale(const f32 gravityScale) const;
 
-            f32 GetMass() const;
-            f32 GetInertia() const;
+            [[nodiscard]] f32 GetMass() const;
+            [[nodiscard]] f32 GetInertia() const;
             [[nodiscard]] MassData GetMassData() const;
             void SetMassData(const MassData& massData) const;
             void ResetMassData() const;
 
-            ObserverPtr<b2Body> GetRawHandle() const noexcept { return m_handle; }
-            ObserverPtr<const class World> GetOwningWorld() const noexcept { return m_owningWorld; }
+            [[nodiscard]] inline ObserverPtr<b2Body> GetRawHandle() const noexcept { return m_handle; }
+            [[nodiscard]] inline ObserverPtr<const class World> GetOwningWorld() const noexcept { return m_owningWorld; }
         };
     }
 }

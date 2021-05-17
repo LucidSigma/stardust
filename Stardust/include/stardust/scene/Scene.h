@@ -47,39 +47,39 @@ namespace stardust
         inline virtual void OnGameControllerAdded(GameController& gameController) { }
         inline virtual void OnGameControllerRemoved(const GameController& gameController) { }
 
-        inline const String& GetName() const noexcept { return m_name; }
+        [[nodiscard]] inline const String& GetName() const noexcept { return m_name; }
 
-        class Application& GetApplication() noexcept;
-        const class Application& GetApplication() const noexcept;
+        [[nodiscard]] class Application& GetApplication() noexcept;
+        [[nodiscard]] const class Application& GetApplication() const noexcept;
 
-        inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
-        inline const entt::registry& GetEntityRegistry() const noexcept { return m_entityRegistry; }
+        [[nodiscard]] inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+        [[nodiscard]] inline const entt::registry& GetEntityRegistry() const noexcept { return m_entityRegistry; }
 
-        class Window& GetWindow() noexcept;
-        const class Window& GetWindow() const noexcept;
+        [[nodiscard]] class Window& GetWindow() noexcept;
+        [[nodiscard]] const class Window& GetWindow() const noexcept;
 
-        Renderer& GetRenderer() noexcept;
-        const Renderer& GetRenderer() const noexcept;
+        [[nodiscard]] Renderer& GetRenderer() noexcept;
+        [[nodiscard]] const Renderer& GetRenderer() const noexcept;
 
-        class Camera2D& GetCamera() noexcept;
-        const class Camera2D& GetCamera() const noexcept;
+        [[nodiscard]] class Camera2D& GetCamera() noexcept;
+        [[nodiscard]] const class Camera2D& GetCamera() const noexcept;
 
-        class InputManager& GetInputManager() noexcept;
-        const class InputManager& GetInputManager() const noexcept;
+        [[nodiscard]] class InputManager& GetInputManager() noexcept;
+        [[nodiscard]] const class InputManager& GetInputManager() const noexcept;
 
-        class SceneManager& GetSceneManager() noexcept;
-        const class SceneManager& GetSceneManager() const noexcept;
+        [[nodiscard]] class SceneManager& GetSceneManager() noexcept;
+        [[nodiscard]] const class SceneManager& GetSceneManager() const noexcept;
 
-        class ScriptEngine& GetScriptEngine() noexcept;
-        const class ScriptEngine& GetScriptEngine() const noexcept;
+        [[nodiscard]] class ScriptEngine& GetScriptEngine() noexcept;
+        [[nodiscard]] const class ScriptEngine& GetScriptEngine() const noexcept;
 
-        class SoundSystem& GetSoundSystem() noexcept;
-        const class SoundSystem& GetSoundSystem() const noexcept;
+        [[nodiscard]] class SoundSystem& GetSoundSystem() noexcept;
+        [[nodiscard]] const class SoundSystem& GetSoundSystem() const noexcept;
 
-        inline const Keyboard& GetKeyboardState() const noexcept { return Input::GetKeyboardState(); }
-        inline const Mouse& GetMouseState() const noexcept { return Input::GetMouseState(); }
+        [[nodiscard]] inline const Keyboard& GetKeyboardState() const noexcept { return Input::GetKeyboardState(); }
+        [[nodiscard]] inline const Mouse& GetMouseState() const noexcept { return Input::GetMouseState(); }
 
-        f64 GetElapsedTime() const noexcept;
+        [[nodiscard]] f64 GetElapsedTime() const noexcept;
 
     protected:
         class Entity CreateEntity();

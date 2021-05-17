@@ -85,7 +85,7 @@ namespace stardust
         Vec2 m_gravity = Vec2Zero;
 
     public:
-        static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }
+        [[nodiscard]] static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }
 
         ParticleSystem();
         ~ParticleSystem() noexcept = default;
@@ -100,10 +100,10 @@ namespace stardust
         void RepositionAllActiveParticles(const Vec2& relativePosition);
         void ResizeAllActiveParticles(const f32 relativeScale);
 
-        inline usize GetActiveParticleCount() const noexcept { return m_activeParticles.size(); }
+        [[nodiscard]] inline usize GetActiveParticleCount() const noexcept { return m_activeParticles.size(); }
 
-        inline const Vec2& GetGravity() const noexcept { return m_gravity; }
-        inline void SetGravity(const Vec2& gravity) noexcept { m_gravity = gravity; }
+        [[nodiscard]] inline const Vec2& GetGravity() const noexcept { return m_gravity; }
+        [[nodiscard]] inline void SetGravity(const Vec2& gravity) noexcept { m_gravity = gravity; }
     };
 }
 

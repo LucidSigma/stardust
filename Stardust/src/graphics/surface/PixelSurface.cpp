@@ -125,17 +125,17 @@ namespace stardust
         };
     }
 
-    u32 PixelSurface::GetPitch() const
+    [[nodiscard]] u32 PixelSurface::GetPitch() const
     {
         return static_cast<u32>(GetRawHandle()->pitch);
     }
 
-    u32 PixelSurface::GetFormat() const
+    [[nodiscard]] u32 PixelSurface::GetFormat() const
     {
         return GetRawHandle()->format->format;
     }
 
-    void* PixelSurface::GetPixels() const
+    [[nodiscard]] void* PixelSurface::GetPixels() const
     {
         return GetRawHandle()->pixels;
     }

@@ -90,7 +90,7 @@ namespace stardust
 
     public:
         static void SetMinimiseOnFullscreenFocusLoss(const bool minimiseOnFocusLoss);
-        static Status SetVSync(const VSyncType vSyncType);
+        [[nodiscard]] static Status SetVSync(const VSyncType vSyncType);
 
         Window() = default;
         explicit Window(const CreateInfo& createInfo);
@@ -110,14 +110,14 @@ namespace stardust
         void ChangeSize(const UVec2& newSize);
         void ProcessResize(const UVec2& newSize);
 
-        f32 GetOpacity() const noexcept;
+        [[nodiscard]] f32 GetOpacity() const noexcept;
         void SetOpacity(const f32 opacity) const noexcept;
 
         void SetIcon(const StringView& iconFilepath, const Locale& locale) const;
 
-        inline bool IsValid() const noexcept { return m_handle != nullptr; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
-        inline const UVec2& GetSize() const noexcept { return m_size; }
+        [[nodiscard]] inline const UVec2& GetSize() const noexcept { return m_size; }
         [[nodiscard]] UVec2 GetDrawableSize() const noexcept;
         [[nodiscard]] inline f32 GetAspectRatio() const noexcept { return static_cast<f32>(m_size.x) / static_cast<f32>(m_size.y); }
 
@@ -132,41 +132,41 @@ namespace stardust
         [[nodiscard]] String GetTitle() const noexcept;
         void SetTitle(const StringView& title) const noexcept;
 
-        inline bool IsFullscreen() const noexcept { return m_isFullscreen; }
-        inline FullscreenType GetFullscreenType() const noexcept { return m_fullscreenType; }
+        [[nodiscard]] inline bool IsFullscreen() const noexcept { return m_isFullscreen; }
+        [[nodiscard]] inline FullscreenType GetFullscreenType() const noexcept { return m_fullscreenType; }
         inline void SetFullscreenType(const FullscreenType fullscreenType) noexcept { m_fullscreenType = fullscreenType; }
 
-        bool IsBorderless() const noexcept;
+        [[nodiscard]] bool IsBorderless() const noexcept;
         void SetBorderless(const bool isBorderless) const noexcept;
 
         [[nodiscard]] inline SDL_Window* const GetRawHandle() const noexcept { return m_handle.get(); }
         [[nodiscard]] SDL_Surface* GetSurface() const noexcept;
         [[nodiscard]] u32 GetPixelFormat() const noexcept;
-        i32 GetDisplayIndex() const noexcept;
+        [[nodiscard]] i32 GetDisplayIndex() const noexcept;
 
-        bool IsMinimised() const noexcept;
+        [[nodiscard]] bool IsMinimised() const noexcept;
         void Minimise() const noexcept;
-        bool IsMaximised() const noexcept;
+        [[nodiscard]] bool IsMaximised() const noexcept;
         void Maximise() const noexcept;
 
-        bool IsResizable() const noexcept;
+        [[nodiscard]] bool IsResizable() const noexcept;
         void SetResizable(const bool isResizable) const noexcept;
 
-        bool IsShown() const noexcept;
+        [[nodiscard]] bool IsShown() const noexcept;
         void Show() const noexcept;
-        bool IsHidden() const noexcept;
+        [[nodiscard]] bool IsHidden() const noexcept;
         void Hide() const noexcept;
 
         void Raise() const noexcept;
         void Restore() const noexcept;
 
-        bool IsGrabbed() const noexcept;
+        [[nodiscard]] bool IsGrabbed() const noexcept;
         void SetGrabbed(const bool isGrabbed) const noexcept;
 
         void Flash() const;
 
     private:
-        i32 GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const;
+        [[nodiscard]] i32 GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const;
     };
 }
 

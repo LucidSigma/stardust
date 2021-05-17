@@ -34,7 +34,7 @@ namespace stardust
         return Status::Success;
     }
 
-    bool Input::IsMouseCaptured()
+    [[nodiscard]] bool Input::IsMouseCaptured()
     {
         return s_isMouseCaptured;
     }
@@ -44,7 +44,7 @@ namespace stardust
         s_isMouseInRelativeMode = SDL_CaptureMouse(static_cast<SDL_bool>(captureMouse)) == 0;
     }
 
-    bool Input::IsMouseInRelativeMode()
+    [[nodiscard]] bool Input::IsMouseInRelativeMode()
     {
         return s_isMouseInRelativeMode;
     }
@@ -64,7 +64,7 @@ namespace stardust
         SDL_GetRelativeMouseState(nullptr, nullptr);
     }
 
-    bool Input::IsCursorShown()
+    [[nodiscard]] bool Input::IsCursorShown()
     {
         return SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE;
     }
@@ -79,7 +79,7 @@ namespace stardust
         SDL_WarpMouseInWindow(window.GetRawHandle(), x, y);
     }
 
-    u32 Input::GetMaxGameControllers() noexcept
+    [[nodiscard]] u32 Input::GetMaxGameControllers() noexcept
     {
         return s_maxGameControllers;
     }
@@ -89,7 +89,7 @@ namespace stardust
         s_maxGameControllers = std::max(1u, maxGameControllers);
     }
 
-    u32 Input::GetGameControllerDeadzone() noexcept
+    [[nodiscard]] u32 Input::GetGameControllerDeadzone() noexcept
     {
         return s_gameControllerDeadzone;
     }
@@ -146,7 +146,7 @@ namespace stardust
         s_gameControllers.clear();
     }
 
-    usize Input::GetGameControllerCount()
+    [[nodiscard]] usize Input::GetGameControllerCount()
     {
         return s_gameControllers.size();
     }
@@ -203,12 +203,12 @@ namespace stardust
         }
     }
 
-    const Keyboard& Input::GetKeyboardState()
+    [[nodiscard]] const Keyboard& Input::GetKeyboardState()
     {
         return s_keyboardState;
     }
 
-    const Mouse& Input::GetMouseState()
+    [[nodiscard]] const Mouse& Input::GetMouseState()
     {
         return s_mouseState;
     }

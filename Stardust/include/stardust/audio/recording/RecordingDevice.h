@@ -57,24 +57,24 @@ namespace stardust
 
         void Initialise(const Info& info);
 
-        Status Open(const u32 frequency = 44'100u, const u32 channelCount = 1u);
+        [[nodiscard]] Status Open(const u32 frequency = 44'100u, const u32 channelCount = 1u);
         void Close() noexcept;
-        inline bool IsOpen() const { return m_internalID != s_InvalidDeviceID; }
+        [[nodiscard]] inline bool IsOpen() const { return m_internalID != s_InvalidDeviceID; }
 
         void StartRecording();
         void StopRecording();
-        inline bool IsRecording() const noexcept { return m_isRecording; }
+        [[nodiscard]] inline bool IsRecording() const noexcept { return m_isRecording; }
 
-        inline bool HasPCMChunk() const noexcept { return m_soundChunkCount > 0u; }
+        [[nodiscard]] inline bool HasPCMChunk() const noexcept { return m_soundChunkCount > 0u; }
         [[nodiscard]] Vector<ubyte> DequeuePCMChunk();
         void ClearPCMChunks();
 
-        inline i32 GetIndex() const noexcept { return m_index; }
-        inline const String& GetName() const noexcept { return m_name; }
+        [[nodiscard]] inline i32 GetIndex() const noexcept { return m_index; }
+        [[nodiscard]] inline const String& GetName() const noexcept { return m_name; }
 
-        inline u32 GetFrequency() const noexcept { return m_frequency; }
-        inline u32 GetChannelCount() const noexcept { return m_channelCount; }
-        inline u32 GetFormat() const noexcept { return m_audioFormat; }
+        [[nodiscard]] inline u32 GetFrequency() const noexcept { return m_frequency; }
+        [[nodiscard]] inline u32 GetChannelCount() const noexcept { return m_channelCount; }
+        [[nodiscard]] inline u32 GetFormat() const noexcept { return m_audioFormat; }
 
     private:
         static void AudioRecordingCallback(void* const userData, ubyte* const stream, const i32 length);

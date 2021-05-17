@@ -72,9 +72,9 @@ namespace stardust
         void Initialise(const StringView& fontFilepath, const FontSize pointSize);
         void Destroy() noexcept;
 
-        inline bool IsValid() const noexcept { return m_handle != nullptr; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
-        FontSize GetPointSize() const noexcept { return m_pointSize; }
+        [[nodiscard]] FontSize GetPointSize() const noexcept { return m_pointSize; }
 
         [[nodiscard]] Vector<Style> GetStyles() const;
         void SetStyles(const Vector<Style>& styles) const;

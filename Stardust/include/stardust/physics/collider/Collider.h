@@ -50,7 +50,7 @@ namespace stardust
             Collider(const ObserverPtr<b2Fixture> fixtureHandle, const class World& world);
             ~Collider() noexcept = default;
 
-            inline bool IsValid() const noexcept { return m_handle != nullptr; }
+            [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
             [[nodiscard]] ShapeType GetShapeType() const;
 
@@ -79,11 +79,11 @@ namespace stardust
             [[nodiscard]] AABB GetAABB() const;
             [[nodiscard]] MassData GetMassData() const;
 
-            inline ObserverPtr<const class Body> GetOwningBody() const noexcept { return m_owningBody; }
-            inline ObserverPtr<b2Fixture> GetRawHandle() const noexcept { return m_handle; }
+            [[nodiscard]] inline ObserverPtr<const class Body> GetOwningBody() const noexcept { return m_owningBody; }
+            [[nodiscard]] inline ObserverPtr<b2Fixture> GetRawHandle() const noexcept { return m_handle; }
 
-            inline bool operator ==(const Collider& other) const noexcept = default;
-            inline bool operator !=(const Collider& other) const noexcept = default;
+            [[nodiscard]] inline bool operator ==(const Collider& other) const noexcept = default;
+            [[nodiscard]] inline bool operator !=(const Collider& other) const noexcept = default;
         };
     }
 }

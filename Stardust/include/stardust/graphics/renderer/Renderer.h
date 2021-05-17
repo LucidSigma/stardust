@@ -140,16 +140,16 @@ namespace stardust
 
         void SetAntiAliasing(const bool enableAntiAliasing) const;
 
-        inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }
-        inline const Vec2& GetVirtualScale() const noexcept { return m_virtualScale; }
-        inline f32 GetVirtualAspectRatio() const noexcept { return m_virtualAspectRatio; }
+        [[nodiscard]] inline const UVec2& GetVirtualSize() const noexcept { return m_virtualSize; }
+        [[nodiscard]] inline const Vec2& GetVirtualScale() const noexcept { return m_virtualScale; }
+        [[nodiscard]] inline f32 GetVirtualAspectRatio() const noexcept { return m_virtualAspectRatio; }
 
-        inline const Mat4& GetScreenProjectionMatrix() const noexcept { return m_screenProjectionMatrix; }
+        [[nodiscard]] inline const Mat4& GetScreenProjectionMatrix() const noexcept { return m_screenProjectionMatrix; }
 
         [[nodiscard]] Pair<UVec2, UVec2> GetViewportRect() const;
-        inline const Window& GetWindow() const noexcept { return *m_window; }
+        [[nodiscard]] inline const Window& GetWindow() const noexcept { return *m_window; }
 
-        inline bool IsValid() const noexcept { return m_isValid; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_isValid; }
 
     private:
         void InitialiseVertexObjects();

@@ -35,24 +35,24 @@ namespace stardust
         }
 
         template <typename T>
-        T& GetComponent() const
+        [[nodiscard]] T& GetComponent() const
         {
             return m_scene->GetEntityRegistry().get<T>(m_handle);
         }
 
         template <typename T>
-        bool HasComponent() const
+        [[nodiscard]] bool HasComponent() const
         {
             return m_scene->GetEntityRegistry().has<T>(m_handle);
         }
 
-        entt::entity GetHandle() const noexcept { return m_handle; }
+        [[nodiscard]] entt::entity GetHandle() const noexcept { return m_handle; }
 
-        bool operator ==(const Entity&) const = default;
-        bool operator !=(const Entity&) const = default;
+        [[nodiscard]] bool operator ==(const Entity&) const = default;
+        [[nodiscard]] bool operator !=(const Entity&) const = default;
 
-        inline operator bool() const noexcept { return m_handle != entt::null; }
-        inline operator u32() const noexcept { return static_cast<u32>(m_handle); }
+        [[nodiscard]] inline operator bool() const noexcept { return m_handle != entt::null; }
+        [[nodiscard]] inline operator u32() const noexcept { return static_cast<u32>(m_handle); }
     };
 }
 

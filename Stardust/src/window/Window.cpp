@@ -28,7 +28,7 @@ namespace stardust
         SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, minimiseOnFocusLoss ? "1" : "0", SDL_HINT_OVERRIDE);
     }
 
-    Status Window::SetVSync(const VSyncType vSyncType)
+    [[nodiscard]] Status Window::SetVSync(const VSyncType vSyncType)
     {
         return SDL_GL_SetSwapInterval(static_cast<i32>(vSyncType)) == 0
             ? Status::Success
@@ -194,7 +194,7 @@ namespace stardust
         }
     }
 
-    f32 Window::GetOpacity() const noexcept
+    [[nodiscard]] f32 Window::GetOpacity() const noexcept
     {
         f32 opacity = 0.0f;
         SDL_GetWindowOpacity(GetRawHandle(), &opacity);
@@ -328,7 +328,7 @@ namespace stardust
         SDL_SetWindowTitle(GetRawHandle(), title.data());
     }
 
-    bool Window::IsBorderless() const noexcept
+    [[nodiscard]] bool Window::IsBorderless() const noexcept
     {
         return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_BORDERLESS;
     }
@@ -348,12 +348,12 @@ namespace stardust
         return SDL_GetWindowPixelFormat(GetRawHandle());
     }
 
-    i32 Window::GetDisplayIndex() const noexcept
+    [[nodiscard]] i32 Window::GetDisplayIndex() const noexcept
     {
         return SDL_GetWindowDisplayIndex(GetRawHandle());
     }
 
-    bool Window::IsMinimised() const noexcept
+    [[nodiscard]] bool Window::IsMinimised() const noexcept
     {
         return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_MINIMIZED;
     }
@@ -363,7 +363,7 @@ namespace stardust
         SDL_MinimizeWindow(GetRawHandle());
     }
 
-    bool Window::IsMaximised() const noexcept
+    [[nodiscard]] bool Window::IsMaximised() const noexcept
     {
         return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_MAXIMIZED;
     }
@@ -373,7 +373,7 @@ namespace stardust
         SDL_MaximizeWindow(GetRawHandle());
     }
 
-    bool Window::IsResizable() const noexcept
+    [[nodiscard]] bool Window::IsResizable() const noexcept
     {
         return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_RESIZABLE;
     }
@@ -383,7 +383,7 @@ namespace stardust
         SDL_SetWindowResizable(GetRawHandle(), static_cast<SDL_bool>(isResizable));
     }
 
-    bool Window::IsShown() const noexcept
+    [[nodiscard]] bool Window::IsShown() const noexcept
     {
         return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_SHOWN;
     }
@@ -393,7 +393,7 @@ namespace stardust
         SDL_ShowWindow(GetRawHandle());
     }
 
-    bool Window::IsHidden() const noexcept
+    [[nodiscard]] bool Window::IsHidden() const noexcept
     {
         return SDL_GetWindowFlags(GetRawHandle()) & SDL_WINDOW_HIDDEN;
     }
@@ -413,7 +413,7 @@ namespace stardust
         SDL_RestoreWindow(GetRawHandle());
     }
 
-    bool Window::IsGrabbed() const noexcept
+    [[nodiscard]] bool Window::IsGrabbed() const noexcept
     {
         return SDL_GetWindowGrab(GetRawHandle());
     }
@@ -444,7 +444,7 @@ namespace stardust
     #endif
     }
 
-    i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const
+    [[nodiscard]] i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const
     {
         if (const Position* windowPosition = std::get_if<Position>(&windowCoordinate);
             windowPosition != nullptr) [[likely]]

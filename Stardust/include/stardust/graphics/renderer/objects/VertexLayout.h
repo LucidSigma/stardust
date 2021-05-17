@@ -65,7 +65,7 @@ namespace stardust
 
         void Destroy() noexcept;
 
-        inline bool IsValid() const noexcept { return m_id != 0u; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_id != 0u; }
 
         void Bind() const;
         void Unbind() const;
@@ -74,7 +74,7 @@ namespace stardust
         void DrawIndexed(const IndexBuffer& indexBuffer, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
         void DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
 
-        inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
+        [[nodiscard]] inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 
     private:
         [[nodiscard]] static usize GetDataTypeSize(const GLenum dataType);

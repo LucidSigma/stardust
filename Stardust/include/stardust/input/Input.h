@@ -43,26 +43,26 @@ namespace stardust
     public:
         [[nodiscard]] static Status InitialiseGameControllerDatabase(const StringView& controllerDatabaseFilepath);
 
-        static bool IsMouseCaptured();
+        [[nodiscard]] static bool IsMouseCaptured();
         static void CaptureMouse(const bool captureMouse);
 
-        static bool IsMouseInRelativeMode();
+        [[nodiscard]] static bool IsMouseInRelativeMode();
         static void SetRelativeMouseMode(const bool isMouseRelative);
         static void ClearRelativeMouseState();
 
-        static bool IsCursorShown();
+        [[nodiscard]] static bool IsCursorShown();
         static void ShowCursor(const bool showCursor);
         static void WarpMouse(const class Window& window, const i32 x, const i32 y);
 
-        static u32 GetMaxGameControllers() noexcept;
+        [[nodiscard]] static u32 GetMaxGameControllers() noexcept;
         static void SetMaxGameControllers(const u32 maxGameControllers) noexcept;
-        static u32 GetGameControllerDeadzone() noexcept;
+        [[nodiscard]] static u32 GetGameControllerDeadzone() noexcept;
         static void SetGameControllerDeadzone(const u32 gameControllerDeadzone) noexcept;
 
         static ObserverPtr<GameController> AddGameController(const i32 id, const class Locale& locale);
         static void RemoveGameController(const SDL_JoystickID instanceID);
         static void RemoveAllGameControllers();
-        static usize GetGameControllerCount();
+        [[nodiscard]] static usize GetGameControllerCount();
 
         static void UpdateKeyboardState();
         static void UpdateMouseState();
@@ -70,8 +70,8 @@ namespace stardust
         static void UpdateScrollState(const i32 scrollAmount) noexcept;
         static void UpdateGameControllers();
 
-        static const Keyboard& GetKeyboardState();
-        static const Mouse& GetMouseState();
+        [[nodiscard]] static const Keyboard& GetKeyboardState();
+        [[nodiscard]] static const Mouse& GetMouseState();
 
         [[nodiscard]] static bool DoesGameControllerExist(const SDL_JoystickID instanceID);
         [[nodiscard]] static ObserverPtr<GameController> GetGameController(const SDL_JoystickID instanceID);

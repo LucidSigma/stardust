@@ -19,7 +19,7 @@ namespace stardust
     {
     private:
         GLuint m_id = 0u;
-        u32 m_worldIndexCount = 0u;
+        u32 m_indexCount = 0u;
 
         GLenum m_dataType = GL_UNSIGNED_INT;
 
@@ -47,25 +47,25 @@ namespace stardust
             
             Unbind();
 
-            m_worldIndexCount = static_cast<u32>(indices.size());
-            m_dataType = GetGLType<T>();
+            m_indexCount = static_cast<u32>(indices.size());
+            m_dataType = GetOpenGLType<T>();
         }
 
         void Destroy() noexcept;
 
-        inline bool IsValid() const noexcept { return m_id != 0u; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_id != 0u; }
 
         void Bind() const;
         void Unbind() const;
 
-        inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
+        [[nodiscard]] inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 
-        inline unsigned int GetIndexCount() const noexcept { return m_worldIndexCount; }
-        inline u32 GetDataType() const noexcept { return static_cast<u32>(m_dataType); }
+        [[nodiscard]] inline u32 GetIndexCount() const noexcept { return m_indexCount; }
+        [[nodiscard]] inline u32 GetDataType() const noexcept { return static_cast<u32>(m_dataType); }
 
     private:
         template <typename T>
-        static constexpr GLenum GetGLType()
+        [[nodiscard]] static constexpr GLenum GetOpenGLType()
         {
             static_assert(sizeof(u8) == sizeof(GLubyte));
             static_assert(sizeof(u16) == sizeof(GLushort));

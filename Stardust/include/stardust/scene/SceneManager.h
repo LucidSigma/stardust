@@ -29,10 +29,10 @@ namespace stardust
 
         void PopScene();
 
-        inline const UniquePtr<Scene>& CurrentScene() const { return m_scenes.front(); }
-        inline bool IsEmpty() const noexcept { return m_scenes.empty(); }
+        [[nodiscard]] inline const UniquePtr<Scene>& CurrentScene() const { return m_scenes.front(); }
+        [[nodiscard]] inline bool IsEmpty() const noexcept { return m_scenes.empty(); }
 
-        inline usize GetSceneCount() const noexcept { return m_scenes.size(); }
+        [[nodiscard]] inline usize GetSceneCount() const noexcept { return m_scenes.size(); }
     };
 }
 

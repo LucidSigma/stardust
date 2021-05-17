@@ -203,7 +203,7 @@ namespace stardust
         return Status::Success;
     }
 
-    Status Texture::LoadFromSDLSurface(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
+    [[nodiscard]] Status Texture::LoadFromSDLSurface(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
     {
         SDL_Surface* targetSurface = surface;
 

@@ -73,10 +73,10 @@ namespace stardust
             }
         }
 
-        inline decltype(auto) operator [](const StringView& variableName) { return m_luaState[variableName]; }
+        [[nodiscard]] inline decltype(auto) operator [](const StringView& variableName) { return m_luaState[variableName]; }
 
-        inline sol::state& GetState() noexcept { return m_luaState; }
-        inline const sol::state& GetState() const noexcept { return m_luaState; }
+        [[nodiscard]] inline sol::state& GetState() noexcept { return m_luaState; }
+        [[nodiscard]] inline const sol::state& GetState() const noexcept { return m_luaState; }
 
     private:
         template <typename T, typename Constructors>

@@ -34,27 +34,27 @@ namespace stardust
         void Refresh();
         void ResetTransform();
 
-        inline Vec3& GetPosition() noexcept { return m_position; }
-        inline const Vec3& GetPosition() const noexcept { return m_position; }
+        [[nodiscard]] inline Vec3& GetPosition() noexcept { return m_position; }
+        [[nodiscard]] inline const Vec3& GetPosition() const noexcept { return m_position; }
         inline void SetPosition(const Vec2& position) noexcept { m_position = Vec3{ position, m_position.z }; }
         inline void SetPosition(const Vec3& position) noexcept { m_position = position; }
         inline void SetPosition(const f32 x, const f32 y, const f32 z) noexcept { m_position = Vec3{ x, y, z }; }
 
-        inline f32 GetRotation() const noexcept { return m_rotation; }
+        [[nodiscard]] inline f32 GetRotation() const noexcept { return m_rotation; }
         inline void SetRotation(const f32 rotation) noexcept { m_rotation = rotation; }
 
-        inline f32 GetZoom() const noexcept { return m_zoom; }
+        [[nodiscard]] inline f32 GetZoom() const noexcept { return m_zoom; }
         inline void SetZoom(const f32 zoom) noexcept { m_zoom = zoom; }
 
-        inline f32 GetHalfSize() const noexcept { return m_halfSize; }
+        [[nodiscard]] inline f32 GetHalfSize() const noexcept { return m_halfSize; }
         void SetHalfSize(const f32 halfSize) noexcept;
 
-        inline f32 GetAspectRatio() const noexcept { return m_aspectRatio; }
-        inline f32 GetPixelsPerUnit() const noexcept { return m_pixelsPerUnit; }
+        [[nodiscard]] inline f32 GetAspectRatio() const noexcept { return m_aspectRatio; }
+        [[nodiscard]] inline f32 GetPixelsPerUnit() const noexcept { return m_pixelsPerUnit; }
 
         [[nodiscard]] Mat4 GetViewMatrix() const noexcept;
-        inline const Mat4& GetProjectionMatrix() const noexcept { return m_projectionMatrix; }
-        inline const class Renderer& GetRenderer() const noexcept { return *m_renderer; }
+        [[nodiscard]] inline const Mat4& GetProjectionMatrix() const noexcept { return m_projectionMatrix; }
+        [[nodiscard]] inline const class Renderer& GetRenderer() const noexcept { return *m_renderer; }
 
         [[nodiscard]] UVec2 WorldSpaceToScreenSpace(Vec2 position) const noexcept;
         [[nodiscard]] Vec2 ScreenSpaceToWorldSpace(const UVec2& position) const noexcept;

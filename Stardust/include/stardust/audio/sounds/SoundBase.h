@@ -98,15 +98,15 @@ namespace stardust
             }
         }
 
-        inline bool IsValid() const noexcept { return m_isValid; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_isValid; }
 
         void StopAll()
         {
             m_handle.stop();
         }
 
-        inline f64 GetLength() const noexcept { return m_length; }
-        inline bool IsSingleInstance() const noexcept { return m_isSingleInstance; }
+        [[nodiscard]] inline f64 GetLength() const noexcept { return m_length; }
+        [[nodiscard]] inline bool IsSingleInstance() const noexcept { return m_isSingleInstance; }
 
         void SetSingleInstance(const bool isSingleInstance)
         {
@@ -114,7 +114,7 @@ namespace stardust
             m_isSingleInstance = isSingleInstance;
         }
 
-        inline f32 GetVolume() const noexcept { return m_volume; }
+        [[nodiscard]] inline f32 GetVolume() const noexcept { return m_volume; }
 
         void SetVolume(const f32 volume)
         {
@@ -122,7 +122,7 @@ namespace stardust
             m_volume = volume;
         }
 
-        inline InaudibleBehaviour GetInaudibleBehaviour() const noexcept { return m_inaudibleBehaviour; }
+        [[nodiscard]] inline InaudibleBehaviour GetInaudibleBehaviour() const noexcept { return m_inaudibleBehaviour; }
 
         void SetInaudibleBehaviour(const InaudibleBehaviour inaudibleBehaviour)
         {
@@ -148,7 +148,7 @@ namespace stardust
             m_inaudibleBehaviour = inaudibleBehaviour;
         }
 
-        inline bool IsLooping() const noexcept { return m_isLooping; }
+        [[nodiscard]] inline bool IsLooping() const noexcept { return m_isLooping; }
 
         void SetLooping(const bool enableLooping)
         {
@@ -156,7 +156,7 @@ namespace stardust
             m_isLooping = enableLooping;
         }
 
-        inline f32 GetLoopPoint() const noexcept { return m_loopPoint; }
+        [[nodiscard]] inline f32 GetLoopPoint() const noexcept { return m_loopPoint; }
 
         void SetLoopPoint(const f32 loopPoint)
         {
@@ -164,7 +164,7 @@ namespace stardust
             m_loopPoint = loopPoint;
         }
 
-        inline f32 GetDopplerFactor() const noexcept { return m_dopplerFactor; }
+        [[nodiscard]] inline f32 GetDopplerFactor() const noexcept { return m_dopplerFactor; }
 
         void SetDopplerFactor(const f32 dopplerFactor)
         {
@@ -172,7 +172,7 @@ namespace stardust
             m_dopplerFactor = dopplerFactor;
         }
 
-        inline AttenuationModel GetAttenuationModel() const noexcept { return m_attenuationModel; }
+        [[nodiscard]] inline AttenuationModel GetAttenuationModel() const noexcept { return m_attenuationModel; }
 
         void SetAttenuationModel(const AttenuationModel attenuationModel)
         {
@@ -180,7 +180,7 @@ namespace stardust
             m_attenuationModel = attenuationModel;
         }
 
-        inline f32 GetAttenuationRolloffFactor() const noexcept { return m_attenuationRolloffFactor; }
+        [[nodiscard]] inline f32 GetAttenuationRolloffFactor() const noexcept { return m_attenuationRolloffFactor; }
 
         void SetAttenuationRolloffFactor(const f32 attenuationRolloffFactor)
         {
@@ -188,7 +188,7 @@ namespace stardust
             m_attenuationRolloffFactor = attenuationRolloffFactor;
         }
 
-        inline bool IsDistanceDelayEnabledBy() const noexcept { return m_isDistanceDelayEnabled; }
+        [[nodiscard]] inline bool IsDistanceDelayEnabledBy() const noexcept { return m_isDistanceDelayEnabled; }
 
         void SetDistanceDelayBy(const bool enableDistanceDelay)
         {
@@ -196,7 +196,7 @@ namespace stardust
             m_isDistanceDelayEnabled = enableDistanceDelay;
         }
 
-        inline bool IsRelativeToListenerBy() const noexcept { return m_isRelativeToListener; }
+        [[nodiscard]] inline bool IsRelativeToListenerBy() const noexcept { return m_isRelativeToListener; }
 
         void SetRelativeToListenerBy(const bool isRelativeToListener)
         {
@@ -204,7 +204,7 @@ namespace stardust
             m_isRelativeToListener = isRelativeToListener;
         }
 
-        inline f32 GetMinDistance() const noexcept { return m_minDistance; }
+        [[nodiscard]] inline f32 GetMinDistance() const noexcept { return m_minDistance; }
 
         void SetMinDistance(const f32 minDistance)
         {
@@ -212,7 +212,7 @@ namespace stardust
             m_minDistance = minDistance;
         }
 
-        inline f32 GetMaxDistance() const noexcept { return m_maxDistance; }
+        [[nodiscard]] inline f32 GetMaxDistance() const noexcept { return m_maxDistance; }
 
         void SetMaxDistance(const f32 maxDistance)
         {
@@ -220,8 +220,8 @@ namespace stardust
             m_maxDistance = maxDistance;
         }
 
-        inline T& GetRawHandle() noexcept { return m_handle; }
-        inline const T& GetRawHandle() const noexcept { return m_handle; }
+        [[nodiscard]] inline T& GetRawHandle() noexcept { return m_handle; }
+        [[nodiscard]] inline const T& GetRawHandle() const noexcept { return m_handle; }
     };
 }
 

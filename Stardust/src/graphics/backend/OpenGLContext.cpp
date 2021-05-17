@@ -47,7 +47,7 @@ namespace stardust
         }
     }
 
-    Status OpenGLContext::MakeCurrent() const
+    [[nodiscard]] Status OpenGLContext::MakeCurrent() const
     {
         return SDL_GL_MakeCurrent(m_window->GetRawHandle(), m_handle) == 0
             ? Status::Success

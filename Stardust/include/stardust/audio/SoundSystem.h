@@ -34,7 +34,7 @@ namespace stardust
 
         void Update() const;
 
-        inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
+        [[nodiscard]] inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
 
         SoundSource PlaySound(Sound& sound, const bool startPaused = false);
         SoundSource PlaySound(SoundStream& soundStream, const bool startPaused = false);
@@ -71,7 +71,7 @@ namespace stardust
         void SetSpeedOfSound(const f32 speedOfSound) const noexcept;
 
         [[nodiscard]] SoLoud::Soloud& GetRawHandle() noexcept { return *m_soLoudHandle.get(); }
-        Listener& GetListener() noexcept { return m_listener; }
+        [[nodiscard]] Listener& GetListener() noexcept { return m_listener; }
 
     private:
         void Initialise();

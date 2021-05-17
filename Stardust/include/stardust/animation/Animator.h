@@ -42,10 +42,10 @@ namespace stardust
 
         void SkipToFrame(KeyFrame frame) const;
 
-        inline ObserverPtr<const Animation> GetCurrentAnimation() const noexcept { return m_currentAnimation; }
+        [[nodiscard]] inline ObserverPtr<const Animation> GetCurrentAnimation() const noexcept { return m_currentAnimation; }
         void SetCurrentAnimation(const String& animationName);
 
-        inline f32 GetSpeed() const noexcept { return m_speed; }
+        [[nodiscard]] inline f32 GetSpeed() const noexcept { return m_speed; }
         inline void SetSpeed(const f32 speed) noexcept { m_speed = speed; }
     };
 }

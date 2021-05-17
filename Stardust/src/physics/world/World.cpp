@@ -29,7 +29,7 @@ namespace stardust
 
                 virtual ~RaycastCallback() noexcept override = default;
 
-                inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
+                [[nodiscard]] inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
@@ -69,7 +69,7 @@ namespace stardust
 
                 virtual ~RaycastAllCallback() noexcept override = default;
 
-                inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
+                [[nodiscard]] inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
@@ -105,7 +105,7 @@ namespace stardust
 
                 virtual ~OverlapBoxCallback() noexcept override = default;
 
-                inline virtual bool ReportFixture(b2Fixture* const fixture) override
+                [[nodiscard]] inline virtual bool ReportFixture(b2Fixture* const fixture) override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
@@ -136,7 +136,7 @@ namespace stardust
 
                 virtual ~OverlapBoxAllCallback() noexcept override = default;
 
-                inline virtual bool ReportFixture(b2Fixture* const fixture) override
+                [[nodiscard]] inline virtual bool ReportFixture(b2Fixture* const fixture) override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
@@ -400,7 +400,7 @@ namespace stardust
             m_handle->SetGravity(b2Vec2{ gravity.x, gravity.y });
         }
 
-        bool World::AllowsSleeping() const
+        [[nodiscard]] bool World::IsSleepingAllowed() const
         {
             return m_handle->GetAllowSleeping();
         }

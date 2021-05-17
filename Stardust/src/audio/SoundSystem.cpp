@@ -138,12 +138,12 @@ namespace stardust
         m_soLoudHandle->oscillateGlobalVolume(1.0f, 1.0f, 0.0);
     }
 
-    unsigned int SoundSystem::GetPlayingSoundCount() const
+    [[nodiscard]] unsigned int SoundSystem::GetPlayingSoundCount() const
     {
         return m_soLoudHandle->getActiveVoiceCount();
     }
 
-    bool SoundSystem::IsSoundPlaying() const
+    [[nodiscard]] bool SoundSystem::IsSoundPlaying() const
     {
         return m_soLoudHandle->getActiveVoiceCount() > 0u;
     }

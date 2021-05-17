@@ -36,7 +36,7 @@ namespace stardust
         void Initialise(const Vector<ObserverPtr<const Shader>>& shaders);
         void Destroy() noexcept;
 
-        inline bool IsValid() const noexcept { return m_id != 0u && m_isValid; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_id != 0u && m_isValid; }
 
         void Use() const;
         void Disuse() const;
@@ -132,7 +132,7 @@ namespace stardust
 
         void SetTextureUniform(const String& name, const i32 index) const;
 
-        inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
+        [[nodiscard]] inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
 
     private:
         [[nodiscard]] Status CheckLinkingStatus() const;

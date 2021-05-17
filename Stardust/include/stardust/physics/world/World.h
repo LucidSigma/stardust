@@ -53,9 +53,9 @@ namespace stardust
             HashMap<const b2Body*, CollisionCallback> m_sensorExitCallbacks{ };
 
         public:
-            inline static u32 GetVelocityIterations() noexcept { return s_velocityIterations; }
+            [[nodiscard]] inline static u32 GetVelocityIterations() noexcept { return s_velocityIterations; }
             inline static void SetVelocityIterations(const u32 iterations) noexcept { s_velocityIterations = iterations; }
-            inline static u32 GetPositionIterations() noexcept { return s_positionIterations; }
+            [[nodiscard]] inline static u32 GetPositionIterations() noexcept { return s_positionIterations; }
             inline static void SetPositionIterations(const u32 iterations) noexcept { s_positionIterations = iterations; }
 
             World();
@@ -88,10 +88,10 @@ namespace stardust
             [[nodiscard]] Vec2 GetGravity() const;
             void SetGravity(const Vec2& gravity) const;
 
-            [[nodiscard]] bool AllowsSleeping() const;
+            [[nodiscard]] bool IsSleepingAllowed() const;
             void AllowSleeping(const bool allowSleeping) const;
 
-            inline bool IsValid() const noexcept { return m_handle != nullptr; }
+            [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
             [[nodiscard]] inline b2World* const GetRawHandle() const noexcept { return m_handle.get(); }
         };
     }

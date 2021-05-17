@@ -30,7 +30,7 @@ namespace stardust
         void Load(const StringView& filepath);
         void Unload() noexcept;
 
-        inline bool IsValid() const noexcept { return m_handle != nullptr; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
         [[nodiscard]] bool HasFunction(const StringView& name) const;
 

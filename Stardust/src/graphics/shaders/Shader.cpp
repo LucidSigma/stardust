@@ -92,7 +92,7 @@ namespace stardust
         glSpecializeShader(m_id, "main", 0, nullptr, nullptr);
     }
 
-    Status Shader::CheckCompilationErrors() const
+    [[nodiscard]] Status Shader::CheckCompilationErrors() const
     {
         GLint isSuccessful = 0;
         glGetShaderiv(m_id, GL_COMPILE_STATUS, &isSuccessful);

@@ -121,27 +121,27 @@ namespace stardust
         void FinishCurrentScene() noexcept;
         void ForceQuit() noexcept;
 
-        inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
+        [[nodiscard]] inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
 
-        inline Config& GetConfig() noexcept { return m_config; }
-        inline Locale& GetLocale() noexcept { return m_locale; }
+        [[nodiscard]] inline Config& GetConfig() noexcept { return m_config; }
+        [[nodiscard]] inline Locale& GetLocale() noexcept { return m_locale; }
 
-        inline Window& GetWindow() noexcept { return m_window; }
-        inline Renderer& GetRenderer() noexcept { return m_renderer; }
-        inline Camera2D& GetCamera() noexcept { return m_camera; }
-        inline InputManager& GetInputManager() noexcept { return m_inputManager; }
-        inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
+        [[nodiscard]] inline Window& GetWindow() noexcept { return m_window; }
+        [[nodiscard]] inline Renderer& GetRenderer() noexcept { return m_renderer; }
+        [[nodiscard]] inline Camera2D& GetCamera() noexcept { return m_camera; }
+        [[nodiscard]] inline InputManager& GetInputManager() noexcept { return m_inputManager; }
+        [[nodiscard]] inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 
-        inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
-        inline ScriptEngine& GetScriptEngine() noexcept { return m_scriptEngine; }
-        inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
-        inline VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
+        [[nodiscard]] inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+        [[nodiscard]] inline ScriptEngine& GetScriptEngine() noexcept { return m_scriptEngine; }
+        [[nodiscard]] inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
+        [[nodiscard]] inline VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
 
         [[nodiscard]] String GetPlatformName() const;
 
-        inline bool IsRunning() const noexcept { return m_isRunning; }
-        inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
-        inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
+        [[nodiscard]] inline bool IsRunning() const noexcept { return m_isRunning; }
+        [[nodiscard]] inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
+        [[nodiscard]] inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }
 
         template <typename T>
         void SetGlobalSceneData(const String& dataName, const T& data)
@@ -157,10 +157,10 @@ namespace stardust
 
         void RemoveFromGlobalSceneData(const String& dataName);
 
-        inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
+        [[nodiscard]] inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
-        inline const String& GetBaseDirectory() const noexcept { return m_baseDirectory; }
-        inline const String& GetPreferenceDirectory() const noexcept { return m_preferenceDirectory; }
+        [[nodiscard]] inline const String& GetBaseDirectory() const noexcept { return m_baseDirectory; }
+        [[nodiscard]] inline const String& GetPreferenceDirectory() const noexcept { return m_preferenceDirectory; }
 
     private:
         void Initialise(const CreateInfo& createInfo);

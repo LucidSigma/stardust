@@ -640,7 +640,7 @@ namespace stardust
         return axisResult;
     }
 
-    i32 InputManager::GetAxisValueFromButtons(const AxisInput& axisData, const Vector<ObserverPtr<const GameController>>& gameControllers) const
+    [[nodiscard]] i32 InputManager::GetAxisValueFromButtons(const AxisInput& axisData, const Vector<ObserverPtr<const GameController>>& gameControllers) const
     {
         i32 axisResult = 0;
 

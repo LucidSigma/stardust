@@ -81,12 +81,12 @@ namespace stardust
 
         void Reset();
 
-        KeyFrame GetCurrentKeyFrame() const noexcept { return m_currentKeyFrame; }
-        u32 GetFrameCount() const noexcept { return m_maxKeyFrame; }
-        u32 GetFPS() const noexcept { return m_fps; }
-        f32 GetSecondsPerFrame() const noexcept { return m_secondsPerFrame; }
+        [[nodiscard]] inline KeyFrame GetCurrentKeyFrame() const noexcept { return m_currentKeyFrame; }
+        [[nodiscard]] inline u32 GetFrameCount() const noexcept { return m_maxKeyFrame; }
+        [[nodiscard]] inline u32 GetFPS() const noexcept { return m_fps; }
+        [[nodiscard]] inline f32 GetSecondsPerFrame() const noexcept { return m_secondsPerFrame; }
 
-        inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
 
     private:
         [[nodiscard]] static Optional<EasingFunction> GetEasingFunction(const String& name);

@@ -26,10 +26,10 @@ namespace stardust
         u64 m_pausedTickCount = 0u;
 
     public:
-        static constexpr u64 GetPrecision() noexcept { return s_Precision; }
+        [[nodiscard]] static constexpr u64 GetPrecision() noexcept { return s_Precision; }
 
-        static constexpr bool CanCountMicroseconds() noexcept { return s_CanCountMicroseconds; }
-        static constexpr bool CanCountNanoseconds() noexcept { return s_CanCountNanoseconds; }
+        [[nodiscard]] static constexpr bool CanCountMicroseconds() noexcept { return s_CanCountMicroseconds; }
+        [[nodiscard]] static constexpr bool CanCountNanoseconds() noexcept { return s_CanCountNanoseconds; }
 
         explicit Stopwatch(const bool startTicking = false);
         ~Stopwatch() noexcept = default;
@@ -41,9 +41,9 @@ namespace stardust
         void Pause();
         void Resume();
 
-        inline bool IsRunning() const noexcept { return m_isRunning && !m_isPaused; }
-        inline bool IsStopped() const noexcept { return !m_isRunning; }
-        inline bool IsPaused() const noexcept { return m_isRunning && m_isPaused; }
+        [[nodiscard]] inline bool IsRunning() const noexcept { return m_isRunning && !m_isPaused; }
+        [[nodiscard]] inline bool IsStopped() const noexcept { return !m_isRunning; }
+        [[nodiscard]] inline bool IsPaused() const noexcept { return m_isRunning && m_isPaused; }
 
         [[nodiscard]] u32 GetElapsedSeconds() const;
         [[nodiscard]] u64 GetElapsedMilliseconds() const;

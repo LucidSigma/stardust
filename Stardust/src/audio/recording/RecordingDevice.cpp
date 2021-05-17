@@ -42,7 +42,7 @@ namespace stardust
         m_name = info.name;
     }
 
-    Status RecordingDevice::Open(const u32 frequency, const u32 channelCount)
+    [[nodiscard]] Status RecordingDevice::Open(const u32 frequency, const u32 channelCount)
     {
         const SDL_AudioSpec desiredAudioSpec{
             .freq = static_cast<i32>(frequency),
