@@ -318,7 +318,7 @@ namespace stardust
         #endif
         };
 
-        for (const auto [attribute, value] : glWindowAttributes)
+        for (auto&& [attribute, value] : glWindowAttributes)
         {
             SDL_GL_SetAttribute(attribute, value);
         }

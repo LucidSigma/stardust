@@ -271,7 +271,7 @@ namespace stardust
             Pair<GLenum, GLint>{ GL_TEXTURE_MAG_FILTER, static_cast<GLint>(sampler.magFilter) },
         };
 
-        for (const auto [parameter, value] : textureParameters)
+        for (auto&& [parameter, value] : textureParameters)
         {
             glTexParameteri(GL_TEXTURE_2D, parameter, value);
         }

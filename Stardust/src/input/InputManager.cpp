@@ -443,7 +443,7 @@ namespace stardust
         const auto& axisData = m_axes.at(axisName);
         i32 axisResult = 0;
 
-        for (const auto [axisType, isInverted] : axisData.axes)
+        for (auto&& [axisType, isInverted] : axisData.axes)
         {
             axisResult += GetAxisValueFromType(axisType, isInverted, gameControllers);
         }
