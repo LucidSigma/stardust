@@ -53,12 +53,12 @@ namespace stardust
 
         [[nodiscard]] String RemoveFirstCharacter(const String& string)
         {
-            return string.empty() ? "" : string.substr(1u);
+            return string.length() > 1u ? string.substr(1u) : "";
         }
 
         [[nodiscard]] String RemoveLastCharacter(const String& string)
         {
-            return string.empty() ? "" : string.substr(0u, string.length() - 2u);
+            return string.length() > 1u ? string.substr(0u, string.length() - 1u) : "";
         }
 
         [[nodiscard]] String RemoveFirstAndLastCharacters(const String& string)
