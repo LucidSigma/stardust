@@ -73,6 +73,7 @@
 
 #include "math/Math.h"
 
+#include "particles/ParticleData.h"
 #include "particles/ParticleSystem.h"
 
 #include "physics/body/Body.h"

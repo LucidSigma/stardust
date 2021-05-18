@@ -246,7 +246,7 @@ public:
                 auto finalColour = sd::colours::Yellow;
                 finalColour.alpha = 0u;
 
-                m_particles.Emit(sd::ParticleSystem::ParticleData{
+                m_particles.Emit(sd::ParticleData{
                     .initialPosition = GetMouseState().GetProportionalCoordinates(GetRenderer()),
                     .initialRotation = 0.0f,
                     .minVelocity = { -100.0f, -400.0f },
