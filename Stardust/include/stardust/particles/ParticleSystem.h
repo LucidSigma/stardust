@@ -31,6 +31,7 @@ namespace stardust
             f32 angularAcceleration = 1.0f;
 
             bool isAffectedByGravity = false;
+            bool isAffectedByWind = false;
 
             Vec2 minSize = Vec2One;
             Vec2 maxSize = Vec2One;
@@ -60,6 +61,7 @@ namespace stardust
             f32 angularAcceleration = 1.0f;
 
             bool isAffectedByGravity = false;
+            bool isAffectedByWind = false;
 
             Vec2 size = Vec2One;
             f32 sizeUpdateMultipler = 1.0f;
@@ -82,7 +84,8 @@ namespace stardust
         usize m_particlePoolIndex = s_ParticleCount - 1u;
         HashMap<usize, ObserverPtr<Particle>> m_activeParticles{ };
 
-        Vec2 m_gravity = Vec2Zero;
+        f32 m_gravity = 0.0f;
+        f32 m_wind = 0.0f;
 
     public:
         [[nodiscard]] static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }
@@ -102,8 +105,11 @@ namespace stardust
 
         [[nodiscard]] inline usize GetActiveParticleCount() const noexcept { return m_activeParticles.size(); }
 
-        [[nodiscard]] inline const Vec2& GetGravity() const noexcept { return m_gravity; }
-        [[nodiscard]] inline void SetGravity(const Vec2& gravity) noexcept { m_gravity = gravity; }
+        [[nodiscard]] inline f32 GetGravity() const noexcept { return m_gravity; }
+        [[nodiscard]] inline void SetGravity(const f32 gravity) noexcept { m_gravity = gravity; }
+
+        [[nodiscard]] inline f32 GetWind() const noexcept { return m_wind; }
+        [[nodiscard]] inline void SetWind(const f32 wind) noexcept { m_wind = wind; }
     };
 }
 

@@ -35,7 +35,12 @@ namespace stardust
 
             if (particle->isAffectedByGravity)
             {
-                particle->velocity += m_gravity * deltaTime;
+                particle->velocity.y += m_gravity * deltaTime;
+            }
+
+            if (particle->isAffectedByWind)
+            {
+                particle->velocity.x += m_wind * deltaTime;
             }
 
             particle->position += particle->velocity * deltaTime;
@@ -61,7 +66,7 @@ namespace stardust
     {
         for (const auto& [particleID, particle] : m_activeParticles)
         {
-            if (!particle->isActive)
+            if (!particle->isActive) [[unlikely]]
             {
                 continue;
             }
@@ -126,6 +131,7 @@ namespace stardust
         particle.angularAcceleration = particleData.angularAcceleration;
 
         particle.isAffectedByGravity = particleData.isAffectedByGravity;
+        particle.isAffectedByWind = particleData.isAffectedByWind;
 
         particle.size.x = Random::GenerateFloat(particleData.minSize.x, particleData.maxSize.x);
         particle.size.y = particleData.keepAsSquare ? particle.size.x : Random::GenerateFloat(particleData.minSize.y, particleData.maxSize.y);

@@ -133,6 +133,8 @@ public:
         m_tilemap.AddTiles(m_groundTiles);
         m_tilemap.AddTiles(m_conveyorTextures);
 
+        m_particles.SetWind(575.0f);
+
         GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
         GetInputManager().AddToButton("outline", sd::KeyCode::Space);
         GetInputManager().AddToButton("speed", sd::KeyCode::LeftShift);
@@ -171,7 +173,11 @@ public:
         GetScriptEngine().CallFunction<void>("vector_stuff");
 
         m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
-        m_device.Open();
+        
+        if (m_device.Open() == sd::Status::Fail)
+        {
+            return sd::Status::Fail;
+        }
 
         return sd::Status::Success;
     }
@@ -250,6 +256,7 @@ public:
                     .maxAngularVelocity = 180.0f,
                     .angularAcceleration = -0.1f,
                     .isAffectedByGravity = false,
+                    .isAffectedByWind = true,
                     .minSize = { 20.0f, 20.0f },
                     .maxSize = { 40.0f, 40.0f },
                     .sizeUpdateMultipler = -0.2f,
