@@ -1,4 +1,4 @@
-#include "stardust/time/Stopwatch.h"
+#include "stardust/time/stopwatch/Stopwatch.h"
 
 namespace stardust
 {

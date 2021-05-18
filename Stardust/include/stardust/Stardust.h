@@ -104,7 +104,7 @@
 
 #include "tilemap/Tilemap.h"
 
-#include "time/Stopwatch.h"
+#include "time/stopwatch/Stopwatch.h"
 #include "time/Time.h"
 #include "time/Timers.h"
 
