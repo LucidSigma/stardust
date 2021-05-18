@@ -3,8 +3,9 @@ cmake_minimum_required(VERSION 3.15)
 add_executable(colour_test "colour/src/Main.cpp")
 add_executable(config_test "config/src/Main.cpp")
 add_executable(fs_test "filesystem/src/Main.cpp")
+add_executable(string_test "string/src/Main.cpp")
 
-set(TEST_TARGETS colour_test config_test fs_test)
+set(TEST_TARGETS colour_test config_test fs_test string_test)
 
 foreach(TEST_TARGET ${TEST_TARGETS})
     target_include_directories(${TEST_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/Stardust/include" ${CATCH2_INCLUDE_DIRS})
@@ -36,6 +37,12 @@ if(WIN32)
     foreach(DLL ${SDL2_DLLS})
         add_custom_command(TARGET ${TEST_TARGETS} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:colour_test>
+        )
+    endforeach()
+
+    foreach(SDL2_TTF_DLL ${SDL2_TTF_DLLS})
+        add_custom_command(TARGET ${TEST_TARGETS} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:colour_test>
         )
     endforeach()
 endif()
