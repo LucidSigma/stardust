@@ -1,6 +1,6 @@
 #pragma once
-#ifndef STARDUST_ASYNC_H
-#define STARDUST_ASYNC_H
+#ifndef STARDUST_ASYNC_TASK_H
+#define STARDUST_ASYNC_TASK_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 

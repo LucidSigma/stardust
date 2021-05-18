@@ -94,7 +94,10 @@
 #include "scene/SceneManager.h"
 
 #include "scripting/ScriptEngine.h"
+
+#include "task/scheduler/TaskScheduler.h"
 #include "task/AsyncTask.h"
+#include "task/TaskStats.h"
 
 #include "text/clipboard/Clipboard.h"
 #include "text/font/Font.h"

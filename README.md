@@ -25,7 +25,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Animation (sprites and basic tweens).
 * Logging and system modals.
 * Shared object/DLL loading.
-* Basic parallel task scheduling.
+* Async tasks and parallel task scheduling.
 
 ## Scene Template
 ```cpp
