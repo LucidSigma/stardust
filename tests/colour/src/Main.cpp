@@ -87,6 +87,8 @@ TEST_CASE("Colours can be created and converted between different colour spaces"
 
     SECTION("Can convert RGB colours to and from hex codes")
     {
+        using namespace sd::literals;
+
         const sd::Colour colour = 0xF49E76_colour;
         REQUIRE(colour.red == 244u);
         REQUIRE(colour.green == 158u);

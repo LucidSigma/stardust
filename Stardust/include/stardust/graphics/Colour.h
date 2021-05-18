@@ -143,6 +143,11 @@ namespace stardust
     [[nodiscard]] extern Colour HSVToRGB(const HSVColour& hsvColour);
     [[nodiscard]] extern Colour HexToRGB(u32 colourHex, const u8 alpha = SDL_ALPHA_OPAQUE);
     [[nodiscard]] extern u32 RGBToHex(const Colour& rgbColour);
+
+    inline namespace literals
+    {
+        [[nodiscard]] extern stardust::Colour operator ""_colour(const stardust::u64 hexCode);
+    }
 }
 
 namespace std
@@ -181,7 +186,5 @@ namespace std
         }
     };
 }
-
-[[nodiscard]] extern stardust::Colour operator ""_colour(const stardust::u64 hexCode);
 
 #endif

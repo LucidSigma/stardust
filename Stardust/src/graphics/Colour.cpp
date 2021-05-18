@@ -128,9 +128,12 @@ namespace stardust
 
         return colourHex;
     }
-}
 
-[[nodiscard]] stardust::Colour operator ""_colour(const stardust::u64 hexCode)
-{
-    return stardust::HexToRGB(static_cast<stardust::u32>(hexCode));
+    inline namespace literals
+    {
+        [[nodiscard]] stardust::Colour operator ""_colour(const stardust::u64 hexCode)
+        {
+            return stardust::HexToRGB(static_cast<stardust::u32>(hexCode));
+        }
+    }
 }
