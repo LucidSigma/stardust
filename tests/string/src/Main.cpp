@@ -22,13 +22,13 @@ TEST_CASE("Strings can be manipulated in different ways", "[string]")
 
     SECTION("Can split a string on a delimiter")
     {
-        sd::Vector<sd::String> values = sd::string::SplitString("These are some words.");
+        sd::Vector<sd::String> values = sd::string::Split("These are some words.");
         REQUIRE(values == sd::Vector<sd::String>{ "These", "are", "some", "words." });
 
-        values = sd::string::SplitString("A|B|C|D", '|');
+        values = sd::string::Split("A|B|C|D", '|');
         REQUIRE(values == sd::Vector<sd::String>{ "A", "B", "C", "D" });
 
-        values = sd::string::SplitString("");
+        values = sd::string::Split("");
         REQUIRE(values.empty());
     }
 }

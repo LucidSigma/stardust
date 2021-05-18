@@ -89,7 +89,7 @@ namespace stardust
 
     namespace string
     {
-        [[nodiscard]] extern Vector<String> SplitString(const String& string, const char delimiter = ' ');
+        [[nodiscard]] extern Vector<String> Split(const String& string, const char delimiter = ' ');
 
         [[nodiscard]] extern String MakeUpper(String string);
         [[nodiscard]] extern String MakeLower(String string);

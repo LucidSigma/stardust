@@ -8,7 +8,7 @@ namespace stardust
 {
     namespace string
     {
-        [[nodiscard]] Vector<String> SplitString(const String& string, const char delimiter)
+        [[nodiscard]] Vector<String> Split(const String& string, const char delimiter)
         {
             String currentToken;
             std::istringstream reader(string);
