@@ -31,4 +31,23 @@ TEST_CASE("Strings can be manipulated in different ways", "[string]")
         values = sd::string::Split("");
         REQUIRE(values.empty());
     }
+
+    SECTION("Can remove first and last characters from a string")
+    {
+        REQUIRE(sd::string::RemoveFirstCharacter("test") == "est");
+        REQUIRE(sd::string::RemoveFirstCharacter("abcde") == "bcde");
+        REQUIRE(sd::string::RemoveFirstCharacter("a") == "");
+        REQUIRE(sd::string::RemoveFirstCharacter("") == "");
+
+        REQUIRE(sd::string::RemoveLastCharacter("test") == "tes");
+        REQUIRE(sd::string::RemoveLastCharacter("abcde") == "abcd");
+        REQUIRE(sd::string::RemoveLastCharacter("a") == "");
+        REQUIRE(sd::string::RemoveLastCharacter("") == "");
+
+        REQUIRE(sd::string::RemoveFirstAndLastCharacters("test") == "es");
+        REQUIRE(sd::string::RemoveFirstAndLastCharacters("abcde") == "bcd");
+        REQUIRE(sd::string::RemoveFirstAndLastCharacters("ab") == "");
+        REQUIRE(sd::string::RemoveFirstAndLastCharacters("a") == "");
+        REQUIRE(sd::string::RemoveFirstAndLastCharacters("") == "");
+    }
 }
