@@ -109,6 +109,7 @@
 #include "time/Timers.h"
 
 #include "utility/cpu/CPU.h"
+#include "utility/hash/Hash.h"
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"
 #include "utility/random/Random.h"
