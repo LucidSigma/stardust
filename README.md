@@ -80,6 +80,7 @@ public:
 * [magic_enum](https://github.com/Neargye/magic_enum)
 * [nlohmann JSON](https://github.com/nlohmann/json)
 * [psched](https://github.com/p-ranav/psched)
+* [stbrumme's hash library](https://github.com/stbrumme/hash-library)
 
 ### Assets
 * [PhysFS](https://icculus.org/physfs/)

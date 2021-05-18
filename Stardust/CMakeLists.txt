@@ -36,6 +36,7 @@ target_link_libraries(Stardust PUBLIC
     OpenGL::GL
     box2d
     glad
+    hash_library
     lua
     physfs
     soloud
