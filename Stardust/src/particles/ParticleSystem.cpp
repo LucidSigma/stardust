@@ -51,7 +51,7 @@ namespace stardust
                 glm::lerp(
                     Vec4(particle->endColour),
                     Vec4(particle->startColour),
-                    particle->lifetimeRemaining / particle->lifetime
+                    particle->colourEasingFunction(particle->lifetimeRemaining / particle->lifetime)
                 )
             );
         }
@@ -147,6 +147,8 @@ namespace stardust
         particle.endColour = particleData.endColour;
         particle.texture = particleData.texture;
         particle.textureArea = particleData.textureArea;
+
+        particle.colourEasingFunction = particleData.colourEasingFunction;
 
         particle.lifetime = Random::GenerateFloat(particleData.minLifetime, particleData.maxLifetime);
         particle.lifetimeRemaining = particle.lifetime;

@@ -2,6 +2,7 @@
 #ifndef STARDUST_PARTICLE_DATA_H
 #define STARDUST_PARTICLE_DATA_H
 
+#include "stardust/animation/Easings.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
@@ -37,6 +38,8 @@ namespace stardust
         Colour endColour = colours::White;
         ObserverPtr<const Texture> texture = nullptr;
         Optional<TextureCoordinatePair> textureArea = NullOpt;
+
+        EasingFunction colourEasingFunction = easings::EaseLinear;
 
         f32 minLifetime = 0.0f;
         f32 maxLifetime = 0.0f;

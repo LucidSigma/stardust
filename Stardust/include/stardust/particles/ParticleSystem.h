@@ -2,6 +2,7 @@
 #ifndef STARDUST_PARTICLE_SYSTEM_H
 #define STARDUST_PARTICLE_SYSTEM_H
 
+#include "stardust/animation/Easings.h"
 #include "stardust/camera/Camera2D.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
@@ -40,6 +41,8 @@ namespace stardust
             Colour endColour = colours::White;
             ObserverPtr<const Texture> texture = nullptr;
             Optional<TextureCoordinatePair> textureArea = NullOpt;
+
+            EasingFunction colourEasingFunction = easings::EaseLinear;
 
             f32 lifetime = 0.0f;
             f32 lifetimeRemaining = 0.0f;

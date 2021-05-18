@@ -266,6 +266,7 @@ public:
                     .endColour = finalColour,
                     .texture = nullptr,  
                     .textureArea = std::nullopt,
+                    .colourEasingFunction = sd::easings::EaseOutCubic,
                     .minLifetime = 0.5f,
                     .maxLifetime = 1.0f,
                 });
