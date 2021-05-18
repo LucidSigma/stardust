@@ -94,6 +94,7 @@
 #include "scene/SceneManager.h"
 
 #include "scripting/ScriptEngine.h"
+#include "task/Async.h"
 
 #include "text/clipboard/Clipboard.h"
 #include "text/font/Font.h"
@@ -114,7 +115,6 @@
 #include "utility/interfaces/INonmovable.h"
 #include "utility/random/Random.h"
 #include "utility/status/Status.h"
-#include "utility/tasks/Task.h"
 #include "utility/version/Version.h"
 #include "utility/Utility.h"
 
