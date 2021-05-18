@@ -2,7 +2,7 @@
 #include <catch2/catch.hpp>
 #include <stardust/Stardust.h>
 
-TEST_CASE("Colours can be created and converted between differen colour spaces", "[colour]")
+TEST_CASE("Colours can be created and converted between different colour spaces", "[colour]")
 {
     SECTION("Can create colours in RGB space")
     {
