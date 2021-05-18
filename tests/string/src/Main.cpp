@@ -50,4 +50,19 @@ TEST_CASE("Strings can be manipulated in different ways", "[string]")
         REQUIRE(sd::string::RemoveFirstAndLastCharacters("a") == "");
         REQUIRE(sd::string::RemoveFirstAndLastCharacters("") == "");
     }
+
+    SECTION("Can trim whitespace from a string")
+    {
+        REQUIRE(sd::string::LeftTrim("    hello    ") == "hello    ");
+        REQUIRE(sd::string::LeftTrim("  \n\n  test") == "test");
+        REQUIRE(sd::string::LeftTrim("\t\t") == "");
+
+        REQUIRE(sd::string::RightTrim("    hello    ") == "    hello");
+        REQUIRE(sd::string::RightTrim("test  \n\n  ") == "test");
+        REQUIRE(sd::string::RightTrim("\t\t") == "");
+
+        REQUIRE(sd::string::Trim("    hello    ") == "hello");
+        REQUIRE(sd::string::Trim("  \n\n  test  \n\n  ") == "test");
+        REQUIRE(sd::string::Trim("\t\t") == "");
+    }
 }
