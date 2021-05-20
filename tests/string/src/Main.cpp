@@ -72,18 +72,20 @@ TEST_CASE("Can convert version information to and from strings", "[version]")
     SECTION("Can convert strings into version information")
     {
         const sd::VersionInfo versionA = sd::CreateVersionFromString("1.2.3");
-        REQUIRE(versionA.major == 1u);
-        REQUIRE(versionA.minor == 2u);
-        REQUIRE(versionA.patch == 3u);
+        REQUIRE(versionA == sd::CreateVersionInfo(1u, 2u, 3u));
 
         const sd::VersionInfo versionB = sd::CreateVersionFromString("2.0");
-        REQUIRE(versionB.major == 2u);
-        REQUIRE(versionB.minor == 0u);
-        REQUIRE(versionB.patch == 0u);
+        REQUIRE(versionB == sd::CreateVersionInfo(2u, 0u, 0u));
 
         const sd::VersionInfo versionC = sd::CreateVersionFromString("1");
-        REQUIRE(versionC.major == 1u);
-        REQUIRE(versionC.minor == 0u);
-        REQUIRE(versionC.patch == 0u);
+        REQUIRE(versionC == sd::CreateVersionInfo(1u, 0u, 0u));
+    }
+
+    SECTION("Can convert version information into strings")
+    {
+        REQUIRE(sd::CreateVersionInfo(4u, 6u, 8u).ToString() == sd::String("4.6.8"));
+        REQUIRE(sd::CreateVersionInfo(1u, 10u).ToString() == sd::String("1.10.0"));
+        REQUIRE(sd::CreateVersionInfo(5u).ToString() == sd::String("5.0.0"));
+        REQUIRE(sd::CreateVersionInfo(7u).ToString(false) == sd::String("7.0"));
     }
 }
