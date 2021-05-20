@@ -55,6 +55,16 @@ public:
     {
         sd::SetCursor(sd::CursorType::No);
 
+        const sd::system::CPUInfo cpuInfo = sd::system::GetCPUInfo();
+
+        sd::Log::Trace("CPU name: {} [Vendor: {}]", cpuInfo.name, cpuInfo.vendor);
+        sd::Log::Trace("Family: {}; Model: {}; Stepping level: {}", cpuInfo.family, cpuInfo.model, cpuInfo.steppingLevel);
+        
+        for (const auto& [level, size, lineCount, lineSize] : cpuInfo.caches)
+        {
+            sd::Log::Trace("\tCache level {} - Size: {} bytes; Lines: {}; Line size: {} bytes", level, size, lineCount, lineSize);
+        }
+
         GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
 
         const auto textures = sd::vfs::GetAllFilesInDirectory("assets/textures");

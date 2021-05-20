@@ -9,6 +9,7 @@ target_include_directories(Stardust PUBLIC
     "${CMAKE_CURRENT_LIST_DIR}/include"
     ${BOX2D_INCLUDE_DIRS}
     ${CONCURRENT_QUEUE_INCLUDE_DIRS}
+    ${CPU_FEATURES_INCLUDE_DIRS}
     ${ENTT_INCLUDE_DIRS}
     ${GLAD_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}

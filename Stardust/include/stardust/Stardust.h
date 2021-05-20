@@ -95,6 +95,9 @@
 
 #include "scripting/ScriptEngine.h"
 
+#include "system/cpu/CPU.h"
+#include "system/System.h"
+
 #include "task/scheduler/TaskScheduler.h"
 #include "task/AsyncTask.h"
 #include "task/TaskStats.h"
@@ -112,7 +115,6 @@
 #include "time/Time.h"
 #include "time/Timers.h"
 
-#include "utility/cpu/CPU.h"
 #include "utility/hash/Hash.h"
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"

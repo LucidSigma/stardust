@@ -115,7 +115,7 @@ setup_include_and_definitions(cpu_features)
 target_link_libraries(cpu_features PUBLIC ${CMAKE_DL_LIBS})
 set_property(TARGET cpu_features PROPERTY POSITION_INDEPENDENT_CODE ${BUILD_PIC})
 target_include_directories(cpu_features
-  PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_include/cpu_featuresDIR}/cpu_features>
+  PRIVATE $<INSTALL_INTERFACE:${CMAKE_INSTALL_include/cpu_featuresDIR}/cpu_features>
 )
 if(PROCESSOR_IS_X86)
   if(APPLE)
@@ -123,5 +123,9 @@ if(PROCESSOR_IS_X86)
   endif()
 endif()
 add_library(CpuFeature::cpu_features ALIAS cpu_features)
+
+get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(CPU_FEATURES_INCLUDE_DIRS "${_IMPORT_PREFIX}/include")
+set(CPU_FEATURES_INCLUDE_DIRS "${CPU_FEATURES_INCLUDE_DIRS}" PARENT_SCOPE)
 
 set_target_properties(cpu_features PROPERTIES FOLDER "Dependencies")
