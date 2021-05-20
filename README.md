@@ -75,6 +75,7 @@ public:
     * [stb_vorbis](https://github.com/nothings/stb/blob/master/stb_vorbis.c)
 
 ### Data
+* [cpu_features](https://github.com/google/cpu_features)
 * [concurrentqueue](https://github.com/cameron314/concurrentqueue)
 * [EnTT](https://github.com/skypjack/entt)
 * [magic_enum](https://github.com/Neargye/magic_enum)

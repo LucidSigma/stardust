@@ -42,6 +42,7 @@ add_subdirectory("dep/sol2-3.2.2")
 
 # Other dependencies.
 add_subdirectory("dep/box2d-2.4.1")
+add_subdirectory("dep/cpu_features-0.6.0")
 add_subdirectory("dep/Glad-0.1.34")
 add_subdirectory("dep/hash_library-v8")
 add_subdirectory("dep/lua-5.4.3")

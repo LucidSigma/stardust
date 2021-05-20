@@ -35,6 +35,7 @@ target_link_libraries(Stardust PUBLIC
     ${SDL2_TTF_LIBS}
     OpenGL::GL
     box2d
+    cpu_features
     glad
     hash_library
     lua
