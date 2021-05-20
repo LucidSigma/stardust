@@ -66,3 +66,24 @@ TEST_CASE("Strings can be manipulated in different ways", "[string]")
         REQUIRE(sd::string::Trim("\t\t") == "");
     }
 }
+
+TEST_CASE("Can convert version information to and from strings", "[version]")
+{
+    SECTION("Can convert strings into version information")
+    {
+        const sd::VersionInfo versionA = sd::GetVersionFromString("1.2.3");
+        REQUIRE(versionA.major == 1u);
+        REQUIRE(versionA.minor == 2u);
+        REQUIRE(versionA.patch == 3u);
+
+        const sd::VersionInfo versionB = sd::GetVersionFromString("2.0");
+        REQUIRE(versionB.major == 2u);
+        REQUIRE(versionB.minor == 0u);
+        REQUIRE(versionB.patch == 0u);
+
+        const sd::VersionInfo versionC = sd::GetVersionFromString("1");
+        REQUIRE(versionC.major == 1u);
+        REQUIRE(versionC.minor == 0u);
+        REQUIRE(versionC.patch == 0u);
+    }
+}
