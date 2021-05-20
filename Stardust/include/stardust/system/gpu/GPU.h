@@ -4,6 +4,7 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
+#include "stardust/utility/version/Version.h"
 
 namespace stardust
 {
@@ -14,8 +15,11 @@ namespace stardust
             String name;
             String vendor;
 
-            String openGLVersion;
-            String glslVersion;
+            VersionInfo openGLVersion;
+            String openGLVersionString;
+
+            VersionInfo glslVersion;
+            String glslVersionString;
 
             u64 maxTextureSize;
         };

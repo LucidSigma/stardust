@@ -67,7 +67,7 @@ public:
 
         const sd::system::GPUInfo& gpuInfo = sd::system::GetGPUInfo();
         sd::Log::Trace("GPU: {} [Vendor: {}]", gpuInfo.name, gpuInfo.vendor);
-        sd::Log::Trace("Supports OpenGL {} and GLSL {}", gpuInfo.openGLVersion, gpuInfo.glslVersion);
+        sd::Log::Trace("Supports OpenGL {} and GLSL {}", gpuInfo.openGLVersion.ToString(), gpuInfo.glslVersion.ToString(false));
         sd::Log::Trace("Max texture size: {} bytes", gpuInfo.maxTextureSize);
 
         sd::Log::Trace("Memory: {} megabytes", sd::system::GetSystemRAMCount());

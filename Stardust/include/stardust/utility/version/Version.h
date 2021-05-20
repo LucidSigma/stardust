@@ -13,8 +13,8 @@ namespace stardust
         u32 minor;
         u32 patch;
 
-        [[nodiscard]] String GetString() const;
-        [[nodiscard]] inline operator String() const { return GetString(); }
+        [[nodiscard]] String ToString(const bool includePatch = true) const;
+        [[nodiscard]] inline operator String() const { return ToString(); }
     };
 
     constexpr VersionInfo Version{

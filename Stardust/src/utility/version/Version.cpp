@@ -4,9 +4,16 @@
 
 namespace stardust
 {
-    [[nodiscard]] String VersionInfo::GetString() const
+    [[nodiscard]] String VersionInfo::ToString(const bool includePatch) const
     {
-        return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(patch);
+        String versionString = std::to_string(major) + "." + std::to_string(minor);
+        
+        if (includePatch)
+        {
+            versionString += "." + std::to_string(patch);
+        }
+
+        return versionString;
     }
 
     [[nodiscard]] VersionInfo GetVersionFromString(const String& versionString)
@@ -36,6 +43,16 @@ namespace stardust
             default:
                 break;
             }
+        }
+
+        if (versionCategories.size() < 2u)
+        {
+            version.minor = 0u;
+        }
+
+        if (versionCategories.size() < 3u)
+        {
+            version.patch = 0u;
         }
 
         return version;
