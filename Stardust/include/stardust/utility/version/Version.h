@@ -15,6 +15,9 @@ namespace stardust
 
         [[nodiscard]] String ToString(const bool includePatch = true) const;
         [[nodiscard]] inline operator String() const { return ToString(); }
+
+        [[nodiscard]] bool operator ==(const VersionInfo&) const noexcept = default;
+        [[nodiscard]] bool operator !=(const VersionInfo&) const noexcept = default;
     };
 
     constexpr VersionInfo Version{
