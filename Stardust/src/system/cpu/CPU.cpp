@@ -15,11 +15,6 @@ namespace stardust
             bool hasCPUInfoBeenQueried = false;
         }
 
-        [[nodiscard]] u32 GetCPUCount()
-        {
-            return static_cast<u32>(SDL_GetCPUCount());
-        }
-        
         [[nodiscard]] const CPUInfo& GetCPUInfo()
         {
         #ifndef CPU_FEATURES_ARCH_X86
@@ -33,11 +28,12 @@ namespace stardust
                 cpuInfo.name = std::move(cpuBrandString);
 
                 const cpu_features::X86Info queriedCPUInfo = cpu_features::GetX86Info();
-
                 cpuInfo.vendor = queriedCPUInfo.vendor;
                 cpuInfo.family = static_cast<u32>(queriedCPUInfo.family);
                 cpuInfo.model = static_cast<u32>(queriedCPUInfo.model);
                 cpuInfo.steppingLevel = static_cast<u32>(queriedCPUInfo.stepping);
+
+                cpuInfo.coreCount = static_cast<u32>(SDL_GetCPUCount());
 
                 const cpu_features::CacheInfo queriedCPUCacheInfo = cpu_features::GetX86CacheInfo();
                 HashSet<i32> visitedCacheLevels{ };

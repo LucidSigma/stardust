@@ -23,6 +23,8 @@ namespace stardust
             String name;
             String vendor;
 
+            u32 coreCount;
+
             u32 family;
             u32 model;
             u32 steppingLevel;
@@ -30,7 +32,6 @@ namespace stardust
             Vector<CacheInfo> caches;
         };
 
-        [[nodiscard]] extern u32 GetCPUCount();
         [[nodiscard]] extern const CPUInfo& GetCPUInfo();
     }
 }
