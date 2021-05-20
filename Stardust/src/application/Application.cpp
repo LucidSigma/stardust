@@ -19,6 +19,7 @@
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/Input.h"
 #include "stardust/physics/world/World.h"
+#include "stardust/utility/version/Version.h"
 #include "stardust/window/cursor/Cursor.h"
 
 namespace stardust
@@ -119,7 +120,7 @@ namespace stardust
         }
     #endif
 
-        Log::EngineInfo("Logger initialised.");
+        Log::EngineInfo("Logger initialised [Stardust Version {}].", Version.ToString());
         Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName());
         Log::EngineDebug("Base directory: \"{}\"", m_baseDirectory);
         Log::EngineInfo("ECS initialised.");
