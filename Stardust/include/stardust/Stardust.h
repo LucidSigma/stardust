@@ -96,6 +96,7 @@
 #include "scripting/ScriptEngine.h"
 
 #include "system/cpu/CPU.h"
+#include "system/gpu/GPU.h"
 #include "system/System.h"
 
 #include "task/scheduler/TaskScheduler.h"
