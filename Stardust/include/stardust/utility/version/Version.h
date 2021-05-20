@@ -2,6 +2,7 @@
 #ifndef STARDUST_VERSION_H
 #define STARDUST_VERSION_H
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust
@@ -11,6 +12,9 @@ namespace stardust
         u32 major;
         u32 minor;
         u32 patch;
+
+        [[nodiscard]] String GetString() const;
+        [[nodiscard]] inline operator String() const { return GetString(); }
     };
 
     constexpr VersionInfo Version{
@@ -18,6 +22,8 @@ namespace stardust
         .minor = 0u,
         .patch = 7u,
     };
+
+    [[nodiscard]] VersionInfo GetVersionFromString(const String& versionString);
 }
 
 #endif
