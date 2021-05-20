@@ -24,7 +24,7 @@ namespace stardust
                 if (!gpuInfo.openGLVersionString.empty())
                 {
                     const String openGLVersion = string::Split(string::Trim(gpuInfo.openGLVersionString), ' ').front();
-                    gpuInfo.openGLVersion = GetVersionFromString(openGLVersion);
+                    gpuInfo.openGLVersion = CreateVersionFromString(openGLVersion);
                 }
 
                 gpuInfo.glslVersionString = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -32,7 +32,7 @@ namespace stardust
                 if (!gpuInfo.glslVersionString.empty())
                 {
                     const String glslVersion = string::Split(string::Trim(gpuInfo.glslVersionString), ' ').front();
-                    gpuInfo.glslVersion = GetVersionFromString(glslVersion);
+                    gpuInfo.glslVersion = CreateVersionFromString(glslVersion);
                 }
 
                 GLint maxTextureSizeDimension = 0;

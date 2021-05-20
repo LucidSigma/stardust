@@ -16,7 +16,16 @@ namespace stardust
         return versionString;
     }
 
-    [[nodiscard]] VersionInfo GetVersionFromString(const String& versionString)
+    [[nodiscard]] VersionInfo CreateVersionInfo(const u32 major, const u32 minor, const u32 patch) noexcept
+    {
+        return VersionInfo{
+            .major = major,
+            .minor = minor,
+            .patch = patch,
+        };
+    }
+
+    [[nodiscard]] VersionInfo CreateVersionFromString(const String& versionString)
     {
         VersionInfo version{ };
         const auto versionCategories = string::Split(versionString, '.');

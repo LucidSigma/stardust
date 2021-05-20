@@ -23,7 +23,8 @@ namespace stardust
         .patch = 7u,
     };
 
-    [[nodiscard]] VersionInfo GetVersionFromString(const String& versionString);
+    [[nodiscard]] extern VersionInfo CreateVersionInfo(const u32 major, const u32 minor = 0u, const u32 patch = 0u) noexcept;
+    [[nodiscard]] extern VersionInfo CreateVersionFromString(const String& versionString);
 }
 
 #endif
