@@ -8,139 +8,146 @@ namespace stardust
     {
         [[nodiscard]] f32 EaseLinear(const f32 value)
         {
-            return value;
+            return glm::clamp(value, 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInQuad(const f32 value)
         {
-            return value * value;
+            return glm::clamp(value * value, 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutQuad(const f32 value)
         {
-            return 1.0f - (1.0f - value) * (1.0f - value);
+            return glm::clamp(1.0f - (1.0f - value) * (1.0f - value), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInOutQuad(const f32 value)
         {
-            return value < 0.5f
-                ? 2.0f * value * value
-                : 1.0f - glm::pow(-2.0f * value + 2.0f, 2.0f) / 2.0f;
+            return glm::clamp(value < 0.5f
+                    ? 2.0f * value * value
+                    : 1.0f - glm::pow(-2.0f * value + 2.0f, 2.0f) / 2.0f,
+                0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInCubic(const f32 value)
         {
-            return value * value * value;
+            return glm::clamp(value * value * value, 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutCubic(const f32 value)
         {
-            return 1.0f - glm::pow(1.0f - value, 3.0f);
+            return glm::clamp(1.0f - glm::pow(1.0f - value, 3.0f), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInOutCubic(const f32 value)
         {
-            return value < 0.5f
-                ? 4.0f * value * value * value
-                : 1.0f - glm::pow(-2.0f * value + 2.0f, 3.0f) / 2.0f;
+            return glm::clamp(value < 0.5f
+                    ? 4.0f * value * value * value
+                    : 1.0f - glm::pow(-2.0f * value + 2.0f, 3.0f) / 2.0f,
+                0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInQuart(const f32 value)
         {
-            return value * value * value * value;
+            return glm::clamp(value * value * value * value, 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutQuart(const f32 value)
         {
-            return 1.0f - glm::pow(1.0f - value, 4.0f);
+            return glm::clamp(1.0f - glm::pow(1.0f - value, 4.0f), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInOutQuart(const f32 value)
         {
-            return value < 0.5f
-                ? 8.0f * value * value * value * value
-                : 1.0f - glm::pow(-2.0f * value + 2.0f, 4.0f) / 2.0f;
+            return glm::clamp(value < 0.5f
+                    ? 8.0f * value * value * value * value
+                    : 1.0f - glm::pow(-2.0f * value + 2.0f, 4.0f) / 2.0f,
+                0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInQuint(const f32 value)
         {
-            return value * value * value * value * value;
+            return glm::clamp(value * value * value * value * value, 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutQuint(const f32 value)
         {
-            return 1.0f - glm::pow(1.0f - value, 5.0f);
+            return glm::clamp(1.0f - glm::pow(1.0f - value, 5.0f), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInOutQuint(const f32 value)
         {
-            return value < 0.5f
-                ? 16.0f * value * value * value * value * value
-                : 1.0f - glm::pow(-2.0f * value + 2.0f, 5.0f) / 2.0f;
+            return glm::clamp(value < 0.5f
+                    ? 16.0f * value * value * value * value * value
+                    : 1.0f - glm::pow(-2.0f * value + 2.0f, 5.0f) / 2.0f,
+                0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInSine(const f32 value)
         {
-            return 1.0f - glm::cos((value * std::numbers::pi_v<f32>) / 2.0f);
+            return glm::clamp(1.0f - glm::cos((value * std::numbers::pi_v<f32>) / 2.0f), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutSine(const f32 value)
         {
-            return 1.0f - glm::sin((value * std::numbers::pi_v<f32>) / 2.0f);
+            return glm::clamp(1.0f - glm::sin((value * std::numbers::pi_v<f32>) / 2.0f), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInOutSine(const f32 value)
         {
-            return -(glm::cos(value * std::numbers::pi_v<f32>) - 1.0f) / 2.0f;
+            return glm::clamp(-(glm::cos(value * std::numbers::pi_v<f32>) - 1.0f) / 2.0f, 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInExponential(const f32 value)
         {
-            return value == 0.0f
-                ? 0.0f
-                : glm::exp(10.0f * value - 10.0f);
+            return glm::clamp(value == 0.0f
+                    ? 0.0f
+                    : glm::exp(10.0f * value - 10.0f),
+                0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutExponential(const f32 value)
         {
-            return value == 1.0f
-                ? 1.0f
-                : 1.0f - glm::exp(-10.0f * value);
+            return glm::clamp(value == 1.0f
+                    ? 1.0f
+                    : 1.0f - glm::exp(-10.0f * value),
+                0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInOutExponential(const f32 value)
         {
             if (value == 0.0f || value == 1.0f)
             {
-                return value;
+                return glm::clamp(value, 0.0f, 1.0f);
             }
             else if (value < 0.5f)
             {
-                return glm::exp(20.0f * value - 10.0f) / 2.0f;
+                return glm::clamp(glm::exp(20.0f * value - 10.0f) / 2.0f, 0.0f, 1.0f);
             }
             else
             {
-                return (2.0f - glm::exp(-20.0f * value + 10.0f)) / 2.0f;
+                return glm::clamp((2.0f - glm::exp(-20.0f * value + 10.0f)) / 2.0f, 0.0f, 1.0f);
             }
         }
 
         [[nodiscard]] f32 EaseInCircle(const f32 value)
         {
-            return 1.0f - glm::sqrt(1.0f - glm::pow(value, 2.0f));
+            return glm::clamp(1.0f - glm::sqrt(1.0f - glm::pow(value, 2.0f)), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutCircle(const f32 value)
         {
-            return glm::sqrt(1.0f - glm::pow(value - 1.0f, 2.0f));
+            return glm::clamp(glm::sqrt(1.0f - glm::pow(value - 1.0f, 2.0f)), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseInOutCircle(const f32 value)
         {
-            return value < 0.5f
-                ? (1.0f - glm::sqrt(1.0f - glm::pow(2.0f * value, 2.0f))) / 2.0f
-                : (glm::sqrt(1.0f - glm::pow(-2.0f * value + 2.0f, 2.0f)) + 1.0f) / 2.0f;
+            return glm::clamp(value < 0.5f
+                    ? (1.0f - glm::sqrt(1.0f - glm::pow(2.0f * value, 2.0f))) / 2.0f
+                    : (glm::sqrt(1.0f - glm::pow(-2.0f * value + 2.0f, 2.0f)) + 1.0f) / 2.0f,
+                0.0f, 1.0f);
         }
-
+        
         [[nodiscard]] f32 EaseInBack(const f32 value)
         {
             constexpr f32 BackBounceConstant = 1.70158f;
@@ -215,7 +222,7 @@ namespace stardust
 
         [[nodiscard]] f32 EaseInBounce(const f32 value)
         {
-            return 1.0f - EaseOutBounce(1.0f - value);
+            return glm::clamp(1.0f - EaseOutBounce(1.0f - value), 0.0f, 1.0f);
         }
 
         [[nodiscard]] f32 EaseOutBounce(f32 value)
@@ -225,33 +232,34 @@ namespace stardust
 
             if (value < 1.0f / Denominator)
             {
-                return Numerator * value * value;
+                return glm::clamp(Numerator * value * value, 0.0f, 1.0f);
             }
             else if (value < 2.0f / Denominator)
             {
                 value -= 1.5f / Denominator;
 
-                return Numerator * value * value + 0.75f;
+                return glm::clamp(Numerator * value * value + 0.75f, 0.0f, 1.0f);
             }
             else if (value < 2.5f / Denominator)
             {
                 value -= 2.25f / Denominator;
 
-                return Numerator * value * value + 0.9375f;
+                return glm::clamp(Numerator * value * value + 0.9375f, 0.0f, 1.0f);
             }
             else
             {
                 value -= 2.625f / Denominator;
 
-                return Numerator * value * value + 0.984375f;
+                return glm::clamp(Numerator * value * value + 0.984375f, 0.0f, 1.0f);
             }
         }
 
         [[nodiscard]] f32 EaseInOutBounce(const f32 value)
         {
-            return value < 0.5f
-                ? (1.0f - EaseOutBounce(1.0f - 2.0f * value)) / 2.0f
-                : (1.0f + EaseOutBounce(2.0f * value - 1.0f)) / 2.0f;
+            return glm::clamp(value < 0.5f
+                    ? (1.0f - EaseOutBounce(1.0f - 2.0f * value)) / 2.0f
+                    : (1.0f + EaseOutBounce(2.0f * value - 1.0f)) / 2.0f,
+                0.0f, 1.0f);
         }
     }
 
