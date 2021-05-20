@@ -23,8 +23,15 @@ namespace stardust
 
             if (!hasCPUInfoBeenQueried)
             {
-                String cpuBrandString(49u, ' ');
+                String cpuBrandString(49u, '\0');
                 cpu_features::FillX86BrandString(cpuBrandString.data());
+
+                if (const usize firstNullTerminatorLocation = cpuBrandString.find_first_of('\0');
+                    firstNullTerminatorLocation != String::npos)
+                {
+                    cpuBrandString.erase(firstNullTerminatorLocation);
+                }
+                
                 cpuInfo.name = std::move(cpuBrandString);
 
                 const cpu_features::X86Info queriedCPUInfo = cpu_features::GetX86Info();
