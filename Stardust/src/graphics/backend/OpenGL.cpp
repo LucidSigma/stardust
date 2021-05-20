@@ -7,6 +7,7 @@
 #endif
 
 #include "stardust/data/Containers.h"
+#include "stardust/data/Types.h"
 #include "stardust/debug/logging/Log.h"
 
 #ifndef WIN32
@@ -62,6 +63,21 @@ namespace stardust
             default:
                 break;
             }
+        }
+
+        [[nodiscard]] VersionInfo GetVersion()
+        {
+            GLint openGLMajorVersion = 0;
+            glGetIntegerv(GL_MAJOR_VERSION, &openGLMajorVersion);
+
+            GLint openGLMinorVersion = 0;
+            glGetIntegerv(GL_MINOR_VERSION, &openGLMinorVersion);
+
+            return VersionInfo{
+                .major = static_cast<u32>(openGLMajorVersion),
+                .minor = static_cast<u32>(openGLMinorVersion),
+                .patch = 0u,
+            };
         }
     }
 }

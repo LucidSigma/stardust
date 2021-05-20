@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 
 #include "stardust/utility/status/Status.h"
+#include "stardust/utility/version/Version.h"
 
 #ifndef WIN32
 #define __cdecl
@@ -18,6 +19,8 @@ namespace stardust
         extern void InitialiseDebugCallback();
 
         extern void __cdecl DebugMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const GLchar* message, const void* userParams) noexcept;
+
+        [[nodiscard]] VersionInfo GetVersion();
     }
 }
 
