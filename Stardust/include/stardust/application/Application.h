@@ -174,6 +174,8 @@ namespace stardust
         [[nodiscard]] Status InitialiseRenderer(const CreateInfo&);
         [[nodiscard]] Status InitialiseTextSystem(const CreateInfo&);
         [[nodiscard]] Status InitialiseScriptEngine(const CreateInfo&);
+        [[nodiscard]] Status InitialisePhysics(const CreateInfo& createInfo);
+        [[nodiscard]] Status InitialiseInput(const CreateInfo&);
         void InitialiseScenes();
 
         void FixedUpdate();

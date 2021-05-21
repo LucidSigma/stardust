@@ -129,6 +129,8 @@ namespace stardust
             &Application::InitialiseRenderer,
             &Application::InitialiseTextSystem,
             &Application::InitialiseScriptEngine,
+            &Application::InitialisePhysics,
+            &Application::InitialiseInput,
         };
 
         for (const auto& initialisationFunction : initialisationFunctions)
@@ -137,18 +139,6 @@ namespace stardust
             {
                 return;
             }
-        }
-
-        m_fixedTimestep = createInfo.physicsInfo.fixedTimestep;
-        physics::World::SetVelocityIterations(createInfo.physicsInfo.velocityIterations);
-        physics::World::SetPositionIterations(createInfo.physicsInfo.positionIterations);
-        Log::EngineInfo("Physics subsystem initialised.");
-
-        Input::SetGameControllerDeadzone(m_config["input"]["controller-deadzone"]);
-
-        if (Input::InitialiseGameControllerDatabase("assets/input/gamecontrollerdb.txt") != Status::Success)
-        {
-            Log::EngineWarn("Game controller database not loaded correctly - some controllers might not work properly.");
         }
 
         m_onInitialise = createInfo.initialiseCallback;
@@ -498,6 +488,30 @@ namespace stardust
     {
         m_scriptEngine.Initialise(*this);
         Log::EngineInfo("Lua script engine initialised.");
+
+        return Status::Success;
+    }
+
+    [[nodiscard]] Status Application::InitialisePhysics(const CreateInfo& createInfo)
+    {
+        m_fixedTimestep = createInfo.physicsInfo.fixedTimestep;
+        physics::World::SetVelocityIterations(createInfo.physicsInfo.velocityIterations);
+        physics::World::SetPositionIterations(createInfo.physicsInfo.positionIterations);
+        Log::EngineInfo("Physics subsystem initialised.");
+
+        return Status::Success;
+    }
+
+    [[nodiscard]] Status Application::InitialiseInput(const CreateInfo&)
+    {
+        Input::SetGameControllerDeadzone(m_config["input"]["controller-deadzone"]);
+
+        if (Input::InitialiseGameControllerDatabase("assets/input/gamecontrollerdb.txt") != Status::Success)
+        {
+            Log::EngineWarn("Game controller database not loaded correctly - some controllers might not work properly.");
+        }
+
+        Log::EngineInfo("Input subsystem initialised.");
 
         return Status::Success;
     }
