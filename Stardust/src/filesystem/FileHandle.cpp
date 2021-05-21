@@ -18,7 +18,7 @@ namespace stardust
             m_handle = std::exchange(other.m_handle, nullptr);
         }
 
-        FileHandle& FileHandle::operator=(FileHandle&& other) noexcept
+        FileHandle& FileHandle::operator =(FileHandle&& other) noexcept
         {
             Close();
             m_handle = std::exchange(other.m_handle, nullptr);

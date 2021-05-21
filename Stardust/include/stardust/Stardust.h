@@ -36,6 +36,7 @@
 
 #include "filesystem/shared_object/SharedObject.h"
 #include "filesystem/vfs/VFS.h"
+#include "filesystem/vfs/VirtualFileHandle.h"
 #include "filesystem/FileHandle.h"
 #include "filesystem/Filesystem.h"
 
