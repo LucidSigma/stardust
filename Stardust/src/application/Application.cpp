@@ -31,6 +31,11 @@ namespace stardust
 
     Application::~Application() noexcept
     {
+        if (m_onExit.has_value())
+        {
+            m_onExit.value()(*this);
+        }
+
         m_entityRegistry.clear();
         m_globalSceneData.clear();
 
@@ -74,11 +79,6 @@ namespace stardust
 
             PollEvents(event);
             UpdateSceneQueue();
-        }
-
-        if (m_onExit.has_value())
-        {
-            m_onExit.value()(*this);
         }
     }
 
