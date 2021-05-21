@@ -7,6 +7,9 @@
 #include <SDL2/SDL.h>
 
 #include "stardust/data/Types.h"
+#include "stardust/input/controller/GameControllerCodes.h"
+#include "stardust/input/keyboard/KeyCodes.h"
+#include "stardust/input/mouse/MouseButtonCodes.h"
 
 namespace stardust
 {
@@ -103,6 +106,10 @@ namespace stardust
     [[nodiscard]] inline EventType GetEventType(const Event& event) noexcept { return static_cast<EventType>(event.type); }
     [[nodiscard]] inline WindowEventType GetWindowEventType(const WindowEvent& windowEvent) noexcept { return static_cast<WindowEventType>(windowEvent.event); }
     [[nodiscard]] inline DisplayEventType GetDisplayEventType(const DisplayEvent& displayEvent) noexcept { return static_cast<DisplayEventType>(displayEvent.event); }
+
+    [[nodiscard]] extern KeyCode GetEventKeyCode(const Event& event) noexcept;
+    [[nodiscard]] extern MouseButton GetEventMouseButton(const Event& event) noexcept;
+    [[nodiscard]] extern GameControllerButton GetEventGameControllerButton(const Event& event) noexcept;
 
     [[nodiscard]] extern bool IsEventEnqueued(const EventType eventType) noexcept;
 

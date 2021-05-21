@@ -490,7 +490,7 @@ public:
 
     virtual void PollEvent(const sd::Event& event) override
     {
-        if (sd::GetEventType(event) == sd::EventType::KeyDown && event.key.keysym.sym == SDLK_F11)
+        if (sd::GetEventType(event) == sd::EventType::KeyDown && sd::GetEventKeyCode(event) == sd::KeyCode::F11)
         {
             if (!GetWindow().IsFullscreen())
             {

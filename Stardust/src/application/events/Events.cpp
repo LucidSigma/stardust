@@ -2,6 +2,21 @@
 
 namespace stardust
 {
+    [[nodiscard]] KeyCode GetEventKeyCode(const Event& event) noexcept
+    {
+        return static_cast<KeyCode>(event.key.keysym.scancode);
+    }
+
+    [[nodiscard]] MouseButton GetEventMouseButton(const Event& event) noexcept
+    {
+        return static_cast<MouseButton>(event.button.button);
+    }
+
+    [[nodiscard]] GameControllerButton GetEventGameControllerButton(const Event& event) noexcept
+    {
+        return static_cast<GameControllerButton>(event.cbutton.button);
+    }
+
     [[nodiscard]] bool IsEventEnqueued(const EventType eventType) noexcept
     {
         return SDL_HasEvent(static_cast<SDL_EventType>(eventType)) == SDL_TRUE;
