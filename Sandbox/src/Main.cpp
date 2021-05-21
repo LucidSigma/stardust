@@ -20,7 +20,7 @@ int main([[maybe_unused]] const int argc, char* argv[])
         },
         .filepaths = sd::Application::FilepathsInfo{
             .defaultConfigFilepath = "assets/defaults/config.json",
-            .windowIconFile = "assets/icon/icon.png",
+            .windowIconFilepath = sd::Optional<sd::StringView>("assets/icon/icon.png"),
         },
 
         .physicsInfo = sd::Application::PhysicsInfo{

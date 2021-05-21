@@ -47,7 +47,7 @@ namespace stardust
         struct FilepathsInfo
         {
             StringView defaultConfigFilepath;
-            StringView windowIconFile;
+            Optional<StringView> windowIconFilepath;
         };
 
         struct PhysicsInfo

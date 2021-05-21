@@ -344,7 +344,11 @@ namespace stardust
             return Status::Fail;
         }
 
-        m_window.SetIcon(createInfo.filepaths.windowIconFile, m_locale);
+        if (createInfo.filepaths.windowIconFilepath.has_value())
+        {
+            m_window.SetIcon(createInfo.filepaths.windowIconFilepath.value(), m_locale);
+        }
+
         Log::EngineInfo("Window created.");
 
         return Status::Success;
