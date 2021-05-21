@@ -91,10 +91,9 @@ namespace stardust
 
         [[nodiscard]] Vector<ubyte> VirtualFileHandle::Read(const usize byteCount) const
         {
-            const PHYSFS_sint64 fileSize = PHYSFS_fileLength(m_handle);
-            Vector<ubyte> fileData(fileSize);
+            Vector<ubyte> fileData(byteCount);
 
-            const PHYSFS_sint64 readResult =  PHYSFS_readBytes(m_handle, fileData.data(), fileSize);
+            const PHYSFS_sint64 readResult =  PHYSFS_readBytes(m_handle, fileData.data(), byteCount);
 
             return readResult == -1ll ? Vector<ubyte>{ } : fileData;
         }

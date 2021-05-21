@@ -157,7 +157,13 @@ namespace stardust
                 return Vector<ubyte>{ };
             }
 
-            const PHYSFS_sint64 fileSize = PHYSFS_fileLength(file);
+            const usize fileSize = GetFileSize(filepath);
+
+            if (fileSize == 0u)
+            {
+                return Vector<ubyte>{ };
+            }
+
             Vector<ubyte> fileData(fileSize);
 
             if (PHYSFS_readBytes(file, fileData.data(), fileSize) == -1ll)
