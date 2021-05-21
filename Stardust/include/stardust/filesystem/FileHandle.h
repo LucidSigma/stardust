@@ -60,7 +60,8 @@ namespace stardust
             [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
 
             [[nodiscard]] Optional<i64> Tell() const;
-            [[nodiscard]] Optional<i64> Seek(const SeekLocation location, const i64 offset) const;
+            Status Seek(const SeekLocation location, const i64 offset) const;
+            [[nodiscard]] bool IsAtEOF() const;
 
             [[nodiscard]] Vector<ubyte> Read(const usize byteCount) const;
             [[nodiscard]] String ReadString(const usize byteCount) const;

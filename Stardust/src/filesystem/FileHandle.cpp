@@ -75,18 +75,40 @@ namespace stardust
             }
         }
 
-        [[nodiscard]] Optional<i64> FileHandle::Seek(const SeekLocation location, const i64 offset) const
+        Status FileHandle::Seek(const SeekLocation location, const i64 offset) const
         {
             const i64 seekResult = SDL_RWseek(m_handle, offset, static_cast<i32>(location));
 
-            if (seekResult == -1)
+            return seekResult == -1 ? Status::Fail : Status::Success;
+        }
+
+        [[nodiscard]] bool FileHandle::IsAtEOF() const
+        {
+            const Optional<i64> currentLocation = Tell();
+
+            if (!currentLocation.has_value())
             {
-                return NullOpt;
+                return false;
             }
-            else
+
+            if (Seek(SeekLocation::End, 0) == Status::Fail)
             {
-                return seekResult;
+                return false;
             }
+
+            const Optional<i64> eofLocation = Tell();
+
+            if (!eofLocation.has_value())
+            {
+                Seek(SeekLocation::Beginning, currentLocation.value());
+
+                return false;
+            }
+
+            const bool isAtEOF = (eofLocation.value() - currentLocation.value()) == 0;
+            Seek(SeekLocation::Beginning, currentLocation.value());
+
+            return isAtEOF;
         }
 
         [[nodiscard]] Vector<ubyte> FileHandle::Read(const usize byteCount) const
