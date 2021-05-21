@@ -153,7 +153,7 @@ namespace stardust
             const PHYSFS_sint64 fileSize = PHYSFS_fileLength(file);
             Vector<ubyte> fileData(fileSize);
 
-            if (PHYSFS_readBytes(file, fileData.data(), fileSize) == -1)
+            if (PHYSFS_readBytes(file, fileData.data(), fileSize) == -1ll)
             {
                 PHYSFS_close(file);
                 file = nullptr;
@@ -176,7 +176,7 @@ namespace stardust
                 return Status::Fail;
             }
 
-            if (PHYSFS_writeBytes(file, data.data(), data.size()) == -1)
+            if (PHYSFS_writeBytes(file, data.data(), data.size()) == -1ll)
             {
                 PHYSFS_close(file);
                 file = nullptr;
@@ -199,7 +199,7 @@ namespace stardust
                 return Status::Fail;
             }
 
-            if (PHYSFS_writeBytes(file, data.data(), data.length()) == -1)
+            if (PHYSFS_writeBytes(file, data.data(), data.length()) == -1ll)
             {
                 PHYSFS_close(file);
                 file = nullptr;
@@ -222,7 +222,7 @@ namespace stardust
                 return Status::Fail;
             }
 
-            if (PHYSFS_writeBytes(file, data.data(), data.size()) == -1)
+            if (PHYSFS_writeBytes(file, data.data(), data.size()) == -1ll)
             {
                 PHYSFS_close(file);
                 file = nullptr;
@@ -245,7 +245,7 @@ namespace stardust
                 return Status::Fail;
             }
 
-            if (PHYSFS_writeBytes(file, data.data(), data.length()) == -1)
+            if (PHYSFS_writeBytes(file, data.data(), data.length()) == -1ll)
             {
                 PHYSFS_close(file);
                 file = nullptr;
