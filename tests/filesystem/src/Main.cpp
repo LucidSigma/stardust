@@ -31,6 +31,12 @@ TEST_CASE("Query and iterate files in directories", "[filesystem]")
         REQUIRE(sd::fs::GetFileExtension("fs_resources/1.txt") == ".txt");
     }
 
+    SECTION("Can query the size of a file")
+    {
+        REQUIRE(sd::fs::GetFileSize("fs_resources/1.txt") == 18u);
+        REQUIRE(sd::fs::GetFileSize("fs_resources/test.json") == 40u);
+    }
+
     SECTION("Can convert JSON to and from MessagePack")
     {
         const nlohmann::json json = nlohmann::json::parse(sd::fs::ReadFile("fs_resources/test.json"));
@@ -52,14 +58,14 @@ TEST_CASE("VFS can open and read from zip files", "[vfs]")
     
     SECTION("Can read files from a zip archive")
     {
-        REQUIRE(sd::vfs::GetAllFilesInDirectory("resources").size() == 2u);
-        REQUIRE(sd::vfs::GetAllFileNamesInDirectory("resources").size() == 2u);
+        REQUIRE(sd::vfs::GetAllFilesInDirectory("resources").size() == 3u);
+        REQUIRE(sd::vfs::GetAllFileNamesInDirectory("resources").size() == 3u);
     }
     
     SECTION("Can recursively read files from a zip archive")
     {
-        REQUIRE(sd::vfs::GetAllFilesInDirectoryRecursive("resources").size() == 4u);
-        REQUIRE(sd::vfs::GetAllFileNamesInDirectoryRecursive("resources").size() == 4);
+        REQUIRE(sd::vfs::GetAllFilesInDirectoryRecursive("resources").size() == 5u);
+        REQUIRE(sd::vfs::GetAllFileNamesInDirectoryRecursive("resources").size() == 5u);
     }
     
     SECTION("Can determine if files/directories exist")
@@ -70,6 +76,12 @@ TEST_CASE("VFS can open and read from zip files", "[vfs]")
         REQUIRE(sd::vfs::IsDirectory("resources/a"));
         REQUIRE(!sd::vfs::IsDirectory("resources/c"));
         REQUIRE(!sd::vfs::IsDirectory("resources/1.txt"));
+    }
+
+    SECTION("Can query the size of a file")
+    {
+        REQUIRE(sd::vfs::GetFileSize("resources/1.txt") == 18u);
+        REQUIRE(sd::vfs::GetFileSize("resources/test.json") == 40u);
     }
 
     sd::vfs::Quit();
