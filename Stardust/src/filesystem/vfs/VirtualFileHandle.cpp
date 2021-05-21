@@ -67,7 +67,7 @@ namespace stardust
         {
             const PHYSFS_sint64 tellResult = PHYSFS_tell(m_handle);
 
-            if (tellResult == -1)
+            if (tellResult == -1ll)
             {
                 return NullOpt;
             }
