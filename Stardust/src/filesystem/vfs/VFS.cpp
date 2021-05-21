@@ -138,7 +138,14 @@ namespace stardust
 
         [[nodiscard]] bool IsDirectory(const StringView& filepath)
         {
-            return PHYSFS_isDirectory(filepath.data()) != 0;
+            PHYSFS_Stat fileStats{ };
+
+            if (PHYSFS_stat(filepath.data(), &fileStats) == 0)
+            {
+                return false;
+            }
+
+            return fileStats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY;
         }
 
         [[nodiscard]] Vector<ubyte> ReadFileData(const StringView& filepath)
