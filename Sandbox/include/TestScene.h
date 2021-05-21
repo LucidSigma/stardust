@@ -55,7 +55,7 @@ public:
     {
         sd::SetCursor(sd::CursorType::No);
 
-        const sd::system::CPUInfo& cpuInfo = sd::system::GetCPUInfo();
+        const sd::sys::CPUInfo& cpuInfo = sd::sys::GetCPUInfo();
 
         sd::Log::Trace("CPU name: {} [Vendor: {}]", cpuInfo.name, cpuInfo.vendor);
         sd::Log::Trace("Cores: {}; Family: {}; Model: {}; Stepping level: {}", cpuInfo.coreCount, cpuInfo.family, cpuInfo.model, cpuInfo.steppingLevel);
@@ -65,12 +65,12 @@ public:
             sd::Log::Trace("\tCache level {} - Size: {} bytes; Lines: {}; Line size: {} bytes", level, size, lineCount, lineSize);
         }
 
-        const sd::system::GPUInfo& gpuInfo = sd::system::GetGPUInfo();
+        const sd::sys::GPUInfo& gpuInfo = sd::sys::GetGPUInfo();
         sd::Log::Trace("GPU: {} [Vendor: {}]", gpuInfo.name, gpuInfo.vendor);
         sd::Log::Trace("Supports OpenGL {} and GLSL {} [Running OpenGL {}]", gpuInfo.openGLVersion.ToString(), gpuInfo.glslVersion.ToString(false), sd::opengl::GetVersion().ToString(false));
         sd::Log::Trace("Max texture size: {} bytes", gpuInfo.maxTextureSize);
 
-        sd::Log::Trace("Memory: {} megabytes", sd::system::GetSystemRAMCount());
+        sd::Log::Trace("Memory: {} megabytes", sd::sys::GetSystemRAMCount());
 
         GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
 

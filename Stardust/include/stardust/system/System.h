@@ -10,6 +10,8 @@ namespace stardust
     {
         [[nodiscard]] extern u32 GetSystemRAMCount();
     }
+
+    namespace sys = system;
 }
 
 #endif
