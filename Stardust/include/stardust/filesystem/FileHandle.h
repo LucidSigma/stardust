@@ -24,8 +24,8 @@ namespace stardust
                 Write,
                 Append,
                 ReadWrite,
-                ReadAppend,
                 ReadWriteReplace,
+                ReadAppend,
             };
 
             enum class OpenFormat
@@ -62,11 +62,14 @@ namespace stardust
             [[nodiscard]] Optional<i64> Tell() const;
             [[nodiscard]] Optional<i64> Seek(const SeekLocation location, const i64 offset) const;
 
-            [[nodiscard]] Vector<ubyte> Read(const usize bytes) const;
-            [[nodiscard]] Status Write(const String& string) const;
+            [[nodiscard]] Vector<ubyte> Read(const usize byteCount) const;
+            [[nodiscard]] String ReadString(const usize byteCount) const;
             [[nodiscard]] Status Write(const Vector<ubyte>& bytes) const;
+            [[nodiscard]] Status Write(const String& string) const;
 
             [[nodiscard]] usize Size() const;
+
+            [[nodiscard]] SDL_RWops* GetRawHandle() const noexcept { return m_handle; }
         };
     }
 }
