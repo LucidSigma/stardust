@@ -4,10 +4,44 @@
 #include <fstream>
 #include <sstream>
 
+#include <SDL2/SDL.h>
+
 namespace stardust
 {
     namespace filesystem
     {
+        [[nodiscard]] String GetApplicationBaseDirectory()
+        {
+            String baseDirectory;
+
+            if (char* baseDirectoryPointer = SDL_GetBasePath();
+                baseDirectoryPointer != nullptr)
+            {
+                baseDirectory = baseDirectoryPointer;
+
+                SDL_free(baseDirectoryPointer);
+                baseDirectoryPointer = nullptr;
+            }
+
+            return baseDirectory;
+        }
+
+        [[nodiscard]] String GetApplicationPreferenceDirectory(const StringView& organisationName, const StringView& applicationName)
+        {
+            String preferenceDirectory;
+
+            if (char* preferenceDirectoryPointer = SDL_GetPrefPath(organisationName.data(), applicationName.data());
+                preferenceDirectoryPointer != nullptr)
+            {
+                preferenceDirectory = preferenceDirectoryPointer;
+
+                SDL_free(preferenceDirectoryPointer);
+                preferenceDirectoryPointer = nullptr;
+            }
+
+            return preferenceDirectory;
+        }
+
         [[nodiscard]] Vector<String> GetAllFilesInDirectory(const StringView& directory)
         {
             Vector<String> files{ };

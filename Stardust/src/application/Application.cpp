@@ -104,14 +104,7 @@ namespace stardust
 
     void Application::Initialise(const CreateInfo& createInfo)
     {
-        if (char* baseDirectory = SDL_GetBasePath();
-            baseDirectory != nullptr)
-        {
-            m_baseDirectory = baseDirectory;
-
-            SDL_free(baseDirectory);
-            baseDirectory = nullptr;
-        }
+        m_baseDirectory = filesystem::GetApplicationBaseDirectory();
 
     #ifndef NDEBUG
         {
@@ -181,15 +174,9 @@ namespace stardust
             Log::EngineWarn("Failed to get base directory.");
         }
 
-        if (char* preferenceDirectory = SDL_GetPrefPath(createInfo.organisationName.data(), createInfo.applicationName.data());
-            preferenceDirectory != nullptr)
-        {
-            m_preferenceDirectory = preferenceDirectory;
+        m_preferenceDirectory = filesystem::GetApplicationPreferenceDirectory(createInfo.organisationName, createInfo.applicationName);
 
-            SDL_free(preferenceDirectory);
-            preferenceDirectory = nullptr;
-        }
-        else
+        if (m_preferenceDirectory.empty())
         {
             message_box::Show("Filesystem Error", "Failed to get preference directory.", message_box::Type::Error);
             Log::EngineError("Failed to get preference directory.");
