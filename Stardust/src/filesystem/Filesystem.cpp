@@ -1,8 +1,11 @@
 #include "stardust/filesystem/Filesystem.h"
 
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <sstream>
+#include <system_error>
 
 #include <SDL2/SDL.h>
 
@@ -278,6 +281,14 @@ namespace stardust
             outputFile.close();
 
             return Status::Success;
+        }
+
+        [[nodiscard]] usize GetFileSize(const StringView& filepath)
+        {
+            std::error_code errorCode;
+            const std::uintmax_t fileSize = std::filesystem::file_size(filepath, errorCode);
+
+            return fileSize != std::numeric_limits<std::uintmax_t>::max() ? static_cast<usize>(fileSize) : 0u;
         }
 
         [[nodiscard]] Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data)

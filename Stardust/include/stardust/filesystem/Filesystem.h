@@ -44,6 +44,8 @@ namespace stardust
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const nlohmann::json& data);
 
+        [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
+
         [[nodiscard]] extern Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data);
         [[nodiscard]] extern nlohmann::json ReadMessagePack(const StringView& filepath);
     }

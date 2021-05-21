@@ -33,6 +33,8 @@ namespace stardust
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
+
+        [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
     }
 }
 

@@ -265,5 +265,22 @@ namespace stardust
 
             return Status::Success;
         }
+
+        [[nodiscard]] usize GetFileSize(const StringView& filepath)
+        {
+            PHYSFS_Stat fileStats{ };
+
+            if (PHYSFS_stat(filepath.data(), &fileStats) == 0)
+            {
+                return 0u;
+            }
+
+            if (fileStats.filetype == PHYSFS_FileType::PHYSFS_FILETYPE_DIRECTORY)
+            {
+                return 0u;
+            }
+
+            return static_cast<usize>(fileStats.filesize);
+        }
     }
 }
