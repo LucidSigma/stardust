@@ -2,10 +2,11 @@
 #ifndef STARDUST_ENTITY_REGISTRY_H
 #define STARDUST_ENTITY_REGISTRY_H
 
+#include <functional>
+
 #include <entt/entt.hpp>
 
-#include "stardust/scene/entity/Entity.h"
-#include "stardust/scene/Scene.h"
+#include "stardust/data/Containers.h"
 
 namespace stardust
 {
@@ -18,8 +19,22 @@ namespace stardust
         EntityRegistry() = default;
         ~EntityRegistry() noexcept = default;
 
-        [[nodiscard]] Entity CreateEntity(Scene& scene);
-        void DestroyEntity(const Entity& entity);
+        [[nodiscard]] class Entity CreateEntity(class Scene& scene);
+        void DestroyEntity(const class Entity& entity);
+
+        template <typename T>
+        void SortEntities(const std::function<bool(const T&, const T&)>& predicate)
+        {
+            m_handle.sort<T>(predicate);
+        }
+
+        [[nodiscard]] bool IsEntityValid(const class Entity& entity) const;
+
+        template <typename... Args>
+        void ClearComponents()
+        {
+            m_handle.clear<Args...>();
+        }
 
         void ClearAllEntities();
 

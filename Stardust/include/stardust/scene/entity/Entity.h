@@ -7,6 +7,8 @@
 #include <entt/entt.hpp>
 
 #include "stardust/data/Pointers.h"
+#include "stardust/data/Types.h"
+#include "stardust/scene/registry/EntityRegistry.h"
 #include "stardust/scene/Scene.h"
 
 namespace stardust
@@ -25,26 +27,60 @@ namespace stardust
         template <typename T, typename... Args>
         T& AddComponent(Args&&... args)
         {
-            return m_scene->GetEntityRegistry().emplace<T>(m_handle, std::forward<Args>(args)...);
+            return m_scene->GetEntityRegistry().GetHandle().emplace<T>(m_handle, std::forward<Args>(args)...);
+        }
+
+        template <typename T, typename... Args>
+        void PatchComponent(Args&&... args)
+        {
+            return m_scene->GetEntityRegistry().GetHandle().patch<T>(m_handle, std::forward<Args>(args)...);
         }
 
         template <typename T>
         void RemoveComponent() const
         {
-            return m_scene->GetEntityRegistry().remove<T>(m_handle);
+            return m_scene->GetEntityRegistry().GetHandle().remove<T>(m_handle);
         }
 
         template <typename T>
         [[nodiscard]] T& GetComponent() const
         {
-            return m_scene->GetEntityRegistry().get<T>(m_handle);
+            return m_scene->GetEntityRegistry().GetHandle().get<T>(m_handle);
+        }
+
+        template <typename T>
+        [[nodiscard]] ObserverPtr<T> TryGetComponent() const
+        {
+            return m_scene->GetEntityRegistry().GetHandle().try_get<T>(m_handle);
         }
 
         template <typename T>
         [[nodiscard]] bool HasComponent() const
         {
-            return m_scene->GetEntityRegistry().has<T>(m_handle);
+            return m_scene->GetEntityRegistry().GetHandle().has<T>(m_handle);
         }
+
+        template <typename... Args>
+        [[nodiscard]] bool HasAllComponents() const
+        {
+            return m_scene->GetEntityRegistry().GetHandle().all_of<Args...>(m_handle);
+        }
+
+        template <typename... Args>
+        [[nodiscard]] bool HasAnyComponents() const
+        {
+            return m_scene->GetEntityRegistry().GetHandle().any_of<Args...>(m_handle);
+        }
+
+        template <typename... Args>
+        [[nodiscard]] bool HasNoComponents() const
+        {
+            return !m_scene->GetEntityRegistry().GetHandle().any_of<Args...>(m_handle);
+        }
+
+        [[nodiscard]] bool IsOrphan() const;
+
+        [[nodiscard]] inline bool IsValid() const noexcept { return m_scene->GetEntityRegistry().IsEntityValid(*this); }
 
         [[nodiscard]] inline bool IsNull() const noexcept { return m_handle == entt::null; }
         [[nodiscard]] entt::entity GetHandle() const noexcept { return m_handle; }
