@@ -22,6 +22,18 @@ namespace stardust
         [[nodiscard]] class Entity CreateEntity(class Scene& scene);
         void DestroyEntity(const class Entity& entity);
 
+        template <typename... Args>
+        [[nodiscard]] entt::view<Args...> ViewEntities()
+        {
+            return m_handle.view<Args...>();
+        }
+
+        template <typename... Args>
+        [[nodiscard]] entt::view<Args...>::iterable_view IterateEntities()
+        {
+            return m_handle.view<Args...>().each();
+        }
+
         template <typename T>
         void SortEntities(const std::function<bool(const T&, const T&)>& predicate)
         {
