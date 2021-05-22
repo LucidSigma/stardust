@@ -5,6 +5,7 @@
 #include "stardust/camera/Camera2D.h"
 #include "stardust/input/InputManager.h"
 #include "stardust/scene/entity/Entity.h"
+#include "stardust/scene/registry/EntityRegistry.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/scripting/ScriptEngine.h"
 #include "stardust/window/Window.h"
@@ -23,6 +24,16 @@ namespace stardust
     [[nodiscard]] const Application& Scene::GetApplication() const noexcept
     {
         return m_application;
+    }
+
+    [[nodiscard]] EntityRegistry& Scene::GetEntityRegistry() noexcept
+    {
+        return m_entityRegistry;
+    }
+
+    [[nodiscard]] const EntityRegistry& Scene::GetEntityRegistry() const noexcept
+    {
+        return m_entityRegistry;
     }
 
     [[nodiscard]] Window& Scene::GetWindow() noexcept
@@ -102,6 +113,6 @@ namespace stardust
 
     Entity Scene::CreateEntity()
     {
-        return Entity(m_entityRegistry.create(), *this);
+        return m_entityRegistry.CreateEntity(*this);
     }
 }

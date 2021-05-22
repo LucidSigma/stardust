@@ -36,7 +36,7 @@ namespace stardust
             m_onExit.value()(*this);
         }
 
-        m_entityRegistry.clear();
+        m_entityRegistry.ClearAllEntities();
         m_globalSceneData.clear();
 
         Input::RemoveAllGameControllers();
@@ -700,7 +700,7 @@ namespace stardust
 
             m_renderer.SetClearColour(colours::Black);
             m_camera.ResetTransform();
-            m_entityRegistry.clear();
+            m_entityRegistry.ClearAllEntities();
             m_soundSystem.GetListener().Reset();
 
             if (!m_sceneManager.IsEmpty())

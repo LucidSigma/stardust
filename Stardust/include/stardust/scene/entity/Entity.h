@@ -46,6 +46,7 @@ namespace stardust
             return m_scene->GetEntityRegistry().has<T>(m_handle);
         }
 
+        [[nodiscard]] inline bool IsNull() const noexcept { return m_handle == entt::null; }
         [[nodiscard]] entt::entity GetHandle() const noexcept { return m_handle; }
 
         [[nodiscard]] bool operator ==(const Entity&) const = default;

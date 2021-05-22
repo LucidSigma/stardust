@@ -92,6 +92,7 @@
 
 #include "scene/components/Components.h"
 #include "scene/entity/Entity.h"
+#include "scene/registry/EntityRegistry.h"
 #include "scene/Scene.h"
 #include "scene/SceneManager.h"
 
