@@ -55,17 +55,17 @@ namespace stardust
     template <typename T>
     using HashSet = std::unordered_set<T>;
 
-    template <typename K, typename V>
-    using Map = std::map<K, V>;
+    template <typename K, typename V, typename Comp = std::less<K>>
+    using Map = std::map<K, V, Comp>;
 
-    template <typename K, typename V>
-    using MultiMap = std::multimap<K, V>;
+    template <typename K, typename V, typename Comp = std::less<K>>
+    using MultiMap = std::multimap<K, V, Comp>;
 
-    template <typename T>
-    using Set = std::set<T>;
+    template <typename T, typename Comp = std::less<T>>
+    using Set = std::set<T, Comp>;
 
-    template <typename T>
-    using MultiSet = std::multiset<T>;
+    template <typename T, typename Comp = std::less<T>>
+    using MultiSet = std::multiset<T, Comp>;
 
     template <typename T>
     using Queue = std::queue<T>;
