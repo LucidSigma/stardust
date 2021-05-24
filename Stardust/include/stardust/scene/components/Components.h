@@ -9,6 +9,7 @@
 #include "ScreenTransformComponent.h"
 #include "ShearTransformComponent.h"
 #include "SpriteComponent.h"
+#include "StateBehaviourComponent.h"
 #include "TagComponent.h"
 #include "TilemapLayerComponent.h"
 #include "TransformComponent.h"

@@ -40,6 +40,7 @@ namespace stardust
             void DeregisterState(const String& name);
 
             [[nodiscard]] inline bool IsCurrentStateValid() const noexcept { return m_currentState != nullptr; }
+            [[nodiscard]] inline ObserverPtr<const State> GetCurrentState() const noexcept { return m_currentState; }
             [[nodiscard]] inline bool HasState(const String& name) const noexcept { return m_states.contains(name); }
         };
     }
