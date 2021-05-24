@@ -112,31 +112,13 @@ namespace stardust
                 if (const auto nodeLocation = m_edges.find(node);
                     nodeLocation != std::cend(m_edges))
                 {
-                    adjacentNodes.insert({ nodeLocation->second.node, nodeLocation->second.weight });
+                    for (const auto& edgeData : nodeLocation->second)
+                    {
+                        adjacentNodes.insert({ edgeData.node, edgeData.weight });
+                    }
                 }
 
                 return adjacentNodes;
-            }
-
-            void RemoveEdges(const T& source, const T& destination)
-            {
-                if (const auto sourceLocation = m_edges.find(source);
-                    sourceLocation != std::cend(m_edges))
-                {
-                    sourceLocation->second = { };
-                }
-
-                if (const auto destinationLocation = m_edges.find(source);
-                    destinationLocation != std::cend(m_edges))
-                {
-                    destinationLocation->second.erase(
-                        std::remove_if(std::begin(destinationLocation->second), std::end(destinationLocation->second), [&source](const EdgeData& edgeData) -> bool
-                        {
-                            return edgeData.node == source && edgeData.isBidirectionalDuplicate;
-                        }),
-                        std::end(destinationLocation->second)
-                    );
-                }
             }
 
             void RemoveNode(const T& node)
@@ -155,7 +137,7 @@ namespace stardust
                 }
             }
 
-            [[nodiscard]] inline void HasNode(const T& node) const noexcept { return m_edges.contains(node); }
+            [[nodiscard]] inline bool HasNode(const T& node) const noexcept { return m_edges.contains(node); }
 
             [[nodiscard]] inline usize GetOrder() const noexcept { return m_edges.size(); }
 
