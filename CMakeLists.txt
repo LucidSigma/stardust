@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(STARDUST_BUILD_SANDBOX "Whether to build the sandbox application or not." ON)
-option(STARDUST_BUILD_TESTS "Whether to build the unit tests or not." ON)
+option(STARDUST_BUILD_SANDBOX "Whether to build the sandbox application or not." OFF)
+option(STARDUST_BUILD_TESTS "Whether to build the unit tests or not." OFF)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
