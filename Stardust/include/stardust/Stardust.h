@@ -58,7 +58,6 @@
 #include "graphics/renderer/FlipType.h"
 #include "graphics/renderer/Renderer.h"
 #include "graphics/renderer/Quad.h"
-
 #include "graphics/shaders/Shader.h"
 #include "graphics/shaders/ShaderProgram.h"
 #include "graphics/surface/PixelSurface.h"

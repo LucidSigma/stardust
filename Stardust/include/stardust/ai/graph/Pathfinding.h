@@ -36,7 +36,7 @@ namespace stardust
             {
                 if (node != rootNode)
                 {
-                    nodeDistances[node] = std::numeric_limits<f32>::max();
+                    nodeDistances[node] = std::numeric_limits<f32>::infinity();
                 }
 
                 nodeQueue.push_back({ node, nodeDistances[node] });
@@ -91,7 +91,7 @@ namespace stardust
             {
                 if (node != rootNode)
                 {
-                    nodeDistances[node] = std::numeric_limits<f32>::max();
+                    nodeDistances[node] = std::numeric_limits<f32>::infinity();
                 }
 
                 predecessorNodes[node] = NullOpt;
@@ -123,7 +123,7 @@ namespace stardust
                     }
                 }
 
-                if (currentNode == goalNode && minDistance != std::numeric_limits<f32>::max())
+                if (currentNode == goalNode && minDistance != std::numeric_limits<f32>::infinity())
                 {
                     wasNodeFound = true;
 
@@ -184,8 +184,8 @@ namespace stardust
             {
                 if (node != rootNode)
                 {
-                    fScores[node] = std::numeric_limits<f32>::max();
-                    gScores[node] = std::numeric_limits<f32>::max();
+                    fScores[node] = std::numeric_limits<f32>::infinity();
+                    gScores[node] = std::numeric_limits<f32>::infinity();
                 }
                 
                 predecessorNodes[node] = NullOpt;
