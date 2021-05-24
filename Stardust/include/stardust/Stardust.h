@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <sol/sol.hpp>
 
+#include "ai/graph/Graph.h"
 #include "ai/state_machine/State.h"
 #include "ai/state_machine/StateMachine.h"
 
