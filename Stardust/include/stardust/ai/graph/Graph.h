@@ -11,16 +11,15 @@ namespace stardust
 {
     namespace ai
     {
+        enum class EdgeDirection
+        {
+            Unidirectional,
+            Bidirectional,
+        };
+
         template <typename T>
         class Graph
         {
-        public:
-            enum class EdgeDirection
-            {
-                Unidirectional,
-                Bidirectional,
-            };
-
         private:
             struct EdgeData
             {
