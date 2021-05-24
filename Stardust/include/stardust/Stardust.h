@@ -8,6 +8,7 @@
 
 #include "ai/graph/Graph.h"
 #include "ai/graph/Pathfinding.h"
+#include "ai/graph/Traversal.h"
 #include "ai/state_machine/State.h"
 #include "ai/state_machine/StateMachine.h"
 
