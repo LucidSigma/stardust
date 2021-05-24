@@ -131,6 +131,41 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
         REQUIRE(dijkstrasAlgorithm == sd::Vector<sd::String>{ "A", "B", "D" });
 
         dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "B", "E");
-        REQUIRE(dijkstrasAlgorithm == sd::Vector<sd::String>{ });
+        REQUIRE(dijkstrasAlgorithm.empty());
+
+        std::function<sd::f32(const sd::String&, const sd::String&)> heuristicFunction = [](const sd::String& currentNode, const sd::String& goalNode) -> sd::f32
+        {
+            return sd::HashMap<sd::String, sd::f32>{
+                { "A", 0.0f },
+                { "B", 5.5f },
+                { "C", 2.5f },
+                { "D", 7.4f },
+                { "E", 8.4f },
+                { "F", 18.4f },
+                { "G", std::numeric_limits<sd::f32>::max() },
+            }.at(currentNode);
+        };
+
+        auto aStarSearch = sd::ai::AStarSearch<sd::String>(graph, "E", "A", heuristicFunction);
+        REQUIRE(aStarSearch == sd::Vector<sd::String>{ "E", "D", "B", "C", "A" });
+
+        heuristicFunction = [](const sd::String& currentNode, const sd::String& goalNode) -> sd::f32
+        {
+            return sd::HashMap<sd::String, sd::f32>{
+                { "A", 8.9f },
+                { "B", 1.9f },
+                { "C", 0.4f },
+                { "D", 0.0f },
+                { "E", 1.0f },
+                { "F", 11.1f },
+                { "G", std::numeric_limits<sd::f32>::max() },
+            }.at(currentNode);
+        };
+
+        aStarSearch = sd::ai::AStarSearch<sd::String>(graph, "A", "D", heuristicFunction);
+        REQUIRE(aStarSearch == sd::Vector<sd::String>{ "A", "B", "D" });
+
+        aStarSearch = sd::ai::AStarSearch<sd::String>(graph, "B", "E", heuristicFunction);
+        REQUIRE(aStarSearch.empty());
     }
 }

@@ -3,6 +3,7 @@
 #define STARDUST_PATHFINDING_H
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 
 #include "stardust/data/Containers.h"
@@ -43,9 +44,9 @@ namespace stardust
 
                     const auto adjacentNodes = graph.GetAdjacentNodes(currentNode);
 
-                    for (const auto& [node, weight] : adjacentNodes)
+                    for (const auto& [adjacentNode, weight] : adjacentNodes)
                     {
-                        nodeStack.push(node);
+                        nodeStack.push(adjacentNode);
                     }
                 }
             }
@@ -82,12 +83,12 @@ namespace stardust
 
                 const auto adjacentNodes = graph.GetAdjacentNodes(currentNode);
 
-                for (const auto& [node, weight] : adjacentNodes)
+                for (const auto& [adjacentNode, weight] : adjacentNodes)
                 {
-                    if (!visitedNodes.contains(node))
+                    if (!visitedNodes.contains(adjacentNode))
                     {
-                        visitedNodes.insert(node);
-                        nodeQueue.push(node);
+                        visitedNodes.insert(adjacentNode);
+                        nodeQueue.push(adjacentNode);
                     }
                 }
             }
@@ -132,12 +133,12 @@ namespace stardust
 
                 const auto adjacentNodes = graph.GetEfficientAdjacentNodes(currentNode);
 
-                for (const auto& [node, weight] : adjacentNodes)
+                for (const auto& [adjacentNode, weight] : adjacentNodes)
                 {
-                    if (!visitedNodes.contains(node))
+                    if (!visitedNodes.contains(adjacentNode))
                     {
-                        visitedNodes.insert(node);
-                        nodeQueue.push({ node, weight });
+                        visitedNodes.insert(adjacentNode);
+                        nodeQueue.push({ adjacentNode, weight });
                     }
                 }
             }
@@ -170,8 +171,9 @@ namespace stardust
                 if (node != rootNode)
                 {
                     nodeDistances[node] = std::numeric_limits<f32>::max();
-                    predecessorNodes[node] = NullOpt;
                 }
+
+                predecessorNodes[node] = NullOpt;
 
                 nodeQueue.push_back({ node, nodeDistances[node] });
                 std::ranges::sort(nodeQueue, NodeDistanceSorter);
@@ -186,16 +188,16 @@ namespace stardust
 
                 const auto adjacentNodes = graph.GetEfficientAdjacentNodes(currentNode);
 
-                for (const auto& [node, distance] : adjacentNodes)
+                for (const auto& [adjacentNode, distance] : adjacentNodes)
                 {
                     const f32 candidateDistance = nodeDistances[currentNode] + distance;
 
-                    if (candidateDistance < nodeDistances[node])
+                    if (candidateDistance < nodeDistances[adjacentNode])
                     {
-                        nodeDistances[node] = candidateDistance;
-                        predecessorNodes[node] = currentNode;
+                        nodeDistances[adjacentNode] = candidateDistance;
+                        predecessorNodes[adjacentNode] = currentNode;
 
-                        std::ranges::find_if(nodeQueue, [node](const auto& nodePair) -> bool { return nodePair.first == node; })->second = candidateDistance;
+                        std::ranges::find_if(nodeQueue, [adjacentNode](const auto& nodePair) -> bool { return nodePair.first == adjacentNode; })->second = candidateDistance;
                         std::ranges::sort(nodeQueue, NodeDistanceSorter);
                     }
                 }
@@ -205,6 +207,105 @@ namespace stardust
                     wasNodeFound = true;
 
                     break;
+                }
+            }
+
+            if (!wasNodeFound)
+            {
+                return { };
+            }
+
+            Vector<T> traversedNodes{ };
+            Optional<T> currentNode = goalNode;
+
+            while (currentNode.has_value())
+            {
+                traversedNodes.push_back(currentNode.value());
+                currentNode = predecessorNodes[currentNode.value()];
+            }
+
+            std::ranges::reverse(traversedNodes);
+
+            return traversedNodes;
+        }
+
+        template <typename T>
+        using HeuristicFunction = std::function<f32(const T&, const T&)>;
+
+        template <typename T>
+        [[nodiscard]] Vector<T> AStarSearch(const Graph<T>& graph, const T& rootNode, const T& goalNode, const HeuristicFunction<T>& heuristicFunction)
+        {
+            if (!graph.HasNode(rootNode) || !graph.HasNode(goalNode))
+            {
+                return { };
+            }
+
+            struct NodeScoreSorter
+            {
+                [[nodiscard]] inline bool operator ()(const Pair<T, f32>& lhs, const Pair<T, f32>& rhs) const noexcept
+                {
+                    return lhs.second > rhs.second;
+                }
+            };
+
+            PriorityQueue<Pair<T, f32>, NodeScoreSorter> openSet{ };
+            HashSet<T> visitedNodes{ };
+            HashMap<T, Optional<T>> predecessorNodes{ };
+
+            HashMap<T, f32> fScores{ };
+            HashMap<T, f32> gScores{ };
+            fScores[rootNode] = heuristicFunction(rootNode, goalNode);
+            gScores[rootNode] = 0.0f;
+            
+            const auto allNodes = graph.GetNodes();
+
+            for (const auto& node : allNodes)
+            {
+                if (node != rootNode)
+                {
+                    fScores[node] = std::numeric_limits<f32>::max();
+                    gScores[node] = std::numeric_limits<f32>::max();
+                }
+                
+                predecessorNodes[node] = NullOpt;
+            }
+
+            openSet.push({ rootNode, fScores[rootNode] });
+
+            bool wasNodeFound = false;
+
+            while (!openSet.empty())
+            {
+                const auto [currentNode, currentFScore] = openSet.top();
+                openSet.pop();
+
+                visitedNodes.insert(currentNode);
+
+                if (currentNode == goalNode)
+                {
+                    wasNodeFound = true;
+
+                    break;
+                }
+
+                const auto adjacentNodes = graph.GetEfficientAdjacentNodes(currentNode);
+
+                for (const auto& [adjacentNode, distance] : adjacentNodes)
+                {
+                    const f32 tentativeGScore = gScores[currentNode] + distance;
+
+                    if (tentativeGScore < gScores[adjacentNode])
+                    {
+                        gScores[adjacentNode] = tentativeGScore;
+                        fScores[adjacentNode] = gScores[adjacentNode] + heuristicFunction(adjacentNode, goalNode);
+
+                        predecessorNodes[adjacentNode] = currentNode;
+
+                        if (!visitedNodes.contains(adjacentNode))
+                        {
+                            openSet.push({ adjacentNode, fScores[adjacentNode] });
+                        }
+                    }
                 }
             }
 
