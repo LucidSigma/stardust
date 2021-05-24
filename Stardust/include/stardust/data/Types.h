@@ -31,6 +31,9 @@ namespace stardust
     using isize = std::ptrdiff_t;
     using usize = std::size_t;
 
+    using imax = std::intmax_t;
+    using umax = std::uintmax_t;
+
     using f32 = std::float_t;
     static_assert(sizeof(f32) == 4u);
     static_assert(std::numeric_limits<f32>::is_iec559);
