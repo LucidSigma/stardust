@@ -10,7 +10,7 @@ namespace stardust
     namespace ai
     {
         template <typename T>
-        [[nodiscard]] Vector<T> DepthFirstTraversal(const Graph<T>& graph, const T& root)
+        [[nodiscard]] Vector<T> DepthFirstTraversal(const Graph<T>& graph, const T& root, const Optional<T>& goalNode = NullOpt)
         {
             if (!graph.HasNode(root))
             {
@@ -33,6 +33,11 @@ namespace stardust
                     visitedNodes.insert(currentNode);
                     traversalOrder.push_back(currentNode);
 
+                    if (goalNode.has_value() && currentNode == goalNode.value())
+                    {
+                        break;
+                    }
+
                     const auto adjacentNodes = graph.GetAdjacentNodes(currentNode);
 
                     for (const auto& [node, weight] : adjacentNodes)
@@ -46,7 +51,7 @@ namespace stardust
         }
 
         template <typename T>
-        [[nodiscard]] Vector<T> BreadthFirstTraversal(const Graph<T>& graph, const T& root)
+        [[nodiscard]] Vector<T> BreadthFirstTraversal(const Graph<T>& graph, const T& root, const Optional<T>& goalNode = NullOpt)
         {
             if (!graph.HasNode(root))
             {
@@ -66,6 +71,12 @@ namespace stardust
                 nodeQueue.pop();
                 
                 traversalOrder.push_back(currentNode);
+
+                if (goalNode.has_value() && currentNode == goalNode.value())
+                {
+                    break;
+                }
+
                 const auto adjacentNodes = graph.GetAdjacentNodes(currentNode);
 
                 for (const auto& [node, weight] : adjacentNodes)
@@ -82,7 +93,7 @@ namespace stardust
         }
 
         template <typename T>
-        [[nodiscard]] Vector<T> BestFirstTraversal(const Graph<T>& graph, const T& root)
+        [[nodiscard]] Vector<T> BestFirstTraversal(const Graph<T>& graph, const T& root, const Optional<T>& goalNode = NullOpt)
         {
             if (!graph.HasNode(root))
             {
@@ -110,6 +121,12 @@ namespace stardust
                 nodeQueue.pop();
 
                 traversalOrder.push_back(currentNode);
+
+                if (goalNode.has_value() && currentNode == goalNode.value())
+                {
+                    break;
+                }
+
                 const auto adjacentNodes = graph.GetEfficientAdjacentNodes(currentNode);
 
                 for (const auto& [node, weight] : adjacentNodes)

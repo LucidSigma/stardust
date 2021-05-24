@@ -100,16 +100,25 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
         depthFirstTraversal = sd::ai::DepthFirstTraversal<sd::String>(graph, "E");
         REQUIRE(depthFirstTraversal == sd::Vector<sd::String>{ "E", "D", "F", "B", "C", "A" });
 
+        depthFirstTraversal = sd::ai::DepthFirstTraversal<sd::String>(graph, "E", "B");
+        REQUIRE(depthFirstTraversal == sd::Vector<sd::String>{ "E", "D", "F", "B" });
+
         auto breadthFirstTraversal = sd::ai::BreadthFirstTraversal<sd::String>(graph, "A");
         REQUIRE(breadthFirstTraversal == sd::Vector<sd::String>{ "A", "B", "C", "D", "F" });
 
         breadthFirstTraversal = sd::ai::BreadthFirstTraversal<sd::String>(graph, "E");
         REQUIRE(breadthFirstTraversal == sd::Vector<sd::String>{ "E", "C", "D", "A", "B", "F" });
 
+        breadthFirstTraversal = sd::ai::BreadthFirstTraversal<sd::String>(graph, "E", "B");
+        REQUIRE(breadthFirstTraversal == sd::Vector<sd::String>{ "E", "C", "D", "A", "B" });
+
         auto bestFirstTraversal = sd::ai::BestFirstTraversal<sd::String>(graph, "A");
         REQUIRE(bestFirstTraversal == sd::Vector<sd::String>{ "A", "B", "D", "C", "F" });
 
         bestFirstTraversal = sd::ai::BestFirstTraversal<sd::String>(graph, "E");
         REQUIRE(bestFirstTraversal == sd::Vector<sd::String>{ "E", "D", "B", "C", "A", "F" });
+
+        bestFirstTraversal = sd::ai::BestFirstTraversal<sd::String>(graph, "E", "B");
+        REQUIRE(bestFirstTraversal == sd::Vector<sd::String>{ "E", "D", "B" });
     }
 }
