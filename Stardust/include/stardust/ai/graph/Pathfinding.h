@@ -147,7 +147,61 @@ namespace stardust
         }
 
         template <typename T>
-        [[nodiscard]] Vector<T> DijkstrasAlgorithm(const Graph<T>& graph, const T& rootNode, const T& goalNode)
+        [[nodiscard]] HashMap<T, f32> DijkstrasAlgorithm(const Graph<T>& graph, const T& rootNode)
+        {
+            if (!graph.HasNode(rootNode))
+            {
+                return { };
+            }
+
+            HashMap<T, f32> nodeDistances{ };
+            nodeDistances[rootNode] = 0.0f;
+
+            constexpr auto NodeDistanceSorter = [](const Pair<T, f32>& lhs, const Pair<T, f32>& rhs) -> bool
+            {
+                return lhs.second > rhs.second;
+            };
+
+            Vector<Pair<T, f32>> nodeQueue{ };
+            const auto allNodes = graph.GetNodes();
+
+            for (const auto& node : allNodes)
+            {
+                if (node != rootNode)
+                {
+                    nodeDistances[node] = std::numeric_limits<f32>::max();
+                }
+
+                nodeQueue.push_back({ node, nodeDistances[node] });
+                std::ranges::sort(nodeQueue, NodeDistanceSorter);
+            }
+
+            while (!nodeQueue.empty())
+            {
+                const auto [currentNode, minDistance] = nodeQueue.back();
+                nodeQueue.pop_back();
+
+                const auto adjacentNodes = graph.GetEfficientAdjacentNodes(currentNode);
+
+                for (const auto& [adjacentNode, distance] : adjacentNodes)
+                {
+                    const f32 candidateDistance = nodeDistances[currentNode] + distance;
+
+                    if (candidateDistance < nodeDistances[adjacentNode])
+                    {
+                        nodeDistances[adjacentNode] = candidateDistance;
+
+                        std::ranges::find_if(nodeQueue, [adjacentNode](const auto& nodePair) -> bool { return nodePair.first == adjacentNode; })->second = candidateDistance;
+                        std::ranges::sort(nodeQueue, NodeDistanceSorter);
+                    }
+                }
+            }
+
+            return nodeDistances;
+        }
+
+        template <typename T>
+        [[nodiscard]] Vector<T> DijkstrasAlgorithmSearch(const Graph<T>& graph, const T& rootNode, const T& goalNode)
         {
             if (!graph.HasNode(rootNode) || !graph.HasNode(goalNode))
             {

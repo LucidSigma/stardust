@@ -122,15 +122,36 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
         REQUIRE(bestFirstTraversal == sd::Vector<sd::String>{ "E", "D", "B" });
     }
 
+    SECTION("Can find the shortest distances to each node from a root node")
+    {
+        auto dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "A");
+        REQUIRE(dijkstrasAlgorithm["A"] == 0.0f);
+        REQUIRE(dijkstrasAlgorithm["B"] == 7.0f);
+        REQUIRE(dijkstrasAlgorithm["C"] == 10.0f);
+        REQUIRE(dijkstrasAlgorithm["D"] == 8.9f);
+        REQUIRE(dijkstrasAlgorithm["E"] > 10'000.0f);
+        REQUIRE(dijkstrasAlgorithm["F"] == 20.0f);
+        REQUIRE(dijkstrasAlgorithm["G"] > 10'000.0f);
+
+        dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "E");
+        REQUIRE(dijkstrasAlgorithm["A"] == 8.4f);
+        REQUIRE(dijkstrasAlgorithm["B"] == 2.9f);
+        REQUIRE(dijkstrasAlgorithm["C"] == 5.9f);
+        REQUIRE(dijkstrasAlgorithm["D"] == 1.0f);
+        REQUIRE(dijkstrasAlgorithm["E"] == 0.0f);
+        REQUIRE(dijkstrasAlgorithm["F"] == 12.1f);
+        REQUIRE(dijkstrasAlgorithm["G"] > 10'000.0f);
+    }
+
     SECTION("Can pathfind in a graph")
     {
-        auto dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "E", "A");
+        auto dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithmSearch<sd::String>(graph, "E", "A");
         REQUIRE(dijkstrasAlgorithm == sd::Vector<sd::String>{ "E", "D", "B", "C", "A" });
 
-        dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "A", "D");
+        dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithmSearch<sd::String>(graph, "A", "D");
         REQUIRE(dijkstrasAlgorithm == sd::Vector<sd::String>{ "A", "B", "D" });
 
-        dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "B", "E");
+        dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithmSearch<sd::String>(graph, "B", "E");
         REQUIRE(dijkstrasAlgorithm.empty());
 
         std::function<sd::f32(const sd::String&, const sd::String&)> heuristicFunction = [](const sd::String& currentNode, const sd::String& goalNode) -> sd::f32
