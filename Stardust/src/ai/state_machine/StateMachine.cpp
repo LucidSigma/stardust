@@ -1,7 +1,5 @@
 #include "stardust/ai/state_machine/StateMachine.h"
 
-#include <iterator>
-
 namespace stardust
 {
     namespace ai
