@@ -76,4 +76,16 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
         REQUIRE(graph.GetDegree("E") == 1u);
         REQUIRE(graph.GetDegree("F") == 0u);
     }
+
+    SECTION("Can remove all edges between nodes")
+    {
+        graph.RemoveEdges("A", "B");
+        graph.RemoveEdges("B", "C");
+
+        REQUIRE(graph.GetSize() == 7u);
+
+        REQUIRE(graph.GetDegree("A") == 0u);
+        REQUIRE(graph.GetDegree("B") == 2u);
+        REQUIRE(graph.GetDegree("C") == 2u);
+    }
 }

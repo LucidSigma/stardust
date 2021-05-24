@@ -121,6 +121,33 @@ namespace stardust
                 return adjacentNodes;
             }
 
+            void RemoveEdges(const T& nodeA, const T& nodeB)
+            {
+                if (const auto nodeALocation = m_edges.find(nodeA);
+                    nodeALocation != std::cend(m_edges))
+                {
+                    nodeALocation->second.erase(
+                        std::remove_if(std::begin(nodeALocation->second), std::end(nodeALocation->second), [&nodeB](const EdgeData& edgeData) -> bool
+                        {
+                            return edgeData.node == nodeB;
+                        }),
+                        std::end(nodeALocation->second)
+                    );
+                }
+
+                if (const auto nodeBLocation = m_edges.find(nodeB);
+                    nodeBLocation != std::cend(m_edges))
+                {
+                    nodeBLocation->second.erase(
+                        std::remove_if(std::begin(nodeBLocation->second), std::end(nodeBLocation->second), [&nodeA](const EdgeData& edgeData) -> bool
+                        {
+                            return edgeData.node == nodeA;
+                        }),
+                        std::end(nodeBLocation->second)
+                    );
+                }
+            }
+
             void RemoveNode(const T& node)
             {
                 m_edges.erase(node);
