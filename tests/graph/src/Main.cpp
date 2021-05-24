@@ -121,4 +121,16 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
         bestFirstTraversal = sd::ai::BestFirstTraversal<sd::String>(graph, "E", "B");
         REQUIRE(bestFirstTraversal == sd::Vector<sd::String>{ "E", "D", "B" });
     }
+
+    SECTION("Can pathfind in a graph")
+    {
+        auto dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "E", "A");
+        REQUIRE(dijkstrasAlgorithm == sd::Vector<sd::String>{ "E", "D", "B", "C", "A" });
+
+        dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "A", "D");
+        REQUIRE(dijkstrasAlgorithm == sd::Vector<sd::String>{ "A", "B", "D" });
+
+        dijkstrasAlgorithm = sd::ai::DijkstrasAlgorithm<sd::String>(graph, "B", "E");
+        REQUIRE(dijkstrasAlgorithm == sd::Vector<sd::String>{ });
+    }
 }
