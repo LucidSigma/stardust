@@ -1,5 +1,7 @@
 #include "stardust/ai/state_machine/State.h"
 
+#include "stardust/ai/state_machine/StateMachine.h"
+
 namespace stardust
 {
     namespace ai

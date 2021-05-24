@@ -18,7 +18,7 @@ namespace stardust
 
         public:
             explicit State(class StateMachine& owner, const String& name);
-            ~State() noexcept = default;
+            virtual ~State() noexcept = default;
 
             virtual void OnEnter() = 0;
             virtual void OnExit() = 0;
