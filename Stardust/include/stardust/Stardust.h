@@ -6,6 +6,9 @@
 #include <SDL2/SDL.h>
 #include <sol/sol.hpp>
 
+#include "ai/state_machine/State.h"
+#include "ai/state_machine/StateMachine.h"
+
 #include "animation/Animation.h"
 #include "animation/Animator.h"
 #include "animation/Easings.h"
