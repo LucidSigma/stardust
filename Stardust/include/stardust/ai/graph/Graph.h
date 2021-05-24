@@ -2,6 +2,8 @@
 #ifndef STARDUST_GRAPH_H
 #define STARDUST_GRAPH_H
 
+#include <algorithm>
+
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 
@@ -43,6 +45,11 @@ namespace stardust
                     m_edges[source] = { };
                 }
 
+                if (!m_edges.contains(destination))
+                {
+                    m_edges[destination] = { };
+                }
+
                 m_edges[source].push_back(EdgeData{
                     .node = destination,
                     .weight = weight,
@@ -52,11 +59,6 @@ namespace stardust
 
                 if (direction == EdgeDirection::Bidirectional)
                 {
-                    if (!m_edges.contains(destination))
-                    {
-                        m_edges[destination] = { };
-                    }
-
                     m_edges[destination].push_back(EdgeData{
                         .node = source,
                         .weight = weight,
@@ -115,6 +117,43 @@ namespace stardust
                 }
 
                 return adjacentNodes;
+            }
+
+            void RemoveEdges(const T& source, const T& destination)
+            {
+                if (const auto sourceLocation = m_edges.find(source);
+                    sourceLocation != std::cend(m_edges))
+                {
+                    sourceLocation->second = { };
+                }
+
+                if (const auto destinationLocation = m_edges.find(source);
+                    destinationLocation != std::cend(m_edges))
+                {
+                    destinationLocation->second.erase(
+                        std::remove_if(std::begin(destinationLocation->second), std::end(destinationLocation->second), [&source](const EdgeData& edgeData) -> bool
+                        {
+                            return edgeData.node == source && edgeData.isBidirectionalDuplicate;
+                        }),
+                        std::end(destinationLocation->second)
+                    );
+                }
+            }
+
+            void RemoveNode(const T& node)
+            {
+                m_edges.erase(node);
+            
+                for (auto& [sourceNode, edges] : m_edges)
+                {
+                    edges.erase(
+                        std::remove_if(std::begin(edges), std::end(edges), [&node](const EdgeData& edgeData) -> bool
+                        {
+                            return edgeData.node == node;
+                        }),
+                        std::end(edges)
+                    );
+                }
             }
 
             [[nodiscard]] inline void HasNode(const T& node) const noexcept { return m_edges.contains(node); }
