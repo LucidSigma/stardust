@@ -91,7 +91,16 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
 
     SECTION("Can traverse a graph")
     {
-        const auto depthFirstTraversal = sd::ai::DepthFirstTraversal<sd::String>(graph, "A");
+        auto depthFirstTraversal = sd::ai::DepthFirstTraversal<sd::String>(graph, "A");
         REQUIRE(depthFirstTraversal == sd::Vector<sd::String>{ "A", "B", "D", "F", "C" });
+
+        depthFirstTraversal = sd::ai::DepthFirstTraversal<sd::String>(graph, "E");
+        REQUIRE(depthFirstTraversal == sd::Vector<sd::String>{ "E", "D", "F", "B", "C", "A" });
+
+        auto breadthFirstTraversal = sd::ai::BreadthFirstTraversal<sd::String>(graph, "A");
+        REQUIRE(breadthFirstTraversal == sd::Vector<sd::String>{ "A", "B", "C", "D", "F" });
+
+        breadthFirstTraversal = sd::ai::BreadthFirstTraversal<sd::String>(graph, "E");
+        REQUIRE(breadthFirstTraversal == sd::Vector<sd::String>{ "E", "C", "D", "A", "B", "F" });
     }
 }
