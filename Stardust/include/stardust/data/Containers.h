@@ -5,6 +5,7 @@
 #include <array>
 #include <cstddef>
 #include <deque>
+#include <functional>
 #include <iterator>
 #include <list>
 #include <map>
@@ -69,8 +70,8 @@ namespace stardust
     template <typename T>
     using Queue = std::queue<T>;
 
-    template <typename T>
-    using PriorityQueue = std::priority_queue<T>;
+    template <typename T, typename Comp = std::less<T>>
+    using PriorityQueue = std::priority_queue<T, Vector<T>, Comp>;
 
     template <typename T>
     using Stack = std::stack<T>;

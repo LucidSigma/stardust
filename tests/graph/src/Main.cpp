@@ -50,6 +50,9 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
         auto adjacentEdges = graph.GetAdjacentNodes("B");
         REQUIRE(adjacentEdges.size() == 3u);
 
+        const auto efficientAdjacentEdges = graph.GetEfficientAdjacentNodes("B");
+        REQUIRE(efficientAdjacentEdges.size() == 2u);
+
         adjacentEdges = graph.GetAdjacentNodes("D");
         sd::f32 edgeWeightSum = 0.0f;
         
@@ -102,5 +105,11 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
 
         breadthFirstTraversal = sd::ai::BreadthFirstTraversal<sd::String>(graph, "E");
         REQUIRE(breadthFirstTraversal == sd::Vector<sd::String>{ "E", "C", "D", "A", "B", "F" });
+
+        auto bestFirstTraversal = sd::ai::BestFirstTraversal<sd::String>(graph, "A");
+        REQUIRE(bestFirstTraversal == sd::Vector<sd::String>{ "A", "B", "D", "C", "F" });
+
+        bestFirstTraversal = sd::ai::BestFirstTraversal<sd::String>(graph, "E");
+        REQUIRE(bestFirstTraversal == sd::Vector<sd::String>{ "E", "D", "B", "C", "A", "F" });
     }
 }

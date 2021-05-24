@@ -80,6 +80,50 @@ namespace stardust
 
             return traversalOrder;
         }
+
+        template <typename T>
+        [[nodiscard]] Vector<T> BestFirstTraversal(const Graph<T>& graph, const T& root)
+        {
+            if (!graph.HasNode(root))
+            {
+                return { };
+            }
+
+            struct NodeWeightSorter
+            {
+                [[nodiscard]] inline bool operator ()(const Pair<T, f32>& lhs, const Pair<T, f32>& rhs) const noexcept
+                {
+                    return lhs.second > rhs.second;
+                }
+            };
+
+            Vector<T> traversalOrder{ };
+            HashSet<T> visitedNodes{ };
+            visitedNodes.insert(root);
+
+            PriorityQueue<Pair<T, f32>, NodeWeightSorter> nodeQueue{ };
+            nodeQueue.push({ root, 0.0f });
+
+            while (!nodeQueue.empty())
+            {
+                const auto [currentNode, currentWeight] = nodeQueue.top();
+                nodeQueue.pop();
+
+                traversalOrder.push_back(currentNode);
+                const auto adjacentNodes = graph.GetEfficientAdjacentNodes(currentNode);
+
+                for (const auto& [node, weight] : adjacentNodes)
+                {
+                    if (!visitedNodes.contains(node))
+                    {
+                        visitedNodes.insert(node);
+                        nodeQueue.push({ node, weight });
+                    }
+                }
+            }
+
+            return traversalOrder;
+        }
     }
 }
 

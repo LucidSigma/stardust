@@ -121,6 +121,52 @@ namespace stardust
                 return adjacentNodes;
             }
 
+            [[nodiscard]] HashMap<T, f32> GetEfficientAdjacentNodes(const T& node) const
+            {
+                HashMap<T, f32> adjacentNodes{ };
+
+                if (const auto nodeLocation = m_edges.find(node);
+                    nodeLocation != std::cend(m_edges))
+                {
+                    for (const auto& edgeData : nodeLocation->second)
+                    {
+                        if (adjacentNodes.contains(edgeData.node))
+                        {
+                            adjacentNodes[edgeData.node] = std::min(edgeData.weight, adjacentNodes[edgeData.node]);
+                        }
+                        else
+                        {
+                            adjacentNodes.insert({ edgeData.node, edgeData.weight });
+                        }
+                    }
+                }
+
+                return adjacentNodes;
+            }
+
+            [[nodiscard]] HashMap<T, f32> GetExpensiveAdjacentNodes(const T& node) const
+            {
+                HashMap<T, f32> adjacentNodes{ };
+
+                if (const auto nodeLocation = m_edges.find(node);
+                    nodeLocation != std::cend(m_edges))
+                {
+                    for (const auto& edgeData : nodeLocation->second)
+                    {
+                        if (adjacentNodes.contains(edgeData.node))
+                        {
+                            adjacentNodes[edgeData.node] = std::max(edgeData.weight, adjacentNodes[edgeData.node]);
+                        }
+                        else
+                        {
+                            adjacentNodes.insert({ edgeData.node, edgeData.weight });
+                        }
+                    }
+                }
+
+                return adjacentNodes;
+            }
+
             void RemoveEdges(const T& nodeA, const T& nodeB)
             {
                 if (const auto nodeALocation = m_edges.find(nodeA);
