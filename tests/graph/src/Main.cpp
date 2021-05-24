@@ -7,9 +7,9 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
     sd::ai::Graph<sd::String> graph;
 
     graph.AddEdge("A", "B", 7.0f, sd::ai::EdgeDirection::Unidirectional);
+    graph.AddEdge("B", "C", 3.0f, sd::ai::EdgeDirection::Bidirectional);
     graph.AddEdge("B", "D", 1.9f, sd::ai::EdgeDirection::Bidirectional);
     graph.AddEdge("B", "D", 9.0f, sd::ai::EdgeDirection::Bidirectional);
-    graph.AddEdge("B", "C", 3.0f, sd::ai::EdgeDirection::Bidirectional);
     graph.AddEdge("C", "A", 2.5f, sd::ai::EdgeDirection::Unidirectional);
     graph.AddEdge("C", "D", 0.4f, sd::ai::EdgeDirection::Unidirectional);
     graph.AddEdge("D", "F", 11.1f, sd::ai::EdgeDirection::Bidirectional);
@@ -87,5 +87,11 @@ TEST_CASE("Graphs can be make from nodes and edges, and have information queried
         REQUIRE(graph.GetDegree("A") == 0u);
         REQUIRE(graph.GetDegree("B") == 2u);
         REQUIRE(graph.GetDegree("C") == 2u);
+    }
+
+    SECTION("Can traverse a graph")
+    {
+        const auto depthFirstTraversal = sd::ai::DepthFirstTraversal<sd::String>(graph, "A");
+        REQUIRE(depthFirstTraversal == sd::Vector<sd::String>{ "A", "B", "D", "F", "C" });
     }
 }
