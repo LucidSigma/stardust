@@ -19,7 +19,7 @@ namespace stardust
             [[nodiscard]] virtual f32 GetScore() const = 0;
             [[nodiscard]] virtual bool IsTerminal() const = 0;
 
-            [[nodiscard]] virtual Vector<UniquePtr<GameState>> GetPossibleMoves() const = 0;
+            [[nodiscard]] virtual Vector<UniquePtr<GameState>> GetNextStates() const = 0;
         };
     }
 }

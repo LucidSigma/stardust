@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "stardust/ai/game_tree/GameState.h"
+#include "stardust/data/Containers.h"
 #include "stardust/data/Pointers.h"
+#include "stardust/data/Types.h"
 
 namespace stardust
 {
@@ -26,8 +28,14 @@ namespace stardust
 
             ~GameTree() noexcept = default;
 
+            [[nodiscard]] ObserverPtr<GameState> GetMinimaxResult(const u32 depth, const bool startMaximising = true) const;
+            [[nodiscard]] ObserverPtr<GameState> GetPrunedMinimaxResult(const u32 depth, const bool startMaximising = true) const;
+
             [[nodiscard]] UniquePtr<GameState>& GetRootState() noexcept { return m_rootState; }
             [[nodiscard]] const UniquePtr<GameState>& GetRootState() const noexcept { return m_rootState; }
+
+        private:
+            [[nodiscard]] Pair<f32, ObserverPtr<GameState>> MinimaxHelper(const UniquePtr<GameState>& currentState, const u32 depth, const bool isMaximising) const;
         };
     }
 }
