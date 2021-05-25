@@ -6,8 +6,6 @@
 #include <SDL2/SDL.h>
 #include <sol/sol.hpp>
 
-#include "ai/game_tree/GameState.h"
-#include "ai/game_tree/GameTree.h"
 #include "ai/graph/Graph.h"
 #include "ai/graph/Pathfinding.h"
 #include "ai/graph/Traversal.h"
