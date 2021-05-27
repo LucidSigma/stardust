@@ -5,7 +5,6 @@
 #include <functional>
 
 #include "stardust/data/Containers.h"
-#include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust
@@ -20,7 +19,7 @@ namespace stardust
             std::function<f32(const T&)> getScore;
             std::function<bool(const T&)> isTerminal;
 
-            std::function<Vector<GameState<T>>(const T&)> getNextScores;
+            std::function<Vector<GameState<T>>(const T&)> getNextStates;
         };
     }
 }
