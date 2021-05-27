@@ -61,7 +61,7 @@ namespace stardust
             }
         }
 
-        template <typename Clock = std::chrono::system_clock, typename Duration = Clock::duration/*, typename = std::enable_if_t<std::is_clock_v<Clock>*/>
+        template <typename Clock = std::chrono::system_clock, typename Duration = Clock::duration, typename = std::enable_if_t<std::is_clock_v<Clock>>>
         [[nodiscard]] Optional<T> AwaitUntil(const std::chrono::time_point<Clock, Duration>& timePoint)
         {
             switch (const std::future_status awaitStatus = m_handle.wait_until(timePoint);
