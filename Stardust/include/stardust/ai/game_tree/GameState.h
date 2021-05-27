@@ -16,10 +16,13 @@ namespace stardust
         {
             T state;
 
-            std::function<f32(const T&)> getScore;
-            std::function<bool(const T&)> isTerminal;
+            std::function<f32(const T&)> getScoreCallback;
+            std::function<bool(const T&)> isTerminalCallback;
+            std::function<Vector<GameState<T>>(const T&)> getNextStatesCallback;
 
-            std::function<Vector<GameState<T>>(const T&)> getNextStates;
+            [[nodiscard]] inline f32 GetScore() const { return getScoreCallback(this->state); }
+            [[nodiscard]] inline bool IsTerminal() const { return isTerminalCallback(this->state); }
+            [[nodiscard]] inline Vector<GameState<T>> GetNextStates() const { return getNextStatesCallback(this->state); }
         };
     }
 }

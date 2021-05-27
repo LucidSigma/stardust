@@ -21,9 +21,9 @@ namespace stardust
 
             static const MinimaxHelperFunction minimaxHelper = [](const GameState<T>& currentState, const u32 currentDepth, const bool isMaximising) -> Pair<f32, GameState<T>>
             {
-                if (currentDepth == 0u || currentState.isTerminal(currentState.state))
+                if (currentDepth == 0u || currentState.IsTerminal())
                 {
-                    return { currentState.getScore(currentState.state), currentState };
+                    return { currentState.GetScore(), currentState };
                 }
 
                 if (isMaximising)
@@ -31,7 +31,7 @@ namespace stardust
                     f32 maxEvaluation = -std::numeric_limits<f32>::infinity();
                     GameState<T> bestChildState{ };
 
-                    const auto childStates = currentState.getNextStates(currentState.state);
+                    const auto childStates = currentState.GetNextStates();
 
                     for (const auto& childState : childStates)
                     {
@@ -51,7 +51,7 @@ namespace stardust
                     f32 minEvaluation = std::numeric_limits<f32>::infinity();
                     GameState<T> bestChildState{ };
 
-                    const auto childStates = currentState.getNextStates(currentState.state);
+                    const auto childStates = currentState.GetNextStates();
 
                     for (const auto& childState : childStates)
                     {
@@ -78,9 +78,9 @@ namespace stardust
 
             static const AlphaBetaHelperFunction alphaBetaHelper = [](const GameState<T>& currentState, const u32 currentDepth, const bool isMaximising, f32 alpha, f32 beta) -> Pair<f32, GameState<T>>
             {
-                if (currentDepth == 0u || currentState.isTerminal(currentState.state))
+                if (currentDepth == 0u || currentState.IsTerminal())
                 {
-                    return { currentState.getScore(currentState.state), currentState };
+                    return { currentState.GetScore(), currentState };
                 }
 
                 if (isMaximising)
@@ -88,7 +88,7 @@ namespace stardust
                     f32 maxEvaluation = -std::numeric_limits<f32>::infinity();
                     GameState<T> bestChildState{ };
 
-                    const auto childStates = currentState.getNextStates(currentState.state);
+                    const auto childStates = currentState.GetNextStates();
 
                     for (const auto& childState : childStates)
                     {
@@ -115,7 +115,7 @@ namespace stardust
                     f32 minEvaluation = std::numeric_limits<f32>::infinity();
                     GameState<T> bestChildState{ };
 
-                    const auto childStates = currentState.getNextStates(currentState.state);
+                    const auto childStates = currentState.GetNextStates();
 
                     for (const auto& childState : childStates)
                     {
