@@ -42,6 +42,8 @@ private:
     sd::Sound m_chunkSound;
     sd::SoundSource m_source;
 
+    sd::ai::BoidFlock m_flock;
+
 public:
     TestScene(sd::Application& application, const sd::String& name)
         : Scene(application, name)
@@ -151,6 +153,12 @@ public:
         m_tilemap.AddTiles(m_conveyorTextures);
 
         m_particles.SetWind(575.0f);
+
+        m_flock.Initialise(sd::ai::BoidFlock::CreateInfo{
+            .initialBoidCount = 100u,
+            .spawnRadius = 3.0f,
+            .maxBoidSpeed = 4u,
+        });
 
         GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
         GetInputManager().AddToButton("outline", sd::KeyCode::Space);
@@ -345,6 +353,8 @@ public:
                 m_source = GetSoundSystem().PlaySound(m_chunkSound);
             }
         }
+
+        m_flock.Update(deltaTime);
     }
 
     virtual void LateUpdate(const sd::f32 deltaTime) override { }
@@ -486,6 +496,15 @@ public:
         );
 
         m_particles.RenderOnScreen(renderer);
+
+        for (const auto& boid : m_flock.GetBoids())
+        {
+            renderer.DrawWorldRect(
+                sd::comp::Transform(boid.GetPosition(), 0.0f, sd::NullOpt, sd::Vec2One * 0.1f),
+                sd::colours::White,
+                GetCamera()
+            );
+        }
     }
 
     virtual void PollEvent(const sd::Event& event) override

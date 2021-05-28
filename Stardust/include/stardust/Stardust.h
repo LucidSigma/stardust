@@ -13,6 +13,7 @@
 #include "ai/graph/Traversal.h"
 #include "ai/state_machine/State.h"
 #include "ai/state_machine/StateMachine.h"
+#include "ai/Boids.h"
 
 #include "animation/Animation.h"
 #include "animation/Animator.h"
