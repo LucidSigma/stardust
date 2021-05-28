@@ -67,6 +67,7 @@ namespace stardust
 
             private:
                 [[nodiscard]] Vec2 Align(const Vector<Boid>& boids) const;
+                [[nodiscard]] Vec2 Cohere(const Vector<Boid>& boids) const;
             };
 
         private:

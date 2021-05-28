@@ -13,10 +13,13 @@ namespace stardust
         void BoidFlock::Boid::Update(const f32 deltaTime, const Vector<Boid>& boids)
         {
             const Vec2 alignForce = Align(boids);
+            const Vec2 cohesionForce = Cohere(boids);
 
-            m_acceleration += LimitMagnitude(alignForce, m_maxSteeringForce) * deltaTime;
+            m_acceleration += LimitMagnitude(alignForce + cohesionForce, m_maxSteeringForce) * deltaTime;
 
             m_velocity += m_acceleration * deltaTime;
+            m_velocity = LimitMagnitude(m_velocity, m_maxSpeed);
+
             m_position += m_velocity * deltaTime;
         }
 
@@ -44,6 +47,38 @@ namespace stardust
             }
 
             steeringVelocity /= static_cast<f32>(boidsWithinRange);
+            steeringVelocity = SetMagnitude(steeringVelocity, m_maxSpeed);
+            steeringVelocity -= m_velocity;
+
+            return steeringVelocity;
+        }
+
+        [[nodiscard]] Vec2 BoidFlock::Boid::Cohere(const Vector<Boid>& boids) const
+        {
+            Vec2 steeringVelocity = Vec2Zero;
+            u32 boidsWithinRange = 0u;
+
+            for (const auto& boid : boids)
+            {
+                if (&boid != this) [[likely]]
+                {
+                    if (const f32 distance = glm::distance(GetPosition(), boid.GetPosition());
+                        distance <= m_perceptionRadius)
+                    {
+                        steeringVelocity += boid.GetPosition();
+                        ++boidsWithinRange;
+                    }
+                }
+            }
+
+            if (boidsWithinRange == 0u)
+            {
+                return Vec2Zero;
+            }
+
+            steeringVelocity /= static_cast<f32>(boidsWithinRange);
+            steeringVelocity -= m_position;
+
             steeringVelocity = SetMagnitude(steeringVelocity, m_maxSpeed);
             steeringVelocity -= m_velocity;
 
