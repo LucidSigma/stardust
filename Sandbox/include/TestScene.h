@@ -155,10 +155,13 @@ public:
         m_particles.SetWind(575.0f);
 
         m_flock.Initialise(sd::ai::BoidFlock::CreateInfo{
+            .separationFactor = 1.0f,
+            .alignmentFactor = 1.0f,
+            .cohesionFactor = 1.0f,
             .initialBoidCount = 100u,
             .spawnRadius = 3.0f,
-            .minBoidSpeed = 2.0f,
-            .maxBoidSpeed = 6.0f,
+            .minBoidSpeed = 0.5f,
+            .maxBoidSpeed = 1.0f,
             .minBoidSteeringForce = 1.0f,
             .maxBoidSteeringForce = 3.0f,
             .minBoidPerceptionRadius = 10.0f,

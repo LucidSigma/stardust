@@ -10,9 +10,9 @@ namespace stardust
             : m_position(createInfo.position), m_velocity(createInfo.velocity), m_maxSpeed(glm::length(createInfo.velocity)), m_maxSteeringForce(createInfo.maxSteeringForce), m_perceptionRadius(createInfo.perceptionRadius)
         { }
 
-        void BoidFlock::Boid::Update(const f32 deltaTime, const Vector<Boid>& boids)
+        void BoidFlock::Boid::Update(const f32 deltaTime, const BoidFlock& flock)
         {
-            m_acceleration += GetFlockForce(boids) * deltaTime;
+            m_acceleration = GetFlockForce(flock);
 
             m_velocity += m_acceleration * deltaTime;
             m_velocity = LimitMagnitude(m_velocity, m_maxSpeed);
@@ -20,7 +20,7 @@ namespace stardust
             m_position += m_velocity * deltaTime;
         }
 
-        [[nodiscard]] Vec2 BoidFlock::Boid::GetFlockForce(const Vector<Boid>& boids) const
+        [[nodiscard]] Vec2 BoidFlock::Boid::GetFlockForce(const BoidFlock& flock) const
         {
             Vec2 separationForce = Vec2Zero;
             Vec2 alignmentForce = Vec2Zero;
@@ -28,7 +28,7 @@ namespace stardust
 
             u32 boidsWithinRange = 0u;
 
-            for (const auto& boid : boids)
+            for (const auto& boid : flock.GetBoids())
             {
                 if (&boid != this) [[likely]]
                 {
@@ -55,15 +55,18 @@ namespace stardust
             separationForce /= static_cast<f32>(boidsWithinRange);
             separationForce = SetMagnitude(separationForce, m_maxSpeed);
             separationForce -= m_velocity;
+            separationForce *= flock.GetSeparationFactor();
 
             alignmentForce /= static_cast<f32>(boidsWithinRange);
             alignmentForce = SetMagnitude(alignmentForce, m_maxSpeed);
             alignmentForce -= m_velocity;
+            alignmentForce *= flock.GetAlignmentFactor();
 
             cohesionForce /= static_cast<f32>(boidsWithinRange);
             cohesionForce -= m_position;
             cohesionForce = SetMagnitude(cohesionForce, m_maxSpeed);
             cohesionForce -= m_velocity;
+            cohesionForce *= flock.GetCohesionFactor();
 
             return LimitMagnitude(separationForce + alignmentForce + cohesionForce, m_maxSteeringForce);
         }
@@ -94,7 +97,7 @@ namespace stardust
         {
             for (auto& boid : m_boids)
             {
-                boid.Update(deltaTime, m_boids);
+                boid.Update(deltaTime, *this);
             }
         }
     }

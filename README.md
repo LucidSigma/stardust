@@ -27,6 +27,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Logging and system modals.
 * Shared object/DLL loading.
 * Async tasks and parallel task scheduling.
+* Basic game AI (graphs/pathfinding, minimax, boids).
 
 ## Scene Template
 ```cpp

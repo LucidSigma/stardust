@@ -16,6 +16,10 @@ namespace stardust
         public:
             struct CreateInfo
             {
+                f32 separationFactor;
+                f32 alignmentFactor;
+                f32 cohesionFactor;
+
                 usize initialBoidCount;
                 f32 spawnRadius;
 
@@ -54,7 +58,7 @@ namespace stardust
                 Boid(const CreateInfo& createInfo);
                 ~Boid() noexcept = default;
 
-                void Update(const f32 deltaTime, const Vector<Boid>& boids);
+                void Update(const f32 deltaTime, const BoidFlock& flock);
 
                 [[nodiscard]] inline const Vec2& GetPosition() const noexcept { return m_position; }
                 inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
@@ -66,11 +70,15 @@ namespace stardust
                 inline void SetAcceleration(const Vec2& acceleration) noexcept { m_acceleration = acceleration; }
 
             private:
-                [[nodiscard]] Vec2 GetFlockForce(const Vector<Boid>& boids) const;
+                [[nodiscard]] Vec2 GetFlockForce(const BoidFlock& flock) const;
             };
 
         private:
             Vector<Boid> m_boids{ };
+
+            f32 m_separationFactor;
+            f32 m_alignmentFactor;
+            f32 m_cohesionFactor;
 
         public:
             BoidFlock() = default;
@@ -83,6 +91,15 @@ namespace stardust
 
             [[nodiscard]] inline Vector<Boid>& GetBoids() noexcept { return m_boids; }
             [[nodiscard]] inline const Vector<Boid>& GetBoids() const noexcept { return m_boids; }
+
+            [[nodiscard]] inline f32 GetSeparationFactor() const noexcept { return m_separationFactor; }
+            inline void SetSeparationFactor(const f32 separationFactor) noexcept { m_separationFactor = separationFactor; }
+
+            [[nodiscard]] inline f32 GetAlignmentFactor() const noexcept { return m_alignmentFactor; }
+            inline void SetAlignmentFactor(const f32 alignmentFactor) noexcept { m_alignmentFactor = alignmentFactor; }
+
+            [[nodiscard]] inline f32 GetCohesionFactor() const noexcept { return m_cohesionFactor; }
+            inline void SetCohesionFactor(const f32 cohesionFactor) noexcept { m_cohesionFactor = cohesionFactor; }
         };
     }
 }
