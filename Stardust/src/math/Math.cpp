@@ -121,4 +121,25 @@ namespace stardust
     {
         return glm::normalize(vector) * magnitude;
     }
+
+    [[nodiscard]] Vec2 LimitMagnitude(const Vec2& vector, const f32 maxMagnitude)
+    {
+        const f32 magnitude = glm::length(vector);
+
+        return magnitude > maxMagnitude ? LimitMagnitude(vector, maxMagnitude) : vector;
+    }
+
+    [[nodiscard]] Vec3 LimitMagnitude(const Vec3& vector, const f32 maxMagnitude)
+    {
+        const f32 magnitude = glm::length(vector);
+
+        return magnitude > maxMagnitude ? LimitMagnitude(vector, maxMagnitude) : vector;
+    }
+
+    [[nodiscard]] Vec4 LimitMagnitude(const Vec4& vector, const f32 maxMagnitude)
+    {
+        const f32 magnitude = glm::length(vector);
+
+        return magnitude > maxMagnitude ? LimitMagnitude(vector, maxMagnitude) : vector;
+    }
 }
