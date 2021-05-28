@@ -181,6 +181,14 @@ namespace stardust
     [[nodiscard]] extern Vec2 LimitMagnitude(const Vec2& vector, const f32 maxMagnitude);
     [[nodiscard]] extern Vec3 LimitMagnitude(const Vec3& vector, const f32 maxMagnitude);
     [[nodiscard]] extern Vec4 LimitMagnitude(const Vec4& vector, const f32 maxMagnitude);
+
+    [[nodiscard]] extern Vec2 RandomVec2(const f32 min, const f32 max);
+    [[nodiscard]] extern Vec3 RandomVec3(const f32 min, const f32 max);
+    [[nodiscard]] extern Vec4 RandomVec4(const f32 min, const f32 max);
+
+    [[nodiscard]] extern Vec2 RandomUnitVec2();
+    [[nodiscard]] extern Vec3 RandomUnitVec3();
+    [[nodiscard]] extern Vec4 RandomUnitVec4();
 }
 
 #endif

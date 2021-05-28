@@ -1,5 +1,7 @@
 #include "stardust/math/Math.h"
 
+#include "stardust/utility/random/Random.h"
+
 namespace stardust
 {
     // All of these functions are based on Unity's C# implementation of SmoothDamp, which itself is based on the algorithm from Game Programming Gems 4 Chapter 1.10.
@@ -141,5 +143,35 @@ namespace stardust
         const f32 magnitude = glm::length(vector);
 
         return magnitude > maxMagnitude ? LimitMagnitude(vector, maxMagnitude) : vector;
+    }
+
+    [[nodiscard]] Vec2 RandomVec2(const f32 min, const f32 max)
+    {
+        return Vec2{ Random::GenerateFloat(min, max), Random::GenerateFloat(min, max) };
+    }
+
+    [[nodiscard]] Vec3 RandomVec3(const f32 min, const f32 max)
+    {
+        return Vec3{ Random::GenerateFloat(min, max), Random::GenerateFloat(min, max), Random::GenerateFloat(min, max) };
+    }
+
+    [[nodiscard]] Vec4 RandomVec4(const f32 min, const f32 max)
+    {
+        return Vec4{ Random::GenerateFloat(min, max), Random::GenerateFloat(min, max), Random::GenerateFloat(min, max), Random::GenerateFloat(min, max) };
+    }
+
+    [[nodiscard]] Vec2 RandomUnitVec2()
+    {
+        return glm::normalize(RandomVec2(-1.0f, 1.0f));
+    }
+
+    [[nodiscard]] Vec3 RandomUnitVec3()
+    {
+        return glm::normalize(RandomVec3(-1.0f, 1.0f));
+    }
+
+    [[nodiscard]] Vec4 RandomUnitVec4()
+    {
+        return glm::normalize(RandomVec4(-1.0f, 1.0f));
     }
 }
