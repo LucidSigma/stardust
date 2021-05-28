@@ -128,21 +128,21 @@ namespace stardust
     {
         const f32 magnitude = glm::length(vector);
 
-        return magnitude > maxMagnitude ? LimitMagnitude(vector, maxMagnitude) : vector;
+        return magnitude > maxMagnitude ? SetMagnitude(vector, maxMagnitude) : vector;
     }
 
     [[nodiscard]] Vec3 LimitMagnitude(const Vec3& vector, const f32 maxMagnitude)
     {
         const f32 magnitude = glm::length(vector);
 
-        return magnitude > maxMagnitude ? LimitMagnitude(vector, maxMagnitude) : vector;
+        return magnitude > maxMagnitude ? SetMagnitude(vector, maxMagnitude) : vector;
     }
 
     [[nodiscard]] Vec4 LimitMagnitude(const Vec4& vector, const f32 maxMagnitude)
     {
         const f32 magnitude = glm::length(vector);
 
-        return magnitude > maxMagnitude ? LimitMagnitude(vector, maxMagnitude) : vector;
+        return magnitude > maxMagnitude ? SetMagnitude(vector, maxMagnitude) : vector;
     }
 
     [[nodiscard]] Vec2 RandomVec2(const f32 min, const f32 max)
