@@ -12,15 +12,49 @@ namespace stardust
 
         void BoidFlock::Boid::Update(const f32 deltaTime, const Vector<Boid>& boids)
         {
+            const Vec2 separationForce = Separate(boids);
             const Vec2 alignForce = Align(boids);
             const Vec2 cohesionForce = Cohere(boids);
 
-            m_acceleration += LimitMagnitude(alignForce + cohesionForce, m_maxSteeringForce) * deltaTime;
+            m_acceleration += LimitMagnitude(separationForce + alignForce + cohesionForce, m_maxSteeringForce) * deltaTime;
 
             m_velocity += m_acceleration * deltaTime;
             m_velocity = LimitMagnitude(m_velocity, m_maxSpeed);
 
             m_position += m_velocity * deltaTime;
+        }
+
+        [[nodiscard]] Vec2 BoidFlock::Boid::Separate(const Vector<Boid>& boids) const
+        {
+            Vec2 steeringVelocity = Vec2Zero;
+            u32 boidsWithinRange = 0u;
+
+            for (const auto& boid : boids)
+            {
+                if (&boid != this) [[likely]]
+                {
+                    if (const f32 distance = glm::distance(GetPosition(), boid.GetPosition());
+                        distance <= m_perceptionRadius)
+                    {
+                        Vec2 difference = m_position - boid.GetPosition();
+                        difference /= distance * distance;
+
+                        steeringVelocity += difference;
+                        ++boidsWithinRange;
+                    }
+                }
+            }
+
+            if (boidsWithinRange == 0u)
+            {
+                return Vec2Zero;
+            }
+
+            steeringVelocity /= static_cast<f32>(boidsWithinRange);
+            steeringVelocity = SetMagnitude(steeringVelocity, m_maxSpeed);
+            steeringVelocity -= m_velocity;
+
+            return steeringVelocity;
         }
 
         [[nodiscard]] Vec2 BoidFlock::Boid::Align(const Vector<Boid>& boids) const

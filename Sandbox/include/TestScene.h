@@ -157,12 +157,12 @@ public:
         m_flock.Initialise(sd::ai::BoidFlock::CreateInfo{
             .initialBoidCount = 100u,
             .spawnRadius = 3.0f,
-            .minBoidSpeed = 1.0f,
-            .maxBoidSpeed = 2.0f,
+            .minBoidSpeed = 2.0f,
+            .maxBoidSpeed = 6.0f,
             .minBoidSteeringForce = 1.0f,
             .maxBoidSteeringForce = 3.0f,
-            .minBoidPerceptionRadius = 1.0f,
-            .maxBoidPerceptionRadius = 2.5f,
+            .minBoidPerceptionRadius = 10.0f,
+            .maxBoidPerceptionRadius = 25.0f,
         });
 
         GetInputManager().AddToButton("quit", sd::KeyCode::Escape);

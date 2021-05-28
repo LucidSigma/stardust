@@ -66,6 +66,7 @@ namespace stardust
                 inline void SetAcceleration(const Vec2& acceleration) noexcept { m_acceleration = acceleration; }
 
             private:
+                [[nodiscard]] Vec2 Separate(const Vector<Boid>& boids) const;
                 [[nodiscard]] Vec2 Align(const Vector<Boid>& boids) const;
                 [[nodiscard]] Vec2 Cohere(const Vector<Boid>& boids) const;
             };
