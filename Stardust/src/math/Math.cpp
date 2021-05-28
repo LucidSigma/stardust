@@ -106,4 +106,19 @@ namespace stardust
 
         return smoothingResult;
     }
+
+    [[nodiscard]] Vec2 SetMagnitude(const Vec2& vector, const f32 magnitude)
+    {
+        return glm::normalize(vector) * magnitude;
+    }
+
+    [[nodiscard]] Vec3 SetMagnitude(const Vec3& vector, const f32 magnitude)
+    {
+        return glm::normalize(vector) * magnitude;
+    }
+
+    [[nodiscard]] Vec4 SetMagnitude(const Vec4& vector, const f32 magnitude)
+    {
+        return glm::normalize(vector) * magnitude;
+    }
 }
