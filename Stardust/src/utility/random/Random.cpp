@@ -9,6 +9,11 @@ namespace stardust
         s_randomEngine.seed(std::random_device()());
     }
 
+    [[nodiscard]] i32 Random::GenerateSign()
+    {
+        return GenerateInt(-1, 1);
+    }
+
     [[nodiscard]] bool Random::FlipCoin()
     {
         return GenerateInt(0, 1) == 0;

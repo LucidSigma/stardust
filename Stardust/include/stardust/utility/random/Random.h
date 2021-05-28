@@ -46,6 +46,7 @@ namespace stardust
             return uniformDistribution(s_randomEngine);
         }
 
+        [[nodiscard]] static i32 GenerateSign();
         [[nodiscard]] static bool FlipCoin();
         [[nodiscard]] static u32 RollDice(const u32 sideCount = 6u);
 
