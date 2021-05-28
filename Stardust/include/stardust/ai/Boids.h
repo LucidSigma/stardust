@@ -19,25 +19,54 @@ namespace stardust
                 usize initialBoidCount;
                 f32 spawnRadius;
 
+                f32 minBoidSpeed;
                 f32 maxBoidSpeed;
+
+                f32 minBoidSteeringForce;
+                f32 maxBoidSteeringForce;
+
+                f32 minBoidPerceptionRadius;
+                f32 maxBoidPerceptionRadius;
             };
 
             class Boid
             {
+            public:
+                struct CreateInfo
+                {
+                    Vec2 position;
+                    Vec2 velocity;
+
+                    f32 maxSteeringForce;
+                    f32 perceptionRadius;
+                };
+
             private:
                 Vec2 m_position;
                 Vec2 m_velocity;
                 Vec2 m_acceleration = Vec2Zero;
 
+                f32 m_maxSpeed;
+                f32 m_maxSteeringForce;
+                f32 m_perceptionRadius;
+
             public:
-                Boid(const Vec2& position, const Vec2& velocity);
+                Boid(const CreateInfo& createInfo);
                 ~Boid() noexcept = default;
 
-                void Update(const f32 deltaTime);
+                void Update(const f32 deltaTime, const Vector<Boid>& boids);
 
-                [[nodiscard]] const Vec2& GetPosition() const noexcept { return m_position; }
-                [[nodiscard]] const Vec2& GetVelocity() const noexcept { return m_velocity; }
-                [[nodiscard]] const Vec2& GetAcceleration() const noexcept { return m_acceleration; }
+                [[nodiscard]] inline const Vec2& GetPosition() const noexcept { return m_position; }
+                inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
+
+                [[nodiscard]] inline const Vec2& GetVelocity() const noexcept { return m_velocity; }
+                inline void SetVelocity(const Vec2& velocity) noexcept { m_velocity = velocity; }
+
+                [[nodiscard]] inline const Vec2& GetAcceleration() const noexcept { return m_acceleration; }
+                inline void SetAcceleration(const Vec2& acceleration) noexcept { m_acceleration = acceleration; }
+
+            private:
+                [[nodiscard]] Vec2 Align(const Vector<Boid>& boids) const;
             };
 
         private:
@@ -52,6 +81,7 @@ namespace stardust
 
             void Update(const f32 deltaTime);
 
+            [[nodiscard]] inline Vector<Boid>& GetBoids() noexcept { return m_boids; }
             [[nodiscard]] inline const Vector<Boid>& GetBoids() const noexcept { return m_boids; }
         };
     }
