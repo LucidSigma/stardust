@@ -185,6 +185,48 @@ namespace stardust
         FillTiles(topLeft, size, EmptyTile);
     }
 
+    void Tilemap::FloodFill(const UVec2& origin, const Tile tile)
+    {
+        const Tile tileToReplace = m_tiles[origin.y][origin.x];
+
+        HashSet<UVec2> visitedCoordinates{ };
+        Queue<UVec2> coordinatesToFill{ };
+        coordinatesToFill.push(origin);
+
+        while (!coordinatesToFill.empty())
+        {
+            const UVec2 currentCoordinate = coordinatesToFill.front();
+            coordinatesToFill.pop();
+
+            visitedCoordinates.insert(currentCoordinate);
+
+            if (m_tiles[currentCoordinate.y][currentCoordinate.x] == tileToReplace)
+            {
+                m_tiles[currentCoordinate.y][currentCoordinate.x] = tile;
+
+                if (currentCoordinate.y > 0u && !visitedCoordinates.contains(UVec2{ currentCoordinate.x, currentCoordinate.y - 1u }))
+                {
+                    coordinatesToFill.push(UVec2{ currentCoordinate.x, currentCoordinate.y - 1u });
+                }
+
+                if (currentCoordinate.y < m_size.y - 1u && !visitedCoordinates.contains(UVec2{ currentCoordinate.x, currentCoordinate.y + 1u }))
+                {
+                    coordinatesToFill.push(UVec2{ currentCoordinate.x, currentCoordinate.y + 1u});
+                }
+
+                if (currentCoordinate.x > 0u && !visitedCoordinates.contains(UVec2{ currentCoordinate.x - 1u, currentCoordinate.y }))
+                {
+                    coordinatesToFill.push(UVec2{ currentCoordinate.x - 1u, currentCoordinate.y });
+                }
+
+                if (currentCoordinate.x < m_size.x - 1u && !visitedCoordinates.contains(UVec2{ currentCoordinate.x + 1u, currentCoordinate.y }))
+                {
+                    coordinatesToFill.push(UVec2{ currentCoordinate.x + 1u, currentCoordinate.y });
+                }
+            }
+        }
+    }
+
     void Tilemap::ClearAllTiles()
     {
         FillTiles(UVec2Zero, m_size, EmptyTile);
@@ -251,5 +293,7 @@ namespace stardust
         {
             row.resize(newSize.x, fillerTile);
         }
+
+        m_size = newSize;
     }
 }
