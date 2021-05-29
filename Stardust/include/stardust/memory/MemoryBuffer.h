@@ -18,9 +18,16 @@ namespace stardust
         explicit MemoryBuffer(const usize size = 0u);
         ~MemoryBuffer() noexcept = default;
 
-        void MovePointer(const uptr offset);
+        [[nodiscard]] inline bool IsPointerValid() const noexcept { return m_rwPointer != nullptr; }
+
+        void SetPointer(const usize index);
+        void ShiftPointer(const isize offset);
+        void MovePointerToBeginning();
+        void MovePointerToEnd();
+
         [[nodiscard]] inline ObserverPtr<ubyte> GetPointer() noexcept { return m_rwPointer; }
         [[nodiscard]] inline ObserverPtr<const ubyte> GetPointer() const noexcept { return m_rwPointer; }
+        [[nodiscard]] usize GetPointerOffset() const;
 
         [[nodiscard]] Vector<ubyte> ReadBytes(const usize byteCount) const;
         void WriteBytes(const Vector<ubyte>& bytes);
