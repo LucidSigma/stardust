@@ -46,6 +46,8 @@ namespace stardust
 
         [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
 
+        [[nodiscard]] extern nlohmann::json ReadJSON(const StringView& filepath);
+
         [[nodiscard]] extern Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data);
         [[nodiscard]] extern nlohmann::json ReadMessagePack(const StringView& filepath);
     }

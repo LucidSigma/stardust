@@ -41,19 +41,7 @@ namespace stardust
 
     void TextureAtlas::Initialise(const StringView& filepath)
     {
-        const Vector<ubyte> textureAtlasData = vfs::ReadFileData(filepath);
-
-        if (textureAtlasData.empty())
-        {
-            return;
-        }
-
-        const nlohmann::json textureAtlasJSON = nlohmann::json::parse(
-            reinterpret_cast<const u8*>(textureAtlasData.data()),
-            reinterpret_cast<const u8*>(textureAtlasData.data()) + textureAtlasData.size(),
-            nullptr,
-            false
-        );
+        const nlohmann::json textureAtlasJSON = vfs::ReadJSON(filepath);
 
         if (textureAtlasJSON.is_discarded())
         {

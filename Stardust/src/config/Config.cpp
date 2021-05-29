@@ -51,8 +51,7 @@ namespace stardust
             }
         }
 
-        const String configFileData = filesystem::ReadFile(configFilepath);
-        m_data = nlohmann::json::parse(configFileData, nullptr, false);
+        m_data = filesystem::ReadJSON(configFilepath);
         m_filepath = configFilepath;
 
         if (m_data.is_discarded())

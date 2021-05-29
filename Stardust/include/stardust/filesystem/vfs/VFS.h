@@ -2,6 +2,8 @@
 #ifndef STARDUST_VFS_H
 #define STARDUST_VFS_H
 
+#include <nlohmann/json.hpp>
+
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 #include "stardust/utility/status/Status.h"
@@ -36,6 +38,8 @@ namespace stardust
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
 
         [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
+
+        [[nodiscard]] extern nlohmann::json ReadJSON(const StringView& filepath);
     }
 }
 

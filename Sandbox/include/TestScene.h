@@ -141,19 +141,7 @@ public:
         m_colourAnimator.AddAnimation("flash", m_flashAnimation);
         m_colourAnimator.SetSpeed(0.25f);
 
-        const sd::Vector<sd::ubyte> tilemapData = sd::vfs::ReadFileData("assets/tilemaps/ground.json");
-
-        if (tilemapData.empty())
-        {
-            return sd::Status::Fail;
-        }
-
-        const nlohmann::json tilemapJSON = nlohmann::json::parse(
-            reinterpret_cast<const unsigned char*>(tilemapData.data()),
-            reinterpret_cast<const unsigned char*>(tilemapData.data()) + tilemapData.size(),
-            nullptr,
-            false
-        );
+        const nlohmann::json tilemapJSON = sd::vfs::ReadJSON("assets/tilemaps/ground.json");
 
         if (tilemapJSON.is_discarded() || tilemapJSON.is_null())
         {
@@ -178,8 +166,8 @@ public:
             .cohesionFactor = 1.0f,
             .initialBoidCount = 100u,
             .spawnRadius = 3.0f,
-            .minBoidSpeed = 0.5f,
-            .maxBoidSpeed = 1.0f,
+            .minBoidSpeed = 1.0f,
+            .maxBoidSpeed = 1.5f,
             .minBoidSteeringForce = 1.0f,
             .maxBoidSteeringForce = 3.0f,
             .minBoidPerceptionRadius = 10.0f,

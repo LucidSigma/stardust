@@ -290,6 +290,18 @@ namespace stardust
             return fileSize != std::numeric_limits<umax>::max() ? static_cast<usize>(fileSize) : 0u;
         }
 
+        [[nodiscard]] nlohmann::json ReadJSON(const StringView& filepath)
+        {
+            const String fileData = ReadFile(filepath);
+
+            if (fileData.empty())
+            {
+                return nlohmann::json{ };
+            }
+
+            return nlohmann::json::parse(fileData, nullptr, false);
+        }
+
         [[nodiscard]] Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data)
         {
             const Vector<ubyte> messagePackData = nlohmann::json::to_msgpack(data);

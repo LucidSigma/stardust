@@ -320,5 +320,22 @@ namespace stardust
 
             return static_cast<usize>(fileStats.filesize);
         }
+        
+        [[nodiscard]] nlohmann::json ReadJSON(const StringView& filepath)
+        {
+            const auto fileData = ReadFileData(filepath);
+
+            if (fileData.empty())
+            {
+                return nlohmann::json{ };
+            }
+
+            return nlohmann::json::parse(
+                reinterpret_cast<const u8*>(fileData.data()),
+                reinterpret_cast<const u8*>(fileData.data()) + fileData.size(),
+                nullptr,
+                false
+            );
+        }
     }
 }

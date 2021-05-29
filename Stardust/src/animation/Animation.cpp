@@ -194,19 +194,7 @@ namespace stardust
 
     void Animation::LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas)
     {
-        const Vector<ubyte> animationData = vfs::ReadFileData(filepath);
-
-        if (animationData.empty())
-        {
-            return;
-        }
-
-        const nlohmann::json animationJSON = nlohmann::json::parse(
-            reinterpret_cast<const u8*>(animationData.data()),
-            reinterpret_cast<const u8*>(animationData.data()) + animationData.size(),
-            nullptr,
-            false
-        );
+        const nlohmann::json animationJSON = vfs::ReadJSON(filepath);
 
         if (animationJSON.is_discarded())
         {

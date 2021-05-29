@@ -88,19 +88,7 @@ namespace stardust
 
     [[nodiscard]] Optional<nlohmann::json> Locale::LoadLocaleFile(const String& filepath) const
     {
-        const Vector<ubyte> localeData = vfs::ReadFileData(filepath);
-
-        if (localeData.empty())
-        {
-            return NullOpt;
-        }
-
-        const nlohmann::json locale = nlohmann::json::parse(
-            reinterpret_cast<const unsigned char*>(localeData.data()),
-            reinterpret_cast<const unsigned char*>(localeData.data()) + localeData.size(),
-            nullptr,
-            false
-        );
+        const nlohmann::json locale = vfs::ReadJSON(filepath);
 
         if (locale.is_discarded())
         {
