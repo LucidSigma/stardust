@@ -49,13 +49,7 @@ namespace stardust
 
     void MemoryBuffer::Resize(const usize newSize)
     {
-        const usize pointerOffset = GetPointerOffset();
-
         m_buffer.resize(newSize, 0u);
-
-        if (pointerOffset >= newSize)
-        {
-            m_rwPointer = nullptr;
-        }
+        m_rwPointer = m_buffer.data();
     }
 }
