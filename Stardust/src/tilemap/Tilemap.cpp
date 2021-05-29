@@ -145,4 +145,111 @@ namespace stardust
     {
         m_tiles[coordinates.y][coordinates.x] = tile;
     }
+
+    void Tilemap::EraseTile(const UVec2& coordinates)
+    {
+        SetTile(coordinates, EmptyTile);
+    }
+
+    [[nodiscard]] bool Tilemap::HasTile(const UVec2& coordinates) const
+    {
+        return GetTile(coordinates) != EmptyTile;
+    }
+
+    [[nodiscard]] bool Tilemap::ContainsTile(const Tile tile) const
+    {
+        for (const auto& row : m_tiles)
+        {
+            if (std::ranges::find(row, tile) != std::cend(row))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void Tilemap::FillTiles(const UVec2& topLeft, const UVec2& size, const Tile tile)
+    {
+        for (usize y = static_cast<usize>(topLeft.y); y <= static_cast<usize>(topLeft.y + size.y); ++y)
+        {
+            for (usize x = static_cast<usize>(topLeft.x); x <= static_cast<usize>(topLeft.x + size.x); ++x)
+            {
+                m_tiles[y][x] = tile;
+            }
+        }
+    }
+
+    void Tilemap::EraseTiles(const UVec2& topLeft, const UVec2& size)
+    {
+        FillTiles(topLeft, size, EmptyTile);
+    }
+
+    void Tilemap::ClearAllTiles()
+    {
+        FillTiles(UVec2Zero, m_size, EmptyTile);
+    }
+
+    [[nodiscard]] bool Tilemap::IsAnyTileInArea(const UVec2& topLeft, const UVec2& size) const
+    {
+        for (usize y = static_cast<usize>(topLeft.y); y <= static_cast<usize>(topLeft.y + size.y); ++y)
+        {
+            for (usize x = static_cast<usize>(topLeft.x); x <= static_cast<usize>(topLeft.x + size.x); ++x)
+            {
+                if (m_tiles[y][x] != EmptyTile)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    [[nodiscard]] bool Tilemap::AreAllTilesFilled(const UVec2& topLeft, const UVec2& size) const
+    {
+        for (usize y = static_cast<usize>(topLeft.y); y <= static_cast<usize>(topLeft.y + size.y); ++y)
+        {
+            for (usize x = static_cast<usize>(topLeft.x); x <= static_cast<usize>(topLeft.x + size.x); ++x)
+            {
+                if (m_tiles[y][x] == EmptyTile)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    [[nodiscard]] bool Tilemap::IsAreaFilledWithTile(const UVec2& topLeft, const UVec2& size, const Tile tile) const
+    {
+        for (usize y = static_cast<usize>(topLeft.y); y <= static_cast<usize>(topLeft.y + size.y); ++y)
+        {
+            for (usize x = static_cast<usize>(topLeft.x); x <= static_cast<usize>(topLeft.x + size.x); ++x)
+            {
+                if (m_tiles[y][x] != tile)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    [[nodiscard]] bool Tilemap::IsAreaEmpty(const UVec2& topLeft, const UVec2& size) const
+    {
+        return IsAreaFilledWithTile(topLeft, size, EmptyTile);
+    }
+
+    void Tilemap::Resize(const UVec2& newSize, const Tile fillerTile)
+    {
+        m_tiles.resize(newSize.y, Vector<Tile>(newSize.x, fillerTile));
+
+        for (auto& row : m_tiles)
+        {
+            row.resize(newSize.x, fillerTile);
+        }
+    }
 }
