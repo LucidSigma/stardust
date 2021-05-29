@@ -29,6 +29,7 @@ namespace stardust
         [[nodiscard]] extern bool IsDirectory(const StringView& filepath);
 
         [[nodiscard]] extern Vector<ubyte> ReadFileData(const StringView& filepath);
+        [[nodiscard]] extern String ReadFileString(const StringView& filepath);
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);

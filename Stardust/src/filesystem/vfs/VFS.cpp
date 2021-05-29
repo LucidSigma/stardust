@@ -180,6 +180,38 @@ namespace stardust
             return fileData;
         }
 
+        [[nodiscard]] String ReadFileString(const StringView& filepath)
+        {
+            PHYSFS_File* file = PHYSFS_openRead(filepath.data());
+
+            if (file == nullptr)
+            {
+                return "";
+            }
+
+            const usize fileSize = GetFileSize(filepath);
+
+            if (fileSize == 0u)
+            {
+                return "";
+            }
+
+            String fileString(fileSize, '\0');
+
+            if (PHYSFS_readBytes(file, fileString.data(), fileSize) == -1ll)
+            {
+                PHYSFS_close(file);
+                file = nullptr;
+
+                return "";
+            }
+
+            PHYSFS_close(file);
+            file = nullptr;
+
+            return fileString;
+        }
+
         [[nodiscard]] Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data)
         {
             PHYSFS_File* file = PHYSFS_openWrite(filepath.data());
