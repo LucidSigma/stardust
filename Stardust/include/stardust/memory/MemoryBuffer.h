@@ -1,0 +1,33 @@
+#pragma once
+#ifndef STARDUST_MEMORY_BUFFER_H
+#define STARDUST_MEMORY_BUFFER_H
+
+#include "stardust/data/Containers.h"
+#include "stardust/data/Pointers.h"
+#include "stardust/data/Types.h"
+
+namespace stardust
+{
+    class MemoryBuffer
+    {
+    private:
+        Vector<ubyte> m_buffer{ };
+        ObserverPtr<ubyte> m_rwPointer = nullptr;
+
+    public:
+        explicit MemoryBuffer(const usize size = 0u);
+        ~MemoryBuffer() noexcept = default;
+
+        void MovePointer(const uptr offset);
+        [[nodiscard]] inline ObserverPtr<ubyte> GetPointer() noexcept { return m_rwPointer; }
+        [[nodiscard]] inline ObserverPtr<const ubyte> GetPointer() const noexcept { return m_rwPointer; }
+
+        [[nodiscard]] Vector<ubyte> ReadBytes(const usize byteCount) const;
+        void WriteBytes(const Vector<ubyte>& bytes);
+
+        void Resize(const usize newSize);
+        [[nodiscard]] inline usize GetSize() const noexcept { return m_buffer.size(); }
+    };
+}
+
+#endif

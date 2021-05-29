@@ -82,6 +82,7 @@
 #include "locale/Locale.h"
 
 #include "math/Math.h"
+#include "memory/MemoryBuffer.h"
 
 #include "particles/ParticleData.h"
 #include "particles/ParticleSystem.h"
