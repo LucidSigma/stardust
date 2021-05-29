@@ -35,7 +35,7 @@ private:
     sd::Animation m_colourAnimation;
     sd::Animation m_flashAnimation;
 
-    sd::Tilemap m_tilemap;
+    sd::Vector<sd::Tilemap> m_tilemaps{ };
 
     bool m_startRecording = false;
     sd::RecordingDevice m_device;
@@ -141,16 +141,34 @@ public:
         m_colourAnimator.AddAnimation("flash", m_flashAnimation);
         m_colourAnimator.SetSpeed(0.25f);
 
-        m_tilemap.Initialise("assets/tilemaps/ground.json");
+        const sd::Vector<sd::ubyte> tilemapData = sd::vfs::ReadFileData("assets/tilemaps/ground.json");
 
-        if (!m_tilemap.IsValid())
+        if (tilemapData.empty())
         {
             return sd::Status::Fail;
         }
 
-        m_tilemap.SetPosition(sd::Vec2{ -10.0f, 5.0f });
-        m_tilemap.AddTiles(m_groundTiles);
-        m_tilemap.AddTiles(m_conveyorTextures);
+        const nlohmann::json tilemapJSON = nlohmann::json::parse(
+            reinterpret_cast<const unsigned char*>(tilemapData.data()),
+            reinterpret_cast<const unsigned char*>(tilemapData.data()) + tilemapData.size(),
+            nullptr,
+            false
+        );
+
+        if (tilemapJSON.is_discarded() || tilemapJSON.is_null())
+        {
+            return sd::Status::Fail;
+        }
+
+        for (const auto& layer : tilemapJSON["layers"])
+        {
+            sd::Vector<sd::Tile> tiles = layer["data"];
+            m_tilemaps.emplace_back(tiles, layer["width"]);
+
+            m_tilemaps.back().SetPosition(sd::Vec2{ -10.0f, 5.0f });
+            m_tilemaps.back().AddTileTextures(m_groundTiles);
+            m_tilemaps.back().AddTileTextures(m_conveyorTextures);
+        }
 
         m_particles.SetWind(575.0f);
 
@@ -369,9 +387,9 @@ public:
 
     virtual void Render(sd::Renderer& renderer) override
     {
-        for (const auto& layer : m_tilemap.GetLayers())
+        for (const auto& tilemap : m_tilemaps)
         {
-            layer.Render(renderer, GetCamera());
+            tilemap.Render(renderer, GetCamera());
         }
 
         for (sd::i32 x = -3; x <= 3; ++x)

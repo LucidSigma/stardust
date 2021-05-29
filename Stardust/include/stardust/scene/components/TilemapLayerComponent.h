@@ -11,14 +11,14 @@ namespace stardust
     {
         struct TilemapLayer
         {
-            ObserverPtr<Tilemap::Layer> layer;
+            ObserverPtr<Tilemap> tilemap;
 
             TilemapLayer()
-                : layer(nullptr)
+                : tilemap(nullptr)
             { }
 
-            explicit TilemapLayer(Tilemap::Layer& layer)
-                : layer(&layer)
+            explicit TilemapLayer(Tilemap& tilemap)
+                : tilemap(&tilemap)
             { }
 
             ~TilemapLayer() noexcept = default;
