@@ -509,6 +509,13 @@ public:
             GetCamera()
         );
 
+        renderer.DrawWorldQuad(
+            sd::CreateQuad(sd::Vec2{ -2.0f, -2.0f }, sd::Vec2{ -2.0f + 2.0f / GetCamera().GetPixelsPerUnit() / GetCamera().GetZoom(), -2.0f }, sd::Vec2{ 3.0f, 5.0f }, sd::Vec2{ 3.0f + 2.0f / GetCamera().GetPixelsPerUnit() / GetCamera().GetZoom(), 5.0f }),
+            sd::comp::Transform(sd::Vec2Zero),
+            sd::colours::White,
+            GetCamera()
+        );
+
         m_particles.RenderOnScreen(renderer);
 
         for (const auto& boid : m_flock.GetBoids())
