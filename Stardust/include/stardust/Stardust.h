@@ -99,6 +99,8 @@
 #include "physics/AABB.h"
 #include "physics/Physics.h"
 
+#include "rect/Rect.h"
+
 #include "scene/components/Components.h"
 #include "scene/entity/Entity.h"
 #include "scene/Scene.h"
