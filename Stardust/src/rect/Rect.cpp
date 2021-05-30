@@ -52,9 +52,9 @@ namespace stardust
         return static_cast<u32>(2 * m_rect.w + 2 * m_rect.h);
     }
 
-    [[nodiscard]] u32 Rect::GetDiagonal() const
+    [[nodiscard]] f32 Rect::GetDiagonal() const
     {
-        return static_cast<u32>(glm::sqrt(m_rect.w * m_rect.w + m_rect.h + m_rect.h));
+        return glm::sqrt(static_cast<f32>(m_rect.w * m_rect.w + m_rect.h + m_rect.h));
     }
 
     [[nodiscard]] bool Rect::IsEmpty() const noexcept

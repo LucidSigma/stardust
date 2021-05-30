@@ -27,7 +27,7 @@ namespace stardust
 
         [[nodiscard]] u32 GetArea() const noexcept;
         [[nodiscard]] u32 GetPerimeter() const noexcept;
-        [[nodiscard]] u32 GetDiagonal() const;
+        [[nodiscard]] f32 GetDiagonal() const;
 
         [[nodiscard]] bool IsEmpty() const noexcept;
         [[nodiscard]] bool IsSquare() const noexcept;
