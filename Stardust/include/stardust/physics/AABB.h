@@ -52,6 +52,7 @@ namespace stardust
             [[nodiscard]] Vec2 GetExtents() const;
             [[nodiscard]] Vec2 GetSize() const;
 
+            [[nodiscard]] f32 GetArea() const;
             [[nodiscard]] f32 GetPerimeter() const;
 
             [[nodiscard]] inline operator b2AABB() const noexcept { return m_aabb; }

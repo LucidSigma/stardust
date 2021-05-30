@@ -152,6 +152,11 @@ namespace stardust
             return GetExtents() * 2.0f;
         }
 
+        [[nodiscard]] f32 AABB::GetArea() const
+        {
+            return GetWidth() * GetHeight();
+        }
+
         [[nodiscard]] f32 AABB::GetPerimeter() const
         {
             return m_aabb.GetPerimeter();
