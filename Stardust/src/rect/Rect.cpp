@@ -54,7 +54,7 @@ namespace stardust
 
     [[nodiscard]] f32 Rect::GetDiagonal() const
     {
-        return glm::sqrt(static_cast<f32>(m_rect.w * m_rect.w + m_rect.h + m_rect.h));
+        return glm::sqrt(static_cast<f32>(m_rect.w * m_rect.w + m_rect.h * m_rect.h));
     }
 
     [[nodiscard]] bool Rect::IsEmpty() const noexcept
