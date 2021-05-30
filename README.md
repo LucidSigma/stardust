@@ -80,6 +80,7 @@ public:
 * [cpu_features](https://github.com/google/cpu_features)
 * [concurrentqueue](https://github.com/cameron314/concurrentqueue)
 * [EnTT](https://github.com/skypjack/entt)
+* [fifo_map](https://github.com/nlohmann/fifo_map)
 * [magic_enum](https://github.com/Neargye/magic_enum)
 * [nlohmann JSON](https://github.com/nlohmann/json)
 * [psched](https://github.com/p-ranav/psched)

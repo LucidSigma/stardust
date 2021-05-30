@@ -22,6 +22,7 @@
 
 #include <concurrentqueue/concurrentqueue.h>
 #include <concurrentqueue/blockingconcurrentqueue.h>
+#include <fifo_map/fifo_map.hpp>
 
 namespace stardust
 {
@@ -66,6 +67,9 @@ namespace stardust
 
     template <typename T, typename Comp = std::less<T>>
     using MultiSet = std::multiset<T, Comp>;
+
+    template <typename K, typename V, typename Comp = nlohmann::fifo_map_compare<K>>
+    using FifoMap = nlohmann::fifo_map<K, V, Comp>;
 
     template <typename T>
     using Queue = std::queue<T>;
