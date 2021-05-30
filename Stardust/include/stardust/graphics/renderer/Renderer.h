@@ -130,6 +130,8 @@ namespace stardust
         void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::Sprite& sprite, const Camera2D& camera);
         void DrawWorldQuad(const Quad& quad, const components::Transform& transform, const components::ShearTransform& shear, const components::Sprite& sprite, const Camera2D& camera);
 
+        void DrawWorldLine(const Vec2& pointA, const Vec2& pointB, const components::Transform& transform, const Colour& colour, const Camera2D& camera);
+
         void DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour);
         void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const Colour& colour);
         void DrawScreenRect(const components::ScreenTransform& transform, const components::Sprite& sprite);

@@ -370,6 +370,21 @@ namespace stardust
         GenerateQuad(quad, modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_worldQuadBufferPtr, m_worldIndexCount);
     }
 
+    void Renderer::DrawWorldLine(const Vec2& pointA, const Vec2& pointB, const components::Transform& transform, const Colour& colour, const Camera2D& camera)
+    {
+        DrawWorldQuad(
+            Quad{
+                .lowerLeft = pointA,
+                .upperLeft = pointA + (2.0f * Vec2Down / camera.GetPixelsPerUnit() / camera.GetZoom()),
+                .upperRight = pointB,
+                .lowerRight = pointB + (2.0f * Vec2Down / camera.GetPixelsPerUnit() / camera.GetZoom()),
+            },
+            transform,
+            colour,
+            camera
+        );
+    }
+
     void Renderer::DrawScreenRect(const components::ScreenTransform& transform, const Colour& colour)
     {
         if (m_screenIndexCount >= s_MaxIndicesPerBatch) [[unlikely]]
