@@ -11,8 +11,11 @@
 
 namespace stardust
 {
-    using Sound = SoundBase<SoLoud::Wav>;
-    using SoundStream = SoundBase<SoLoud::WavStream>;
+    namespace audio
+    {
+        using Sound = SoundBase<SoLoud::Wav>;
+        using SoundStream = SoundBase<SoLoud::WavStream>;
+    }
 }
 
 #endif

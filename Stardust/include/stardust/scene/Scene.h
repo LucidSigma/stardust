@@ -17,6 +17,11 @@
 
 namespace stardust
 {
+    namespace audio
+    {
+        class SoundSystem;
+    }
+
     class Scene
         : private INoncopyable, private INonmovable
     {
@@ -71,8 +76,8 @@ namespace stardust
         [[nodiscard]] class ScriptEngine& GetScriptEngine() noexcept;
         [[nodiscard]] const class ScriptEngine& GetScriptEngine() const noexcept;
 
-        [[nodiscard]] class SoundSystem& GetSoundSystem() noexcept;
-        [[nodiscard]] const class SoundSystem& GetSoundSystem() const noexcept;
+        [[nodiscard]] audio::SoundSystem& GetSoundSystem() noexcept;
+        [[nodiscard]] const audio::SoundSystem& GetSoundSystem() const noexcept;
 
         [[nodiscard]] inline const Keyboard& GetKeyboardState() const noexcept { return Input::GetKeyboardState(); }
         [[nodiscard]] inline const Mouse& GetMouseState() const noexcept { return Input::GetMouseState(); }

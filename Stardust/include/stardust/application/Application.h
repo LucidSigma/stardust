@@ -100,8 +100,8 @@ namespace stardust
 
         EntityRegistry m_entityRegistry;
         ScriptEngine m_scriptEngine;
-        SoundSystem m_soundSystem;
-        VolumeManager m_volumeManager;
+        audio::SoundSystem m_soundSystem;
+        audio::VolumeManager m_volumeManager;
 
         HashMap<String, Any> m_globalSceneData{ };
 
@@ -133,8 +133,8 @@ namespace stardust
 
         [[nodiscard]] inline EntityRegistry& GetEntityRegistry() noexcept { return m_entityRegistry; }
         [[nodiscard]] inline ScriptEngine& GetScriptEngine() noexcept { return m_scriptEngine; }
-        [[nodiscard]] inline SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
-        [[nodiscard]] inline VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
+        [[nodiscard]] inline audio::SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
+        [[nodiscard]] inline audio::VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
 
         [[nodiscard]] String GetPlatformName() const;
 

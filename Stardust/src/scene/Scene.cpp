@@ -96,12 +96,12 @@ namespace stardust
         return m_application.GetScriptEngine();
     }
 
-    [[nodiscard]] SoundSystem& Scene::GetSoundSystem() noexcept
+    [[nodiscard]] audio::SoundSystem& Scene::GetSoundSystem() noexcept
     {
         return m_application.GetSoundSystem();
     }
 
-    [[nodiscard]] const SoundSystem& Scene::GetSoundSystem() const noexcept
+    [[nodiscard]] const audio::SoundSystem& Scene::GetSoundSystem() const noexcept
     {
         return m_application.GetSoundSystem();
     }

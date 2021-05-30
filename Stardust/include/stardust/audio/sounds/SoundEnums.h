@@ -10,21 +10,24 @@
 
 namespace stardust
 {
-    enum class InaudibleBehaviour
+    namespace audio
     {
-        Pause,
-        KeepTicking,
-        Kill,
-    };
+        enum class InaudibleBehaviour
+        {
+            Pause,
+            KeepTicking,
+            Kill,
+        };
 
-    enum class AttenuationModel
-        : std::underlying_type_t<SoLoud::AudioSource::ATTENUATION_MODELS>
-    {
-        None = SoLoud::AudioSource::NO_ATTENUATION,
-        InverseDistance = SoLoud::AudioSource::INVERSE_DISTANCE,
-        LinearDistance = SoLoud::AudioSource::LINEAR_DISTANCE,
-        ExponentialDistance = SoLoud::AudioSource::EXPONENTIAL_DISTANCE,
-    };
+        enum class AttenuationModel
+            : std::underlying_type_t<SoLoud::AudioSource::ATTENUATION_MODELS>
+        {
+            None = SoLoud::AudioSource::NO_ATTENUATION,
+            InverseDistance = SoLoud::AudioSource::INVERSE_DISTANCE,
+            LinearDistance = SoLoud::AudioSource::LINEAR_DISTANCE,
+            ExponentialDistance = SoLoud::AudioSource::EXPONENTIAL_DISTANCE,
+        };
+    }
 }
 
 #endif

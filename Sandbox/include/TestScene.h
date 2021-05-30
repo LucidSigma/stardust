@@ -26,7 +26,7 @@ private:
 
     sd::GameController* m_controller = nullptr;
 
-    sd::AssetManager<sd::Sound> m_sounds;
+    sd::AssetManager<sd::audio::Sound> m_sounds;
     
     sd::ParticleSystem m_particles;
     sd::f32 m_clickParticleDelay = 0.01f;
@@ -38,9 +38,9 @@ private:
     sd::Vector<sd::Tilemap> m_tilemaps{ };
 
     bool m_startRecording = false;
-    sd::RecordingDevice m_device;
-    sd::Sound m_chunkSound;
-    sd::SoundSource m_source;
+    sd::audio::RecordingDevice m_device;
+    sd::audio::Sound m_chunkSound;
+    sd::audio::SoundSource m_source;
 
     sd::ai::BoidFlock m_flock;
 
@@ -211,7 +211,7 @@ public:
         GetScriptEngine().CallFunction<void, sd::String>("print_stuff", "Script attached.");
         GetScriptEngine().CallFunction<void>("vector_stuff");
 
-        m_device.Initialise(sd::RecordingDevice::GetAllDeviceInfos().back());
+        m_device.Initialise(sd::audio::RecordingDevice::GetAllDeviceInfos().back());
         
         if (m_device.Open() == sd::Status::Fail)
         {
