@@ -61,4 +61,23 @@ TEST_CASE("Rects can be created and have information queried about them", "[rect
         const sd::Rect clippingRect(18, 18, 10, 10);
         REQUIRE(sd::Rect::GetMinimumEnslosingRect(points, clippingRect) == sd::Rect(20, 20, 6u, 6u));
     }
+
+    SECTION("Canm query intersections and unions between rects and lines")
+    {
+        const sd::Rect rect(5, 10, 10u, 5u);
+
+        const sd::Pair<sd::IVec2, sd::IVec2> line{
+            sd::IVec2{ -5, -5 },
+            sd::IVec2{ 15, 15 },
+        };
+
+        REQUIRE(rectA.HasIntersection(rect));
+        REQUIRE(rectA.HasIntersection(line));
+
+        REQUIRE(rectA.GetIntersection(rect) == sd::Rect(5, 10, 5u, 5u));
+        REQUIRE(rectA.GetUnion(rect) == sd::Rect(0, 0, 15u, 20u));
+
+        const auto clippedLine = rectA.ClipLineToRect(line);
+        REQUIRE(clippedLine == sd::Pair<sd::IVec2, sd::IVec2>{ sd::IVec2{ 0, 0 }, sd::IVec2{ 9, 9 } });
+    }
 }
