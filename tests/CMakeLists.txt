@@ -4,9 +4,10 @@ add_executable(colour_test "colour/src/Main.cpp")
 add_executable(config_test "config/src/Main.cpp")
 add_executable(fs_test "filesystem/src/Main.cpp")
 add_executable(graph_test "graph/src/Main.cpp")
+add_executable(rect_test "rect/src/Main.cpp")
 add_executable(string_test "string/src/Main.cpp")
 
-set(TEST_TARGETS colour_test config_test fs_test graph_test string_test)
+set(TEST_TARGETS colour_test config_test fs_test graph_test rect_test string_test)
 
 foreach(TEST_TARGET ${TEST_TARGETS})
     target_include_directories(${TEST_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/Stardust/include" ${CATCH2_INCLUDE_DIRS})
