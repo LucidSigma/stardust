@@ -16,8 +16,8 @@ namespace stardust
         SDL_Rect m_rect{ };
 
     public:
-        [[nodiscard]] Rect GetMinimumEnslosingRect(const Vector<IVec2>& points);
-        [[nodiscard]] Rect GetMinimumEnslosingRect(const Vector<IVec2>& points, const Rect& clippingRect);
+        [[nodiscard]] static Rect GetMinimumEnslosingRect(const Vector<IVec2>& points);
+        [[nodiscard]] static Rect GetMinimumEnslosingRect(const Vector<IVec2>& points, const Rect& clippingRect);
 
         Rect() = default;
         Rect(const SDL_Rect& rect);
