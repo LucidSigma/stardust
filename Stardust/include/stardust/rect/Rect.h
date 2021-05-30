@@ -61,6 +61,8 @@ namespace stardust
         [[nodiscard]] bool operator ==(const Rect& other) const noexcept;
         [[nodiscard]] bool operator !=(const Rect& other) const noexcept;
 
+        [[nodiscard]] inline SDL_Rect& GetRawRect() noexcept { return m_rect; }
+        [[nodiscard]] inline const SDL_Rect& GetRawRect() const noexcept { return m_rect; }
         [[nodiscard]] inline operator SDL_Rect() const noexcept { return m_rect; }
     };
 }

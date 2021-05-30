@@ -97,24 +97,18 @@ namespace stardust
         }
     }
 
-    void PixelSurface::Blit(const PixelSurface& source, const Optional<Pair<IVec2, UVec2>>& sourceArea, const IVec2& destinationPosition) const
+    void PixelSurface::Blit(const PixelSurface& source, const Optional<Rect>& sourceArea, const IVec2& destinationPosition) const
     {
-        SDL_Rect sourceAreaRect{ };
         const SDL_Rect* sourceAreaPointer = nullptr;
 
         if (sourceArea.has_value())
         {
-            sourceAreaRect.x = sourceArea.value().first.x;
-            sourceAreaRect.y = sourceArea.value().first.x;
-            sourceAreaRect.w = static_cast<i32>(sourceArea.value().second.x);
-            sourceAreaRect.h = static_cast<i32>(sourceArea.value().second.y);
-
-            sourceAreaPointer = &sourceAreaRect;
+            sourceAreaPointer = &sourceArea.value().GetRawRect();
         }
 
-        SDL_Rect destinationRect{ destinationPosition.x, destinationPosition.y, 0, 0 };
+        Rect destinationRect(destinationPosition.x, destinationPosition.y, 0u, 0u);
 
-        SDL_BlitSurface(source.GetRawHandle(), sourceAreaPointer, GetRawHandle(), &destinationRect);
+        SDL_BlitSurface(source.GetRawHandle(), sourceAreaPointer, GetRawHandle(), &destinationRect.GetRawRect());
     }
 
     [[nodiscard]] UVec2 PixelSurface::GetSize() const

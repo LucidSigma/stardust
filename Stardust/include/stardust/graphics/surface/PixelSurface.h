@@ -6,10 +6,10 @@
 
 #include <SDL2/SDL.h>
 
-#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
+#include "stardust/rect/Rect.h"
 
 namespace stardust
 {
@@ -50,7 +50,7 @@ namespace stardust
         void Unlock();
         [[nodiscard]] inline bool IsLocked() const noexcept { return m_isLocked; }
 
-        void Blit(const PixelSurface& source, const Optional<Pair<IVec2, UVec2>>& sourceArea, const IVec2& destinationPosition) const;
+        void Blit(const PixelSurface& source, const Optional<Rect>& sourceArea, const IVec2& destinationPosition) const;
 
         [[nodiscard]] UVec2 GetSize() const;
         [[nodiscard]] u32 GetPitch() const;
