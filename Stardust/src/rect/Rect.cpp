@@ -1,5 +1,7 @@
 #include "stardust/rect/Rect.h"
 
+#include "stardust/math/Math.h"
+
 namespace stardust
 {
     [[nodiscard]] Rect Rect::GetMinimumEnslosingRect(const Vector<IVec2>& points)
@@ -48,6 +50,11 @@ namespace stardust
     [[nodiscard]] u32 Rect::GetPerimeter() const noexcept
     {
         return static_cast<u32>(2 * m_rect.w + 2 * m_rect.h);
+    }
+
+    [[nodiscard]] u32 Rect::GetDiagonal() const
+    {
+        return static_cast<u32>(glm::sqrt(m_rect.w * m_rect.w + m_rect.h + m_rect.h));
     }
 
     [[nodiscard]] bool Rect::IsEmpty() const noexcept
