@@ -38,7 +38,7 @@ namespace stardust
     using UTF32String = std::u32string;
     using UTF32StringView = std::u32string_view;
 
-    template <typename T, std::size_t N = 1u>
+    template <typename T, std::size_t N>
     using Array = std::array<T, N>;
 
     template <typename T>
