@@ -22,8 +22,8 @@ namespace stardust
 
     constexpr VersionInfo Version{
         .major = 1u,
-        .minor = 0u,
-        .patch = 7u,
+        .minor = 1u,
+        .patch = 0u,
     };
 
     [[nodiscard]] extern VersionInfo CreateVersionInfo(const u32 major, const u32 minor = 0u, const u32 patch = 0u) noexcept;
