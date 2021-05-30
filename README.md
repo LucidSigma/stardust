@@ -18,7 +18,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Lua scripting (using Sol2).
 * Support for multiple locales.
 * Timer and timesteps.
-* Tilemaps (using Tiled JSON files).
+* Tilemaps.
 * Scene queue.
 * Converting JSON to and from MessagePack (for binary storage).
 * Audio recording.
@@ -27,7 +27,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Logging and system modals.
 * Shared object/DLL loading.
 * Async tasks and parallel task scheduling.
-* Basic game AI (graphs/pathfinding, minimax, boids).
+* Basic game AI (graphs/pathfinding, minimax, state machine, boids).
 
 ## Scene Template
 ```cpp
