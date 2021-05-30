@@ -5,6 +5,8 @@
 #include "stardust/utility/interfaces/INoncopyable.h"
 #include "stardust/utility/interfaces/INonmovable.h"
 
+#include <entt/entt.hpp>
+
 #include "stardust/application/events/Events.h"
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
@@ -30,7 +32,7 @@ namespace stardust
 
     protected:
         class Application& m_application;
-        class EntityRegistry& m_entityRegistry;
+        entt::registry& m_entityRegistry;
 
     public:
         Scene(class Application& application, const String& name);
@@ -55,8 +57,8 @@ namespace stardust
         [[nodiscard]] class Application& GetApplication() noexcept;
         [[nodiscard]] const class Application& GetApplication() const noexcept;
 
-        [[nodiscard]] class EntityRegistry& GetEntityRegistry() noexcept;
-        [[nodiscard]] const class EntityRegistry& GetEntityRegistry() const noexcept;
+        [[nodiscard]] inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+        [[nodiscard]] inline const entt::registry& GetEntityRegistry() const noexcept { return m_entityRegistry; }
 
         [[nodiscard]] class Window& GetWindow() noexcept;
         [[nodiscard]] const class Window& GetWindow() const noexcept;

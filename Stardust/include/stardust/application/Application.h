@@ -9,6 +9,8 @@
 #include <chrono>
 #include <functional>
 
+#include <entt/entt.hpp>
+
 #include "stardust/application/events/Events.h"
 #include "stardust/audio/volume/VolumeManager.h"
 #include "stardust/audio/SoundSystem.h"
@@ -20,7 +22,6 @@
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/input/InputManager.h"
 #include "stardust/locale/Locale.h"
-#include "stardust/scene/registry/EntityRegistry.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/scripting/ScriptEngine.h"
 #include "stardust/utility/status/Status.h"
@@ -98,7 +99,7 @@ namespace stardust
         SceneManager m_sceneManager;
         bool m_isCurrentSceneFinished = false;
 
-        EntityRegistry m_entityRegistry;
+        entt::registry m_entityRegistry;
         ScriptEngine m_scriptEngine;
         audio::SoundSystem m_soundSystem;
         audio::VolumeManager m_volumeManager;
@@ -131,7 +132,7 @@ namespace stardust
         [[nodiscard]] inline InputManager& GetInputManager() noexcept { return m_inputManager; }
         [[nodiscard]] inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 
-        [[nodiscard]] inline EntityRegistry& GetEntityRegistry() noexcept { return m_entityRegistry; }
+        [[nodiscard]] inline entt::registry& GetEntityRegistry() noexcept { return m_entityRegistry; }
         [[nodiscard]] inline ScriptEngine& GetScriptEngine() noexcept { return m_scriptEngine; }
         [[nodiscard]] inline audio::SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
         [[nodiscard]] inline audio::VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }

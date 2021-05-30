@@ -8,6 +8,6 @@ namespace stardust
 
     [[nodiscard]] bool Entity::IsOrphan() const
     {
-        return m_scene->GetEntityRegistry().GetHandle().orphan(m_handle);
+        return m_scene->GetEntityRegistry().orphan(m_handle);
     }
 }
