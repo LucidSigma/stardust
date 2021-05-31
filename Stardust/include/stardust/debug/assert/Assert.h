@@ -18,11 +18,27 @@
 #define STARDUST_ASSERT(condition) SDL_assert(condition)
 #define STARDUST_ASSERT_PARANOID(condition) SDL_assert_paranoid(condition)
 
+#include "stardust/data/Containers.h"
+#include "stardust/data/Types.h"
+
 namespace stardust
 {
     namespace debug
     {
-        
+        struct AssertionData
+        {
+            bool isAlwaysIgnored;
+
+            u32 triggerCount;
+            String condition;
+            
+            String filename;
+            u32 lineNumber;
+            String functionName;
+        };
+
+        [[nodiscard]] Vector<AssertionData> GetAssertionReport();
+        void ResetAssertionReport();
     }
 }
 
