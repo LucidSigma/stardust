@@ -65,16 +65,16 @@ namespace stardust
 
             while (currentAssertion != nullptr)
             {
-                assertionReport.emplace_back();
+                assertionReport.emplace_back(AssertionData{
+                    .isAlwaysIgnored = static_cast<bool>(currentAssertion->always_ignore),
 
-                assertionReport.back().isAlwaysIgnored = static_cast<bool>(currentAssertion->always_ignore);
+                    .triggerCount = currentAssertion->trigger_count,
+                    .condition = currentAssertion->condition,
 
-                assertionReport.back().triggerCount = currentAssertion->trigger_count;
-                assertionReport.back().condition = currentAssertion->condition;
-                
-                assertionReport.back().filename = currentAssertion->filename;
-                assertionReport.back().lineNumber = static_cast<u32>(currentAssertion->linenum);
-                assertionReport.back().functionName = currentAssertion->function;
+                    .filename = currentAssertion->filename,
+                    .lineNumber = static_cast<u32>(currentAssertion->linenum),
+                    .functionName = currentAssertion->function,
+                });
 
                 currentAssertion = currentAssertion->next;
             }

@@ -76,9 +76,9 @@ namespace stardust
         private:
             Vector<Boid> m_boids{ };
 
-            f32 m_separationFactor;
-            f32 m_alignmentFactor;
-            f32 m_cohesionFactor;
+            f32 m_separationFactor = 1.0f;
+            f32 m_alignmentFactor = 1.0f;
+            f32 m_cohesionFactor = 1.0f;
 
         public:
             BoidFlock() = default;
