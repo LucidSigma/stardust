@@ -1,6 +1,9 @@
 #include "stardust/debug/assert/Assert.h"
 
+#include <format>
+
 #include "stardust/debug/logging/Log.h"
+#include "stardust/debug/message_box/MessageBox.h"
 
 #ifndef WIN32
     #define __cdecl
@@ -14,9 +17,44 @@ namespace stardust
         {
             [[nodiscard]] SDL_AssertState __cdecl AssertionHandler(const SDL_AssertData* const assertionData, void* const userData)
             {
-                Log::Error("Assertion failed. Information:");
+                const String errorMessage = std::format(
+                    "Assertion failure at {} ({}:{}); triggered {} {}.\n\tFailing condition: \"{}\".",
+                    assertionData->function, assertionData->filename, assertionData->linenum,
+                    assertionData->trigger_count, assertionData->trigger_count == 1 ? "time" : "times",
+                    assertionData->condition
+                );
 
-                return SDL_GetDefaultAssertionHandler()(assertionData, userData);
+                Log::Error("{}", errorMessage);
+
+                const message_box::ButtonID selectedButton = message_box::ShowComplex("Assertion Failed", errorMessage, message_box::Type::Warning, Vector<message_box::ButtonData>{
+                    message_box::ButtonData{
+                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_IGNORE),
+                        .text = "Ignore",
+                        .flags = { message_box::ButtonFlag::ReturnKeyDefault, message_box::ButtonFlag::EscapeKeyDefault },
+                    },
+                    message_box::ButtonData{
+                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_ALWAYS_IGNORE),
+                        .text = "Always Ignore",
+                        .flags = { },
+                    },
+                    message_box::ButtonData{
+                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_BREAK),
+                        .text = "Break",
+                        .flags = { },
+                    },
+                    message_box::ButtonData{
+                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_RETRY),
+                        .text = "Retry",
+                        .flags = { },
+                    },
+                    message_box::ButtonData{
+                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_ABORT),
+                        .text = "Abort",
+                        .flags = { },
+                    },
+                });
+
+                return static_cast<SDL_AssertState>(selectedButton);
             }
         }
 
