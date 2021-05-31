@@ -4,6 +4,7 @@
 
 #include <SDL2/SDL.h>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
 
 namespace stardust
@@ -44,6 +45,8 @@ namespace stardust
         [[nodiscard]] extern f32 ConvertBigToNativeEndianness(const f32 bits) noexcept;
 
         [[nodiscard]] extern u32 GetSystemRAMCount();
+
+        [[nodiscard]] String GetPlatformName();
     }
 
     namespace sys = system;

@@ -19,6 +19,7 @@
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/Input.h"
 #include "stardust/physics/world/World.h"
+#include "stardust/system/System.h"
 #include "stardust/utility/version/Version.h"
 #include "stardust/window/cursor/Cursor.h"
 
@@ -92,11 +93,6 @@ namespace stardust
         m_isRunning = false;
     }
 
-    [[nodiscard]] String Application::GetPlatformName() const
-    {
-        return SDL_GetPlatform();
-    }
-
     void Application::RemoveFromGlobalSceneData(const String& dataName)
     {
         m_globalSceneData.erase(dataName);
@@ -114,7 +110,7 @@ namespace stardust
     #endif
 
         Log::EngineInfo("Logger initialised [Stardust Version {}].", Version.ToString());
-        Log::EngineDebug("Platform detected: \"{}\".", GetPlatformName());
+        Log::EngineDebug("Platform detected: \"{}\".", system::GetPlatformName());
         Log::EngineDebug("Base directory: \"{}\"", m_baseDirectory);
         Log::EngineInfo("ECS initialised.");
 

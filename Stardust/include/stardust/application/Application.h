@@ -137,8 +137,6 @@ namespace stardust
         [[nodiscard]] inline audio::SoundSystem& GetSoundSystem() noexcept { return m_soundSystem; }
         [[nodiscard]] inline audio::VolumeManager& GetVolumeManager() noexcept { return m_volumeManager; }
 
-        [[nodiscard]] String GetPlatformName() const;
-
         [[nodiscard]] inline bool IsRunning() const noexcept { return m_isRunning; }
         [[nodiscard]] inline f64 GetElapsedTime() const noexcept { return m_elapsedTime; }
         [[nodiscard]] inline bool HasWindowFocus() const noexcept { return m_hasWindowFocus; }

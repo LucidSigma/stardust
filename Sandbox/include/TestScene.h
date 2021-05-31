@@ -74,6 +74,8 @@ public:
 
         sd::Log::Trace("Memory: {} megabytes", sd::sys::GetSystemRAMCount());
 
+        sd::Log::Trace("Key count: {}; mouse button count: {}; controller button count: {}.", sd::KeyCount, sd::MouseButtonCount, sd::GameControllerButtonCount);
+
         GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
 
         const auto textures = sd::vfs::GetAllFilesInDirectory("assets/textures");

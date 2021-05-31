@@ -6,11 +6,6 @@ namespace stardust
 {
     namespace system
     {
-        [[nodiscard]] u32 GetSystemRAMCount()
-        {
-            return static_cast<u32>(SDL_GetSystemRAM());
-        }
-
         [[nodiscard]] u16 SwapEndianness(const u16 bits) noexcept
         {
             return SDL_Swap16(bits);
@@ -69,6 +64,16 @@ namespace stardust
         [[nodiscard]] f32 ConvertBigToNativeEndianness(const f32 bits) noexcept
         {
             return SDL_SwapFloatBE(bits);
+        }
+
+        [[nodiscard]] u32 GetSystemRAMCount()
+        {
+            return static_cast<u32>(SDL_GetSystemRAM());
+        }
+
+        [[nodiscard]] String GetPlatformName()
+        {
+            return SDL_GetPlatform();
         }
     }
 }
