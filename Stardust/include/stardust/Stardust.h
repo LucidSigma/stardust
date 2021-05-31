@@ -2,6 +2,8 @@
 #ifndef STARDUST_H
 #define STARDUST_H
 
+#include "debug/assert/Assert.h"
+
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 #include <sol/sol.hpp>
