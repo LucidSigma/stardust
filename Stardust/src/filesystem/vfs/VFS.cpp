@@ -337,5 +337,22 @@ namespace stardust
                 false
             );
         }
+
+        [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document)
+        {
+            const String xmlString = ReadFileString(filepath);
+
+            if (xmlString.empty())
+            {
+                return Status::Fail;
+            }
+
+            if (document.Parse(xmlString.data(), xmlString.size()) != tinyxml2::XML_SUCCESS)
+            {
+                return Status::Fail;
+            }
+
+            return Status::Success;
+        }
     }
 }
