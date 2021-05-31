@@ -3,6 +3,7 @@
 #define STARDUST_FILESYSTEM_H
 
 #include <nlohmann/json.hpp>
+#include <tinyxml2/tinyxml2.h>
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
@@ -39,14 +40,17 @@ namespace stardust
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const nlohmann::json& data);
+        [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const tinyxml2::XMLDocument& data);
 
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const nlohmann::json& data);
+        [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const tinyxml2::XMLDocument& data);
 
         [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
 
         [[nodiscard]] extern nlohmann::json ReadJSON(const StringView& filepath);
+        [[nodiscard]] extern Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document);
 
         [[nodiscard]] extern Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data);
         [[nodiscard]] extern nlohmann::json ReadMessagePack(const StringView& filepath);

@@ -237,6 +237,14 @@ namespace stardust
             return Status::Success;
         }
 
+        [[nodiscard]] Status WriteToFile(const StringView& filepath, const tinyxml2::XMLDocument& data)
+        {
+            tinyxml2::XMLPrinter xmlPrinter;
+            data.Print(&xmlPrinter);
+
+            return WriteToFile(filepath, String(xmlPrinter.CStr()));
+        }
+
         [[nodiscard]] Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data)
         {
             std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
@@ -282,6 +290,14 @@ namespace stardust
             return Status::Success;
         }
 
+        [[nodiscard]] Status AppendToFile(const StringView& filepath, const tinyxml2::XMLDocument& data)
+        {
+            tinyxml2::XMLPrinter xmlPrinter;
+            data.Print(&xmlPrinter);
+
+            return AppendToFile(filepath, String(xmlPrinter.CStr()));
+        }
+
         [[nodiscard]] usize GetFileSize(const StringView& filepath)
         {
             std::error_code errorCode;
@@ -300,6 +316,16 @@ namespace stardust
             }
 
             return nlohmann::json::parse(fileData, nullptr, false);
+        }
+
+        [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document)
+        {          
+            if (document.LoadFile(filepath.data()) != tinyxml2::XML_SUCCESS)
+            {
+                return Status::Fail;
+            }
+
+            return Status::Success;
         }
 
         [[nodiscard]] Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data)

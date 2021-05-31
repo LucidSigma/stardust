@@ -3,6 +3,7 @@
 #define STARDUST_VFS_H
 
 #include <nlohmann/json.hpp>
+#include <tinyxml2/tinyxml2.h>
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
@@ -32,14 +33,17 @@ namespace stardust
 
         [[nodiscard]] extern Vector<ubyte> ReadFileData(const StringView& filepath);
         [[nodiscard]] extern String ReadFileString(const StringView& filepath);
+
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);
         [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
+
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
         [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
 
         [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
 
         [[nodiscard]] extern nlohmann::json ReadJSON(const StringView& filepath);
+        [[nodiscard]] extern Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document);
     }
 }
 
