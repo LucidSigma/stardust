@@ -2,11 +2,23 @@
 #ifndef STARDUST_H
 #define STARDUST_H
 
-#include "debug/assert/Assert.h"
+#ifndef STARDUST_ASSERT_LEVEL
+    #ifdef NDEBUG
+        #define STARDUST_ASSERT_LEVEL 1
+    #else
+        #define STARDUST_ASSERT_LEVEL 2
+    #endif
+#endif
+
+#ifndef SDL_ASSERT_LEVEL
+    #define SDL_ASSERT_LEVEL STARDUST_ASSERT_LEVEL
+#endif
 
 #include <entt/entt.hpp>
+#include <nlohmann/json.hpp>
 #include <SDL2/SDL.h>
 #include <sol/sol.hpp>
+#include <tinyxml2/tinyxml2.h>
 
 #include "ai/game_tree/GameState.h"
 #include "ai/game_tree/Minimax.h"
@@ -42,6 +54,7 @@
 #include "data/Pointers.h"
 #include "data/Types.h"
 
+#include "debug/assert/Assert.h"
 #include "debug/logging/Log.h"
 #include "debug/message_box/MessageBox.h"
 #include "debug/Debug.h"
