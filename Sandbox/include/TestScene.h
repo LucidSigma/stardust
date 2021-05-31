@@ -195,9 +195,11 @@ public:
         GetInputManager().AddToAxis("x", sd::AxisType::ADKeys, true);
         GetInputManager().AddToAxis("x", sd::AxisType::LeftRightKeys, true);
         GetInputManager().AddToAxis("x", sd::AxisType::ControllerRightX, true);
+        GetInputManager().AddToAxis("x", sd::AxisType::ControllerDPadX, true);
 
         GetInputManager().AddToAxis("y", sd::AxisType::WSKeys, true);
         GetInputManager().AddToAxis("y", sd::AxisType::UpDownKeys, true);
+        GetInputManager().AddToAxis("y", sd::AxisType::ControllerDPadY, true);
         GetInputManager().AddToAxis("y", sd::AxisType::ControllerRightY, false);
 
         if (GetScriptEngine().LoadScript("assets/scripts/test.lua") != sd::Status::Success)
