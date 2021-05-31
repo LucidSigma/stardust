@@ -10,6 +10,7 @@
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
+#include "stardust/debug/assert/Assert.h"
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/filesystem/vfs/VFS.h"
@@ -46,6 +47,10 @@ namespace stardust
         m_openGLContext.Destroy();
         m_window.Destroy();
         ResetCursor();
+
+    #ifndef NDEBUG
+        debug::ResetAssertionCallback();
+    #endif
 
         vfs::Quit();
 
@@ -106,6 +111,7 @@ namespace stardust
         {
             const String logFilepath = m_baseDirectory + "log.txt";
             Log::Initialise(createInfo.applicationName, logFilepath);
+            debug::InitialiseAssertionCallback();
         }
     #endif
 

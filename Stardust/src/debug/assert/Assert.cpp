@@ -1,9 +1,25 @@
 #include "stardust/debug/assert/Assert.h"
 
+#include "stardust/debug/logging/Log.h"
+
+#ifndef WIN32
+    #define __cdecl
+#endif
+
 namespace stardust
 {
     namespace debug
     {
+        namespace
+        {
+            [[nodiscard]] SDL_AssertState __cdecl AssertionHandler(const SDL_AssertData* const assertionData, void* const userData)
+            {
+                Log::Error("Assertion failed. Information:");
+
+                return SDL_GetDefaultAssertionHandler()(assertionData, userData);
+            }
+        }
+
         [[nodiscard]] Vector<AssertionData> GetAssertionReport()
         {
             Vector<AssertionData> assertionReport{ };
@@ -32,5 +48,19 @@ namespace stardust
         {
             SDL_ResetAssertionReport();
         }
+
+        void InitialiseAssertionCallback()
+        {
+            SDL_SetAssertionHandler(AssertionHandler, nullptr);
+        }
+
+        void ResetAssertionCallback()
+        {
+            SDL_SetAssertionHandler(SDL_GetDefaultAssertionHandler(), nullptr);
+        }
     }
 }
+
+#ifndef WIN32
+    #undef __cdecl
+#endif

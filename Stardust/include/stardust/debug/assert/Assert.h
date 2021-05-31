@@ -10,7 +10,9 @@
     #endif
 #endif
 
-#define SDL_ASSERT_LEVEL STARDUST_ASSERT_LEVEL
+#ifndef SDL_ASSERT_LEVEL
+    #define SDL_ASSERT_LEVEL STARDUST_ASSERT_LEVEL
+#endif
 
 #include <SDL2/SDL.h>
 
@@ -39,6 +41,9 @@ namespace stardust
 
         [[nodiscard]] Vector<AssertionData> GetAssertionReport();
         void ResetAssertionReport();
+
+        void InitialiseAssertionCallback();
+        void ResetAssertionCallback();
     }
 }
 
