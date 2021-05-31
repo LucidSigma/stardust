@@ -44,6 +44,7 @@
 
 #include "debug/logging/Log.h"
 #include "debug/message_box/MessageBox.h"
+#include "debug/Debug.h"
 
 #include "filesystem/shared_object/SharedObject.h"
 #include "filesystem/vfs/VFS.h"
