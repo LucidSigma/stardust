@@ -53,6 +53,7 @@ add_subdirectory("dep/lua-5.4.3")
 add_subdirectory("dep/physfs-3.0.2")
 add_subdirectory("dep/SoLoud-2020.02.07")
 add_subdirectory("dep/stb_image-2.26")
+add_subdirectory("dep/tinyxml2-8.1.0")
 
 # Projects in workspace.
 add_subdirectory("Stardust")

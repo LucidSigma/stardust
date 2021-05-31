@@ -82,9 +82,12 @@ public:
 * [EnTT](https://github.com/skypjack/entt)
 * [fifo_map](https://github.com/nlohmann/fifo_map)
 * [magic_enum](https://github.com/Neargye/magic_enum)
-* [nlohmann JSON](https://github.com/nlohmann/json)
 * [psched](https://github.com/p-ranav/psched)
 * [stbrumme's hash library](https://github.com/stbrumme/hash-library)
+
+### Serialisation/Parsing
+* [nlohmann JSON](https://github.com/nlohmann/json)
+* [tinyxml2](https://github.com/leethomason/tinyxml2)
 
 ### Assets
 * [PhysFS](https://icculus.org/physfs/)

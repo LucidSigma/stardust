@@ -25,6 +25,7 @@ target_include_directories(Stardust PUBLIC
     ${SOLOUD_INCLUDE_DIRS}
     ${SPDLOG_INCLUDE_DIRS}
     ${STB_IMAGE_INCLUDE_DIRS}
+    ${TINYXML2_INCLUDE_DIRS}
 )
 
 target_link_directories(Stardust PUBLIC
@@ -44,6 +45,7 @@ target_link_libraries(Stardust PUBLIC
     physfs
     soloud
     stb_image
+    tinyxml2
 )
 
 source_group(TREE "${CMAKE_CURRENT_LIST_DIR}/src" FILES ${STARDUST_SOURCE_FILES})
