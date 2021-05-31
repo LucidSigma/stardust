@@ -13,18 +13,21 @@ namespace stardust
         SHA256 sha256Hasher;
     }
 
-    [[nodiscard]] String GetMD5Hash(const StringView& text)
+    namespace utility
     {
-        return md5Hasher(text.data());
-    }
+        [[nodiscard]] String GetMD5Hash(const StringView& text)
+        {
+            return md5Hasher(text.data());
+        }
 
-    [[nodiscard]] String GetSHA1Hash(const StringView& text)
-    {
-        return sha1Hasher(text.data());
-    }
+        [[nodiscard]] String GetSHA1Hash(const StringView& text)
+        {
+            return sha1Hasher(text.data());
+        }
 
-    [[nodiscard]] String GetSHA256Hash(const StringView& text)
-    {
-        return sha256Hasher(text.data());
+        [[nodiscard]] String GetSHA256Hash(const StringView& text)
+        {
+            return sha256Hasher(text.data());
+        }
     }
 }
