@@ -8,7 +8,7 @@
 #include "stardust/utility/version/Version.h"
 
 #ifndef WIN32
-#define __cdecl
+    #define __cdecl
 #endif
 
 namespace stardust
@@ -25,7 +25,7 @@ namespace stardust
 }
 
 #ifndef WIN32
-#undef __cdecl
+    #undef __cdecl
 #endif
 
 #endif

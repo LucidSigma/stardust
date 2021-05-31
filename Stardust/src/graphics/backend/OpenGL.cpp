@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 
 #ifdef WIN32
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #include "stardust/data/Containers.h"
@@ -11,9 +11,8 @@
 #include "stardust/debug/logging/Log.h"
 
 #ifndef WIN32
-#define __cdecl
+    #define __cdecl
 #endif
-
 
 #ifdef WIN32
 extern "C"
@@ -83,5 +82,5 @@ namespace stardust
 }
 
 #ifndef WIN32
-#undef __cdecl
+    #undef __cdecl
 #endif
