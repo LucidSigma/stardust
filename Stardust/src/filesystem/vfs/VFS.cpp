@@ -354,5 +354,20 @@ namespace stardust
 
             return Status::Success;
         }
+        
+        [[nodiscard]] Status ReadTOML(const StringView& filepath, toml::table& table)
+        {
+            try
+            {
+                const String tomlString = ReadFileString(filepath);
+                table = toml::parse(tomlString);
+            }
+            catch (const toml::parse_error& error)
+            {
+                return Status::Fail;
+            }
+
+            return Status::Success;
+        }
     }
 }
