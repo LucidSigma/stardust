@@ -4,6 +4,7 @@
 
 #include <nlohmann/json.hpp>
 #include <tinyxml2/tinyxml2.h>
+#include <toml++/toml.hpp>
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
@@ -52,6 +53,7 @@ namespace stardust
 
         [[nodiscard]] extern nlohmann::json ReadJSON(const StringView& filepath);
         [[nodiscard]] extern Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document);
+        [[nodiscard]] extern Status ReadTOML(const StringView& filepath, toml::table& table);
 
         [[nodiscard]] extern Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data);
         [[nodiscard]] extern nlohmann::json ReadMessagePack(const StringView& filepath);

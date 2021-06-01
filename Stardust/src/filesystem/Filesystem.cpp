@@ -351,6 +351,20 @@ namespace stardust
             return Status::Success;
         }
 
+        [[nodiscard]] Status ReadTOML(const StringView& filepath, toml::table& table)
+        {
+            try
+            {
+                table = toml::parse_file(filepath);
+            }
+            catch (const toml::parse_error& error)
+            {
+                return Status::Fail;
+            }
+
+            return Status::Success;
+        }
+
         [[nodiscard]] Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data)
         {
             const Vector<ubyte> messagePackData = nlohmann::json::to_msgpack(data);
