@@ -11,6 +11,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * ECS with EnTT.
 * Full keyboard, mouse, and controller input support.
 * Virtual filesystem with PhysFS.
+* Data serialisation with cereal.
 * Positional audio with SoLoud.
 * Config loading.
 * Particle system.
@@ -24,7 +25,7 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Audio recording.
 * Querying system information.
 * Animation (sprites and basic tweens).
-* Logging and system modals.
+* Logging, assertions, and system modals.
 * Shared object/DLL loading.
 * Async tasks and parallel task scheduling.
 * Basic game AI (graphs/pathfinding, minimax, state machine, boids).

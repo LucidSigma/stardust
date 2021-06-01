@@ -59,6 +59,7 @@
 #include "debug/message_box/MessageBox.h"
 #include "debug/Debug.h"
 
+#include "filesystem/serialise/Serialise.h"
 #include "filesystem/shared_object/SharedObject.h"
 #include "filesystem/vfs/VFS.h"
 #include "filesystem/vfs/VirtualFileHandle.h"
