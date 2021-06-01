@@ -51,7 +51,7 @@ namespace stardust
 
         [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
 
-        [[nodiscard]] extern nlohmann::json ReadJSON(const StringView& filepath);
+        [[nodiscard]] extern Status ReadJSON(const StringView& filepath, nlohmann::json& data);
         [[nodiscard]] extern Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document);
         [[nodiscard]] extern Status ReadTOML(const StringView& filepath, toml::table& table);
 

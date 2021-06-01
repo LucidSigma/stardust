@@ -143,9 +143,9 @@ public:
         m_colourAnimator.AddAnimation("flash", m_flashAnimation);
         m_colourAnimator.SetSpeed(0.25f);
 
-        const nlohmann::json tilemapJSON = sd::vfs::ReadJSON("assets/tilemaps/ground.json");
-
-        if (tilemapJSON.is_discarded() || tilemapJSON.is_null())
+        nlohmann::json tilemapJSON{ };
+        
+        if (sd::vfs::ReadJSON("assets/tilemaps/ground.json", tilemapJSON) == sd::Status::Fail)
         {
             return sd::Status::Fail;
         }

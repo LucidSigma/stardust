@@ -329,16 +329,18 @@ namespace stardust
             return fileSize != std::numeric_limits<umax>::max() ? static_cast<usize>(fileSize) : 0u;
         }
 
-        [[nodiscard]] nlohmann::json ReadJSON(const StringView& filepath)
+        [[nodiscard]] Status ReadJSON(const StringView& filepath, nlohmann::json& data)
         {
             const String fileData = ReadFile(filepath);
 
             if (fileData.empty())
             {
-                return nlohmann::json{ };
+                return Status::Fail;
             }
 
-            return nlohmann::json::parse(fileData, nullptr, false);
+            data = nlohmann::json::parse(fileData, nullptr, false);
+
+            return data.is_discarded() ? Status::Fail : Status::Success;
         }
 
         [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document)

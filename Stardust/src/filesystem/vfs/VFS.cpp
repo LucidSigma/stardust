@@ -321,21 +321,23 @@ namespace stardust
             return static_cast<usize>(fileStats.filesize);
         }
         
-        [[nodiscard]] nlohmann::json ReadJSON(const StringView& filepath)
+        [[nodiscard]] Status ReadJSON(const StringView& filepath, nlohmann::json& data)
         {
             const auto fileData = ReadFileData(filepath);
 
             if (fileData.empty())
             {
-                return nlohmann::json{ };
+                return Status::Fail;
             }
 
-            return nlohmann::json::parse(
+            data = nlohmann::json::parse(
                 reinterpret_cast<const u8*>(fileData.data()),
                 reinterpret_cast<const u8*>(fileData.data()) + fileData.size(),
                 nullptr,
                 false
             );
+
+            return data.is_discarded() ? Status::Fail : Status::Success;
         }
 
         [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document)
@@ -360,6 +362,12 @@ namespace stardust
             try
             {
                 const String tomlString = ReadFileString(filepath);
+
+                if (tomlString.empty())
+                {
+                    return Status::Fail;
+                }
+
                 table = toml::parse(tomlString);
             }
             catch (const toml::parse_error& error)

@@ -88,15 +88,13 @@ namespace stardust
 
     [[nodiscard]] Optional<nlohmann::json> Locale::LoadLocaleFile(const String& filepath) const
     {
-        const nlohmann::json locale = vfs::ReadJSON(filepath);
+        nlohmann::json locale{ };
 
-        if (locale.is_discarded())
+        if (vfs::ReadJSON(filepath, locale) == Status::Fail)
         {
             return NullOpt;
         }
-        else
-        {
-            return locale;
-        }
+
+        return locale;
     }
 }

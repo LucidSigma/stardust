@@ -51,10 +51,9 @@ namespace stardust
             }
         }
 
-        m_data = filesystem::ReadJSON(configFilepath);
         m_filepath = configFilepath;
 
-        if (m_data.is_discarded())
+        if (filesystem::ReadJSON(configFilepath, m_data) == Status::Fail)
         {
             return Status::Fail;
         }
