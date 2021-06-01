@@ -28,6 +28,7 @@
 #include "animation/Easings.h"
 
 #include "application/events/Events.h"
+#include "application/AppConfig.h"
 #include "application/Application.h"
 #include "assets/AssetManager.h"
 

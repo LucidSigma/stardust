@@ -16,7 +16,8 @@ namespace stardust
 {
     namespace filesystem
     {
-        [[nodiscard]] extern Status InitialiseApplicationDirectories(const StringView& organisationName, const StringView& applicationName);
+        [[nodiscard]] extern Status InitialiseApplicationBaseDirectory();
+        [[nodiscard]] extern Status InitialiseApplicationPreferenceDirectory(const StringView& organisationName, const StringView& applicationName);
         [[nodiscard]] extern const String& GetApplicationBaseDirectory();
         [[nodiscard]] extern const String& GetApplicationPreferenceDirectory();
 

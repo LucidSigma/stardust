@@ -12,6 +12,7 @@
 #include <entt/entt.hpp>
 
 #include "stardust/application/events/Events.h"
+#include "stardust/application/AppConfig.h"
 #include "stardust/audio/volume/VolumeManager.h"
 #include "stardust/audio/SoundSystem.h"
 #include "stardust/camera/Camera2D.h"
@@ -36,40 +37,10 @@ namespace stardust
         using InitialiseCallback = std::function<Status(Application&)>;
         using ExitCallback = std::function<void(Application&)>;
 
-        struct FilesystemInfo
-        {
-            const char* argv0;
-
-            StringView assetsArchive;
-            StringView localesArchive;
-        };
-
-        struct FilepathsInfo
-        {
-            StringView defaultConfigFilepath;
-            Optional<StringView> windowIconFilepath;
-        };
-
-        struct PhysicsInfo
-        {
-            f64 fixedTimestep;
-
-            u32 velocityIterations;
-            u32 positionIterations;
-        };
-
         struct CreateInfo
         {
-            StringView applicationName;
-            StringView organisationName;
-            StringView windowTitle;
-
-            bool allowResizableWindow;
-
-            FilesystemInfo filesystem;
-            FilepathsInfo filepaths;
-
-            PhysicsInfo physicsInfo;
+            String appTOMLRelativeFilepath;
+            const char* argv0;
 
             Optional<InitialiseCallback> initialiseCallback;
             Optional<ExitCallback> exitCallback;
@@ -155,19 +126,21 @@ namespace stardust
         [[nodiscard]] inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
     private:
+        [[nodiscard]] Status CreateApplicationConfig(const String& appTOMLFilepath, const char* argv0, AppConfig& appConfig);
+
         void Initialise(const CreateInfo& createInfo);
-        [[nodiscard]] Status InitialiseFilesystem(const CreateInfo& createInfo);
-        [[nodiscard]] Status InitialiseConfig(const CreateInfo& createInfo);
-        [[nodiscard]] Status InitialiseLocale(const CreateInfo&);
-        [[nodiscard]] Status InitialiseSoundSystem(const CreateInfo&);
-        [[nodiscard]] Status InitialiseSDL(const CreateInfo&);
-        [[nodiscard]] Status InitialiseWindow(const CreateInfo& createInfo);
-        [[nodiscard]] Status InitialiseOpenGL(const CreateInfo&);
-        [[nodiscard]] Status InitialiseRenderer(const CreateInfo&);
-        [[nodiscard]] Status InitialiseTextSystem(const CreateInfo&);
-        [[nodiscard]] Status InitialiseScriptEngine(const CreateInfo&);
-        [[nodiscard]] Status InitialisePhysics(const CreateInfo& createInfo);
-        [[nodiscard]] Status InitialiseInput(const CreateInfo&);
+        [[nodiscard]] Status InitialiseFilesystem(const AppConfig& appConfig);
+        [[nodiscard]] Status InitialiseConfig(const AppConfig& appConfig);
+        [[nodiscard]] Status InitialiseLocale(const AppConfig&);
+        [[nodiscard]] Status InitialiseSoundSystem(const AppConfig&);
+        [[nodiscard]] Status InitialiseSDL(const AppConfig&);
+        [[nodiscard]] Status InitialiseWindow(const AppConfig& appConfig);
+        [[nodiscard]] Status InitialiseOpenGL(const AppConfig&);
+        [[nodiscard]] Status InitialiseRenderer(const AppConfig&);
+        [[nodiscard]] Status InitialiseTextSystem(const AppConfig&);
+        [[nodiscard]] Status InitialiseScriptEngine(const AppConfig&);
+        [[nodiscard]] Status InitialisePhysics(const AppConfig& appConfig);
+        [[nodiscard]] Status InitialiseInput(const AppConfig& appConfig);
         void InitialiseScenes();
 
         void FixedUpdate();

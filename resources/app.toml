@@ -3,8 +3,8 @@ application_name = "Sandbox"
 organisation_name = "test_organisation"
 
 [window]
-title = "Stardust Sandbox"
 can_resize = false
+title = "Stardust Sandbox"
 
 [filesystem]
 assets_archive_relative_path = "assets.pak"
@@ -13,9 +13,10 @@ log_file_relative_path = "log.txt"
 
     [filesystem.virtual_filepaths]
     default_config_path = "assets/defaults/config.json"
+    game_controller_database_path = "assets/input/gamecontrollerdb.txt"
     window_icon_path = "assets/icon/icon.png"
     
 [physics]
 fixed_timestep = 0.01
-velocity_iterations = 8
 position_iterations = 3
+velocity_iterations = 8

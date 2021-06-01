@@ -18,7 +18,7 @@ namespace stardust
             String applicationPreferenceDirectory;
         }
 
-        [[nodiscard]] Status InitialiseApplicationDirectories(const StringView& organisationName, const StringView& applicationName)
+        [[nodiscard]] Status InitialiseApplicationBaseDirectory()
         {
             if (applicationBaseDirectory.empty())
             {
@@ -37,6 +37,11 @@ namespace stardust
                 return Status::Fail;
             }
 
+            return Status::Success;
+        }
+
+        [[nodiscard]] Status InitialiseApplicationPreferenceDirectory(const StringView& organisationName, const StringView& applicationName)
+        {
             if (applicationPreferenceDirectory.empty())
             {
                 if (char* preferenceDirectoryPointer = SDL_GetPrefPath(organisationName.data(), applicationName.data());

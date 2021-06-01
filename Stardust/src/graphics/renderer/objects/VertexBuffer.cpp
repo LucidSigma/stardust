@@ -41,10 +41,10 @@ namespace stardust
 
     void VertexBuffer::Destroy() noexcept
     {
-        Unbind();
-
         if (m_id != 0u)
         {
+            Unbind();
+
             glDeleteBuffers(1, &m_id);
             m_id = 0u;
         }

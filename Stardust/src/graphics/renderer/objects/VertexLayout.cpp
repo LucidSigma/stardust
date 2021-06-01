@@ -115,13 +115,13 @@ namespace stardust
 
     void VertexLayout::Destroy() noexcept
     {
-        Unbind();
-
         if (m_id != 0u)
         {
-            glDeleteVertexArrays(1, &m_id);
-            m_id = 0u;
+            Unbind();
 
+            glDeleteVertexArrays(1, &m_id);
+
+            m_id = 0u;
             m_vertexBuffers.clear();
             m_vertexSize = 0u;
 

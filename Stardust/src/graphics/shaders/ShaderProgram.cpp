@@ -73,11 +73,12 @@ namespace stardust
 
     void ShaderProgram::Destroy() noexcept
     {
-        Disuse();
-
         if (m_id != 0u)
         {
+            Disuse();
+
             glDeleteProgram(m_id);
+
             m_id = 0u;
             m_isValid = false;
             m_uniformCache.clear();

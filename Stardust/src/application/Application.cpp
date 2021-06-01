@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <stb/stb_image.h>
+#include <toml++/toml.hpp>
 
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
@@ -43,9 +44,21 @@ namespace stardust
 
         Input::RemoveAllGameControllers();
 
-        m_renderer.Destroy();
-        m_openGLContext.Destroy();
-        m_window.Destroy();
+        if (m_renderer.IsValid())
+        {
+            m_renderer.Destroy();
+        }
+
+        if (m_openGLContext.IsValid())
+        {
+            m_openGLContext.Destroy();
+        }
+
+        if (m_window.IsValid())
+        {
+            m_window.Destroy();
+        }
+
         ResetCursor();
 
     #ifndef NDEBUG
@@ -103,33 +116,84 @@ namespace stardust
         m_globalSceneData.erase(dataName);
     }
 
+    [[nodiscard]] Status Application::CreateApplicationConfig(const String& appTOMLFilepath, const char* argv0, AppConfig& appConfig)
+    {
+        toml::table tomlData{ };
+        
+        if (filesystem::ReadTOML(appTOMLFilepath, tomlData) == Status::Fail)
+        {
+            return Status::Fail;
+        }
+        
+        try
+        {
+            appConfig.applicationName = tomlData["application"]["application_name"].value<String>().value();
+            appConfig.organisationName = tomlData["application"]["organisation_name"].value<String>().value();
+
+            appConfig.allowResizableWindow = tomlData["window"]["can_resize"].value<bool>().value();
+            appConfig.windowTitle = tomlData["window"]["title"].value<String>().value();
+
+            appConfig.assetsArchiveRelativeFilepath = tomlData["filesystem"]["assets_archive_relative_path"].value<String>().value();
+            appConfig.localesArchiveRelativeFilepath = tomlData["filesystem"]["locales_archive_relative_path"].value<String>().value();
+            appConfig.logFileRelativeFilepath = tomlData["filesystem"]["log_file_relative_path"].value<String>().value();
+
+            appConfig.defaultConfigFilepath = tomlData["filesystem"]["virtual_filepaths"]["default_config_path"].value<String>().value();
+            appConfig.gameControllerDatabaseFilepath = tomlData["filesystem"]["virtual_filepaths"]["game_controller_database_path"].value<String>().value();
+            appConfig.windowIconFilepath = tomlData["filesystem"]["virtual_filepaths"]["window_icon_path"].value<String>();
+
+            appConfig.fixedTimestep = tomlData["physics"]["fixed_timestep"].value<f64>().value();
+            appConfig.positionIterations = tomlData["physics"]["position_iterations"].value<u32>().value();
+            appConfig.velocityIterations = tomlData["physics"]["velocity_iterations"].value<u32>().value();
+
+            appConfig.argv0 = argv0;
+        }
+        catch (const std::bad_optional_access& error)
+        {
+            return Status::Fail;
+        }
+
+        return Status::Success;
+    }
+
     void Application::Initialise(const CreateInfo& createInfo)
     {
-        const Status directoryStatus = filesystem::InitialiseApplicationDirectories(createInfo.organisationName, createInfo.applicationName);
+        if (filesystem::InitialiseApplicationBaseDirectory() == Status::Fail)
+        {
+            message_box::Show("Filesystem Error", "Failed to get base directory of application.", message_box::Type::Error);
+
+            return;
+        }
+
+        AppConfig appConfig{ };
+
+        if (CreateApplicationConfig(filesystem::GetApplicationBaseDirectory() + createInfo.appTOMLRelativeFilepath, createInfo.argv0, appConfig) == Status::Fail)
+        {
+            message_box::Show("app.toml Error", "Could not find app.toml at " + createInfo.appTOMLRelativeFilepath, message_box::Type::Error);
+
+            return;
+        }
+
+        if (filesystem::InitialiseApplicationPreferenceDirectory(appConfig.organisationName, appConfig.applicationName) == Status::Fail)
+        {
+            message_box::Show("Filesystem Error", "Failed to get preference directory of application.", message_box::Type::Error);
+
+            return;
+        }
 
     #ifndef NDEBUG
         {
-            const String logFilepath = filesystem::GetApplicationBaseDirectory() + "log.txt";
-            Log::Initialise(createInfo.applicationName, logFilepath);
+            const String logFilepath = filesystem::GetApplicationBaseDirectory() + appConfig.logFileRelativeFilepath;
+            Log::Initialise(appConfig.applicationName, logFilepath);
             debug::InitialiseAssertionCallback();
         }
     #endif
 
         Log::EngineInfo("Logger initialised [Stardust Version {}].", Version.ToString());
-
-        if (directoryStatus == Status::Fail)
-        {
-            message_box::Show("Filesystem Error", "Failed to get base/preference directories of application.", message_box::Type::Error);
-            Log::EngineError("Failed to get base/preference directories.");
-
-            return;
-        }
-
         Log::EngineDebug("Platform detected: \"{}\".", system::GetPlatformName());
         Log::EngineDebug("Base directory: \"{}\"", filesystem::GetApplicationBaseDirectory());
         Log::EngineInfo("ECS initialised.");
 
-        static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
+        static const Vector<std::function<Status(Application* const, const AppConfig&)>> initialisationFunctions{
             &Application::InitialiseFilesystem,
             &Application::InitialiseConfig,
             &Application::InitialiseLocale,
@@ -146,7 +210,7 @@ namespace stardust
 
         for (const auto& initialisationFunction : initialisationFunctions)
         {
-            if (initialisationFunction(this, createInfo) != Status::Success)
+            if (initialisationFunction(this, appConfig) != Status::Success)
             {
                 return;
             }
@@ -168,11 +232,11 @@ namespace stardust
         m_didInitialiseSuccessfully = true;
     }
 
-    [[nodiscard]] Status Application::InitialiseFilesystem(const CreateInfo& createInfo)
+    [[nodiscard]] Status Application::InitialiseFilesystem(const AppConfig& appConfig)
     {
         Log::EngineInfo("Filesystem initialised.");
 
-        if (!vfs::Initialise(createInfo.filesystem.argv0))
+        if (!vfs::Initialise(appConfig.argv0))
         {
             message_box::Show("Filesystem Error", "Virtual filesystem failed to initialise.", message_box::Type::Error);
             Log::EngineError("Failed to initialise virtual filesystem.");
@@ -180,8 +244,8 @@ namespace stardust
             return Status::Fail;
         }
 
-        const String assetsFilepath = filesystem::GetApplicationBaseDirectory() + String(createInfo.filesystem.assetsArchive);
-        const String localesFilepath = filesystem::GetApplicationBaseDirectory() + String(createInfo.filesystem.localesArchive);
+        const String assetsFilepath = filesystem::GetApplicationBaseDirectory() + appConfig.assetsArchiveRelativeFilepath;
+        const String localesFilepath = filesystem::GetApplicationBaseDirectory() + appConfig.localesArchiveRelativeFilepath;
 
         vfs::AddToSearchPath({
             assetsFilepath,
@@ -193,9 +257,9 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseConfig(const CreateInfo& createInfo)
+    [[nodiscard]] Status Application::InitialiseConfig(const AppConfig& appConfig)
     {
-        if (m_config.Initialise(filesystem::GetApplicationPreferenceDirectory(), createInfo.filepaths.defaultConfigFilepath) == Status::Fail)
+        if (m_config.Initialise(filesystem::GetApplicationPreferenceDirectory(), appConfig.defaultConfigFilepath) == Status::Fail)
         {
             message_box::Show("Config Error", "Failed to load config file.", message_box::Type::Error);
             Log::EngineError("Failed to load config file.");
@@ -208,7 +272,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseLocale(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseLocale(const AppConfig&)
     {
         m_locale.Initialise("locales");
 
@@ -225,7 +289,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseSoundSystem(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseSoundSystem(const AppConfig&)
     {
         if (!m_soundSystem.DidInitialiseSuccessfully())
         {
@@ -245,7 +309,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseSDL(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseSDL(const AppConfig&)
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         {
@@ -264,7 +328,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseWindow(const CreateInfo& createInfo)
+    [[nodiscard]] Status Application::InitialiseWindow(const AppConfig& appConfig)
     {
         const Vector<Pair<SDL_GLattr, i32>> glWindowAttributes{
             { SDL_GL_DOUBLEBUFFER, SDL_TRUE },
@@ -305,7 +369,7 @@ namespace stardust
             Window::CreateFlag::Shown,
         };
 
-        if (createInfo.allowResizableWindow)
+        if (appConfig.allowResizableWindow)
         {
             windowCreateFlags.push_back(Window::CreateFlag::Resizable);
         }
@@ -321,7 +385,7 @@ namespace stardust
         }
 
         m_window.Initialise(Window::CreateInfo{
-            .title = createInfo.windowTitle,
+            .title = appConfig.windowTitle,
             .x = Window::Position::Centred,
             .y = Window::Position::Centred,
             .size = UVec2{ m_config["graphics"]["window"]["size"]["width"], m_config["graphics"]["window"]["size"]["height"] },
@@ -340,9 +404,9 @@ namespace stardust
             return Status::Fail;
         }
 
-        if (createInfo.filepaths.windowIconFilepath.has_value() && !createInfo.filepaths.windowIconFilepath.value().empty())
+        if (appConfig.windowIconFilepath.has_value() && !appConfig.windowIconFilepath.value().empty())
         {
-            m_window.SetIcon(createInfo.filepaths.windowIconFilepath.value(), m_locale);
+            m_window.SetIcon(appConfig.windowIconFilepath.value(), m_locale);
         }
 
         Log::EngineInfo("Window created.");
@@ -350,7 +414,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseOpenGL(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseOpenGL(const AppConfig&)
     {
         m_openGLContext.Initialise(m_window);
         
@@ -434,7 +498,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseRenderer(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseRenderer(const AppConfig&)
     {
         m_renderer.Initialise(Renderer::CreateInfo{
             .window = &m_window,
@@ -465,7 +529,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseTextSystem(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseTextSystem(const AppConfig&)
     {
         if (TTF_Init() != 0)
         {
@@ -484,7 +548,7 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseScriptEngine(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseScriptEngine(const AppConfig&)
     {
         m_scriptEngine.Initialise(*this);
         Log::EngineInfo("Lua script engine initialised.");
@@ -492,21 +556,21 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialisePhysics(const CreateInfo& createInfo)
+    [[nodiscard]] Status Application::InitialisePhysics(const AppConfig& appConfig)
     {
-        m_fixedTimestep = createInfo.physicsInfo.fixedTimestep;
-        physics::World::SetVelocityIterations(createInfo.physicsInfo.velocityIterations);
-        physics::World::SetPositionIterations(createInfo.physicsInfo.positionIterations);
+        m_fixedTimestep = appConfig.fixedTimestep;
+        physics::World::SetVelocityIterations(appConfig.velocityIterations);
+        physics::World::SetPositionIterations(appConfig.positionIterations);
         Log::EngineInfo("Physics subsystem initialised.");
 
         return Status::Success;
     }
 
-    [[nodiscard]] Status Application::InitialiseInput(const CreateInfo&)
+    [[nodiscard]] Status Application::InitialiseInput(const AppConfig& appConfig)
     {
         Input::SetGameControllerDeadzone(m_config["input"]["controller-deadzone"]);
 
-        if (Input::InitialiseGameControllerDatabase("assets/input/gamecontrollerdb.txt") != Status::Success)
+        if (Input::InitialiseGameControllerDatabase(appConfig.gameControllerDatabaseFilepath) != Status::Success)
         {
             Log::EngineWarn("Game controller database not loaded correctly - some controllers might not work properly.");
         }

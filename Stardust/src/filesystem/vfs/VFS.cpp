@@ -13,7 +13,10 @@ namespace stardust
 
         void Quit()
         {
-            PHYSFS_deinit();
+            if (PHYSFS_isInit() != 0)
+            {
+                PHYSFS_deinit();
+            }
         }
 
         void AddToSearchPath(const StringView& directory)

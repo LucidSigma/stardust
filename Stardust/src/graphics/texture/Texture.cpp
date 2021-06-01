@@ -106,13 +106,13 @@ namespace stardust
 
     void Texture::Destroy() noexcept
     {
-        Unbind();
-
         if (m_id != 0u)
         {
-            glDeleteTextures(1, &m_id);
-            m_id = 0u;
+            Unbind();
 
+            glDeleteTextures(1, &m_id);
+
+            m_id = 0u;
             m_size = UVec2Zero;
             m_isValid = false;
         }
