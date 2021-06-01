@@ -15,8 +15,9 @@ namespace stardust
 {
     namespace filesystem
     {
-        [[nodiscard]] extern String GetApplicationBaseDirectory();
-        [[nodiscard]] extern String GetApplicationPreferenceDirectory(const StringView& organisationName, const StringView& applicationName);
+        [[nodiscard]] extern Status InitialiseApplicationDirectories(const StringView& organisationName, const StringView& applicationName);
+        [[nodiscard]] extern const String& GetApplicationBaseDirectory();
+        [[nodiscard]] extern const String& GetApplicationPreferenceDirectory();
 
         [[nodiscard]] extern Vector<String> GetAllFilesInDirectory(const StringView& directory);
         [[nodiscard]] extern Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory);

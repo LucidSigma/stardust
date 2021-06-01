@@ -105,19 +105,28 @@ namespace stardust
 
     void Application::Initialise(const CreateInfo& createInfo)
     {
-        m_baseDirectory = filesystem::GetApplicationBaseDirectory();
+        const Status directoryStatus = filesystem::InitialiseApplicationDirectories(createInfo.organisationName, createInfo.applicationName);
 
     #ifndef NDEBUG
         {
-            const String logFilepath = m_baseDirectory + "log.txt";
+            const String logFilepath = filesystem::GetApplicationBaseDirectory() + "log.txt";
             Log::Initialise(createInfo.applicationName, logFilepath);
             debug::InitialiseAssertionCallback();
         }
     #endif
 
         Log::EngineInfo("Logger initialised [Stardust Version {}].", Version.ToString());
+
+        if (directoryStatus == Status::Fail)
+        {
+            message_box::Show("Filesystem Error", "Failed to get base/preference directories of application.", message_box::Type::Error);
+            Log::EngineError("Failed to get base/preference directories.");
+
+            return;
+        }
+
         Log::EngineDebug("Platform detected: \"{}\".", system::GetPlatformName());
-        Log::EngineDebug("Base directory: \"{}\"", m_baseDirectory);
+        Log::EngineDebug("Base directory: \"{}\"", filesystem::GetApplicationBaseDirectory());
         Log::EngineInfo("ECS initialised.");
 
         static const Vector<std::function<Status(Application* const, const CreateInfo&)>> initialisationFunctions{
@@ -161,21 +170,6 @@ namespace stardust
 
     [[nodiscard]] Status Application::InitialiseFilesystem(const CreateInfo& createInfo)
     {
-        if (m_baseDirectory.empty())
-        {
-            Log::EngineWarn("Failed to get base directory.");
-        }
-
-        m_preferenceDirectory = filesystem::GetApplicationPreferenceDirectory(createInfo.organisationName, createInfo.applicationName);
-
-        if (m_preferenceDirectory.empty())
-        {
-            message_box::Show("Filesystem Error", "Failed to get preference directory.", message_box::Type::Error);
-            Log::EngineError("Failed to get preference directory.");
-
-            return Status::Fail;
-        }
-
         Log::EngineInfo("Filesystem initialised.");
 
         if (!vfs::Initialise(createInfo.filesystem.argv0))
@@ -186,8 +180,8 @@ namespace stardust
             return Status::Fail;
         }
 
-        const String assetsFilepath = m_baseDirectory + String(createInfo.filesystem.assetsArchive);
-        const String localesFilepath = m_baseDirectory + String(createInfo.filesystem.localesArchive);
+        const String assetsFilepath = filesystem::GetApplicationBaseDirectory() + String(createInfo.filesystem.assetsArchive);
+        const String localesFilepath = filesystem::GetApplicationBaseDirectory() + String(createInfo.filesystem.localesArchive);
 
         vfs::AddToSearchPath({
             assetsFilepath,
@@ -201,7 +195,7 @@ namespace stardust
 
     [[nodiscard]] Status Application::InitialiseConfig(const CreateInfo& createInfo)
     {
-        if (m_config.Initialise(m_preferenceDirectory, createInfo.filepaths.defaultConfigFilepath) == Status::Fail)
+        if (m_config.Initialise(filesystem::GetApplicationPreferenceDirectory(), createInfo.filepaths.defaultConfigFilepath) == Status::Fail)
         {
             message_box::Show("Config Error", "Failed to load config file.", message_box::Type::Error);
             Log::EngineError("Failed to load config file.");

@@ -106,9 +106,6 @@ namespace stardust
 
         HashMap<String, Any> m_globalSceneData{ };
 
-        String m_baseDirectory;
-        String m_preferenceDirectory;
-
         Optional<ExitCallback> m_onExit = NullOpt;
         Optional<InitialiseCallback> m_onInitialise = NullOpt;
 
@@ -156,9 +153,6 @@ namespace stardust
         void RemoveFromGlobalSceneData(const String& dataName);
 
         [[nodiscard]] inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
-
-        [[nodiscard]] inline const String& GetBaseDirectory() const noexcept { return m_baseDirectory; }
-        [[nodiscard]] inline const String& GetPreferenceDirectory() const noexcept { return m_preferenceDirectory; }
 
     private:
         void Initialise(const CreateInfo& createInfo);

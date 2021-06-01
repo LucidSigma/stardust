@@ -12,36 +12,59 @@ namespace stardust
 {
     namespace filesystem
     {
-        [[nodiscard]] String GetApplicationBaseDirectory()
+        namespace
         {
-            String baseDirectory;
-
-            if (char* baseDirectoryPointer = SDL_GetBasePath();
-                baseDirectoryPointer != nullptr)
-            {
-                baseDirectory = baseDirectoryPointer;
-
-                SDL_free(baseDirectoryPointer);
-                baseDirectoryPointer = nullptr;
-            }
-
-            return baseDirectory;
+            String applicationBaseDirectory;
+            String applicationPreferenceDirectory;
         }
 
-        [[nodiscard]] String GetApplicationPreferenceDirectory(const StringView& organisationName, const StringView& applicationName)
+        [[nodiscard]] Status InitialiseApplicationDirectories(const StringView& organisationName, const StringView& applicationName)
         {
-            String preferenceDirectory;
-
-            if (char* preferenceDirectoryPointer = SDL_GetPrefPath(organisationName.data(), applicationName.data());
-                preferenceDirectoryPointer != nullptr)
+            if (applicationBaseDirectory.empty())
             {
-                preferenceDirectory = preferenceDirectoryPointer;
+                if (char* baseDirectoryPointer = SDL_GetBasePath();
+                    baseDirectoryPointer != nullptr)
+                {
+                    applicationBaseDirectory = baseDirectoryPointer;
 
-                SDL_free(preferenceDirectoryPointer);
-                preferenceDirectoryPointer = nullptr;
+                    SDL_free(baseDirectoryPointer);
+                    baseDirectoryPointer = nullptr;
+                }
             }
 
-            return preferenceDirectory;
+            if (applicationBaseDirectory.empty())
+            {
+                return Status::Fail;
+            }
+
+            if (applicationPreferenceDirectory.empty())
+            {
+                if (char* preferenceDirectoryPointer = SDL_GetPrefPath(organisationName.data(), applicationName.data());
+                    preferenceDirectoryPointer != nullptr)
+                {
+                    applicationPreferenceDirectory = preferenceDirectoryPointer;
+
+                    SDL_free(preferenceDirectoryPointer);
+                    preferenceDirectoryPointer = nullptr;
+                }
+            }
+
+            if (applicationPreferenceDirectory.empty())
+            {
+                return Status::Fail;
+            }
+
+            return Status::Success;
+        }
+
+        [[nodiscard]] const String& GetApplicationBaseDirectory()
+        {
+            return applicationBaseDirectory;
+        }
+
+        [[nodiscard]] const String& GetApplicationPreferenceDirectory()
+        {
+            return applicationPreferenceDirectory;
         }
 
         [[nodiscard]] Vector<String> GetAllFilesInDirectory(const StringView& directory)

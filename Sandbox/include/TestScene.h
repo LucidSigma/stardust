@@ -168,12 +168,12 @@ public:
             .cohesionFactor = 1.0f,
             .initialBoidCount = 100u,
             .spawnRadius = 3.0f,
-            .minBoidSpeed = 1.0f,
-            .maxBoidSpeed = 1.5f,
+            .minBoidSpeed = 2.0f,
+            .maxBoidSpeed = 3.5f,
             .minBoidSteeringForce = 1.0f,
             .maxBoidSteeringForce = 3.0f,
-            .minBoidPerceptionRadius = 10.0f,
-            .maxBoidPerceptionRadius = 25.0f,
+            .minBoidPerceptionRadius = 1.0f,
+            .maxBoidPerceptionRadius = 2.5f,
         });
 
         GetInputManager().AddToButton("quit", sd::KeyCode::Escape);
