@@ -340,7 +340,7 @@ namespace stardust
             return Status::Fail;
         }
 
-        if (createInfo.filepaths.windowIconFilepath.has_value())
+        if (createInfo.filepaths.windowIconFilepath.has_value() && !createInfo.filepaths.windowIconFilepath.value().empty())
         {
             m_window.SetIcon(createInfo.filepaths.windowIconFilepath.value(), m_locale);
         }
