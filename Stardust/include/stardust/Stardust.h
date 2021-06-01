@@ -14,12 +14,6 @@
     #define SDL_ASSERT_LEVEL STARDUST_ASSERT_LEVEL
 #endif
 
-#include <entt/entt.hpp>
-#include <nlohmann/json.hpp>
-#include <SDL2/SDL.h>
-#include <sol/sol.hpp>
-#include <tinyxml2/tinyxml2.h>
-
 #include "ai/game_tree/GameState.h"
 #include "ai/game_tree/Minimax.h"
 #include "ai/graph/Graph.h"
@@ -157,6 +151,13 @@
 
 #include "window/cursor/Cursor.h"
 #include "window/Window.h"
+
+#include <entt/entt.hpp>
+#include <nlohmann/json.hpp>
+#include <SDL2/SDL.h>
+#include <sol/sol.hpp>
+#include <tinyxml2/tinyxml2.h>
+#include <toml++/toml.hpp>
 
 namespace sd = stardust;
 

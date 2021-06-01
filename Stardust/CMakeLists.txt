@@ -27,6 +27,7 @@ target_include_directories(Stardust PUBLIC
     ${SPDLOG_INCLUDE_DIRS}
     ${STB_IMAGE_INCLUDE_DIRS}
     ${TINYXML2_INCLUDE_DIRS}
+    ${TOMLPLUSPLUS_INCLUDE_DIRS}
 )
 
 target_link_directories(Stardust PUBLIC

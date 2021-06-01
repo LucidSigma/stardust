@@ -90,6 +90,7 @@ public:
 * [cereal](https://github.com/USCiLab/cereal)
 * [nlohmann JSON](https://github.com/nlohmann/json)
 * [tinyxml2](https://github.com/leethomason/tinyxml2)
+* [toml++](https://marzer.github.io/tomlplusplus/)
 
 ### Assets
 * [PhysFS](https://icculus.org/physfs/)
