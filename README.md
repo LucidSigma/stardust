@@ -21,7 +21,6 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Timer and timesteps.
 * Tilemaps.
 * Scene queue.
-* Converting JSON to and from MessagePack (for binary storage).
 * Audio recording.
 * Querying system information.
 * Animation (sprites and basic tweens).
