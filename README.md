@@ -86,6 +86,7 @@ public:
 * [stbrumme's hash library](https://github.com/stbrumme/hash-library)
 
 ### Serialisation/Parsing
+* [cereal](https://github.com/USCiLab/cereal)
 * [nlohmann JSON](https://github.com/nlohmann/json)
 * [tinyxml2](https://github.com/leethomason/tinyxml2)
 

@@ -35,6 +35,7 @@ endif()
 
 # Header-only dependencies.
 add_subdirectory("dep/Catch2-2.13.6")
+add_subdirectory("dep/cereal-1.3.0")
 add_subdirectory("dep/concurrentqueue-1.0.3")
 add_subdirectory("dep/entt-3.7.1")
 add_subdirectory("dep/fifo_map-1.0.0")
