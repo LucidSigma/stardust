@@ -148,6 +148,7 @@
 #include "utility/hash/Hash.h"
 #include "utility/interfaces/INoncopyable.h"
 #include "utility/interfaces/INonmovable.h"
+#include "utility/interfaces/ISerialisable.h"
 #include "utility/random/Random.h"
 #include "utility/status/Status.h"
 #include "utility/version/Version.h"
