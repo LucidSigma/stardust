@@ -273,6 +273,21 @@ namespace stardust
             return WriteToFile(filepath, String(xmlPrinter.CStr()));
         }
 
+        [[nodiscard]] Status WriteToFile(const StringView& filepath, const toml::table& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::trunc);
+
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
+
+            outputFile << data;
+            outputFile.close();
+
+            return Status::Success;
+        }
+
         [[nodiscard]] Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data)
         {
             std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
@@ -324,6 +339,21 @@ namespace stardust
             data.Print(&xmlPrinter);
 
             return AppendToFile(filepath, String(xmlPrinter.CStr()));
+        }
+
+        [[nodiscard]] Status AppendToFile(const StringView& filepath, const toml::table& data)
+        {
+            std::ofstream outputFile(filepath, std::ios_base::out | std::ios_base::app);
+
+            if (!outputFile.is_open())
+            {
+                return Status::Fail;
+            }
+
+            outputFile << data;
+            outputFile.close();
+
+            return Status::Success;
         }
 
         [[nodiscard]] usize GetFileSize(const StringView& filepath)
