@@ -17,6 +17,12 @@ namespace stardust
             Big,
         };
 
+        enum class BuildType
+        {
+            Debug,
+            Release,
+        };
+
         [[nodiscard]] constexpr Endianness GetSystemEndianness() noexcept
         {
             if constexpr (SDL_BYTEORDER == SDL_LIL_ENDIAN)
@@ -27,6 +33,15 @@ namespace stardust
             {
                 return Endianness::Big;
             }
+        }
+
+        [[nodiscard]] constexpr BuildType GetBuildType() noexcept
+        {
+        #ifdef NDEBUG
+            return BuildType::Release;
+        #else
+            return BuildType::Debug;
+        #endif
         }
 
         [[nodiscard]] extern u16 SwapEndianness(const u16 bits) noexcept;
