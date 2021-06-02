@@ -1,35 +1,32 @@
-# Stardust
+# Stardust.
 A 2D game engine/framework built with C++20, SDL2, and OpenGL.
 
 This project is currently for personal use while I keep tweaking the API and features (although you're more than welcome to use it).  
-Once I have created a few demo games and solidified the API enough, I will begin work on proper documentation.  
+Once I have created a few demo games and solidified the API enough, I will begin work on proper documentation and examples.  
 
-## Current Functionality
-* Window creation with SDL2.
-* Batch rendering with OpenGL.
-* 2D camera.
-* ECS with EnTT.
-* Full keyboard, mouse, and controller input support.
-* Virtual filesystem with PhysFS.
-* Data serialisation with cereal.
-* Positional audio with SoLoud.
-* Config loading.
-* Particle system.
-* Physics (powered by Box2D).
-* Lua scripting (using Sol2).
-* Support for multiple locales.
-* Timer and timesteps.
-* Tilemaps.
-* Scene queue.
-* Audio recording.
-* Querying system information.
-* Animation (sprites and basic tweens).
-* Logging, assertions, and system modals.
-* Shared object/DLL loading.
-* Async tasks and parallel task scheduling.
-* Basic game AI (graphs/pathfinding, minimax, state machine, boids).
+## Current Functionality.
+| | |
+| --- | --- |
+| Window creation with SDL2. | Batch rendering with OpenGL. |
+| 2D camera. | ECS with EnTT. |
+| Full keyboard, mouse, and controller input support. | Virtual filesystem with PhysFS. |
+| Data serialisation with cereal. | Positional audio with SoLoud. |
+| Config loading. | * Particle system. |
+| Physics (powered by Box2D). | Lua scripting (using Sol2). |
+| Support for multiple locales. | Timer and timesteps. |
+| Tilemaps. | Scene queue. |
+| Audio recording. | Querying system information. |
+| Animation (sprites and basic tweens). | Logging, assertions, and system modals. |
+| Shared object/DLL loading. | Async tasks and parallel task scheduling. |
+| Basic game AI (graphs, minimax, state machine, boids). | Memory buffer handling. |
 
-## Scene Template
+### Planned Functionality.
+* Use C++20 modules when most IDEs and CMake properly/fully support them.
+* Custom UI with [RmlUi](https://github.com/mikke89/RmlUi).
+* Socket networking with [ENet](http://enet.bespin.org/).
+* HTTP requests with [libcurl](https://curl.se/).
+
+## Scene Template.
 ```cpp
 #pragma once
 #ifndef EXAMPLE_SCENE_H
@@ -62,21 +59,21 @@ public:
 #endif
 ```
 
-## Dependencies
-### Window/Input
+## Dependencies.
+### Window/Input.
 * [SDL2](https://www.libsdl.org/)
     * [SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB)
 
-### Graphics
+### Graphics.
 * [Glad](https://glad.dav1d.de/)
 * [OpenGL](https://www.opengl.org/)
 
-### Audio
+### Audio.
 * [SoLoud](https://sol.gfxile.net/soloud/)
     * [dr_libs](https://github.com/mackron/dr_libs)
     * [stb_vorbis](https://github.com/nothings/stb/blob/master/stb_vorbis.c)
 
-### Data
+### Data.
 * [cpu_features](https://github.com/google/cpu_features)
 * [concurrentqueue](https://github.com/cameron314/concurrentqueue)
 * [EnTT](https://github.com/skypjack/entt)
@@ -85,29 +82,29 @@ public:
 * [psched](https://github.com/p-ranav/psched)
 * [stbrumme's hash library](https://github.com/stbrumme/hash-library)
 
-### Serialisation/Parsing
+### Serialisation/Parsing.
 * [cereal](https://github.com/USCiLab/cereal)
 * [nlohmann JSON](https://github.com/nlohmann/json)
 * [tinyxml2](https://github.com/leethomason/tinyxml2)
 * [toml++](https://marzer.github.io/tomlplusplus/)
 
-### Assets
+### Assets.
 * [PhysFS](https://icculus.org/physfs/)
 * [SDL_ttf](https://www.libsdl.org/projects/SDL_ttf/)
     * [FreeType](https://www.freetype.org/)
     * [zlib](https://zlib.net/)
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
 
-### Mathematics
+### Mathematics.
 * [GLM](https://github.com/g-truc/glm)
 
-### Physics
+### Physics.
 * [Box2D](https://box2d.org/)
 
-### Scripting
+### Scripting.
 * [Lua](http://www.lua.org/)
 * [Sol2](https://github.com/ThePhD/sol2)
 
-### Debugging/Testing
+### Debugging/Testing.
 * [Catch2](https://github.com/catchorg/Catch2)
 * [spdlog](https://github.com/gabime/spdlog)
