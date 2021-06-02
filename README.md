@@ -5,13 +5,12 @@ This project is currently for personal use while I keep tweaking the API and fea
 Once I have created a few demo games and solidified the API enough, I will begin work on proper documentation and examples.  
 
 ## Current Functionality.
-| | |
 | --- | --- |
 | Window creation with SDL2. | Batch rendering with OpenGL. |
 | 2D camera. | ECS with EnTT. |
 | Full keyboard, mouse, and controller input support. | Virtual filesystem with PhysFS. |
 | Data serialisation with cereal. | Positional audio with SoLoud. |
-| Config loading. | * Particle system. |
+| Config loading. | Particle system. |
 | Physics (powered by Box2D). | Lua scripting (using Sol2). |
 | Support for multiple locales. | Timer and timesteps. |
 | Tilemaps. | Scene queue. |
