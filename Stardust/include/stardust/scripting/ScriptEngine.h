@@ -51,7 +51,7 @@ namespace stardust
         template <typename T>
         [[nodiscard]] inline std::function<T> GetFunction(const StringView& functionName) const
         {
-            return static_cast<std::function<T>>(sol::function(m_luaState[functionName]));
+            return static_cast<std::function<T>>(m_luaState[functionName].get<sol::function>());
         }
 
         template <typename... Args>
@@ -65,11 +65,11 @@ namespace stardust
         {
             if constexpr (std::is_same_v<ReturnType, void>)
             {
-                GetFunction<ReturnType(Args...)>(name)(args...);
+                GetFunction<ReturnType(Args...)>(name)(std::forward<Args>(args)...);
             }
             else
             {
-                return GetFunction<ReturnType(Args...)>(name)(args...);
+                return GetFunction<ReturnType(Args...)>(name)(std::forward<Args>(args)...);
             }
         }
 
