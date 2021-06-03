@@ -42,19 +42,14 @@ namespace stardust
 
     [[nodiscard]] Status ScriptEngine::LoadScript(const StringView& filename)
     {
-        const Vector<ubyte> scriptData = vfs::ReadFileData(filename);
+        const String script = vfs::ReadFileString(filename);
 
-        if (scriptData.empty())
+        if (script.empty())
         {
             return Status::Fail;
         }
 
-        const String scriptString(
-            reinterpret_cast<const char*>(scriptData.data()),
-            reinterpret_cast<const char*>(scriptData.data() + scriptData.size())
-        );
-
-        const auto scriptResult = m_luaState.safe_script(scriptString, sol::script_pass_on_error);
+        const auto scriptResult = m_luaState.safe_script(script, sol::script_pass_on_error);
 
         return scriptResult.valid() ? Status::Success : Status::Fail;
     }
