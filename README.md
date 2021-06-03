@@ -5,20 +5,56 @@ This project is currently for personal use while I keep tweaking the API and fea
 Once I have created a few demo games and solidified the API enough, I will begin work on proper documentation and examples.  
 
 ## Current Functionality.
-| | |
-| --- | --- |
-| Window creation with SDL2. | Batch rendering with OpenGL. |
-| 2D camera. | ECS with EnTT. |
-| Full keyboard, mouse, and controller input support. | Virtual filesystem with PhysFS. |
-| Data serialisation with cereal. | Positional audio with SoLoud. |
-| Config loading. | Particle system. |
-| Physics (powered by Box2D). | Lua scripting (using Sol2). |
-| Support for multiple locales. | Timer and timesteps. |
-| Tilemaps. | Scene queue. |
-| Audio recording. | Querying system information. |
-| Animation (sprites and basic tweens). | Logging, assertions, and system modals. |
-| Shared object/DLL loading. | Async tasks and parallel task scheduling. |
-| Basic game AI (graphs, minimax, state machine, boids). | Memory buffer handling. |
+<table>
+    <tr>
+        <td>Window creation with SDL2.</td>
+        <td>Batch rendering with OpenGL.</td>
+    </tr>
+    <tr>
+        <td>2D camera.</td>
+        <td>ECS with EnTT.</td>
+    </tr>
+    <tr>
+        <td>Full keyboard, mouse, and controller input support.</td>
+        <td>Virtual filesystem with PhysFS.</td>
+    </tr>
+    <tr>
+        <td>Data serialisation with cereal.</td>
+        <td>Positional audio with SoLoud.</td>
+    </tr>
+    <tr>
+        <td>Config loading.</td>
+        <td>Particle system.</td>
+    </tr>
+    <tr>
+        <td>Physics (powered by Box2D).</td>
+        <td>Lua scripting (using Sol2).</td>
+    </tr>
+    <tr>
+        <td>Support for multiple locales.</td>
+        <td>Timer and timesteps.</td>
+    </tr>
+    <tr>
+        <td>Tilemaps.</td>
+        <td>Scene queue.</td>
+    </tr>
+    <tr>
+        <td>Audio recording.</td>
+        <td>Querying system information.</td>
+    </tr>
+    <tr>
+        <td>Animation (sprites and basic tweens).</td>
+        <td>Logging, assertions, and system modals.</td>
+    </tr>
+    <tr>
+        <td>Shared object/DLL loading. </td>
+        <td>Async tasks and parallel task scheduling.</td>
+    </tr>
+    <tr>
+        <td>Basic game AI (graphs, minimax, state machine, boids).</td>
+        <td>Memory buffer handling.</td>
+    </tr>
+</table>
 
 ### Planned Functionality.
 * Use C++20 modules when most IDEs and CMake properly/fully support them.
