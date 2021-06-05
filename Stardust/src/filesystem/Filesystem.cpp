@@ -364,7 +364,7 @@ namespace stardust
             return fileSize != std::numeric_limits<umax>::max() ? static_cast<usize>(fileSize) : 0u;
         }
 
-        [[nodiscard]] Status ReadJSON(const StringView& filepath, nlohmann::json& data)
+        [[nodiscard]] Status ReadJSON(const StringView& filepath, nlohmann::json& out_data)
         {
             const String fileData = ReadFile(filepath);
 
@@ -373,14 +373,14 @@ namespace stardust
                 return Status::Fail;
             }
 
-            data = nlohmann::json::parse(fileData, nullptr, false);
+            out_data = nlohmann::json::parse(fileData, nullptr, false);
 
-            return data.is_discarded() ? Status::Fail : Status::Success;
+            return out_data.is_discarded() ? Status::Fail : Status::Success;
         }
 
-        [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document)
+        [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& out_document)
         {          
-            if (document.LoadFile(filepath.data()) != tinyxml2::XML_SUCCESS)
+            if (out_document.LoadFile(filepath.data()) != tinyxml2::XML_SUCCESS)
             {
                 return Status::Fail;
             }
@@ -388,11 +388,11 @@ namespace stardust
             return Status::Success;
         }
 
-        [[nodiscard]] Status ReadTOML(const StringView& filepath, toml::table& table)
+        [[nodiscard]] Status ReadTOML(const StringView& filepath, toml::table& out_table)
         {
             try
             {
-                table = toml::parse_file(filepath);
+                out_table = toml::parse_file(filepath);
             }
             catch (const toml::parse_error& error)
             {

@@ -324,7 +324,7 @@ namespace stardust
             return static_cast<usize>(fileStats.filesize);
         }
         
-        [[nodiscard]] Status ReadJSON(const StringView& filepath, nlohmann::json& data)
+        [[nodiscard]] Status ReadJSON(const StringView& filepath, nlohmann::json& out_data)
         {
             const auto fileData = ReadFileData(filepath);
 
@@ -333,17 +333,17 @@ namespace stardust
                 return Status::Fail;
             }
 
-            data = nlohmann::json::parse(
+            out_data = nlohmann::json::parse(
                 reinterpret_cast<const u8*>(fileData.data()),
                 reinterpret_cast<const u8*>(fileData.data()) + fileData.size(),
                 nullptr,
                 false
             );
 
-            return data.is_discarded() ? Status::Fail : Status::Success;
+            return out_data.is_discarded() ? Status::Fail : Status::Success;
         }
 
-        [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& document)
+        [[nodiscard]] Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& out_document)
         {
             const String xmlString = ReadFileString(filepath);
 
@@ -352,7 +352,7 @@ namespace stardust
                 return Status::Fail;
             }
 
-            if (document.Parse(xmlString.data(), xmlString.size()) != tinyxml2::XML_SUCCESS)
+            if (out_document.Parse(xmlString.data(), xmlString.size()) != tinyxml2::XML_SUCCESS)
             {
                 return Status::Fail;
             }
@@ -360,7 +360,7 @@ namespace stardust
             return Status::Success;
         }
         
-        [[nodiscard]] Status ReadTOML(const StringView& filepath, toml::table& table)
+        [[nodiscard]] Status ReadTOML(const StringView& filepath, toml::table& out_table)
         {
             try
             {
@@ -371,7 +371,7 @@ namespace stardust
                     return Status::Fail;
                 }
 
-                table = toml::parse(tomlString);
+                out_table = toml::parse(tomlString);
             }
             catch (const toml::parse_error& error)
             {
