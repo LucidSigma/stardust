@@ -117,7 +117,7 @@ namespace stardust
         m_globalSceneData.erase(dataName);
     }
 
-    [[nodiscard]] Status Application::CreateApplicationConfig(const String& appTOMLFilepath, const char* argv0, AppConfig& appConfig)
+    [[nodiscard]] Status Application::CreateApplicationConfig(const String& appTOMLFilepath, const char* argv0, AppConfig& out_appConfig)
     {
         toml::table tomlData{ };
         
@@ -128,25 +128,25 @@ namespace stardust
         
         try
         {
-            appConfig.applicationName = tomlData["application"]["application_name"].value<String>().value();
-            appConfig.organisationName = tomlData["application"]["organisation_name"].value<String>().value();
+            out_appConfig.applicationName = tomlData["application"]["application_name"].value<String>().value();
+            out_appConfig.organisationName = tomlData["application"]["organisation_name"].value<String>().value();
 
-            appConfig.allowResizableWindow = tomlData["window"]["can_resize"].value<bool>().value();
-            appConfig.windowTitle = tomlData["window"]["title"].value<String>().value();
+            out_appConfig.allowResizableWindow = tomlData["window"]["can_resize"].value<bool>().value();
+            out_appConfig.windowTitle = tomlData["window"]["title"].value<String>().value();
 
-            appConfig.assetsArchiveRelativeFilepath = tomlData["filesystem"]["assets_archive_relative_path"].value<String>().value();
-            appConfig.localesArchiveRelativeFilepath = tomlData["filesystem"]["locales_archive_relative_path"].value<String>().value();
-            appConfig.logFileRelativeFilepath = tomlData["filesystem"]["log_file_relative_path"].value<String>().value();
+            out_appConfig.assetsArchiveRelativeFilepath = tomlData["filesystem"]["assets_archive_relative_path"].value<String>().value();
+            out_appConfig.localesArchiveRelativeFilepath = tomlData["filesystem"]["locales_archive_relative_path"].value<String>().value();
+            out_appConfig.logFileRelativeFilepath = tomlData["filesystem"]["log_file_relative_path"].value<String>().value();
 
-            appConfig.defaultConfigFilepath = tomlData["filesystem"]["virtual_filepaths"]["default_config_path"].value<String>().value();
-            appConfig.gameControllerDatabaseFilepath = tomlData["filesystem"]["virtual_filepaths"]["game_controller_database_path"].value<String>().value();
-            appConfig.windowIconFilepath = tomlData["filesystem"]["virtual_filepaths"]["window_icon_path"].value<String>();
+            out_appConfig.defaultConfigFilepath = tomlData["filesystem"]["virtual_filepaths"]["default_config_path"].value<String>().value();
+            out_appConfig.gameControllerDatabaseFilepath = tomlData["filesystem"]["virtual_filepaths"]["game_controller_database_path"].value<String>().value();
+            out_appConfig.windowIconFilepath = tomlData["filesystem"]["virtual_filepaths"]["window_icon_path"].value<String>();
 
-            appConfig.fixedTimestep = tomlData["physics"]["fixed_timestep"].value<f64>().value();
-            appConfig.positionIterations = tomlData["physics"]["position_iterations"].value<u32>().value();
-            appConfig.velocityIterations = tomlData["physics"]["velocity_iterations"].value<u32>().value();
+            out_appConfig.fixedTimestep = tomlData["physics"]["fixed_timestep"].value<f64>().value();
+            out_appConfig.positionIterations = tomlData["physics"]["position_iterations"].value<u32>().value();
+            out_appConfig.velocityIterations = tomlData["physics"]["velocity_iterations"].value<u32>().value();
 
-            appConfig.argv0 = argv0;
+            out_appConfig.argv0 = argv0;
         }
         catch (const std::bad_optional_access& error)
         {

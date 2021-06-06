@@ -126,7 +126,7 @@ namespace stardust
         [[nodiscard]] inline HashMap<String, Any>& GetGlobalSceneData() noexcept { return m_globalSceneData; }
 
     private:
-        [[nodiscard]] Status CreateApplicationConfig(const String& appTOMLFilepath, const char* argv0, AppConfig& appConfig);
+        [[nodiscard]] Status CreateApplicationConfig(const String& appTOMLFilepath, const char* argv0, AppConfig& out_appConfig);
 
         void Initialise(const CreateInfo& createInfo);
         [[nodiscard]] Status InitialiseFilesystem(const AppConfig& appConfig);
