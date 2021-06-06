@@ -17,8 +17,8 @@
 #ifdef WIN32
 extern "C"
 {
-    _declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001u;
-    _declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00000001u;
+    _declspec(dllexport) DWORD NvOptimusEnablement = 0x00'00'00'01u;
+    _declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 0x00'00'00'01u;
 }
 #endif
 
