@@ -12,19 +12,19 @@ namespace stardust
             std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilepath.data(), true),
         };
 
-        logSinks[0]->set_pattern("%^[%T] %n: %v%$");
-        logSinks[1]->set_pattern("[%T] [%l] %n: %v");
+        logSinks[0u]->set_pattern("%^[%T].%e %n: %v%$");
+        logSinks[1u]->set_pattern("[%T].%e [%l] %n: %v");
 
         const String clientLoggerName = string::MakeUpper(applicationName.data());
 
         s_engineLogger = std::make_shared<spdlog::logger>("STARDUST", std::cbegin(logSinks), std::cend(logSinks));
-        spdlog::register_logger(s_engineLogger);
         s_engineLogger->set_level(spdlog::level::trace);
         s_engineLogger->flush_on(spdlog::level::trace);
+        spdlog::register_logger(s_engineLogger);
 
         s_clientLogger = std::make_shared<spdlog::logger>(clientLoggerName, std::cbegin(logSinks), std::cend(logSinks));
-        spdlog::register_logger(s_clientLogger);
         s_clientLogger->set_level(spdlog::level::trace);
         s_clientLogger->flush_on(spdlog::level::trace);
+        spdlog::register_logger(s_clientLogger);
     }
 }
