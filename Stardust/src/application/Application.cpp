@@ -63,6 +63,7 @@ namespace stardust
 
     #ifndef NDEBUG
         debug::ResetAssertionCallback();
+        Log::Shutdown();
     #endif
 
         vfs::Quit();

@@ -12,8 +12,8 @@ namespace stardust
             std::make_shared<spdlog::sinks::basic_file_sink_mt>(logFilepath.data(), true),
         };
 
-        logSinks[0u]->set_pattern("%^[%T].%e %n: %v%$");
-        logSinks[1u]->set_pattern("[%T].%e [%l] %n: %v");
+        logSinks[0u]->set_pattern("%^[%T.%e] %n: %v%$");
+        logSinks[1u]->set_pattern("[%T.%e] [%l] %n: %v");
 
         const String clientLoggerName = string::MakeUpper(applicationName.data());
 
@@ -26,5 +26,10 @@ namespace stardust
         s_clientLogger->set_level(spdlog::level::trace);
         s_clientLogger->flush_on(spdlog::level::trace);
         spdlog::register_logger(s_clientLogger);
+    }
+
+    void Log::Shutdown() noexcept
+    {
+        spdlog::shutdown();
     }
 }

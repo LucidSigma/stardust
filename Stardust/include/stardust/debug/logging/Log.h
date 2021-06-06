@@ -23,6 +23,7 @@ namespace stardust
 
     public:
         static void Initialise(const StringView& applicationName, const StringView& logFilepath);
+        static void Shutdown() noexcept;
 
         template <typename... Args>
         static void EngineTrace(const StringView& message, Args&&... args)
