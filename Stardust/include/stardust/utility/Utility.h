@@ -8,6 +8,9 @@ namespace stardust
 {
     namespace utility
     {
+        [[nodiscard]] String ToBase64(const StringView& data);
+        [[nodiscard]] String FromBase64(const StringView& base64);
+
         extern void OpenURL(const StringView& url);
     }
 
