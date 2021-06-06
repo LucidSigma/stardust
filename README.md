@@ -62,6 +62,18 @@ Once I have created a few demo games and solidified the API enough, I will begin
 * Socket networking with [ENet](http://enet.bespin.org/).
 * HTTP requests with [libcurl](https://curl.se/).
 
+## Documentation.
+Coming soon.
+
+### Building.
+See [here](./docs/BUILDING.md).
+
+### Tutorial.
+Coming soon.
+
+### Examples.
+Coming soon.
+
 ## Scene Template.
 ```cpp
 #pragma once
