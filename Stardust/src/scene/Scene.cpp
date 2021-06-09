@@ -3,7 +3,6 @@
 #include "stardust/application/Application.h"
 #include "stardust/audio/SoundSystem.h"
 #include "stardust/camera/Camera2D.h"
-#include "stardust/input/InputManager.h"
 #include "stardust/scene/entity/Entity.h"
 #include "stardust/scene/SceneManager.h"
 #include "stardust/scripting/ScriptEngine.h"

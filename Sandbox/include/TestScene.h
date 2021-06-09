@@ -231,34 +231,34 @@ public:
     virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override
     { }
 
-    virtual void ProcessInput() override
+    virtual void ProcessInput(const sd::InputManager& inputManager) override
     {
         if (m_application.HasWindowFocus())
         {
-            if (GetInputManager().IsButtonDown("quit"))
+            if (inputManager.IsButtonDown("quit"))
             {
                 m_application.FinishCurrentScene();
             }
 
-            if (GetInputManager().IsButtonDown("outline"))
+            if (inputManager.IsButtonDown("outline"))
             {
                 GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Outline);
             }
-            else if (GetInputManager().IsButtonUp("outline"))
+            else if (inputManager.IsButtonUp("outline"))
             {
                 GetRenderer().SetPolygonMode(sd::Renderer::PolygonMode::Filled);
             }
 
-            if (GetInputManager().IsButtonDown("speed"))
+            if (inputManager.IsButtonDown("speed"))
             {
                 m_colourAnimator.SetSpeed(4.0f);
             }
-            else if (GetInputManager().IsButtonUp("speed"))
+            else if (inputManager.IsButtonUp("speed"))
             {
                 m_colourAnimator.SetSpeed(0.25f);
             }
 
-            if (GetInputManager().IsButtonUp("coords"))
+            if (inputManager.IsButtonUp("coords"))
             {
                 const sd::Vec2 mouseClick = GetCamera().ScreenSpaceToWorldSpace(GetMouseState().GetProportionalCoordinates(GetRenderer()));
 
@@ -267,7 +267,7 @@ public:
 
             GetCamera().SetZoom(GetCamera().GetZoom() + GetInputManager().GetAxis("scroll") * 0.1f);
 
-            if (GetInputManager().IsButtonDown("reset", { m_controller }))
+            if (inputManager.IsButtonDown("reset", { m_controller }))
             {
                 GetCamera().ResetTransform();
             }
@@ -277,12 +277,12 @@ public:
                 GetCamera().SetRotation(GetCamera().GetRotation() - (m_controller->GetGyroscopeData().z * 0.04f));
             }
 
-            if (GetInputManager().IsButtonDown("play_sound", { m_controller }))
+            if (inputManager.IsButtonDown("play_sound", { m_controller }))
             {
                 GetSoundSystem().PlaySound(m_sounds["blip"]);
             }
 
-            if (GetInputManager().IsButtonPressed("particle", { m_controller }) && m_clickParticleDelay < 0.0f)
+            if (inputManager.IsButtonPressed("particle", { m_controller }) && m_clickParticleDelay < 0.0f)
             {
                 m_clickParticleDelay = 0.01f;
 

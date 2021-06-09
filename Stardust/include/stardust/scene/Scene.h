@@ -15,6 +15,7 @@
 #include "stardust/input/keyboard/Keyboard.h"
 #include "stardust/input/mouse/Mouse.h"
 #include "stardust/input/Input.h"
+#include "stardust/input/InputManager.h"
 #include "stardust/utility/status/Status.h"
 
 namespace stardust
@@ -42,7 +43,7 @@ namespace stardust
         virtual void OnUnload() noexcept = 0;
 
         inline virtual void FixedUpdate(const f32 fixedDeltaTime) { };
-        virtual void ProcessInput() = 0;
+        virtual void ProcessInput(const InputManager& inputManager) = 0;
         virtual void Update(const f32 deltaTime) = 0;
         inline virtual void LateUpdate(const f32 deltaTime) { }
 

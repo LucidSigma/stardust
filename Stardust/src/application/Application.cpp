@@ -631,7 +631,7 @@ namespace stardust
         Input::UpdateMouseState();
         Input::UpdateGameControllers();
 
-        m_sceneManager.CurrentScene()->ProcessInput();
+        m_sceneManager.CurrentScene()->ProcessInput(m_inputManager);
     }
 
     void Application::Update()
