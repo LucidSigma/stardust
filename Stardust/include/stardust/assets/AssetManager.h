@@ -20,7 +20,8 @@ namespace stardust
         AssetManager() = default;
         ~AssetManager() noexcept = default;
 
-        template <typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Args...>>>
+        template <typename... Args>
+            requires std::is_constructible_v<T, Args...>
         void Add(const String& name, Args&&... args)
         {
             m_assets[name] = std::make_unique<T>(std::forward<Args>(args)...);

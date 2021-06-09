@@ -31,7 +31,8 @@ namespace stardust
 
             void SetState(const String& name);
 
-            template <std::derived_from<State> T, typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, StateMachine, const String, Args...>>>
+            template <std::derived_from<State> T, typename... Args>
+                requires std::is_constructible_v<T, StateMachine, const String, Args...>
             void RegisterState(const String& name, Args&&... args)
             {
                 m_states[name] = std::make_unique<T>(*this, name, std::forward<Args>(args)...);

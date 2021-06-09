@@ -21,7 +21,8 @@ namespace stardust
         SceneManager() = default;
         ~SceneManager() noexcept = default;
 
-        template <std::derived_from<Scene> T, typename... Args, typename = std::enable_if_t<std::is_constructible_v<T, Args...>>>
+        template <std::derived_from<Scene> T, typename... Args>
+            requires std::is_constructible_v<T, Args...>
         void PushScene(Args&&... args)
         {
             m_scenes.push(std::make_unique<T>(std::forward<Args>(args)...));
