@@ -24,26 +24,23 @@ namespace stardust
         [[nodiscard]] inline const std::chrono::steady_clock::time_point& GetFinishTimePoint() const noexcept { return m_stats.end_time; }
 
         template <typename Duration = std::chrono::milliseconds>
-        [[nodiscard]] u64 GetWaitingTime() const noexcept
+            requires psched::is_chrono_duration<Duration>::value
+        [[nodiscard]] inline u64 GetWaitingTime() const noexcept
         {
-            static_assert(psched::is_chrono_duration<Duration>::value, "Duration must be a std::chrono::duration.");
-
             return static_cast<u64>(m_stats.waiting_time());
         }
 
         template <typename Duration = std::chrono::milliseconds>
-        [[nodiscard]] u64 GetBurstTime() const noexcept
+            requires psched::is_chrono_duration<Duration>::value
+        [[nodiscard]] inline u64 GetBurstTime() const noexcept
         {
-            static_assert(psched::is_chrono_duration<Duration>::value, "Duration must be a std::chrono::duration.");
-
             return static_cast<u64>(m_stats.burst_time());
         }
 
         template <typename Duration = std::chrono::milliseconds>
-        [[nodiscard]] u64 GetTurnaroundTime() const noexcept
+            requires psched::is_chrono_duration<Duration>::value
+        [[nodiscard]] inline u64 GetTurnaroundTime() const noexcept
         {
-            static_assert(psched::is_chrono_duration<Duration>::value, "Duration must be a std::chrono::duration.");
-
             return static_cast<u64>(m_stats.turnaround_time());
         }
     };
