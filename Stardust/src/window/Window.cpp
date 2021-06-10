@@ -12,9 +12,10 @@
 
 #include "stardust/debug/logging/Log.h"
 #include "stardust/debug/message_box/MessageBox.h"
+#include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/graphics/display/Display.h"
 #include "stardust/graphics/surface/PixelSurface.h"
-#include "stardust/filesystem/vfs/VFS.h"
+#include "stardust/utility/Utility.h"
 
 namespace stardust
 {
@@ -446,14 +447,9 @@ namespace stardust
 
     [[nodiscard]] i32 Window::GetWindowCoordinate(const Variant<i32, Position>& windowCoordinate) const
     {
-        if (const Position* windowPosition = std::get_if<Position>(&windowCoordinate);
-            windowPosition != nullptr) [[likely]]
-        {
-            return static_cast<i32>(*windowPosition);
-        }
-        else
-        {
-            return std::get<i32>(windowCoordinate);
-        }
+        return std::visit(utility::Overload{
+            [](const Position windowPosition) { return static_cast<i32>(windowPosition); },
+            [](const i32 coordinate) { return coordinate; },
+        }, windowCoordinate);
     }
 }
