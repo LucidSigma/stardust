@@ -93,7 +93,7 @@ public:
     virtual void OnUnload() noexcept override;
 
     virtual void FixedUpdate(const sd::f32 fixedDeltaTime) override;
-    virtual void ProcessInput() override;
+    virtual void ProcessInput(const sd::InputManager& inputManager) override;
     virtual void Update(const sd::f32 deltaTime) override;
     virtual void LateUpdate(const sd::f32 deltaTime) override;
 
