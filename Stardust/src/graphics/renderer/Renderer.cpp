@@ -52,7 +52,7 @@ namespace stardust
             return;
         }
 
-        const Vector<ubyte> blankTextureData{
+        static const Vector<ubyte> blankTextureData{
             0xFF, 0xFF, 0xFF, 0xFF,
         };
 
