@@ -60,6 +60,11 @@ namespace stardust
         }
 
         ResetCursor();
+        
+        if (m_soundSystem.DidInitialiseSuccessfully())
+        {
+            m_soundSystem.StopAllSounds();
+        }
 
     #ifndef NDEBUG
         debug::ResetAssertionCallback();
