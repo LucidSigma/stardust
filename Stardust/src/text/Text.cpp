@@ -2,6 +2,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "stardust/graphics/Colours.h"
+
 namespace stardust
 {
     namespace

@@ -7,6 +7,7 @@
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 #include "stardust/graphics/Colour.h"
+#include "stardust/graphics/Colours.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/math/Math.h"
 

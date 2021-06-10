@@ -6,6 +6,7 @@
 
 #include "stardust/graphics/renderer/objects/BufferUsage.h"
 #include "stardust/graphics/shaders/Shader.h"
+#include "stardust/graphics/Colours.h"
 
 namespace stardust
 {

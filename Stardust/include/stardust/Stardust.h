@@ -80,6 +80,7 @@
 #include "graphics/texture/Sampler.h"
 #include "graphics/texture/Texture.h"
 #include "graphics/Colour.h"
+#include "graphics/Colours.h"
 #include "graphics/SortingLayer.h"
 
 #include "input/controller/GameController.h"
