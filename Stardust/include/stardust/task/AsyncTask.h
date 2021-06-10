@@ -47,7 +47,7 @@ namespace stardust
         }
 
         [[nodiscard]] Optional<T> AwaitFor(const f32 seconds)
-            requires !std::is_same_v<void, T>
+            requires !std::is_void_v<T>
         {
             switch (const std::future_status awaitStatus = m_handle.wait_for(std::chrono::milliseconds(static_cast<u32>(seconds * 1'000.0f)));
                     awaitStatus)
@@ -63,10 +63,10 @@ namespace stardust
         }
 
         [[nodiscard]] bool AwaitFor(const f32 seconds)
-            requires std::is_same_v<void, T>
+            requires std::is_void_v<T>
         {
             switch (const std::future_status awaitStatus = m_handle.wait_for(std::chrono::milliseconds(static_cast<u32>(seconds * 1'000.0f)));
-            awaitStatus)
+                    awaitStatus)
             {
             case std::future_status::ready:
                 m_handle.get();
@@ -81,7 +81,7 @@ namespace stardust
         }
 
         template <typename Clock = std::chrono::system_clock, typename Duration = Clock::duration>
-            requires !std::is_same_v<void, T> && std::chrono::is_clock_v<Clock>
+            requires !std::is_void_v<T> && std::chrono::is_clock_v<Clock>
         [[nodiscard]] Optional<T> AwaitUntil(const std::chrono::time_point<Clock, Duration>& timePoint)
         {
             switch (const std::future_status awaitStatus = m_handle.wait_until(timePoint);
@@ -98,11 +98,11 @@ namespace stardust
         }
 
         template <typename Clock = std::chrono::system_clock, typename Duration = Clock::duration>
-            requires std::is_same_v<void, T> && std::chrono::is_clock_v<Clock>
+            requires std::is_void_v<T> && std::chrono::is_clock_v<Clock>
         [[nodiscard]] bool AwaitUntil(const std::chrono::time_point<Clock, Duration>& timePoint)
         {
             switch (const std::future_status awaitStatus = m_handle.wait_until(timePoint);
-            awaitStatus)
+                    awaitStatus)
             {
             case std::future_status::ready:
                 m_handle.get();
