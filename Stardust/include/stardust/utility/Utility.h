@@ -8,6 +8,16 @@ namespace stardust
 {
     namespace utility
     {
+        template <typename... Types>
+        struct Overload
+            : Types...
+        {
+            using Types::operator ()...;
+        };
+
+        template <typename... Types>
+        Overload(Types...) -> Overload<Types...>;
+
         [[nodiscard]] String ToBase64(const StringView& data);
         [[nodiscard]] String FromBase64(const StringView& base64);
 
