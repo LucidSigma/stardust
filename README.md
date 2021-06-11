@@ -155,4 +155,5 @@ public:
 
 ### Debugging/Testing.
 * [Catch2](https://github.com/catchorg/Catch2)
+* [Google Benchmark](https://github.com/google/benchmark)
 * [spdlog](https://github.com/gabime/spdlog)
