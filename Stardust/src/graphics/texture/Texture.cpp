@@ -7,7 +7,7 @@
 
 #include "stardust/debug/logging/Log.h"
 #include "stardust/filesystem/vfs/VFS.h"
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 
 namespace stardust
 {

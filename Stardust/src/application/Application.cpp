@@ -16,7 +16,7 @@
 #include "stardust/debug/message_box/MessageBox.h"
 #include "stardust/filesystem/vfs/VFS.h"
 #include "stardust/filesystem/Filesystem.h"
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 #include "stardust/graphics/backend/OpenGL.h"
 #include "stardust/input/controller/GameController.h"
 #include "stardust/input/Input.h"

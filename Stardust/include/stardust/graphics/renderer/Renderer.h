@@ -19,7 +19,7 @@
 #include "stardust/graphics/renderer/Quad.h"
 #include "stardust/graphics/shaders/ShaderProgram.h"
 #include "stardust/graphics/texture/Texture.h"
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 #include "stardust/math/Math.h"
 #include "stardust/scene/components/ScreenTransformComponent.h"
 #include "stardust/scene/components/ShearTransformComponent.h"

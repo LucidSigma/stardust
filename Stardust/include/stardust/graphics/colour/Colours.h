@@ -2,7 +2,7 @@
 #ifndef STARDUST_COLOURS_H
 #define STARDUST_COLOURS_H
 
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 
 namespace stardust
 {
@@ -16,6 +16,7 @@ namespace stardust
         constexpr Colour Auburn{ 165u, 42u, 42u, 255u };
         constexpr Colour Aureolin{ 253u, 238u, 0u, 255u };
         constexpr Colour Azure{ 240u, 255u, 255u, 255u };
+        constexpr Colour BananaYellow{ 255u, 225u, 53u, 255u };
         constexpr Colour Beige{ 245u, 245u, 220u, 255u };
         constexpr Colour Bisque{ 255u, 227u, 197u, 255u };
         constexpr Colour Black{ 0u, 0u, 0u, 255u };
@@ -113,6 +114,7 @@ namespace stardust
         constexpr Colour Linen{ 250u, 240u, 230u, 255u };
         constexpr Colour Magenta{ 255u, 0u, 255u, 255u };
         constexpr Colour Mahogany{ 192u, 64u, 0u, 255u };
+        constexpr Colour Marigold{ 234u, 162u, 33u, 255u };
         constexpr Colour Maroon{ 176u, 49u, 97u, 255u };
         constexpr Colour WebMaroon{ 128u, 0u, 0u, 255u };
         constexpr Colour Mauve{ 224u, 176u, 255u, 255u };
@@ -141,6 +143,7 @@ namespace stardust
         constexpr Colour Onyx{ 53u, 56u, 57u, 255u };
         constexpr Colour Orange{ 255u, 166u, 0u, 255u };
         constexpr Colour OrangeRed{ 255u, 69u, 0u, 255u };
+        constexpr Colour OrangeYellow{ 248u, 213u, 104u, 255u };
         constexpr Colour Orchid{ 217u, 113u, 215u, 255u };
         constexpr Colour PaleGoldenrod{ 238u, 233u, 171u, 255u };
         constexpr Colour PaleGreen{ 153u, 250u, 153u, 255u };

@@ -11,7 +11,7 @@
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
 #include "stardust/input/controller/GameControllerCodes.h"
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 #include "stardust/math/Math.h"
 
 namespace stardust

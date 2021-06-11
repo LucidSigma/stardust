@@ -1,4 +1,4 @@
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 
 #include "stardust/data/Types.h"
 #include "stardust/utility/random/Random.h"

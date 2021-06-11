@@ -2,51 +2,51 @@
 
 #include <SDL2/SDL.h>
 
-#include "stardust/graphics/Colours.h"
+#include "stardust/graphics/colour/Colours.h"
 
 namespace stardust
 {
-    namespace
+    namespace text
     {
-        [[nodiscard]] Texture CreateTextTexture(SDL_Surface*& textSurface, const Sampler& sampler)
+        namespace
         {
-            Texture textTexture(textSurface, true, sampler);
-            SDL_FreeSurface(textSurface);
-            textSurface = nullptr;
-
-            return textTexture;
-        }
-
-        [[nodiscard]] Texture CreateOutlinedTextTexture(SDL_Surface*& innerTextSurface, SDL_Surface*& textSurface, const u32 outlineSize, const Sampler& sampler)
-        {
-            SDL_Rect blitArea{
-                static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
-                innerTextSurface->w, innerTextSurface->h
-            };
-
-            if (SDL_BlitSurface(innerTextSurface, nullptr, textSurface, &blitArea) != 0)
+            [[nodiscard]] Texture CreateTextTexture(SDL_Surface*& textSurface, const Sampler& sampler)
             {
+                Texture textTexture(textSurface, true, sampler);
+                SDL_FreeSurface(textSurface);
+                textSurface = nullptr;
+
+                return textTexture;
+            }
+
+            [[nodiscard]] Texture CreateOutlinedTextTexture(SDL_Surface*& innerTextSurface, SDL_Surface*& textSurface, const u32 outlineSize, const Sampler& sampler)
+            {
+                SDL_Rect blitArea{
+                    static_cast<i32>(outlineSize), static_cast<i32>(outlineSize),
+                    innerTextSurface->w, innerTextSurface->h
+                };
+
+                if (SDL_BlitSurface(innerTextSurface, nullptr, textSurface, &blitArea) != 0)
+                {
+                    SDL_FreeSurface(textSurface);
+                    SDL_FreeSurface(innerTextSurface);
+                    textSurface = nullptr;
+                    innerTextSurface = nullptr;
+
+                    return Texture();
+                }
+
+                Texture textTexture(textSurface, true, sampler);
+
                 SDL_FreeSurface(textSurface);
                 SDL_FreeSurface(innerTextSurface);
                 textSurface = nullptr;
                 innerTextSurface = nullptr;
 
-                return Texture();
+                return textTexture;
             }
-
-            Texture textTexture(textSurface, true, sampler);
-
-            SDL_FreeSurface(textSurface);
-            SDL_FreeSurface(innerTextSurface);
-            textSurface = nullptr;
-            innerTextSurface = nullptr;
-
-            return textTexture;
         }
-    }
 
-    namespace text
-    {
         [[nodiscard]] Texture RenderGlyph(const Font& font, const GlyphInfo& glyphInfo, const Sampler& sampler)
         {
             return RenderGlyph(

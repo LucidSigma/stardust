@@ -10,8 +10,8 @@
 #include "stardust/graphics/renderer/Renderer.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
-#include "stardust/graphics/Colour.h"
-#include "stardust/graphics/Colours.h"
+#include "stardust/graphics/colour/Colour.h"
+#include "stardust/graphics/colour/Colours.h"
 #include "stardust/math/Math.h"
 
 namespace stardust

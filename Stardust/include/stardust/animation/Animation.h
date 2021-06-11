@@ -13,7 +13,7 @@
 #include "stardust/data/Types.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
 #include "stardust/graphics/texture/Texture.h"
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 
 namespace stardust
 {

@@ -7,7 +7,7 @@
 
 #include "stardust/data/Containers.h"
 #include "stardust/data/Types.h"
-#include "stardust/graphics/Colour.h"
+#include "stardust/graphics/colour/Colour.h"
 #include "stardust/graphics/texture/Sampler.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/math/Math.h"

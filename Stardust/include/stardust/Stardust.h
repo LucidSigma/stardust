@@ -63,9 +63,10 @@
 
 #include "graphics/backend/OpenGL.h"
 #include "graphics/backend/OpenGLContext.h"
+#include "graphics/colour/Colour.h"
+#include "graphics/colour/Colours.h"
 #include "graphics/display/Display.h"
 #include "graphics/display/VSyncType.h"
-
 #include "graphics/renderer/objects/BufferUsage.h"
 #include "graphics/renderer/objects/IndexBuffer.h"
 #include "graphics/renderer/objects/VertexBuffer.h"
@@ -79,8 +80,6 @@
 #include "graphics/texture/texture_atlas/TextureAtlas.h"
 #include "graphics/texture/Sampler.h"
 #include "graphics/texture/Texture.h"
-#include "graphics/Colour.h"
-#include "graphics/Colours.h"
 #include "graphics/SortingLayer.h"
 
 #include "input/controller/GameController.h"
