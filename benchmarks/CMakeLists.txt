@@ -6,7 +6,7 @@ set(BENCHMARK_TARGETS string_benchmark)
 
 foreach(BENCHMARK_TARGET ${BENCHMARK_TARGETS})
     target_include_directories(${BENCHMARK_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/Stardust/include" ${BENCHMARK_INCLUDE_DIRS})
-    target_link_libraries(${BENCHMARK_TARGET} PUBLIC Stardust)
+    target_link_libraries(${BENCHMARK_TARGET} PUBLIC Stardust PRIVATE benchmark)
 endforeach()
 
 set_target_properties(
