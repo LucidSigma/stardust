@@ -32,7 +32,7 @@ namespace stardust
         ~TaskScheduler() noexcept = default;
 
         template <usize Priority>
-        void ScheduleTask(const std::function<void()>& task, const std::function<void(const TaskStats&)>& endCallback = { }, const std::function<void(const String&)>& errorCallback = { })
+        void ScheduleTask(const std::function<void()>& task, const std::function<void(const TaskStats&)>& endCallback = [](const TaskStats&) { }, const std::function<void(const String&)>& errorCallback = [](const String&) { })
         {
             const auto convertedEndCallback = [endCallback](const psched::TaskStats& taskStats) { endCallback(TaskStats(taskStats)); };
             const auto convertedErrorCallback = [errorCallback](const char* errorMessage) { errorCallback(errorMessage); };
