@@ -118,3 +118,5 @@ if (BENCHMARK_ENABLE_INSTALL)
       NAMESPACE "${namespace}"
       DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 endif()
+
+set_target_properties(benchmark PROPERTIES FOLDER "Dependencies")

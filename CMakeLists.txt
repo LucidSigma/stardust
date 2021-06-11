@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(STARDUST_BUILD_SANDBOX "Whether to build the sandbox application or not." OFF)
 option(STARDUST_BUILD_TESTS "Whether to build the unit tests or not." OFF)
+option(STARDUST_BUILD_BENCHMARKS "Whether to build the benchmarks or not." OFF)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
@@ -69,4 +70,10 @@ if (STARDUST_BUILD_TESTS)
     message(STATUS "Building tests.")
 
     add_subdirectory("tests")
+endif()
+
+if (STARDUST_BUILD_BENCHMARKS)
+    message(STATUS "Building benchmarks.")
+
+    add_subdirectory("benchmarks")
 endif()

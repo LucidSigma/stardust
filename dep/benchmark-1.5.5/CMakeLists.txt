@@ -311,3 +311,6 @@ if (BENCHMARK_ENABLE_TESTING)
   endif()
   add_subdirectory(test)
 endif()
+
+get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(BENCHMARK_INCLUDE_DIRS "${_IMPORT_PREFIX}/include" PARENT_SCOPE)

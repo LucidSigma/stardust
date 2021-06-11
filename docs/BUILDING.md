@@ -14,6 +14,7 @@ Build the project with CMake.
 CMake options include:
 * `STARDUST_BUILD_SANDBOX` - whether to build the Sandbox project or not (default: `OFF`).
 * `STARDUST_BUILD_TESTS` - whether to build the unit tests or not (default: `OFF`).
+* `STARDUST_BUILD_BENCHMARKS` - whether to build the benchmarks or not (default: `OFF`).
 
 This will create a project file (Visual Studio, XCode, Makefile, et cetera). Open this project and build it.  
 Building has only been tested on Windows. Some dependencies may not link correctly on MacOS/Linux. Please inform me of any issues regarding this.
