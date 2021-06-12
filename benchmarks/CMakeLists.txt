@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
+add_executable(graph_benchmark "graph/src/Main.cpp")
 add_executable(string_benchmark "string/src/Main.cpp")
 
-set(BENCHMARK_TARGETS string_benchmark)
+set(BENCHMARK_TARGETS graph_benchmark string_benchmark)
 
 foreach(BENCHMARK_TARGET ${BENCHMARK_TARGETS})
     target_include_directories(${BENCHMARK_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/Stardust/include" ${BENCHMARK_INCLUDE_DIRS})
@@ -21,13 +22,13 @@ set_target_properties(
 if(WIN32)
     foreach(DLL ${SDL2_DLLS})
         add_custom_command(TARGET ${BENCHMARK_TARGETS} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:string_benchmark>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DLL} $<TARGET_FILE_DIR:graph_benchmark>
         )
     endforeach()
 
     foreach(SDL2_TTF_DLL ${SDL2_TTF_DLLS})
         add_custom_command(TARGET ${BENCHMARK_TARGETS} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:string_benchmark>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:graph_benchmark>
         )
     endforeach()
 endif()
