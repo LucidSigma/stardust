@@ -31,4 +31,10 @@ if(WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:graph_benchmark>
         )
     endforeach()
+
+    foreach(RMLUI_DLL ${RMLUI_DLLS})
+        add_custom_command(TARGET ${BENCHMARK_TARGETS} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RMLUI_DLL} $<TARGET_FILE_DIR:graph_benchmark>
+        )
+    endforeach()
 endif()

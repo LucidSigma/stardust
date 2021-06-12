@@ -115,6 +115,8 @@ public:
 ### Graphics.
 * [Glad](https://glad.dav1d.de/)
 * [OpenGL](https://www.opengl.org/)
+* [RmlUi](https://github.com/mikke89/RmlUi)
+    * [FreeType](https://www.freetype.org/)
 
 ### Audio.
 * [SoLoud](https://sol.gfxile.net/soloud/)

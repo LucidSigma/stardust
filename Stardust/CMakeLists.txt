@@ -20,6 +20,7 @@ target_include_directories(Stardust PUBLIC
     ${NLOHMANN_JSON_INCLUDE_DIRS}
     ${PHYSFS_INCLUDE_DIRS}
     ${PSCHED_INCLUDE_DIRS}
+    ${RMLUI_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
     ${SDL2_TTF_INCLUDE_DIRS}
     ${SOL2_INCLUDE_DIRS}
@@ -33,6 +34,7 @@ target_include_directories(Stardust PUBLIC
 target_link_directories(Stardust PUBLIC
     ${SDL2_LIBS_DIR}
     ${SDL2_TTF_LIBS_DIR}
+    ${RMLUI_LIBS_DIR}
 )
 
 target_link_libraries(Stardust PUBLIC
@@ -45,6 +47,7 @@ target_link_libraries(Stardust PUBLIC
     hash_library
     lua
     physfs
+    RmlCore
     soloud
     stb_image
     tinyxml2
@@ -63,6 +66,12 @@ if(WIN32)
     foreach(SDL2_TTF_DLL ${SDL2_TTF_DLLS})
         add_custom_command(TARGET Stardust POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:Stardust>
+        )
+    endforeach()
+
+    foreach(RMLUI_DLL ${RMLUI_DLLS})
+        add_custom_command(TARGET Stardust POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RMLUI_DLL} $<TARGET_FILE_DIR:Stardust>
         )
     endforeach()
 endif()
