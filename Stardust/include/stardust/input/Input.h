@@ -64,8 +64,8 @@ namespace stardust
 
         static ObserverPtr<GameController> AddGameController(const i32 id, const class Locale& locale);
         static void RemoveGameController(const GameControllerID instanceID);
-        static void RemoveAllGameControllers();
-        [[nodiscard]] static usize GetGameControllerCount();
+        static void RemoveAllGameControllers() noexcept;
+        [[nodiscard]] static usize GetGameControllerCount() noexcept;
 
         static void UpdateKeyboardState();
         static void UpdateMouseState();

@@ -137,6 +137,7 @@ namespace stardust
         void DrawScreenRect(const components::ScreenTransform& transform, const components::Sprite& sprite);
         void DrawScreenRect(const components::ScreenTransform& transform, const components::ShearTransform& shear, const components::Sprite& sprite);
         
+        void EnableScissorRect(const bool enable) const;
         void SetScissorRect(const IVec2& topLeft, const UVec2& size) const;
         void ResetScissorRect() const;
 

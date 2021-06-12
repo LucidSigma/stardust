@@ -95,8 +95,11 @@ namespace stardust
         [[nodiscard]] inline Locale& GetLocale() noexcept { return m_locale; }
 
         [[nodiscard]] inline Window& GetWindow() noexcept { return m_window; }
+        [[nodiscard]] inline const Window& GetWindow() const noexcept { return m_window; }
         [[nodiscard]] inline Renderer& GetRenderer() noexcept { return m_renderer; }
+        [[nodiscard]] inline const Renderer& GetRenderer() const noexcept { return m_renderer; }
         [[nodiscard]] inline Camera2D& GetCamera() noexcept { return m_camera; }
+        [[nodiscard]] inline const Camera2D& GetCamera() const noexcept { return m_camera; }
         [[nodiscard]] inline InputManager& GetInputManager() noexcept { return m_inputManager; }
         [[nodiscard]] inline SceneManager& GetSceneManager() noexcept { return m_sceneManager; }
 
@@ -138,6 +141,7 @@ namespace stardust
         [[nodiscard]] Status InitialiseOpenGL(const AppConfig&);
         [[nodiscard]] Status InitialiseRenderer(const AppConfig&);
         [[nodiscard]] Status InitialiseTextSystem(const AppConfig&);
+        [[nodiscard]] Status InitialiseUI(const AppConfig&);
         [[nodiscard]] Status InitialiseScriptEngine(const AppConfig&);
         [[nodiscard]] Status InitialisePhysics(const AppConfig& appConfig);
         [[nodiscard]] Status InitialiseInput(const AppConfig& appConfig);

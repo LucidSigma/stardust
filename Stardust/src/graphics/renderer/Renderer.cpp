@@ -488,6 +488,18 @@ namespace stardust
         GenerateRect(modelMatrix, sprite.colourMod, textureCoordinates, textureIndex, m_screenQuadBufferPtr, m_screenIndexCount);
     }
 
+    void Renderer::EnableScissorRect(const bool enable) const
+    {
+        if (enable)
+        {
+            glEnable(GL_SCISSOR_TEST);
+        }
+        else
+        {
+            glDisable(GL_SCISSOR_TEST);
+        }
+    }
+
     void Renderer::SetScissorRect(const IVec2& topLeft, const UVec2& size) const
     {
         glScissor(

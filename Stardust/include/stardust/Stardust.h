@@ -136,10 +136,12 @@
 #include "text/TextCache.h"
 
 #include "tilemap/Tilemap.h"
-
 #include "time/stopwatch/Stopwatch.h"
 #include "time/Time.h"
 #include "time/Timers.h"
+
+#include "ui/context/UIContext.h"
+#include "ui/UI.h"
 
 #include "utility/hash/Hash.h"
 #include "utility/interfaces/INoncopyable.h"

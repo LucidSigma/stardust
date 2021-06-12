@@ -141,12 +141,12 @@ namespace stardust
         }
     }
 
-    void Input::RemoveAllGameControllers()
+    void Input::RemoveAllGameControllers() noexcept
     {
         s_gameControllers.clear();
     }
 
-    [[nodiscard]] usize Input::GetGameControllerCount()
+    [[nodiscard]] usize Input::GetGameControllerCount() noexcept
     {
         return s_gameControllers.size();
     }

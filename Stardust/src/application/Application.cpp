@@ -22,6 +22,7 @@
 #include "stardust/input/Input.h"
 #include "stardust/physics/world/World.h"
 #include "stardust/system/System.h"
+#include "stardust/ui/UI.h"
 #include "stardust/utility/version/Version.h"
 #include "stardust/window/cursor/Cursor.h"
 
@@ -43,6 +44,7 @@ namespace stardust
         m_globalSceneData.clear();
 
         Input::RemoveAllGameControllers();
+        ui::Shutdown();
 
         if (m_renderer.IsValid())
         {
@@ -209,6 +211,7 @@ namespace stardust
             &Application::InitialiseOpenGL,
             &Application::InitialiseRenderer,
             &Application::InitialiseTextSystem,
+            &Application::InitialiseUI,
             &Application::InitialiseScriptEngine,
             &Application::InitialisePhysics,
             &Application::InitialiseInput,
@@ -552,6 +555,11 @@ namespace stardust
         Log::EngineInfo("Text subsystem initialised.");
 
         return Status::Success;
+    }
+
+    [[nodiscard]] Status Application::InitialiseUI(const AppConfig&)
+    {
+        return ui::Initialise(*this);
     }
 
     [[nodiscard]] Status Application::InitialiseScriptEngine(const AppConfig&)
