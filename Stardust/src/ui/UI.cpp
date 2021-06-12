@@ -7,7 +7,6 @@
 #include <RmlUi/Core.h>
 
 #include "stardust/application/Application.h"
-#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Pointers.h"
 #include "stardust/data/Types.h"
@@ -210,6 +209,13 @@ namespace stardust
         void Shutdown() noexcept
         {
             Rml::Shutdown();
+        }
+        
+        [[nodiscard]] Status LoadFontFace(const StringView& filepath, const bool isFallbackFace)
+        {
+            return Rml::LoadFontFace(filepath.data(), isFallbackFace)
+                ? Status::Success
+                : Status::Fail;
         }
     }
 }
