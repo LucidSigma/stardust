@@ -133,6 +133,8 @@ namespace stardust
                     case SEEK_END:
                         virtualOffset += static_cast<i64>(m_handles[fileHandle].Size());
 
+                        break;
+
                     case SEEK_SET:
                     default:
                         break;
@@ -153,6 +155,23 @@ namespace stardust
                     }
 
                     return 0u;
+                }
+
+                [[nodiscard]] usize Length(const Rml::FileHandle fileHandle) override
+                {
+                    if (m_handles.contains(fileHandle)) [[likely]]
+                    {
+                        return m_handles[fileHandle].Size();
+                    }
+
+                    return 0u;
+                }
+
+                [[nodiscard]] bool LoadFile(const Rml::String& filepath, Rml::String& out_data) override
+                {
+                    out_data = vfs::ReadFileString(filepath);
+
+                    return out_data.empty();
                 }
             };
 
