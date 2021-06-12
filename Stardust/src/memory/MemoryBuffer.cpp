@@ -11,7 +11,7 @@ namespace stardust
 
     void MemoryBuffer::SetPointer(const usize index)
     {
-        m_rwPointer = m_rwPointer + index;
+        m_rwPointer = m_buffer.data() + index;
     }
 
     void MemoryBuffer::ShiftPointer(const isize offset)
@@ -34,10 +34,12 @@ namespace stardust
         return static_cast<usize>(m_rwPointer - m_buffer.data());
     }
 
-    [[nodiscard]] Vector<ubyte> MemoryBuffer::ReadBytes(const usize byteCount) const
+    [[nodiscard]] Vector<ubyte> MemoryBuffer::ReadBytes(const usize byteCount)
     {
         Vector<ubyte> bytes(byteCount);
         std::memcpy(bytes.data(), m_rwPointer, byteCount);
+
+        m_rwPointer += byteCount;
 
         return bytes;
     }
@@ -45,6 +47,7 @@ namespace stardust
     void MemoryBuffer::WriteBytes(const Vector<ubyte>& bytes)
     {
         std::memcpy(m_rwPointer, bytes.data(), bytes.size());
+        m_rwPointer += bytes.size();
     }
 
     void MemoryBuffer::Resize(const usize newSize)

@@ -29,7 +29,7 @@ namespace stardust
         [[nodiscard]] inline ObserverPtr<const ubyte> GetPointer() const noexcept { return m_rwPointer; }
         [[nodiscard]] usize GetPointerOffset() const;
 
-        [[nodiscard]] Vector<ubyte> ReadBytes(const usize byteCount) const;
+        [[nodiscard]] Vector<ubyte> ReadBytes(const usize byteCount);
         void WriteBytes(const Vector<ubyte>& bytes);
 
         void Resize(const usize newSize);
