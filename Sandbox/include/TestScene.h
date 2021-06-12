@@ -110,7 +110,7 @@ public:
             .outline = sd::text::OutlineInfo{
                 .thickness = 4u,
                 .innerColour = sd::colours::Red,
-                .outerColour = sd::colours::Green,
+                .outerColour = sd::colours::DarkGreen,
             },
             .wrapLength = 1024u,
         });
