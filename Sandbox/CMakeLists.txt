@@ -32,10 +32,4 @@ if(WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_TTF_DLL} $<TARGET_FILE_DIR:Sandbox>
         )
     endforeach()
-
-    foreach(RMLUI_DLL ${RMLUI_DLLS})
-        add_custom_command(TARGET Sandbox POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RMLUI_DLL} $<TARGET_FILE_DIR:Sandbox>
-        )
-    endforeach()
 endif()

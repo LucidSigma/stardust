@@ -44,6 +44,8 @@ private:
 
     sd::ai::BoidFlock m_flock;
 
+    sd::ui::Context m_uiContext;
+
 public:
     TestScene(sd::Application& application, const sd::String& name)
         : Scene(application, name)
@@ -55,6 +57,25 @@ public:
 
     [[nodiscard]] virtual sd::Status OnLoad() override
     {
+        if (sd::ui::LoadFontFace("assets/fonts/TheanoModern.ttf") != sd::Status::Success)
+        {
+            return sd::Status::Fail;
+        }
+
+        m_uiContext.Initialise("main", GetWindow().GetSize());
+
+        if (!m_uiContext.IsValid())
+        {
+            return sd::Status::Fail;
+        }
+
+        const auto document = m_uiContext.LoadRMLDocument("assets/ui/test.rml");
+
+        if (document == nullptr)
+        {
+            return sd::Status::Fail;
+        }
+
         sd::SetCursor(sd::CursorType::No);
 
         const sd::sys::CPUInfo& cpuInfo = sd::sys::GetCPUInfo();

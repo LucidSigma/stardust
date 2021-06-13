@@ -1,0 +1,10 @@
+<rml>
+	<head>
+		<title>Test</title>
+		<link type="text/rcss" href="styles/rml.rcss"/>
+	</head>
+
+	<body>
+		<h1>Test Header</h1>
+	</body>
+</rml>
