@@ -31,6 +31,26 @@ static void BM_MakeLower(benchmark::State& state)
 
 BENCHMARK(BM_MakeLower);
 
+static void BM_IsUpper(benchmark::State& state)
+{
+    for (auto execution : state)
+    {
+        const auto result = sd::string::IsUpper("HELLO");
+    }
+}
+
+BENCHMARK(BM_IsUpper);
+
+static void BM_IsLower(benchmark::State& state)
+{
+    for (auto execution : state)
+    {
+        const auto result = sd::string::IsLower("hello");
+    }
+}
+
+BENCHMARK(BM_IsLower);
+
 static void BM_RemoveFirstCharacter(benchmark::State& state)
 {
     for (auto execution : state)

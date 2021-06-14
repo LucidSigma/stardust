@@ -20,6 +20,21 @@ TEST_CASE("Strings can be manipulated in different ways", "[string]")
         REQUIRE(sd::string::MakeUpper("") == "");
     }
 
+    SECTION("Can check if a string is uppercase/lowercase")
+    {
+        REQUIRE(sd::string::IsUpper("HELLO."));
+        REQUIRE(sd::string::IsUpper("TEST"));
+        REQUIRE(!sd::string::IsUpper(""));
+        REQUIRE(!sd::string::IsUpper("hello."));
+        REQUIRE(!sd::string::IsUpper("test"));
+
+        REQUIRE(sd::string::IsLower("hello."));
+        REQUIRE(sd::string::IsLower("test"));
+        REQUIRE(!sd::string::IsLower(""));
+        REQUIRE(!sd::string::IsLower("HELLO."));
+        REQUIRE(!sd::string::IsLower("TEST"));
+    }
+
     SECTION("Can split a string on a delimiter")
     {
         sd::Vector<sd::String> values = sd::string::Split("These are some words.");
