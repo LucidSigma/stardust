@@ -99,6 +99,9 @@ namespace stardust
         [[nodiscard]] extern String MakeUpper(String string);
         [[nodiscard]] extern String MakeLower(String string);
 
+        [[nodiscard]] extern bool IsUpper(const String& string);
+        [[nodiscard]] extern bool IsLower(const String& string);
+
         [[nodiscard]] extern String RemoveFirstCharacter(const String& string);
         [[nodiscard]] extern String RemoveLastCharacter(const String& string);
         [[nodiscard]] extern String RemoveFirstAndLastCharacters(const String& string);

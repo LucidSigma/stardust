@@ -13,7 +13,7 @@ namespace stardust
             String currentToken;
             std::istringstream reader(string);
 
-            Vector<String> tokens;
+            Vector<String> tokens{ };
 
             while (std::getline(reader, currentToken, delimiter))
             {
@@ -25,8 +25,8 @@ namespace stardust
 
         [[nodiscard]] String MakeUpper(String string)
         {
-            std::transform(
-                std::cbegin(string), std::cend(string),
+            std::ranges::transform(
+                string,
                 std::begin(string),
                 [](const char letter) -> char
                 {
@@ -39,8 +39,8 @@ namespace stardust
 
         [[nodiscard]] String MakeLower(String string)
         {
-            std::transform(
-                std::cbegin(string), std::cend(string),
+            std::ranges::transform(
+                string,
                 std::begin(string),
                 [](const char letter) -> char
                 {
@@ -49,6 +49,16 @@ namespace stardust
             );
 
             return string;
+        }
+
+        [[nodiscard]] bool IsUpper(const String& string)
+        {
+            return std::ranges::all_of(string, [](const char letter) { return std::isupper(letter, std::locale()); });
+        }
+
+        [[nodiscard]] bool IsLower(const String& string)
+        {
+            return std::ranges::all_of(string, [](const char letter) { return std::islower(letter, std::locale()); });
         }
 
         [[nodiscard]] String RemoveFirstCharacter(const String& string)
