@@ -8,6 +8,11 @@ namespace stardust
 {
     namespace string
     {
+        namespace
+        {
+            const std::locale globalLocale{ };
+        }
+
         [[nodiscard]] Vector<String> Split(const String& string, const char delimiter)
         {
             String currentToken;
@@ -30,7 +35,7 @@ namespace stardust
                 std::begin(string),
                 [](const char letter) -> char
                 {
-                    return static_cast<char>(std::toupper(static_cast<unsigned char>(letter), std::locale()));
+                    return static_cast<char>(std::toupper(static_cast<unsigned char>(letter), globalLocale));
                 }
             );
 
@@ -44,7 +49,7 @@ namespace stardust
                 std::begin(string),
                 [](const char letter) -> char
                 {
-                    return static_cast<char>(std::tolower(static_cast<unsigned char>(letter), std::locale()));
+                    return static_cast<char>(std::tolower(static_cast<unsigned char>(letter), globalLocale));
                 }
             );
 
@@ -53,12 +58,38 @@ namespace stardust
 
         [[nodiscard]] bool IsUpper(const String& string)
         {
-            return std::ranges::all_of(string, [](const char letter) { return std::isupper(letter, std::locale()); });
+            if (string.empty())
+            {
+                return false;
+            }
+
+            for (const char letter : string)
+            {
+                if (std::isalpha(letter, std::locale()) && !std::isupper(letter, globalLocale))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         [[nodiscard]] bool IsLower(const String& string)
         {
-            return std::ranges::all_of(string, [](const char letter) { return std::islower(letter, std::locale()); });
+            if (string.empty())
+            {
+                return false;
+            }
+
+            for (const char letter : string)
+            {
+                if (std::isalpha(letter, std::locale()) && !std::islower(letter, globalLocale))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         [[nodiscard]] String RemoveFirstCharacter(const String& string)
