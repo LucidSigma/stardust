@@ -91,6 +91,7 @@
 
 #include "math/Math.h"
 #include "memory/MemoryBuffer.h"
+#include "memory/ObjectPool.h"
 
 #include "particles/ParticleData.h"
 #include "particles/ParticleSystem.h"
