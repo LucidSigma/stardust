@@ -9,7 +9,6 @@
 
 #define STARDUST_ASSERT_RELEASE(condition) SDL_assert_release(condition)
 #define STARDUST_ASSERT(condition) SDL_assert(condition)
-#define STARDUST_ASSERT_PARANOID(condition) SDL_assert_paranoid(condition)
 
 namespace stardust
 {

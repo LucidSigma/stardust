@@ -2,16 +2,12 @@
 #ifndef STARDUST_H
 #define STARDUST_H
 
-#ifndef STARDUST_ASSERT_LEVEL
-    #ifdef NDEBUG
-        #define STARDUST_ASSERT_LEVEL 1
-    #else
-        #define STARDUST_ASSERT_LEVEL 2
-    #endif
-#endif
-
 #ifndef SDL_ASSERT_LEVEL
-    #define SDL_ASSERT_LEVEL STARDUST_ASSERT_LEVEL
+    #ifdef NDEBUG
+        #define SDL_ASSERT_LEVEL 1
+    #else
+        #define SDL_ASSERT_LEVEL 2
+    #endif
 #endif
 
 #include "ai/game_tree/GameState.h"
