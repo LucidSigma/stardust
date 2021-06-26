@@ -9,6 +9,7 @@ namespace stardust
     namespace colours
     {
         constexpr Colour AcidGreen{ 176u, 191u, 26u, 255u };
+        constexpr Colour AeroBlue{ 201u, 255u, 229u, 255u };
         constexpr Colour Alabaster{ 237u, 234u, 224u, 255u };
         constexpr Colour AliceBlue{ 240u, 248u, 255u, 255u };
         constexpr Colour AlloyOrange{ 196u, 98u, 16u, 255u };
@@ -21,6 +22,7 @@ namespace stardust
         constexpr Colour Aquamarine{ 128u, 255u, 212u, 255u };
         constexpr Colour ArmyGreen{ 75u, 83u, 32u, 255u };
         constexpr Colour AshGrey{ 178u, 190u, 181u, 255u };
+        constexpr Colour Asparagus{ 135u, 169u, 107u, 255u };
         constexpr Colour Auburn{ 165u, 42u, 42u, 255u };
         constexpr Colour Aureolin{ 253u, 238u, 0u, 255u };
         constexpr Colour Avocado{ 86u, 130u, 3u, 255u };
@@ -35,7 +37,10 @@ namespace stardust
         constexpr Colour BlueGreen{ 13u, 152u, 186u, 255u };
         constexpr Colour BlueGrey{ 102u, 153u, 204u, 255u };
         constexpr Colour BlueViolet{ 138u, 44u, 227u, 255u };
+        constexpr Colour BlueBerry{ 79u, 134u, 247u, 255u };
+        constexpr Colour Blush{ 222u, 93u, 131u, 255u };
         constexpr Colour Bone{ 227u, 218u, 201u, 255u };
+        constexpr Colour Brass{ 181u, 166u, 66u, 255u };
         constexpr Colour Bronze{ 205u, 127u, 50u, 255u };
         constexpr Colour Brown{ 166u, 41u, 41u, 255u };
         constexpr Colour Burgundy{ 128u, 0u, 32u, 255u };
@@ -50,6 +55,13 @@ namespace stardust
         constexpr Colour Cerulean{ 0u, 123u, 167u, 255u };
         constexpr Colour Chartreuse{ 128u, 255u, 0u, 255u };
         constexpr Colour Chocolate{ 210u, 105u, 31u, 255u };
+        constexpr Colour Citrine{ 228u, 208u, 10u, 255u };
+        constexpr Colour Citron{ 158u, 169u, 31u, 255u };
+        constexpr Colour CobaltBlue{ 0u, 71u, 171u, 255u };
+        constexpr Colour CocoaBrown{ 210u, 105u, 30u, 255u };
+        constexpr Colour Coconut{ 150u, 90u, 62u, 255u };
+        constexpr Colour Coffee{ 111u, 78u, 55u, 255u };
+        constexpr Colour Copper{ 184u, 115u, 51u, 255u };
         constexpr Colour Coral{ 255u, 128u, 80u, 255u };
         constexpr Colour CornflowerBlue{ 100u, 148u, 238u, 255u };
         constexpr Colour Cornsilk{ 255u, 248u, 220u, 255u };
@@ -82,6 +94,7 @@ namespace stardust
         constexpr Colour DimGrey{ 105u, 105u, 105u, 255u };
         constexpr Colour Dirt{ 155u, 118u, 83u, 255u };
         constexpr Colour DodgerBlue{ 31u, 143u, 255u, 255u };
+        constexpr Colour Ebony{ 85u, 93u, 80u, 255u };
         constexpr Colour Ecru{ 194u, 178u, 128u, 255u };
         constexpr Colour ElectricBlue{ 125u, 249u, 255u, 255u };
         constexpr Colour Emerald{ 80u, 200u, 120u, 255u };
@@ -140,6 +153,7 @@ namespace stardust
         constexpr Colour Linen{ 250u, 240u, 230u, 255u };
         constexpr Colour Magenta{ 255u, 0u, 255u, 255u };
         constexpr Colour Mahogany{ 192u, 64u, 0u, 255u };
+        constexpr Colour Malachite{ 11u, 218u, 81u, 255u };
         constexpr Colour Mango{ 253u, 190u, 2u, 255u };
         constexpr Colour Mantis{ 116u, 195u, 101u, 255u };
         constexpr Colour Marigold{ 234u, 162u, 33u, 255u };
@@ -156,13 +170,16 @@ namespace stardust
         constexpr Colour MediumTurquoise{ 72u, 210u, 204u, 255u };
         constexpr Colour MediumVioletRed{ 199u, 21u, 133u, 255u };
         constexpr Colour MidnightBlue{ 26u, 26u, 113u, 255u };
+        constexpr Colour Milk{ 253u, 255u, 245u, 255u };
         constexpr Colour Mint{ 62u, 180u, 137u, 255u };
         constexpr Colour MintCream{ 245u, 255u, 250u, 255u };
         constexpr Colour MistyRose{ 255u, 227u, 225u, 255u };
         constexpr Colour Moccasin{ 255u, 227u, 182u, 255u };
+        constexpr Colour Mocha{ 190u, 164u, 147u, 255u };
         constexpr Colour NavajoWhite{ 255u, 222u, 174u, 255u };
         constexpr Colour Navy{ 0u, 0u, 128u, 255u };
         constexpr Colour NavyBlue{ 0u, 0u, 128u, 255u };
+        constexpr Colour OceanBlue{ 79u, 66u, 181u, 255u };
         constexpr Colour Ochre{ 204u, 119u, 34u, 255u };
         constexpr Colour OldLace{ 253u, 245u, 230u, 255u };
         constexpr Colour Olive{ 128u, 128u, 0u, 255u };
@@ -199,11 +216,14 @@ namespace stardust
         constexpr Colour Periwinkle{ 204u, 204u, 255u };
         constexpr Colour PersianBlue{ 28u, 57u, 187u, 255u };
         constexpr Colour PersianGreen{ 0u, 166u, 147u, 255u };
+        constexpr Colour Persimmon{ 236u, 88u, 0u, 255u };
         constexpr Colour Peru{ 204u, 133u, 64u, 255u };
+        constexpr Colour Petal{ 245u, 226u, 226u, 255u };
         constexpr Colour Pink{ 255u, 192u, 204u, 255u };
         constexpr Colour Platinum{ 229u, 228u, 226u, 255u };
         constexpr Colour Plum{ 222u, 161u, 222u, 255u };
         constexpr Colour PowderBlue{ 176u, 225u, 230u, 255u };
+        constexpr Colour PsychedelicPurple{ 223u, 0u, 255u, 255u };
         constexpr Colour Puce{ 204u, 136u, 153u, 255u };
         constexpr Colour Pumpkin{ 255u, 117u, 24u, 255u };
         constexpr Colour Purple{ 161u, 34u, 240u, 255u };
@@ -239,6 +259,7 @@ namespace stardust
         constexpr Colour SpringGreen{ 0u, 255u, 128u, 255u };
         constexpr Colour SteelBlue{ 69u, 131u, 182u, 255u };
         constexpr Colour Straw{ 228u, 217u, 111u, 255u };
+        constexpr Colour Strawberry{ 252u, 90u, 141u, 255u };
         constexpr Colour Sunglow{ 255u, 204u, 51u, 255u };
         constexpr Colour Sunray{ 227u, 171u, 87u, 255u };
         constexpr Colour Sunset{ 250u, 214u, 165u, 255u };
@@ -262,9 +283,11 @@ namespace stardust
         constexpr Colour Vermilion{ 227u, 66u, 52u, 255u };
         constexpr Colour Violet{ 238u, 131u, 238u, 255u };
         constexpr Colour Viridian{ 64u, 130u, 109u, 255u };
+        constexpr Colour Watermelon{ 240u, 92u, 133u, 255u };
         constexpr Colour Wheat{ 245u, 222u, 179u, 255u };
         constexpr Colour White{ 255u, 255u, 255u, 255u };
         constexpr Colour WhiteSmoke{ 245u, 245u, 245u, 255u };
+        constexpr Colour Wine{ 114u, 47u, 55u, 255u };
         constexpr Colour Wisteria{ 201u, 160u, 220u, 255u };
         constexpr Colour WoodBrown{ 193u, 154u, 107u, 255u };
         constexpr Colour Xanadu{ 115u, 134u, 120u, 255u };
