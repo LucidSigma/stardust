@@ -7,6 +7,7 @@
 #include <limits>
 #include <numbers>
 #include <ratio>
+#include <type_traits>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
@@ -19,6 +20,7 @@
 #include <glm/gtx/transform2.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
+#include "stardust/data/Containers.h"
 #include "stardust/data/MathTypes.h"
 #include "stardust/data/Types.h"
 
@@ -168,6 +170,13 @@ namespace stardust
 
     constexpr BVec4 BVec4True{ true, true, true, true };
     constexpr BVec4 BVec4False{ false, false, false, false };
+
+    template <typename T>
+    [[nodiscard]] inline T MapRange(const T value, const Pair<T, T>& inputRange, const Pair<T, T>& outputRange) noexcept
+        requires std::is_integral_v<T> || std::is_floating_point_v<T>
+    {
+        return outputRange.first + ((value - inputRange.first) * (outputRange.second - outputRange.first) / (inputRange.second - inputRange.first));
+    }
 
     [[nodiscard]] extern f32 SmoothDamp(const f32 currentValue, const f32 targetValue, f32& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime);
     [[nodiscard]] extern Vec2 SmoothDamp(const Vec2 currentValue, const Vec2 targetValue, Vec2& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime);
