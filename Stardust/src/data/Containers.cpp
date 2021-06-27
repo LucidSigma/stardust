@@ -63,15 +63,10 @@ namespace stardust
                 return false;
             }
 
-            for (const char letter : string)
+            return std::ranges::all_of(string, [](const char letter) -> bool
             {
-                if (std::isalpha(letter, std::locale()) && !std::isupper(letter, globalLocale))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+                return !std::isalpha(letter, std::locale()) || std::isupper(letter, globalLocale);
+            });
         }
 
         [[nodiscard]] bool IsLower(const String& string)
@@ -81,15 +76,10 @@ namespace stardust
                 return false;
             }
 
-            for (const char letter : string)
+            return std::ranges::all_of(string, [](const char letter) -> bool
             {
-                if (std::isalpha(letter, std::locale()) && !std::islower(letter, globalLocale))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+                return !std::isalpha(letter, std::locale()) || std::islower(letter, globalLocale);
+            });
         }
 
         [[nodiscard]] String RemoveFirstCharacter(const String& string)
