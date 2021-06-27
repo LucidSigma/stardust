@@ -7,8 +7,8 @@ can_resize = false
 title = "Stardust Sandbox"
 
 [filesystem]
-assets_archive_relative_path = "assets.pak"
-locales_archive_relative_path = "locales.pak"
+assets_archive_relative_path = "resources/assets.pak"
+locales_archive_relative_path = "resources/locales.pak"
 log_file_relative_path = "log.txt"
 
     [filesystem.virtual_filepaths]
