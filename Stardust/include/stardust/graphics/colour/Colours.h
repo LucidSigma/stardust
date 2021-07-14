@@ -100,6 +100,7 @@ namespace stardust
         constexpr Colour Emerald{ 80u, 200u, 120u, 255u };
         constexpr Colour Eminence{ 108u, 48u, 130u, 255u };
         constexpr Colour Firebrick{ 179u, 34u, 34u, 255u };
+        constexpr Colour FireEngineRed{ 206u, 32u, 41u, 255u };
         constexpr Colour Flame{ 226u, 88u, 34u, 255u };
         constexpr Colour FloralWhite{ 255u, 250u, 240u, 255u };
         constexpr Colour ForestGreen{ 34u, 141u, 34u, 255u };
@@ -141,6 +142,7 @@ namespace stardust
         constexpr Colour LightGrey{ 212u, 212u, 212u, 255u };
         constexpr Colour LightGreen{ 143u, 238u, 143u, 255u };
         constexpr Colour LightPink{ 255u, 182u, 194u, 255u };
+        constexpr Colour LightRed{ 255u, 127u, 127u, 255u };
         constexpr Colour LightSalmon{ 255u, 161u, 123u, 255u };
         constexpr Colour LightSeaGreen{ 34u, 179u, 171u, 255u };
         constexpr Colour LightSkyBlue{ 136u, 207u, 250u, 255u };
