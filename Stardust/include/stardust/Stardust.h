@@ -123,6 +123,7 @@
 
 #include "task/scheduler/TaskScheduler.h"
 #include "task/AsyncTask.h"
+#include "task/MessagePasser.h"
 #include "task/TaskStats.h"
 
 #include "text/clipboard/Clipboard.h"
