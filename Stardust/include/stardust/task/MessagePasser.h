@@ -10,8 +10,7 @@
 
 namespace stardust
 {
-    template <typename T>
-        requires std::default_initializable<T>
+    template <std::default_initializable T>
     class MessagePasser
     {
     private:
