@@ -10,19 +10,19 @@ namespace stardust
             : m_chain(shapeHandle)
         { }
 
-        Chain::Chain(const Vector<Vec2>& vertices)
+        Chain::Chain(const List<Vector2>& vertices)
         {
             CreateLoop(vertices);
         }
 
-        Chain::Chain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB)
+        Chain::Chain(const List<Vector2>& vertices, const Vector2 ghostVertexA, const Vector2 ghostVertexB)
         {
             CreateChain(vertices, ghostVertexA, ghostVertexB);
         }
 
-        void Chain::CreateLoop(const Vector<Vec2>& vertices)
+        auto Chain::CreateLoop(const List<Vector2>& vertices) -> void
         {
-            Vector<b2Vec2> convertedVertices(vertices.size());
+            List<b2Vec2> convertedVertices(vertices.size());
 
             for (usize i = 0u; i < vertices.size(); ++i)
             {
@@ -32,9 +32,9 @@ namespace stardust
             m_chain.CreateLoop(convertedVertices.data(), static_cast<i32>(convertedVertices.size()));
         }
 
-        void Chain::CreateChain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB)
+        auto Chain::CreateChain(const List<Vector2>& vertices, const Vector2 ghostVertexA, const Vector2 ghostVertexB) -> void
         {
-            Vector<b2Vec2> convertedVertices(vertices.size());
+            List<b2Vec2> convertedVertices(vertices.size());
 
             for (usize i = 0u; i < vertices.size(); ++i)
             {
@@ -49,24 +49,24 @@ namespace stardust
             );
         }
 
-        void Chain::Clear()
+        auto Chain::Clear() -> void
         {
             m_chain.Clear();
         }
 
-        [[nodiscard]] Vector<Vec2> Chain::GetVertices() const
+        [[nodiscard]] auto Chain::GetVertices() const -> List<Vector2>
         {
-            Vector<Vec2> vertices(GetVertexCount());
+            List<Vector2> vertices(GetVertexCount());
 
             for (usize i = 0u; i < vertices.size(); ++i)
             {
-                vertices[i] = Vec2{ m_chain.m_vertices[i].x, m_chain.m_vertices[i].y };
+                vertices[i] = Vector2{ m_chain.m_vertices[i].x, m_chain.m_vertices[i].y };
             }
 
             return vertices;
         }
 
-        [[nodiscard]] Edge Chain::GetChildEdge(const u32 childEdgeIndex) const
+        [[nodiscard]] auto Chain::GetChildEdge(const u32 childEdgeIndex) const -> Edge
         {
             b2EdgeShape edge{ };
             m_chain.GetChildEdge(&edge, static_cast<i32>(childEdgeIndex));
@@ -74,23 +74,15 @@ namespace stardust
             return edge;
         }
 
-        [[nodiscard]] Pair<Vec2, Vec2> Chain::GetGhostVertices() const
+        [[nodiscard]] auto Chain::GetGhostVertices() const -> Pair<Vector2, Vector2>
         {
-            const Vec2 ghostVertexA{ m_chain.m_prevVertex.x, m_chain.m_prevVertex.y };
-            const Vec2 ghostVertexB{ m_chain.m_nextVertex.x, m_chain.m_nextVertex.y };
+            const Vector2 ghostVertexA{ m_chain.m_prevVertex.x, m_chain.m_prevVertex.y };
+            const Vector2 ghostVertexB{ m_chain.m_nextVertex.x, m_chain.m_nextVertex.y };
 
-            return  Pair<Vec2, Vec2>{ ghostVertexA, ghostVertexB };
+            return  Pair<Vector2, Vector2>{ ghostVertexA, ghostVertexB };
         }
 
-        [[nodiscard]] bool Chain::TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const
-        {
-            b2Transform transform{ };
-            transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
-
-            return m_chain.TestPoint(transform, b2Vec2{ point.x, point.y });
-        }
-
-        [[nodiscard]] AABB Chain::ComputeEdgeAABB(const Vec2& worldPosition, const f32 rotation, const u32 childEdgeIndex) const
+        [[nodiscard]] auto Chain::ComputeEdgeAABB(const Vector2 worldPosition, const f32 rotation, const u32 childEdgeIndex) const -> AABB
         {
             b2Transform transform{ };
             transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
@@ -101,14 +93,14 @@ namespace stardust
             return aabb;
         }
 
-        [[nodiscard]] MassData Chain::ComputeMassData(const f32 density) const
+        [[nodiscard]] auto Chain::ComputeMassData(const f32 density) const -> MassData
         {
             b2MassData massData{ };
             m_chain.ComputeMass(&massData, density);
 
             return MassData{
                 .mass = massData.mass,
-                .centre = Vec2{ massData.center.x, massData.center.y },
+                .centre = Vector2{ massData.center.x, massData.center.y },
                 .momentOfInertia = massData.I,
             };
         }

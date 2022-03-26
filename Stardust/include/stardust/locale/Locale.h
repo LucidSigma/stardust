@@ -2,38 +2,51 @@
 #ifndef STARDUST_LOCALE_H
 #define STARDUST_LOCALE_H
 
-#include <nlohmann/json.hpp>
+#include <limits>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/Types.h"
-#include "stardust/utility/status/Status.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Primitives.h"
+#include "stardust/utility/error_handling/Status.h"
 
 namespace stardust
 {
-    class Locale
+    class Locale final
     {
+    public:
+        static constexpr i32 ChangeEventCode = 0;
+
     private:
-        inline static Vector<String> s_systemPreferredLocales{ };
+        inline static u32 s_localeChangeEventID = std::numeric_limits<u32>::max();
 
         String m_baseLocaleDirectory;
 
-        nlohmann::json m_currentLocale;
+        JSON m_currentLocaleEntries;
         String m_currentLocaleName;
 
     public:
-        [[nodiscard]] static const Vector<String>& GetSystemPreferredLocales();
+        static auto SetLocaleChangeEventID(const u32 eventID) noexcept -> void;
 
-        Locale() = default;
-        ~Locale() noexcept = default;
+        auto Initialise(const StringView baseLocaleDirectory) -> void;
+        [[nodiscard]] auto SetLocale(const String& localeName, const bool triggerEvent = true) -> Status;
 
-        void Initialise(const StringView& baseLocaleDirectory);
-        [[nodiscard]] Status SetLocale(const String& localeName);
+        [[nodiscard]] auto GetCurrentLocaleName() const noexcept -> const String& { return m_currentLocaleName; }
 
-        [[nodiscard]] inline const String& GetCurrentLocaleName() const noexcept { return m_currentLocaleName; }
-        [[nodiscard]] inline const nlohmann::json& operator [](const StringView& localeString) const { return m_currentLocale[localeString.data()]; }
+        [[nodiscard]] inline auto Get(const StringView localeEntryName) const -> JSON { return m_currentLocaleEntries[localeEntryName.data()]; }
+        [[nodiscard]] auto Get(const StringView localeEntryName, const HashMap<String, String>& replacementMap) const -> String;
+        [[nodiscard]] auto Get(const List<String>& localeEntryNames) const -> String;
+        [[nodiscard]] auto Get(const List<String>& localeEntryNames, const HashMap<String, String>& replacementMap) const -> String;
+
+        [[nodiscard]] inline auto operator [](const StringView localeEntryName) const -> JSON { return Get(localeEntryName); }
+        [[nodiscard]] inline auto operator ()(const StringView localeEntryName) const -> JSON { return Get(localeEntryName); }
+        [[nodiscard]] inline auto operator ()(const StringView localeEntryName, const HashMap<String, String>& replacementMap) const -> String { return Get(localeEntryName, replacementMap); }
+        [[nodiscard]] inline auto operator [](const List<String>& localeEntryNames) const -> String { return Get(localeEntryNames); }
+        [[nodiscard]] inline auto operator ()(const List<String>& localeEntryNames) const -> String { return Get(localeEntryNames); }
+        [[nodiscard]] inline auto operator ()(const List<String>& localeEntryNames, const HashMap<String, String>& replacementMap) const -> String { return Get(localeEntryNames, replacementMap); }
 
     private:
-        [[nodiscard]] Optional<nlohmann::json> LoadLocaleFile(const String& filepath) const;
+        [[nodiscard]] auto LoadLocaleFile(const String& filepath) const -> Optional<JSON>;
+
+        auto PushLocaleChangeEvent() -> void;
     };
 }
 

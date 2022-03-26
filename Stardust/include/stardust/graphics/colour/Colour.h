@@ -2,156 +2,113 @@
 #ifndef STARDUST_COLOUR_H
 #define STARDUST_COLOUR_H
 
-#include <cstddef>
 #include <functional>
 
 #include <SDL2/SDL.h>
 
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Types.h"
-#include "stardust/math/Math.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    struct Colour
+    struct Colour final
     {
-        [[nodiscard]] static Colour Random();
-        [[nodiscard]] static Colour RandomOpaque();
+        struct HSV final
+        {
+            f32 hue;
+            f32 saturation;
+            f32 value;
+        };
 
-        u8 red;
-        u8 green;
-        u8 blue;
+        static constexpr u8 TransparentChannel = 0x00u;
+        static constexpr u8 OpaqueChannel = 0xFFu;
 
-        u8 alpha;
+        u8 red = 0u;
+        u8 green = 0u;
+        u8 blue = 0u;
 
-        constexpr Colour()
-            : red(0u), green(0u), blue(0u), alpha(SDL_ALPHA_OPAQUE)
-        { }
+        u8 alpha = 0u;
 
-        constexpr Colour(const u8 red, const u8 green, const u8 blue, const u8 alpha = SDL_ALPHA_OPAQUE)
+        [[nodiscard]] static auto Lighten(const Colour& colour, const f32 percentage) -> Colour;
+        [[nodiscard]] static auto Darken(const Colour& colour, const f32 percentage) -> Colour;
+
+        constexpr Colour() = default;
+
+        constexpr Colour(const u8 red, const u8 green, const u8 blue, const u8 alpha = OpaqueChannel)
             : red(red), green(green), blue(blue), alpha(alpha)
         { }
 
-        constexpr Colour(const u32 red, const u32 green, const u32 blue, const u32 alpha = SDL_ALPHA_OPAQUE)
-            : red(red), green(green), blue(blue), alpha(alpha)
+        constexpr Colour(const u32 red, const u32 green, const u32 blue, const u32 alpha = OpaqueChannel)
+            : red(static_cast<u8>(red)), green(static_cast<u8>(green)), blue(static_cast<u8>(blue)), alpha(static_cast<u8>(alpha))
         { }
 
         constexpr Colour(const f32 red, const f32 green, const f32 blue, const f32 alpha = 1.0f)
-            : red(static_cast<u8>(red * 255.0f)), green(static_cast<u8>(green * 255.0f)), blue(static_cast<u8>(blue * 255.0f)), alpha(static_cast<u8>(alpha * 255.0f))
+            : red(static_cast<u8>(red * 255.0f)),
+              green(static_cast<u8>(green * 255.0f)),
+              blue(static_cast<u8>(blue * 255.0f)),
+              alpha(static_cast<u8>(alpha * 255.0f))
         { }
 
-        constexpr Colour(const UVec3& values)
-            : red(values.r), green(values.g), blue(values.b), alpha(SDL_ALPHA_OPAQUE)
+        explicit constexpr Colour(u32 hexCode, const u32 alpha = OpaqueChannel)
+            : alpha(static_cast<u8>(alpha))
+        {
+            constexpr u32 Bitmask = 0xFFu;
+
+            blue = static_cast<u8>(hexCode & Bitmask);
+            hexCode >>= 8u;
+
+            green = static_cast<u8>(hexCode & Bitmask);
+            hexCode >>= 8u;
+
+            red = static_cast<u8>(hexCode & Bitmask);
+        }
+
+        explicit Colour(const HSV& hsv, const u32 alpha = OpaqueChannel);
+
+        explicit constexpr Colour(const UVector3 values)
+            : red(values.r), green(values.g), blue(values.b), alpha(OpaqueChannel)
         { }
 
-        constexpr Colour(const UVec4& values)
+        explicit constexpr Colour(const UVector4 values)
             : red(values.r), green(values.g), blue(values.b), alpha(values.a)
         { }
 
-        constexpr Colour(const Vec3& values)
+        explicit constexpr Colour(const Vector3 values)
             : Colour(values.r, values.g, values.b)
         { }
 
-        constexpr Colour(const Vec4& values)
+        explicit constexpr Colour(const Vector4 values)
             : Colour(values.r, values.g, values.b, values.a)
         { }
 
-        constexpr Colour(const SDL_Colour& colour)
+        explicit constexpr Colour(const SDL_Colour& colour)
             : red(colour.r), green(colour.g), blue(colour.b), alpha(colour.a)
         { }
 
-        ~Colour() noexcept = default;
+        [[nodiscard]] auto GetHex() const noexcept -> u32;
+        [[nodiscard]] auto GetHSV() const noexcept -> HSV;
 
-        [[nodiscard]] bool operator ==(const Colour&) const noexcept = default;
-        [[nodiscard]] bool operator !=(const Colour&) const noexcept = default;
+        [[nodiscard]] auto operator ==(const Colour&) const noexcept -> bool = default;
+        [[nodiscard]] auto operator !=(const Colour&) const noexcept -> bool = default;
 
         [[nodiscard]] operator SDL_Colour() const noexcept;
 
-        [[nodiscard]] explicit operator Vec3() const noexcept;
-        [[nodiscard]] explicit operator Vec4() const noexcept;
+        [[nodiscard]] explicit operator Vector3() const noexcept;
+        [[nodiscard]] explicit operator Vector4() const noexcept;
     };
-
-    struct HSVColour
-    {
-        [[nodiscard]] static HSVColour Random();
-        [[nodiscard]] static HSVColour RandomOpaque();
-
-        f32 hue;
-        f32 saturation;
-        f32 value;
-
-        f32 alpha;
-
-        constexpr HSVColour()
-            : hue(0.0f), saturation(0.0f), value(0.0f), alpha(1.0f)
-        { }
-
-        constexpr HSVColour(const f32 hue, const f32 saturation, const f32 value, const f32 alpha = 1.0f)
-            : hue(hue), saturation(saturation), value(value), alpha(alpha)
-        { }
-
-        constexpr HSVColour(const Vec3& values)
-            : hue(values.r), saturation(values.g), value(values.b), alpha(1.0f)
-        { }
-
-        constexpr HSVColour(const Vec4& values)
-            : hue(values.r), saturation(values.g), value(values.b), alpha(values.a)
-        { }
-
-        ~HSVColour() noexcept = default;
-
-        [[nodiscard]] bool operator ==(const HSVColour&) const noexcept = default;
-        [[nodiscard]] bool operator !=(const HSVColour&) const noexcept = default;
-
-        [[nodiscard]] explicit operator Vec3() const noexcept;
-        [[nodiscard]] explicit operator Vec4() const noexcept;
-    };
-
-    [[nodiscard]] extern HSVColour RGBToHSV(const Colour& rgbColour);
-    [[nodiscard]] extern Colour HSVToRGB(const HSVColour& hsvColour);
-    [[nodiscard]] extern Colour HexToRGB(u32 colourHex, const u8 alpha = SDL_ALPHA_OPAQUE);
-    [[nodiscard]] extern u32 RGBToHex(const Colour& rgbColour);
 
     inline namespace literals
     {
-        [[nodiscard]] extern stardust::Colour operator ""_colour(const stardust::u64 hexCode);
+        [[nodiscard]] extern auto operator ""_colour(const u64 hexCode) -> Colour;
     }
 }
 
 namespace std
 {
     template <>
-    struct hash<stardust::Colour>
+    struct hash<stardust::Colour> final
     {
-        [[nodiscard]] inline std::size_t operator ()(const stardust::Colour& colour) const noexcept
-        {
-            std::size_t seed = 0u;
-            std::hash<stardust::u8> hasher;
-
-            glm::detail::hash_combine(seed, hasher(colour.red));
-            glm::detail::hash_combine(seed, hasher(colour.green));
-            glm::detail::hash_combine(seed, hasher(colour.blue));
-            glm::detail::hash_combine(seed, hasher(colour.alpha));
-
-            return seed;
-        }
-    };
-
-    template <>
-    struct hash<stardust::HSVColour>
-    {
-        [[nodiscard]] inline std::size_t operator ()(const stardust::HSVColour& colour) const noexcept
-        {
-            std::size_t seed = 0u;
-            std::hash<stardust::u8> hasher;
-
-            glm::detail::hash_combine(seed, hasher(colour.hue));
-            glm::detail::hash_combine(seed, hasher(colour.saturation));
-            glm::detail::hash_combine(seed, hasher(colour.value));
-            glm::detail::hash_combine(seed, hasher(colour.alpha));
-
-            return seed;
-        }
+        [[nodiscard]] auto operator ()(const stardust::Colour& colour) const noexcept -> stardust::usize;
     };
 }
 

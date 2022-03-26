@@ -2341,10 +2341,10 @@ namespace sol {
 #endif // luajit
 
 #if SOL_IS_ON(SOL_USE_CXX_LUAJIT_I_)
-	#include <lua/luajit.h>
+	#include <luajit.h>
 #elif SOL_IS_ON(SOL_USE_LUAJIT_I_)
 	extern "C" {
-		#include <lua/luajit.h>
+		#include <luajit.h>
 	}
 #endif // C++ LuaJIT ... whatever that means
 

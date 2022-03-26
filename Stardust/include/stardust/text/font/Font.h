@@ -4,108 +4,134 @@
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 
-#include <glm/glm.hpp>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <type_traits>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
+#include <ftgl/freetype-gl.h>
+#include <harfbuzz/hb.h>
+
+#include "stardust/graphics/texture/Sampler.h"
+#include "stardust/graphics/texture/Texture.h"
+#include "stardust/text/Glyph.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    using FontSize = u32;
-
-    class Font
+    class Font final
         : private INoncopyable
     {
     public:
-        enum class Style
-            : decltype(TTF_STYLE_NORMAL)
+        using Size = f32;
+
+        enum class RenderMode
+            : std::underlying_type_t<ftgl::rendermode_t>
         {
-            Normal = TTF_STYLE_NORMAL,
-            Bold = TTF_STYLE_BOLD,
-            Italic = TTF_STYLE_ITALIC,
-            Underline = TTF_STYLE_UNDERLINE,
-            Strikethrough = TTF_STYLE_STRIKETHROUGH,
+            Normal = ftgl::RENDER_NORMAL,
+            OutlineEdge = ftgl::RENDER_OUTLINE_EDGE,
+            OutlinePositive = ftgl::RENDER_OUTLINE_POSITIVE,
+            OutlineNegative = ftgl::RENDER_OUTLINE_NEGATIVE,
+            SignedDistanceField = ftgl::RENDER_SIGNED_DISTANCE_FIELD,
         };
 
-        enum class Hinting
-            : decltype(TTF_HINTING_NORMAL)
+        struct CreateInfo final
         {
-            Normal = TTF_HINTING_NORMAL,
-            Light = TTF_HINTING_LIGHT,
-            Monochrome = TTF_HINTING_MONO,
-            None = TTF_HINTING_NONE,
-        };
+            String filepath;
+            Size pointSize;
 
-        struct GlyphMetrics
-        {
-            IVec2 minOffset;
-            IVec2 maxOffset;
+            RenderMode renderMode = RenderMode::Normal;
+            f32 outlineThickness = 0.0f;
 
-            i32 advance;
+            UVector2 textureAtlasSize{ 512u, 512u };
+            u32 textureAtlasDepth = 4u;
+
+            graphics::Sampler sampler = graphics::DefaultSampler;
         };
 
     private:
-        struct FontDestroyer
+        struct TextureFontDeleter final
         {
-            void operator ()(TTF_Font* const font) const noexcept;
+            auto operator ()(ftgl::texture_font_t* const font) const noexcept -> void;
         };
 
-        UniquePtr<TTF_Font, FontDestroyer> m_handle = nullptr;
-        Vector<ubyte> m_fontFileData{ };
-        SDL_RWops* m_fontFileRWOps = nullptr;
+        struct TextureAtlasDeleter final
+        {
+            auto operator ()(ftgl::texture_atlas_t* const textureAtlas) const noexcept -> void;
+        };
 
-        FontSize m_pointSize = 0u;
+        struct ShaperFontDeleter final
+        {
+            auto operator ()(hb_font_t* const shaperFont) const noexcept -> void;
+        };
+
+        UniquePointer<ftgl::texture_font_t, TextureFontDeleter> m_handle = nullptr;
+        UniquePointer<ftgl::texture_atlas_t, TextureAtlasDeleter> m_textureAtlasHandle = nullptr;
+
+        UniquePointer<hb_font_t, ShaperFontDeleter> m_shaper = nullptr;
+
+        List<ubyte> m_fontData{ };
+
+        mutable graphics::Texture m_texture;
 
     public:
         Font() = default;
-        Font(const StringView& fontFilepath, const FontSize pointSize);
-
+        explicit Font(const CreateInfo& createInfo);
         Font(Font&& other) noexcept;
-        Font& operator =(Font&& other) noexcept;
-
+        auto operator =(Font&& other) noexcept -> Font&;
         ~Font() noexcept;
 
-        void Initialise(const StringView& fontFilepath, const FontSize pointSize);
-        void Destroy() noexcept;
+        auto Initialise(const CreateInfo& createInfo) -> void;
+        auto Destroy() noexcept -> void;
 
-        [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
+        [[nodiscard]] auto GetGlyphFromCodepoint(const u32 codepoint) const -> Glyph;
+        [[nodiscard]] auto GetGlyphFromIndex(const u32 glyphIndex) const -> Glyph;
+        [[nodiscard]] auto GetGlyphTextureCoordinatesFromCodepoint(const u32 codepoint) const -> graphics::TextureCoordinatePair;
+        [[nodiscard]] auto GetGlyphTextureCoordinatesFromIndex(const u32 glyphIndex) const -> graphics::TextureCoordinatePair;
 
-        [[nodiscard]] FontSize GetPointSize() const noexcept { return m_pointSize; }
+        [[nodiscard]] auto FindGlyphFromCodepoint(const u32 codepoint) const -> Optional<Glyph>;
+        [[nodiscard]] auto FindGlyphFromIndex(const u32 glyphIndex) const -> Optional<Glyph>;
 
-        [[nodiscard]] Vector<Style> GetStyles() const;
-        void SetStyles(const Vector<Style>& styles) const;
-        void ClearStyles() const;
+        [[nodiscard]] auto ContainsGlyphCodepoint(const u32 codepoint) const -> bool;
+        [[nodiscard]] auto ContainsGlyphIndex(const u32 glyphIndex) const -> bool;
 
-        [[nodiscard]] u32 GetOutlineThickness() const;
-        void SetOutlineThickness(const u32 outlineThickness) const;
-        void RemoveOutline() const;
+        [[nodiscard]] auto GetGlyphIndexFromCodepoint(const u32 codepoint) const -> u32;
 
-        [[nodiscard]] Hinting GetHinting() const;
-        void SetHinting(const Hinting hinting) const;
+        [[nodiscard]] inline auto GetPointSize() const noexcept -> f32 { return m_handle->size; }
 
-        [[nodiscard]] u32 GetKerning() const;
-        void SetKerning(const u32 kerning) const;
-        [[nodiscard]] u32 GetKerningBetweenGlyphs(const char16_t leftGlyph, const char16_t rightGlyph) const;
+        [[nodiscard]] inline auto IsKerningEnabled() const noexcept -> bool { return m_handle->kerning != '\0'; }
+        inline auto EnableKerning(const bool enableKerning) noexcept -> void { m_handle->kerning = enableKerning ? static_cast<unsigned char>(1u) : '\0'; }
 
-        [[nodiscard]] u32 GetMaximumHeight() const;
-        [[nodiscard]] i32 GetFontAscent() const;
-        [[nodiscard]] i32 GetFontDescent() const;
-        [[nodiscard]] u32 GetLineSkip() const;
+        [[nodiscard]] inline auto IsAutohintingEnabled() const noexcept -> bool { return m_handle->hinting != '\0'; }
+        inline auto EnableAutohinting(const bool enableAutohinting) noexcept -> void { m_handle->hinting = enableAutohinting ? static_cast<unsigned char>(1u) : '\0'; }
 
-        [[nodiscard]] bool IsFixedWidth() const;
+        [[nodiscard]] inline auto GetLineHeight() const noexcept -> f32 { return m_handle->height; }
+        [[nodiscard]] inline auto GetLineGap() const noexcept -> f32 { return m_handle->linegap; }
+        [[nodiscard]] inline auto GetLineAscender() const noexcept -> f32 { return m_handle->ascender; }
+        [[nodiscard]] inline auto GetLineDescender() const noexcept -> f32 { return m_handle->descender; }
 
-        [[nodiscard]] Optional<usize> GetGlyphIndex(const char16_t glyph) const;
-        [[nodiscard]] bool DoesGlyphExist(const char16_t glyph) const;
-        [[nodiscard]] GlyphMetrics GetGlyphMetrics(const char16_t glyph) const;
+        [[nodiscard]] inline auto GetOutlineThickness() const noexcept -> f32 { return m_handle->outline_thickness; }
+        inline auto SetOutlineThickness(const f32 thickness) noexcept -> void { m_handle->outline_thickness = thickness; }
+        inline auto RemoveOutline() noexcept -> void { m_handle->outline_thickness = 0.0f; }
 
-        [[nodiscard]] UVec2 GetTextSize(const String& text) const;
-        [[nodiscard]] UVec2 GetTextSize(const UTF16String& text) const;
+        [[nodiscard]] inline auto GetUnderlinePosition() const noexcept -> f32 { return m_handle->underline_position; }
 
-        [[nodiscard]] inline TTF_Font* const GetRawHandle() const noexcept { return m_handle.get(); }
+        [[nodiscard]] inline auto GetRenderMode() const noexcept -> RenderMode { return static_cast<RenderMode>(m_handle->rendermode); }
+        inline auto SetRenderMode(const RenderMode renderMode) noexcept -> void { m_handle->rendermode = static_cast<ftgl::rendermode_t>(renderMode); }
+
+        [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_handle != nullptr && m_textureAtlasHandle != nullptr && m_shaper != nullptr && m_texture.IsValid(); }
+
+        [[nodiscard]] auto GetTexture() const -> const graphics::Texture&;
+        [[nodiscard]] auto GetInternalTextureAtlasSize() const noexcept -> UVector2;
+
+        [[nodiscard]] inline auto GetRawHandle() noexcept -> ObserverPointer<ftgl::texture_font_t> { return m_handle.get(); }
+        [[nodiscard]] inline auto GetRawHandle() const noexcept -> ObserverPointer<const ftgl::texture_font_t> { return m_handle.get(); }
+
+        [[nodiscard]] inline auto GetShaper() noexcept -> ObserverPointer<hb_font_t> { return m_shaper.get(); }
+        [[nodiscard]] inline auto GetShaper() const noexcept -> ObserverPointer<const hb_font_t> { return m_shaper.get(); }
+
+    private:
+        auto ResizeTextureAtlas() const -> void;
     };
 }
 

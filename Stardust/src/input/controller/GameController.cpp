@@ -1,167 +1,255 @@
 #include "stardust/input/controller/GameController.h"
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 #include <utility>
 
-#include "stardust/input/Input.h"
+#include "stardust/input/InputController.h"
 
 namespace stardust
 {
-    void GameController::GameControllerDestroyer::operator ()(SDL_GameController* const gameController) const noexcept
+    auto GameController::GameControllerDestroyer::operator ()(SDL_GameController* const gameController) const noexcept -> void
     {
         SDL_GameControllerClose(gameController);
     }
 
-    GameController::GameController(const i32 id)
+    GameController::GameController(const ID id)
+        : m_id(id), m_handle(UniquePointer<SDL_GameController, GameControllerDestroyer>(SDL_GameControllerOpen(id)))
     {
-        m_id = id;
-        m_currentButtons = ButtonState{ };
-        m_previousButtons = ButtonState{ };
-        m_axes = Axes{ };
-
-        m_handle = UniquePtr<SDL_GameController, GameControllerDestroyer>(SDL_GameControllerOpen(id));
-
-        if (m_handle != nullptr)
+        if (m_handle == nullptr)
         {
-            m_hasLED = SDL_GameControllerHasLED(GetRawHandle());
-            m_hasTouchpad = SDL_GameControllerGetNumTouchpads(GetRawHandle()) > 0;
-            
-            if (m_hasTouchpad)
+            return;
+        }
+
+        m_name = SDL_GameControllerName(GetRawHandle());
+        m_guid = [this]() -> String
+        {
+            const SDL_JoystickGUID guid = SDL_JoystickGetGUID(GetRawJoystickHandle());
+
+            String guidString(64u, '\0');
+            SDL_JoystickGetGUIDString(guid, guidString.data(), static_cast<i32>(guidString.length()));
+
+            if (const usize firstNullTerminatorLocation = guidString.find_first_of('\0');
+                firstNullTerminatorLocation != String::npos)
             {
-                m_touchpadFingers.resize(GetSupportedTouchpadFingerCount());
+                guidString.erase(firstNullTerminatorLocation);
             }
 
-            m_canRumble = SDL_GameControllerRumble(GetRawHandle(), 1u, 1u, 0u) == 0;
-            m_canRumbleTriggers = SDL_GameControllerRumbleTriggers(GetRawHandle(), 1u, 1u, 0u) == 0;
+            return guidString;
+        }();
 
-            m_hasAccelerometer = SDL_GameControllerHasSensor(GetRawHandle(), SDL_SENSOR_ACCEL);
+        m_hasTouchpad = SDL_GameControllerGetNumTouchpads(GetRawHandle()) > 0;
 
-            if (m_hasAccelerometer)
-            {
-                SDL_GameControllerSetSensorEnabled(GetRawHandle(), SDL_SENSOR_ACCEL, SDL_TRUE);
-            }
+        if (m_hasTouchpad)
+        {
+            m_touchpadFingers.resize(GetSupportedTouchpadFingerCount());
+        }
 
-            m_hasGyroscope = SDL_GameControllerHasSensor(GetRawHandle(), SDL_SENSOR_GYRO);
+        m_hasAccelerometer = SDL_GameControllerHasSensor(GetRawHandle(), SDL_SENSOR_ACCEL);
 
-            if (m_hasGyroscope)
-            {
-                SDL_GameControllerSetSensorEnabled(GetRawHandle(), SDL_SENSOR_GYRO, SDL_TRUE);
-            }
+        if (m_hasAccelerometer)
+        {
+            SDL_GameControllerSetSensorEnabled(GetRawHandle(), SDL_SENSOR_ACCEL, SDL_TRUE);
+        }
+
+        m_hasGyroscope = SDL_GameControllerHasSensor(GetRawHandle(), SDL_SENSOR_GYRO);
+
+        if (m_hasGyroscope)
+        {
+            SDL_GameControllerSetSensorEnabled(GetRawHandle(), SDL_SENSOR_GYRO, SDL_TRUE);
         }
     }
 
     GameController::GameController(GameController&& other) noexcept
-        : m_id(0), m_playerIndex(0u), m_handle(nullptr),
-          m_currentButtons(ButtonState{ }), m_previousButtons(ButtonState{ }), m_axes(Axes{ }), m_touchpadFingers({ }), m_accelerometerState(Vec3Zero), m_gyroscopeState(Vec3Zero),
-          m_hasLED(false), m_hasTouchpad(false), m_canRumble(false), m_canRumbleTriggers(false), m_hasAccelerometer(false), m_hasGyroscope(false)
+        : m_id(0), m_playerIndex(0u), m_name(""), m_guid(""), m_handle(nullptr),
+          m_currentButtonsState(ButtonState{ }), m_previousButtonsState(ButtonState{ }), m_axes(Axes{ }), m_previousLeftTriggerState(0), m_previousRightTriggerState(0),
+          m_touchpadFingers({ }), m_accelerometerState(Vector3Zero), m_gyroscopeState(Vector3Zero),
+          m_hasTouchpad(false), m_hasAccelerometer(false), m_hasGyroscope(false)
     {
         std::swap(m_id, other.m_id);
         std::swap(m_playerIndex, other.m_playerIndex);
+        std::swap(m_name, other.m_name);
+        std::swap(m_guid, other.m_guid);
         std::swap(m_handle, other.m_handle);
 
-        std::swap(m_currentButtons, other.m_currentButtons);
-        std::swap(m_previousButtons, other.m_previousButtons);
+        std::swap(m_currentButtonsState, other.m_currentButtonsState);
+        std::swap(m_previousButtonsState, other.m_previousButtonsState);
         std::swap(m_axes, other.m_axes);
+        std::swap(m_previousLeftTriggerState, other.m_previousLeftTriggerState);
+        std::swap(m_previousRightTriggerState, other.m_previousRightTriggerState);
+
         std::swap(m_touchpadFingers, other.m_touchpadFingers);
         std::swap(m_accelerometerState, other.m_accelerometerState);
         std::swap(m_gyroscopeState, other.m_gyroscopeState);
 
-        std::swap(m_hasLED, other.m_hasLED);
         std::swap(m_hasTouchpad, other.m_hasTouchpad);
-        std::swap(m_canRumble, other.m_canRumble);
-        std::swap(m_canRumbleTriggers, other.m_canRumbleTriggers);
         std::swap(m_hasAccelerometer, other.m_hasAccelerometer);
         std::swap(m_hasGyroscope, other.m_hasGyroscope);
     }
 
-    GameController& GameController::operator =(GameController&& other) noexcept
+    auto GameController::operator =(GameController&& other) noexcept -> GameController&
     {
         m_id = std::exchange(other.m_id, 0);
         m_playerIndex = std::exchange(other.m_playerIndex, 0u);
+        m_name = std::exchange(other.m_name, "");
+        m_guid = std::exchange(other.m_guid, "");
         m_handle = std::exchange(other.m_handle, nullptr);
 
-        m_currentButtons = std::exchange(other.m_currentButtons, ButtonState{ });
-        m_previousButtons = std::exchange(other.m_previousButtons, ButtonState{ });
+        m_currentButtonsState = std::exchange(other.m_currentButtonsState, ButtonState{ });
+        m_previousButtonsState = std::exchange(other.m_previousButtonsState, ButtonState{ });
         m_axes = std::exchange(other.m_axes, Axes{ });
-        m_touchpadFingers = std::exchange(other.m_touchpadFingers, { });
-        m_accelerometerState = std::exchange(other.m_accelerometerState, Vec3Zero);
-        m_gyroscopeState = std::exchange(other.m_gyroscopeState, Vec3Zero);
+        m_previousLeftTriggerState = std::exchange(other.m_previousLeftTriggerState, 0.0f);
+        m_previousRightTriggerState = std::exchange(other.m_previousRightTriggerState, 0.0f);
 
-        m_hasLED = std::exchange(other.m_hasLED, false);
+        m_touchpadFingers = std::exchange(other.m_touchpadFingers, { });
+        m_accelerometerState = std::exchange(other.m_accelerometerState, Vector3Zero);
+        m_gyroscopeState = std::exchange(other.m_gyroscopeState, Vector3Zero);
+
         m_hasTouchpad = std::exchange(other.m_hasTouchpad, false);
-        m_canRumble = std::exchange(other.m_canRumble, false);
-        m_canRumbleTriggers = std::exchange(other.m_canRumbleTriggers, false);
         m_hasAccelerometer = std::exchange(other.m_hasAccelerometer, false);
         m_hasGyroscope = std::exchange(other.m_hasGyroscope, false);
 
         return *this;
     }
 
-    [[nodiscard]] bool GameController::IsButtonDown(const GameControllerButton button) const
+    auto GameController::Update(const InputController& inputController) -> void
     {
-        return GetButtonState(button, m_currentButtons) && !GetButtonState(button, m_previousButtons);
+        UpdateButtons();
+        UpdateAxes(inputController);
+        UpdateTouchpadFingers();
+        UpdateSensors();
     }
 
-    [[nodiscard]] bool GameController::IsButtonPressed(const GameControllerButton button) const
+    [[nodiscard]] auto GameController::IsButtonDown(const GameControllerButton button) const -> bool
     {
-        return GetButtonState(button, m_currentButtons);
+        return GetButtonState(button, m_currentButtonsState) && !GetButtonState(button, m_previousButtonsState);
     }
 
-    [[nodiscard]] bool GameController::IsButtonUp(const GameControllerButton button) const
+    [[nodiscard]] auto GameController::IsButtonPressed(const GameControllerButton button) const -> bool
     {
-        return !GetButtonState(button, m_currentButtons) && GetButtonState(button, m_previousButtons);
+        return GetButtonState(button, m_currentButtonsState);
     }
 
-    [[nodiscard]] bool GameController::IsAnyButtonDown(const Vector<GameControllerButton>& buttons) const
+    [[nodiscard]] auto GameController::IsButtonUp(const GameControllerButton button) const -> bool
     {
-        return std::any_of(std::cbegin(buttons), std::cend(buttons), [this](const GameControllerButton button)
+        return !GetButtonState(button, m_currentButtonsState) && GetButtonState(button, m_previousButtonsState);
+    }
+
+    [[nodiscard]] auto GameController::IsAnyButtonDown(const List<GameControllerButton>& buttons) const -> bool
+    {
+        return std::ranges::any_of(buttons, [this](const GameControllerButton button)
         {
             return IsButtonDown(button);
         });
     }
 
-    [[nodiscard]] bool GameController::IsAnyButtonPressed(const Vector<GameControllerButton>& buttons) const
+    [[nodiscard]] auto GameController::IsAnyButtonPressed(const List<GameControllerButton>& buttons) const -> bool
     {
-        return std::any_of(std::cbegin(buttons), std::cend(buttons), [this](const GameControllerButton button)
+        return std::ranges::any_of(buttons, [this](const GameControllerButton button)
         {
             return IsButtonPressed(button);
         });
     }
 
-    [[nodiscard]] bool GameController::IsAnyButtonUp(const Vector<GameControllerButton>& buttons) const
+    [[nodiscard]] auto GameController::IsAnyButtonUp(const List<GameControllerButton>& buttons) const -> bool
     {
-        return std::any_of(std::cbegin(buttons), std::cend(buttons), [this](const GameControllerButton button)
+        return std::ranges::any_of(buttons, [this](const GameControllerButton button)
         {
             return IsButtonUp(button);
         });
     }
 
-    [[nodiscard]] bool GameController::AreAllButtonsDown(const Vector<GameControllerButton>& buttons) const
+    [[nodiscard]] auto GameController::AreAllButtonsDown(const List<GameControllerButton>& buttons) const -> bool
     {
-        return std::all_of(std::cbegin(buttons), std::cend(buttons), [this](const GameControllerButton button)
+        return std::ranges::all_of(buttons, [this](const GameControllerButton button)
         {
             return IsButtonDown(button);
         });
     }
 
-    [[nodiscard]] bool GameController::AreAllButtonsPressed(const Vector<GameControllerButton>& buttons) const
+    [[nodiscard]] auto GameController::AreAllButtonsPressed(const List<GameControllerButton>& buttons) const -> bool
     {
-        return std::all_of(std::cbegin(buttons), std::cend(buttons), [this](const GameControllerButton button)
+        return std::ranges::all_of(buttons, [this](const GameControllerButton button)
         {
             return IsButtonPressed(button);
         });
     }
 
-    [[nodiscard]] bool GameController::AreAllButtonsUp(const Vector<GameControllerButton>& buttons) const
+    [[nodiscard]] auto GameController::AreAllButtonsUp(const List<GameControllerButton>& buttons) const -> bool
     {
-        return std::all_of(std::cbegin(buttons), std::cend(buttons), [this](const GameControllerButton button)
+        return std::ranges::all_of(buttons, [this](const GameControllerButton button)
         {
             return IsButtonUp(button);
         });
     }
 
-    void GameController::Rumble(const f32 lowFrequency, const f32 highFrequency, const u32 milliseconds) const
+    [[nodiscard]] auto GameController::AreNoButtonsDown(const List<GameControllerButton>& buttons) const -> bool
+    {
+        return std::ranges::none_of(buttons, [this](const GameControllerButton button)
+        {
+            return IsButtonDown(button);
+        });
+    }
+
+    [[nodiscard]] auto GameController::AreNoButtonsPressed(const List<GameControllerButton>& buttons) const -> bool
+    {
+        return std::ranges::none_of(buttons, [this](const GameControllerButton button)
+        {
+            return IsButtonPressed(button);
+        });
+    }
+
+    [[nodiscard]] auto GameController::AreNoButtonsUp(const List<GameControllerButton>& buttons) const -> bool
+    {
+        return std::ranges::none_of(buttons, [this](const GameControllerButton button)
+        {
+            return IsButtonUp(button);
+        });
+    }
+
+    [[nodiscard]] auto GameController::IsTriggerDown(const GameControllerTrigger trigger) const -> bool
+    {
+        if (trigger == GameControllerTrigger::Left)
+        {
+            return m_axes.leftTrigger != 0.0f && m_previousLeftTriggerState == 0.0f;
+        }
+        else
+        {
+            return m_axes.rightTrigger != 0.0f && m_previousRightTriggerState == 0.0f;
+        }
+    }
+
+    [[nodiscard]] auto GameController::IsTriggerPressed(const GameControllerTrigger trigger) const -> bool
+    {
+        if (trigger == GameControllerTrigger::Left)
+        {
+            return m_axes.leftTrigger != 0.0f;
+        }
+        else
+        {
+            return m_axes.rightTrigger != 0.0f;
+        }
+    }
+
+    [[nodiscard]] auto GameController::IsTriggerUp(const GameControllerTrigger trigger) const -> bool
+    {
+        if (trigger == GameControllerTrigger::Left)
+        {
+            return m_axes.leftTrigger == 0.0f && m_previousLeftTriggerState != 0.0f;
+        }
+        else
+        {
+            return m_axes.rightTrigger == 0.0f && m_previousRightTriggerState != 0.0f;
+        }
+    }
+
+    [[nodiscard]] auto GameController::CanRumble() const -> bool
+    {
+        return SDL_GameControllerHasRumble(GetRawHandle()) == SDL_TRUE;
+    }
+
+    auto GameController::Rumble(const f32 lowFrequency, const f32 highFrequency, const u32 milliseconds) const -> void
     {
         const u16 convertedLowFrequency = static_cast<u16>(lowFrequency * static_cast<f32>(std::numeric_limits<u16>::max()));
         const u16 convertedHighFrequency = static_cast<u16>(highFrequency * static_cast<f32>(std::numeric_limits<u16>::max()));
@@ -169,12 +257,17 @@ namespace stardust
         SDL_GameControllerRumble(GetRawHandle(), convertedLowFrequency, convertedHighFrequency, milliseconds);
     }
 
-    void GameController::StopRumbling() const
+    auto GameController::StopRumbling() const -> void
     {
         SDL_GameControllerRumble(GetRawHandle(), 0u, 0u, 0u);
     }
 
-    void GameController::RumbleTriggers(const f32 leftIntensity, const f32 rightIntensity, const u32 milliseconds) const
+    [[nodiscard]] auto GameController::CanRumbleTriggers() const -> bool
+    {
+        return SDL_GameControllerHasRumbleTriggers(GetRawHandle()) == SDL_TRUE;
+    }
+
+    auto GameController::RumbleTriggers(const f32 leftIntensity, const f32 rightIntensity, const u32 milliseconds) const -> void
     {
         const u16 convertedLeftIntensity = static_cast<u16>(leftIntensity * static_cast<f32>(std::numeric_limits<u16>::max()));
         const u16 convertedRightIntensity = static_cast<u16>(rightIntensity * static_cast<f32>(std::numeric_limits<u16>::max()));
@@ -182,32 +275,47 @@ namespace stardust
         SDL_GameControllerRumbleTriggers(GetRawHandle(), convertedLeftIntensity, convertedRightIntensity, milliseconds);
     }
 
-    void GameController::StopRumblingTriggers() const
+    auto GameController::StopRumblingTriggers() const -> void
     {
         SDL_GameControllerRumbleTriggers(GetRawHandle(), 0u, 0u, 0u);
     }
 
-    void GameController::SetLED(const Colour& colour) const
+    [[nodiscard]] auto GameController::HasLED() const -> bool
+    {
+        return SDL_GameControllerHasLED(GetRawHandle()) == SDL_TRUE;
+    }
+
+    auto GameController::SetLED(const Colour& colour) const -> void
     {
         SDL_GameControllerSetLED(GetRawHandle(), colour.red, colour.green, colour.blue);
     }
 
-    [[nodiscard]] u32 GameController::GetSupportedTouchpadFingerCount() const
+    [[nodiscard]] auto GameController::GetSupportedTouchpadFingerCount() const -> u32
     {
         return static_cast<u32>(SDL_GameControllerGetNumTouchpadFingers(GetRawHandle(), 0));
     }
 
-    [[nodiscard]] String GameController::GetName() const
+    [[nodiscard]] auto GameController::GetInstanceID() const -> InstanceID
     {
-        return SDL_GameControllerName(GetRawHandle());
+        return SDL_JoystickInstanceID(GetRawJoystickHandle());
     }
 
-    [[nodiscard]] SDL_Joystick* const GameController::GetRawJoystickHandle() const
+    [[nodiscard]] auto GameController::GetType() const noexcept -> Type
+    {
+        return static_cast<Type>(SDL_GameControllerGetType(GetRawHandle()));
+    }
+
+    [[nodiscard]] auto GameController::GetRawJoystickHandle() const -> SDL_Joystick*
     {
         return SDL_GameControllerGetJoystick(GetRawHandle());
     }
 
-    [[nodiscard]] bool GameController::GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept
+    [[nodiscard]] GameController::operator Joystick() const
+    {
+        return Joystick(*this);
+    }
+
+    [[nodiscard]] auto GameController::GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept -> bool
     {
         switch (button)
         {
@@ -274,82 +382,159 @@ namespace stardust
         case GameControllerButton::Paddle4:
             return buttonState.paddles[3];
 
-        default:
+        [[unlikely]] default:
             return false;
         }
     }
 
-    void GameController::UpdateButtons()
+    auto GameController::UpdateButtons() -> void
     {
-        m_previousButtons = m_currentButtons;
+        m_previousButtonsState = m_currentButtonsState;
 
-        m_currentButtons.dPad.up = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_UP) == 1u;
-        m_currentButtons.dPad.down = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_DOWN) == 1u;
-        m_currentButtons.dPad.left = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_LEFT) == 1u;
-        m_currentButtons.dPad.right = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_RIGHT) == 1u;
+        m_currentButtonsState.dPad.up = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_UP) == 1u;
+        m_currentButtonsState.dPad.down = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_DOWN) == 1u;
+        m_currentButtonsState.dPad.left = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_LEFT) == 1u;
+        m_currentButtonsState.dPad.right = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_DPAD_RIGHT) == 1u;
 
-        m_currentButtons.a = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_A) == 1u;
-        m_currentButtons.b = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_B) == 1u;
-        m_currentButtons.x = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_X) == 1u;
-        m_currentButtons.y = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_Y) == 1u;
+        m_currentButtonsState.a = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_A) == 1u;
+        m_currentButtonsState.b = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_B) == 1u;
+        m_currentButtonsState.x = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_X) == 1u;
+        m_currentButtonsState.y = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_Y) == 1u;
 
-        m_currentButtons.back = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_BACK) == 1u;
-        m_currentButtons.guide = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_GUIDE) == 1u;
-        m_currentButtons.start = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_START) == 1u;
+        m_currentButtonsState.back = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_BACK) == 1u;
+        m_currentButtonsState.guide = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_GUIDE) == 1u;
+        m_currentButtonsState.start = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_START) == 1u;
 
-        m_currentButtons.leftStick = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSTICK) == 1u;
-        m_currentButtons.rightStick = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSTICK) == 1u;
-        m_currentButtons.leftShoulder = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSHOULDER) == 1u;
-        m_currentButtons.rightShoulder = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == 1u;
+        m_currentButtonsState.leftStick = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSTICK) == 1u;
+        m_currentButtonsState.rightStick = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSTICK) == 1u;
+        m_currentButtonsState.leftShoulder = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_LEFTSHOULDER) == 1u;
+        m_currentButtonsState.rightShoulder = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == 1u;
 
-        m_currentButtons.misc = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_MISC1) == 1u;
-        m_currentButtons.touchpad = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_TOUCHPAD) == 1u;
+        m_currentButtonsState.misc = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_MISC1) == 1u;
+        m_currentButtonsState.touchpad = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_TOUCHPAD) == 1u;
 
-        m_currentButtons.paddles[0] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE1) == 1u;
-        m_currentButtons.paddles[1] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE2) == 1u;
-        m_currentButtons.paddles[2] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE3) == 1u;
-        m_currentButtons.paddles[3] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE4) == 1u;
+        m_currentButtonsState.paddles[0] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE1) == 1u;
+        m_currentButtonsState.paddles[1] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE2) == 1u;
+        m_currentButtonsState.paddles[2] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE3) == 1u;
+        m_currentButtonsState.paddles[3] = SDL_GameControllerGetButton(GetRawHandle(), SDL_CONTROLLER_BUTTON_PADDLE4) == 1u;
     }
 
-    void GameController::UpdateAxes()
+    auto GameController::UpdateAxes(const InputController& inputController) -> void
     {
-        m_axes.left.x = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTX);
-        m_axes.left.y = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTY);
-        m_axes.right.x = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTX);
-        m_axes.right.y = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTY);
+        const f32 deadzone = inputController.GetGameControllerDeadzone();
 
-        m_axes.leftTrigger = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-        m_axes.rightTrigger = SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-
-        const Vector<ReferenceWrapper<i16>> axes{
-            std::ref(m_axes.left.x),
-            std::ref(m_axes.left.y),
-            std::ref(m_axes.right.x),
-            std::ref(m_axes.right.y),
-            std::ref(m_axes.leftTrigger),
-            std::ref(m_axes.rightTrigger),
+        const Vector2 leftAxisData{
+            static_cast<f32>(SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTX)),
+            static_cast<f32>(SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_LEFTY)),
         };
 
-        for (auto& axis : axes)
+        const Vector2 rightAxisData{
+            static_cast<f32>(SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTX)),
+            static_cast<f32>(SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_RIGHTY)),
+        };
+
+        m_axes.left = GetNormalisedThumbstickValue(leftAxisData, deadzone, s_leftThumbstickInputType);
+        m_axes.right = GetNormalisedThumbstickValue(rightAxisData, deadzone, s_rightThumbstickInputType);
+
+        m_previousLeftTriggerState = m_axes.leftTrigger;
+        m_previousRightTriggerState = m_axes.rightTrigger;
+
+        m_axes.leftTrigger = GetNormalisedTriggerValue(
+            SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERLEFT),
+            deadzone
+        );
+
+        m_axes.rightTrigger = GetNormalisedTriggerValue(
+            SDL_GameControllerGetAxis(GetRawHandle(), SDL_CONTROLLER_AXIS_TRIGGERRIGHT),
+            deadzone
+        );
+    }
+
+    [[nodiscard]] auto GameController::GetNormalisedThumbstickValue(const Vector2 rawAxisData, const f32 deadzone, const ThumbstickInputType thumbstickInputType) -> Axes::Thumbstick
+    {
+        constexpr f32 MaxAxisValue = static_cast<f32>(std::numeric_limits<i16>::max());
+        const f32 unnormalisedDeadzone = deadzone * MaxAxisValue;
+
+        switch (thumbstickInputType)
         {
-            if (static_cast<u16>(std::abs(axis.get())) < Input::GetGameControllerDeadzone())
+        case ThumbstickInputType::Orthogonal:
+        {
+            Axes::Thumbstick thumbstick{
+                .x = 0.0f,
+                .y = 0.0f,
+            };
+
+            if (glm::abs(rawAxisData.x) >= unnormalisedDeadzone)
             {
-                axis.get() = 0;
+                const f32 normalisedX = glm::sign(rawAxisData.x) * ((glm::abs(rawAxisData.x) - unnormalisedDeadzone) / (MaxAxisValue - unnormalisedDeadzone));
+                thumbstick.x = glm::clamp(normalisedX, -1.0f, 1.0f);
             }
+
+            if (glm::abs(rawAxisData.y) >= unnormalisedDeadzone)
+            {
+                const f32 normalisedY = glm::sign(rawAxisData.y) * ((glm::abs(rawAxisData.y) - unnormalisedDeadzone) / (MaxAxisValue - unnormalisedDeadzone));
+                thumbstick.y = glm::clamp(normalisedY, -1.0f, 1.0f);
+            }
+
+            return thumbstick;
+        }
+
+        case ThumbstickInputType::Radial:
+        [[unlikely]] default:
+        {
+            const f32 axisLength = glm::abs(glm::length(rawAxisData));
+
+            if (axisLength < unnormalisedDeadzone)
+            {
+                return Axes::Thumbstick{
+                    .x = 0.0f,
+                    .y = 0.0f,
+                };
+            }
+
+            const f32 axisPercentage = (axisLength - unnormalisedDeadzone) / (MaxAxisValue - unnormalisedDeadzone);
+            const Vector2 normalisedAxisData = glm::normalize(rawAxisData) * axisPercentage;
+
+            return Axes::Thumbstick{
+                .x = glm::clamp(normalisedAxisData.x, -1.0f, 1.0f),
+                .y = glm::clamp(normalisedAxisData.y, -1.0f, 1.0f),
+            };
+        }
         }
     }
 
-    void GameController::UpdateTouchpadFingers()
+    [[nodiscard]] auto GameController::GetNormalisedTriggerValue(const i16 rawAxisData, const f32 deadzone) -> f32
+    {
+        constexpr f32 MaxAxisValue = static_cast<f32>(std::numeric_limits<i16>::max());
+        const f32 unnormalisedDeadzone = deadzone * MaxAxisValue;
+
+        if (glm::abs(static_cast<f32>(rawAxisData)) < unnormalisedDeadzone)
+        {
+            return 0.0f;
+        }
+
+        const f32 normalisedTriggerData = glm::sign(static_cast<f32>(rawAxisData)) *
+            ((glm::abs(static_cast<f32>(rawAxisData)) - unnormalisedDeadzone) / (MaxAxisValue - unnormalisedDeadzone));
+
+        return glm::clamp(normalisedTriggerData, -1.0f, 1.0f);
+    }
+
+    auto GameController::UpdateTouchpadFingers() -> void
     {
         if (m_hasTouchpad)
         {
             for (u32 i = 0u; i < m_touchpadFingers.size(); ++i)
             {
-                u8 fingerState = 0u;;
+                u8 fingerState = 0u;
 
                 SDL_GameControllerGetTouchpadFinger(
-                    GetRawHandle(), 0, i,
-                    &fingerState, &m_touchpadFingers[i].position.x, &m_touchpadFingers[i].position.y, &m_touchpadFingers[i].pressure
+                    GetRawHandle(),
+                    0,
+                    i,
+                    &fingerState,
+                    &m_touchpadFingers[i].position.x,
+                    &m_touchpadFingers[i].position.y,
+                    &m_touchpadFingers[i].pressure
                 );
 
                 m_touchpadFingers[i].isTouching = fingerState != 0u;
@@ -357,7 +542,7 @@ namespace stardust
         }
     }
 
-    void GameController::UpdateSensors()
+    auto GameController::UpdateSensors() -> void
     {
         Array<f32, 3u> sensorData{ 0.0f, 0.0f, 0.0f };
 

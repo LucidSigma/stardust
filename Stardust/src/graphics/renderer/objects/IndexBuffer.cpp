@@ -4,52 +4,55 @@
 
 namespace stardust
 {
-    IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
+    namespace graphics
     {
-        Destroy();
-
-        std::swap(m_id, other.m_id);
-        std::swap(m_indexCount, other.m_indexCount);
-        std::swap(m_dataType, other.m_dataType);
-    }
-
-    IndexBuffer& IndexBuffer::operator =(IndexBuffer&& other) noexcept
-    {
-        Destroy();
-
-        std::swap(m_id, other.m_id);
-        std::swap(m_indexCount, other.m_indexCount);
-        std::swap(m_dataType, other.m_dataType);
-
-        return *this;
-    }
-
-    IndexBuffer::~IndexBuffer() noexcept
-    {
-        Destroy();
-    }
-
-    void IndexBuffer::Destroy() noexcept
-    {
-        if (m_id != 0u)
+        IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
         {
-            Unbind();
+            Destroy();
 
-            glDeleteBuffers(1, &m_id);
-
-            m_id = 0u;
-            m_indexCount = 0u;
-            m_dataType = GL_UNSIGNED_INT;
+            std::swap(m_id, other.m_id);
+            std::swap(m_indexType, other.m_indexType);
+            std::swap(m_indexCount, other.m_indexCount);
         }
-    }
 
-    void IndexBuffer::Bind() const
-    {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-    }
+        auto IndexBuffer::operator =(IndexBuffer&& other) noexcept -> IndexBuffer&
+        {
+            Destroy();
 
-    void IndexBuffer::Unbind() const
-    {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0u);
+            std::swap(m_id, other.m_id);
+            std::swap(m_indexType, other.m_indexType);
+            std::swap(m_indexCount, other.m_indexCount);
+
+            return *this;
+        }
+        
+        IndexBuffer::~IndexBuffer() noexcept
+        {
+            Destroy();
+        }
+
+        auto IndexBuffer::Destroy() noexcept -> void
+        {
+            if (m_id != s_InvalidID)
+            {
+                Unbind();
+
+                glDeleteBuffers(1, &m_id);
+
+                m_id = s_InvalidID;
+                m_indexType = IndexType::UnsignedInt32;
+                m_indexCount = 0u;
+            }
+        }
+        
+        auto IndexBuffer::Bind() const noexcept -> void
+        {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+        }
+        
+        auto IndexBuffer::Unbind() const noexcept -> void
+        {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_InvalidID);
+        }
     }
 }

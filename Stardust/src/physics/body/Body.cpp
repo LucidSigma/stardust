@@ -8,29 +8,305 @@ namespace stardust
 {
     namespace physics
     {
-        Body::Body(const World& world, const Body::CreateInfo& createInfo)
+        Body::Body(const World& world, const Body::CreateInfo& createInfo, const EntityHandle associatedEntityHandle)
         {
-            Initialise(world, createInfo);
+            Initialise(world, createInfo, associatedEntityHandle);
         }
 
         Body::Body(Body&& other) noexcept
-            : m_handle(nullptr), m_owningWorld(nullptr), m_colliders({ })
+            : m_handle(nullptr), m_owningWorld(nullptr), m_colliders({ }), m_associatedEntityHandle(NullEntityHandle)
         {
             std::swap(m_handle, other.m_handle);
             std::swap(m_owningWorld, other.m_owningWorld);
             std::swap(m_colliders, other.m_colliders);
+            std::swap(m_associatedEntityHandle, other.m_associatedEntityHandle);
         }
 
-        Body& Body::operator =(Body&& other) noexcept
+        auto Body::operator =(Body&& other) noexcept -> Body&
         {
             m_handle = std::exchange(other.m_handle, nullptr);
             m_owningWorld = std::exchange(other.m_owningWorld, nullptr);
             m_colliders = std::exchange(other.m_colliders, { });
+            m_associatedEntityHandle = std::exchange(other.m_associatedEntityHandle, NullEntityHandle);
 
             return *this;
         }
 
-        void Body::Initialise(const World& world, const CreateInfo& createInfo)
+        auto Body::ApplyForce(const Vector2 force, const Vector2 point, const bool wakeUp) const -> void
+        {
+            m_handle->ApplyForce(b2Vec2{ force.x, force.y }, b2Vec2{ point.x, point.y }, wakeUp);
+        }
+
+        auto Body::ApplyForceToCentre(const Vector2 force, const bool wakeUp) const -> void
+        {
+            m_handle->ApplyForceToCenter(b2Vec2{ force.x, force.y }, wakeUp);
+        }
+
+        auto Body::ApplyTorque(const f32 torque, const bool wakeUp) const -> void
+        {
+            m_handle->ApplyTorque(torque, wakeUp);
+        }
+
+        auto Body::ApplyLinearImpulse(const Vector2 impulse, const Vector2 point, const bool wakeUp) const -> void
+        {
+            m_handle->ApplyLinearImpulse(b2Vec2{ impulse.x, impulse.y }, b2Vec2{ point.x, point.y }, wakeUp);
+        }
+
+        auto Body::ApplyLinearImpulseToCentre(const Vector2 impulse, const bool wakeUp) const -> void
+        {
+            m_handle->ApplyLinearImpulseToCenter(b2Vec2{ impulse.x, impulse.y }, wakeUp);
+        }
+
+        auto Body::ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const -> void
+        {
+            m_handle->ApplyAngularImpulse(impulse, wakeUp);
+        }
+
+        auto Body::Move(const Vector2 positionOffset) const -> void
+        {
+            SetPosition(GetPosition() + positionOffset);
+        }
+
+        auto Body::Rotate(const f32 angleOffset) const -> void
+        {
+            SetRotation(GetRotation() + angleOffset);
+        }
+
+        auto Body::AddCollider(const Collider::CreateInfo& colliderInfo) -> Collider
+        {
+            return *m_colliders.emplace(*this, colliderInfo).first;
+        }
+
+        auto Body::RemoveCollider(const Collider& collider) -> void
+        {
+            m_colliders.erase(collider);
+            m_handle->DestroyFixture(collider.GetRawHandle());
+        }
+
+        [[nodiscard]] auto Body::GetWorldCentre() const -> Vector2
+        {
+            const b2Vec2 worldCentre = m_handle->GetWorldCenter();
+
+            return Vector2{ worldCentre.x, worldCentre.y };
+        }
+
+        [[nodiscard]] auto Body::GetLocalCenter() const -> Vector2
+        {
+            const b2Vec2 localCentre = m_handle->GetLocalCenter();
+
+            return Vector2{ localCentre.x, localCentre.y };
+        }
+
+        [[nodiscard]] auto Body::GetWorldPoint(const Vector2 localPoint) const -> Vector2
+        {
+            const b2Vec2 worldPoint = m_handle->GetWorldPoint(b2Vec2{ localPoint.x, localPoint.y });
+
+            return Vector2{ worldPoint.x, worldPoint.y };
+        }
+
+        [[nodiscard]] auto Body::GetWorldVector(const Vector2 localVector) const -> Vector2
+        {
+            const b2Vec2 worldVector = m_handle->GetWorldVector(b2Vec2{ localVector.x, localVector.y });
+
+            return Vector2{ worldVector.x, worldVector.y };
+        }
+
+        [[nodiscard]] auto Body::GetLocalPoint(const Vector2 worldPoint) const -> Vector2
+        {
+            const b2Vec2 localPoint = m_handle->GetLocalPoint(b2Vec2{ worldPoint.x, worldPoint.y });
+
+            return Vector2{ localPoint.x, localPoint.y };
+        }
+
+        [[nodiscard]] auto Body::GetLocalVector(const Vector2 worldVector) const -> Vector2
+        {
+            const b2Vec2 localVector = m_handle->GetLocalVector(b2Vec2{ worldVector.x, worldVector.y });
+
+            return Vector2{ localVector.x, localVector.y };
+        }
+
+        [[nodiscard]] auto Body::GetLinearVelocityFromWorldPoint(const Vector2 worldPoint) const -> Vector2
+        {
+            const b2Vec2 linearVelocity = m_handle->GetLinearVelocityFromWorldPoint(b2Vec2{ worldPoint.x, worldPoint.y });
+
+            return Vector2{ linearVelocity.x, linearVelocity.y };
+        }
+
+        [[nodiscard]] auto Body::GetLinearVelocityFromLocalPoint(const Vector2 localPoint) const -> Vector2
+        {
+            const b2Vec2 linearVelocity = m_handle->GetLinearVelocityFromLocalPoint(b2Vec2{ localPoint.x, localPoint.y });
+
+            return Vector2{ linearVelocity.x, linearVelocity.y };
+        }
+
+        [[nodiscard]] auto Body::IsEnabled() const -> bool
+        {
+            return m_handle->IsEnabled();
+        }
+
+        auto Body::SetEnabled(const bool isEnabled) const -> void
+        {
+            m_handle->SetEnabled(isEnabled);
+        }
+
+        [[nodiscard]] auto Body::IsAwake() const -> bool
+        {
+            return m_handle->IsAwake();
+        }
+
+        [[nodiscard]] auto Body::CanSleep() const -> bool
+        {
+            return m_handle->IsSleepingAllowed();
+        }
+
+        auto Body::SetAllowSleeping(const bool canSleep) const -> void
+        {
+            m_handle->SetSleepingAllowed(canSleep);
+        }
+
+        [[nodiscard]] auto Body::GetType() const -> Type
+        {
+            return static_cast<Type>(m_handle->GetType());
+        }
+
+        auto Body::SetType(const Type type) const -> void
+        {
+            m_handle->SetType(static_cast<b2BodyType>(type));
+        }
+
+        [[nodiscard]] auto Body::IsBullet() const -> bool
+        {
+            return m_handle->IsBullet();
+        }
+
+        auto Body::SetBullet(const bool isBullet) const -> void
+        {
+            m_handle->SetBullet(isBullet);
+        }
+
+        [[nodiscard]] auto Body::GetPosition() const -> Vector2
+        {
+            const b2Vec2 position = m_handle->GetPosition();
+
+            return Vector2{ position.x, position.y };
+        }
+
+        auto Body::SetPosition(const Vector2 position) const -> void
+        {
+            m_handle->SetTransform(b2Vec2{ position.x, position.y }, GetRotation());
+        }
+
+        [[nodiscard]] auto Body::GetRotation() const -> f32
+        {
+            return -glm::degrees(m_handle->GetAngle());
+        }
+
+        auto Body::SetRotation(const f32 rotation) const -> void
+        {
+            m_handle->SetTransform(m_handle->GetPosition(), -glm::radians(rotation));
+        }
+
+        [[nodiscard]] auto Body::HasFixedRotation() const -> bool
+        {
+            return m_handle->IsFixedRotation();
+        }
+
+        auto Body::SetFixedRotation(const bool hasFixedRotation) const -> void
+        {
+            m_handle->SetFixedRotation(hasFixedRotation);
+        }
+
+        [[nodiscard]] auto Body::GetLinearVelocity() const -> Vector2
+        {
+            const b2Vec2 linearVelocity = m_handle->GetLinearVelocity();
+
+            return Vector2{ linearVelocity.x, linearVelocity.y };
+        }
+
+        auto Body::SetLinearVelocity(const Vector2 linearVelocity) const -> void
+        {
+            m_handle->SetLinearVelocity(b2Vec2{ linearVelocity.x, linearVelocity.y });
+        }
+
+        [[nodiscard]] auto Body::GetAngularVelocity() const -> f32
+        {
+            return m_handle->GetAngularVelocity();
+        }
+
+        auto Body::SetAngularVelocity(const f32 angularVelocity) const -> void
+        {
+            m_handle->SetAngularVelocity(angularVelocity);
+        }
+
+        [[nodiscard]] auto Body::GetLinearDamping() const -> f32
+        {
+            return m_handle->GetLinearDamping();
+        }
+
+        auto Body::SetLinearDamping(const f32 linearDamping) const -> void
+        {
+            m_handle->SetLinearDamping(linearDamping);
+        }
+
+        [[nodiscard]] auto Body::GetAngularDamping() const -> f32
+        {
+            return m_handle->GetAngularDamping();
+        }
+
+        auto Body::SetAngularDamping(const f32 angularDamping) const -> void
+        {
+            m_handle->SetAngularDamping(angularDamping);
+        }
+
+        [[nodiscard]] auto Body::GetGravityScale() const -> f32
+        {
+            return m_handle->GetGravityScale();
+        }
+
+        auto Body::SetGravityScale(const f32 gravityScale) const -> void
+        {
+            m_handle->SetGravityScale(gravityScale);
+        }
+
+        [[nodiscard]] auto Body::GetMass() const -> f32
+        {
+            return m_handle->GetMass();
+        }
+
+        [[nodiscard]] auto Body::GetInertia() const -> f32
+        {
+            return m_handle->GetInertia();
+        }
+
+        [[nodiscard]] auto Body::GetMassData() const -> MassData
+        {
+            b2MassData massData{ };
+            m_handle->GetMassData(&massData);
+
+            return MassData{
+                .mass = massData.mass,
+                .centre = Vector2{ massData.center.x, massData.center.y },
+                .momentOfInertia = massData.I,
+            };
+        }
+
+        auto Body::SetMassData(const MassData& massData) const -> void
+        {
+            const b2MassData convertedMassData{
+                .mass = massData.mass,
+                .center = b2Vec2{ massData.centre.x, massData.centre.y },
+                .I = massData.momentOfInertia,
+            };
+
+            m_handle->SetMassData(&convertedMassData);
+        }
+
+        auto Body::ResetMassData() const -> void
+        {
+            m_handle->ResetMassData();
+        }
+
+        auto Body::Initialise(const World& world, const CreateInfo& createInfo, const EntityHandle associatedEntityHandle) -> void
         {
             b2BodyDef bodyDef{ };
             bodyDef.type = static_cast<b2BodyType>(createInfo.type);
@@ -50,6 +326,7 @@ namespace stardust
 
             m_handle = world.GetRawHandle()->CreateBody(&bodyDef);
             m_owningWorld = &world;
+            m_associatedEntityHandle = associatedEntityHandle;
 
             if (m_handle != nullptr)
             {
@@ -58,280 +335,6 @@ namespace stardust
                     AddCollider(fixtureInfo);
                 }
             }
-        }
-
-        void Body::ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const
-        {
-            m_handle->ApplyForce(b2Vec2{ force.x, force.y }, b2Vec2{ point.x, point.y }, wakeUp);
-        }
-
-        void Body::ApplyForceToCentre(const Vec2& force, const bool wakeUp) const
-        {
-            m_handle->ApplyForceToCenter(b2Vec2{ force.x, force.y }, wakeUp);
-        }
-
-        void Body::ApplyTorque(const f32 torque, const bool wakeUp) const
-        {
-            m_handle->ApplyTorque(torque, wakeUp);
-        }
-
-        void Body::ApplyLinearImpulse(const Vec2& impulse, const Vec2& point, const bool wakeUp) const
-        {
-            m_handle->ApplyLinearImpulse(b2Vec2{ impulse.x, impulse.y }, b2Vec2{ point.x, point.y }, wakeUp);
-        }
-
-        void Body::ApplyLinearImpulseToCentre(const Vec2& impulse, const bool wakeUp) const
-        {
-            m_handle->ApplyLinearImpulseToCenter(b2Vec2{ impulse.x, impulse.y }, wakeUp);
-        }
-
-        void Body::ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const
-        {
-            m_handle->ApplyAngularImpulse(impulse, wakeUp);
-        }
-
-        void Body::Move(const Vec2& positionOffset) const
-        {
-            SetPosition(GetPosition() + positionOffset);
-        }
-
-        void Body::Rotate(const f32 angleOffset) const
-        {
-            SetRotation(GetRotation() + angleOffset);
-        }
-
-        Collider Body::AddCollider(const Collider::CreateInfo& colliderInfo)
-        {
-            return *m_colliders.emplace(*this, colliderInfo).first;
-        }
-
-        void Body::RemoveCollider(const Collider& collider)
-        {
-            m_colliders.erase(collider);
-            m_handle->DestroyFixture(collider.GetRawHandle());
-        }
-
-        [[nodiscard]] Vec2 Body::GetWorldCentre() const
-        {
-            const b2Vec2& worldCentre = m_handle->GetWorldCenter();
-
-            return Vec2{ worldCentre.x, worldCentre.y };
-        }
-
-        [[nodiscard]] Vec2 Body::GetLocalCenter() const
-        {
-            const b2Vec2& localCentre = m_handle->GetLocalCenter();
-
-            return Vec2{ localCentre.x, localCentre.y };
-        }
-
-        [[nodiscard]] Vec2 Body::GetWorldPoint(const Vec2& localPoint) const
-        {
-            const b2Vec2 worldPoint = m_handle->GetWorldPoint(b2Vec2{ localPoint.x, localPoint.y });
-            
-            return Vec2{ worldPoint.x, worldPoint.y };
-        }
-
-        [[nodiscard]] Vec2 Body::GetWorldVector(const Vec2& localVector) const
-        {
-            const b2Vec2 worldVector = m_handle->GetWorldVector(b2Vec2{ localVector.x, localVector.y });
-
-            return Vec2{ worldVector.x, worldVector.y };
-        }
-
-        [[nodiscard]] Vec2 Body::GetLocalPoint(const Vec2& worldPoint) const
-        {
-            const b2Vec2 localPoint = m_handle->GetLocalPoint(b2Vec2{ worldPoint.x, worldPoint.y });
-
-            return Vec2{ localPoint.x, localPoint.y };
-        }
-
-        [[nodiscard]] Vec2 Body::GetLocalVector(const Vec2& worldVector) const
-        {
-            const b2Vec2 localVector = m_handle->GetLocalVector(b2Vec2{ worldVector.x, worldVector.y });
-
-            return Vec2{ localVector.x, localVector.y };
-        }
-
-        [[nodiscard]] Vec2 Body::GetLinearVelocityFromWorldPoint(const Vec2& worldPoint) const
-        {
-            const b2Vec2 linearVelocity = m_handle->GetLinearVelocityFromWorldPoint(b2Vec2{ worldPoint.x, worldPoint.y });
-
-            return Vec2{ linearVelocity.x, linearVelocity.y };
-        }
-
-        [[nodiscard]] Vec2 Body::GetLinearVelocityFromLocalPoint(const Vec2& localPoint) const
-        {
-            const b2Vec2 linearVelocity = m_handle->GetLinearVelocityFromLocalPoint(b2Vec2{ localPoint.x, localPoint.y });
-
-            return Vec2{ linearVelocity.x, linearVelocity.y };
-        }
-
-        [[nodiscard]] bool Body::IsEnabled() const
-        {
-            return m_handle->IsEnabled();
-        }
-
-        void Body::SetEnabled(const bool isEnabled) const
-        {
-            m_handle->SetEnabled(isEnabled);
-        }
-
-        [[nodiscard]] bool Body::IsAwake() const
-        {
-            return m_handle->IsAwake();
-        }
-
-        [[nodiscard]] bool Body::CanSleep() const
-        {
-            return m_handle->IsSleepingAllowed();
-        }
-
-        void Body::SetAllowSleeping(const bool canSleep) const
-        {
-            m_handle->SetSleepingAllowed(canSleep);
-        }
-
-        [[nodiscard]] Body::Type Body::GetType() const
-        {
-            return static_cast<Type>(m_handle->GetType());
-        }
-
-        void Body::SetType(const Type type) const
-        {
-            m_handle->SetType(static_cast<b2BodyType>(type));
-        }
-
-        [[nodiscard]] bool Body::IsBullet() const
-        {
-            return m_handle->IsBullet();
-        }
-
-        void Body::SetBullet(const bool isBullet) const
-        {
-            m_handle->SetBullet(isBullet);
-        }
-
-        [[nodiscard]] Vec2 Body::GetPosition() const
-        {
-            const b2Vec2& position = m_handle->GetPosition();
-
-            return Vec2{ position.x, position.y };
-        }
-
-        void Body::SetPosition(const Vec2& position) const
-        {
-            m_handle->SetTransform(b2Vec2{ position.x, position.y }, GetRotation());
-        }
-
-        [[nodiscard]] f32 Body::GetRotation() const
-        {
-            return -glm::degrees(m_handle->GetAngle());
-        }
-
-        void Body::SetRotation(const f32 rotation) const
-        {
-            m_handle->SetTransform(m_handle->GetPosition(), -glm::radians(rotation));
-        }
-
-        [[nodiscard]] bool Body::HasFixedRotation() const
-        {
-            return m_handle->IsFixedRotation();
-        }
-
-        void Body::SetFixedRotation(const bool hasFixedRotation) const
-        {
-            m_handle->SetFixedRotation(hasFixedRotation);
-        }
-
-        [[nodiscard]] Vec2 Body::GetLinearVelocity() const
-        {
-            const b2Vec2& linearVelocity = m_handle->GetLinearVelocity();
-
-            return Vec2{ linearVelocity.x, linearVelocity.y };
-        }
-
-        void Body::SetLinearVelocity(const Vec2& linearVelocity) const
-        {
-            m_handle->SetLinearVelocity(b2Vec2{ linearVelocity.x, linearVelocity.y });
-        }
-
-        [[nodiscard]] f32 Body::GetAngularVelocity() const
-        {
-            return m_handle->GetAngularVelocity();
-        }
-
-        void Body::SetAngularVelocity(const f32 angularVelocity) const
-        {
-            m_handle->SetAngularVelocity(angularVelocity);
-        }
-
-        [[nodiscard]] f32 Body::GetLinearDamping() const
-        {
-            return m_handle->GetLinearDamping();
-        }
-
-        void Body::SetLinearDamping(const f32 linearDamping) const
-        {
-            m_handle->SetLinearDamping(linearDamping);
-        }
-
-        [[nodiscard]] f32 Body::GetAngularDamping() const
-        {
-            return m_handle->GetAngularDamping();
-        }
-
-        void Body::SetAngularDamping(const f32 angularDamping) const
-        {
-            m_handle->SetAngularDamping(angularDamping);
-        }
-
-        [[nodiscard]] f32 Body::GetGravityScale() const
-        {
-            return m_handle->GetGravityScale();
-        }
-
-        void Body::SetGravityScale(const f32 gravityScale) const
-        {
-            m_handle->SetGravityScale(gravityScale);
-        }
-        
-        [[nodiscard]] f32 Body::GetMass() const
-        {
-            return m_handle->GetMass();
-        }
-
-        [[nodiscard]] f32 Body::GetInertia() const
-        {
-            return m_handle->GetInertia();
-        }
-
-        [[nodiscard]] MassData Body::GetMassData() const
-        {
-            b2MassData massData{ };
-            m_handle->GetMassData(&massData);
-
-            return MassData{
-                .mass = massData.mass,
-                .centre = Vec2{ massData.center.x, massData.center.y },
-                .momentOfInertia = massData.I,
-            };
-        }
-
-        void Body::SetMassData(const MassData& massData) const
-        {
-            const b2MassData convertedMassData{
-                .mass = massData.mass,
-                .center = b2Vec2{ massData.centre.x, massData.centre.y },
-                .I = massData.momentOfInertia,
-            };
-
-            m_handle->SetMassData(&convertedMassData);
-        }
-
-        void Body::ResetMassData() const
-        {
-            m_handle->ResetMassData();
         }
     }
 }

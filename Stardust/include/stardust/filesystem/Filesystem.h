@@ -2,63 +2,68 @@
 #ifndef STARDUST_FILESYSTEM_H
 #define STARDUST_FILESYSTEM_H
 
-#include <nlohmann/json.hpp>
-#include <tinyxml2/tinyxml2.h>
-#include <toml++/toml.hpp>
+#include "stardust/types/Containers.h"
+#include "stardust/types/Primitives.h"
+#include "stardust/utility/error_handling/Result.h"
+#include "stardust/utility/error_handling/Status.h"
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/Types.h"
-#include "stardust/utility/status/Status.h"
-
+#ifdef STARDUST_PLATFORM_WINDOWS
 #undef CreateDirectory
+#endif
 
 namespace stardust
 {
     namespace filesystem
     {
-        [[nodiscard]] extern Status InitialiseApplicationBaseDirectory();
-        [[nodiscard]] extern Status InitialiseApplicationPreferenceDirectory(const StringView& organisationName, const StringView& applicationName);
-        [[nodiscard]] extern const String& GetApplicationBaseDirectory();
-        [[nodiscard]] extern const String& GetApplicationPreferenceDirectory();
+        enum class FileError
+        {
+            CannotOpenFile,
+            InvalidData,
+        };
 
-        [[nodiscard]] extern Vector<String> GetAllFilesInDirectory(const StringView& directory);
-        [[nodiscard]] extern Vector<String> GetAllFilesInDirectoryRecursive(const StringView& directory);
-        [[nodiscard]] extern Vector<String> GetAllFileNamesInDirectory(const StringView& directory);
-        [[nodiscard]] extern Vector<String> GetAllFileNamesInDirectoryRecursive(const StringView& directory);
+        [[nodiscard]] extern auto InitialiseApplicationBaseDirectory() -> Status;
+        [[nodiscard]] extern auto GetApplicationBaseDirectory() -> const String&;
+        [[nodiscard]] extern auto InitialiseApplicationPreferenceDirectory(const StringView organisationName, const StringView applicationName) -> Status;
+        [[nodiscard]] extern auto GetApplicationPreferenceDirectory() -> const String&;
 
-        [[nodiscard]] extern bool DoesFileExist(const StringView& filepath);
-        [[nodiscard]] extern bool IsDirectory(const StringView& filepath);
+        [[nodiscard]] extern auto GetAllFiles(const StringView directory) -> List<String>;
+        [[nodiscard]] extern auto GetAllFilesRecursive(const StringView directory) -> List<String>;
+        [[nodiscard]] extern auto IterateFiles(const String directory) -> Generator<const String>;
+        [[nodiscard]] extern auto IterateFilesRecursive(const String directory) -> Generator<const String>;
 
-        [[nodiscard]] extern String GetParentFilepath(const StringView& filepath);
-        [[nodiscard]] extern String GetFilenameFromDirectory(const StringView& filepath);
-        [[nodiscard]] extern String GetFileStem(const StringView& filename);
-        [[nodiscard]] extern String GetFileExtension(const StringView& filename);
+        [[nodiscard]] extern auto GetAllFilepaths(const StringView directory) -> List<String>;
+        [[nodiscard]] extern auto GetAllFilepathsRecursive(const StringView directory) -> List<String>;
+        [[nodiscard]] extern auto IterateFilepaths(const String directory) -> Generator<const String>;
+        [[nodiscard]] extern auto IterateFilepathsRecursive(const String directory) -> Generator<const String>;
 
-        [[nodiscard]] extern Status CreateDirectory(const StringView& path);
+        [[nodiscard]] extern auto DoesPathExist(const StringView filepath) -> bool;
+        [[nodiscard]] extern auto IsDirectory(const StringView filepath) -> bool;
 
-        [[nodiscard]] extern String ReadFile(const StringView& filepath);
-        [[nodiscard]] extern Vector<String> ReadFileLines(const StringView& filepath);
-        [[nodiscard]] extern Vector<ubyte> ReadFileBytes(const StringView& filepath);
+        [[nodiscard]] extern auto HasStem(const StringView filename) -> bool;
+        [[nodiscard]] extern auto GetStem(const StringView filename) -> String;
+        [[nodiscard]] extern auto HasExtension(const StringView filename) -> bool;
+        [[nodiscard]] extern auto GetExtension(const StringView filename) -> String;
 
-        [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const Vector<ubyte>& data);
-        [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const String& data);
-        [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const nlohmann::json& data);
-        [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const tinyxml2::XMLDocument& data);
-        [[nodiscard]] extern Status WriteToFile(const StringView& filepath, const toml::table& data);
+        [[nodiscard]] extern auto CreateDirectory(const StringView path) -> Status;
+        [[nodiscard]] extern auto GetDirectorySeparator() -> String;
 
-        [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const Vector<ubyte>& data);
-        [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const String& data);
-        [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const nlohmann::json& data);
-        [[nodiscard]] extern Status AppendToFile(const StringView& filepath, const toml::table& data);
+        [[nodiscard]] extern auto ReadFile(const StringView filepath) -> Result<String, FileError>;
+        [[nodiscard]] extern auto ReadFileLines(const StringView filepath) -> Result<List<String>, FileError>;
+        [[nodiscard]] extern auto IterateFileLines(const String filepath) -> Generator<const String>;
+        [[nodiscard]] extern auto ReadFileBytes(const StringView filepath) -> Result<List<ubyte>, FileError>;
+        [[nodiscard]] extern auto ReadJSON(const StringView filepath) -> Result<JSON, FileError>;
+        [[nodiscard]] extern auto ReadMessagePack(const StringView filepath) -> Result<JSON, FileError>;
+        [[nodiscard]] extern auto ReadTOML(const StringView filepath) -> Result<TOML, FileError>;
+        [[nodiscard]] extern auto ReadXML(const StringView filepath) -> Result<XML, FileError>;
 
-        [[nodiscard]] extern usize GetFileSize(const StringView& filepath);
+        [[nodiscard]] extern auto WriteToFile(const StringView filepath, const String& data) -> Status;
+        [[nodiscard]] extern auto WriteBytesToFile(const StringView filepath, const List<ubyte>& data) -> Status;
+        [[nodiscard]] extern auto WriteJSONToFile(const StringView filepath, const JSON& data) -> Status;
+        [[nodiscard]] extern auto WriteMessagePackToFile(const StringView filepath, const JSON& data) -> Status;
+        [[nodiscard]] extern auto WriteTOMLToFile(const StringView filepath, const TOML& data) -> Status;
+        [[nodiscard]] extern auto WriteXMLToFile(const StringView filepath, const XML& data) -> Status;
 
-        [[nodiscard]] extern Status ReadJSON(const StringView& filepath, nlohmann::json& out_data);
-        [[nodiscard]] extern Status ReadXML(const StringView& filepath, tinyxml2::XMLDocument& out_document);
-        [[nodiscard]] extern Status ReadTOML(const StringView& filepath, toml::table& out_table);
-
-        [[nodiscard]] extern Status SaveToMessagePack(const StringView& filepath, const nlohmann::json& data);
-        [[nodiscard]] extern nlohmann::json ReadMessagePack(const StringView& filepath);
+        [[nodiscard]] extern auto GetFileSize(const StringView filepath) -> usize;
     }
 
     namespace fs = filesystem;

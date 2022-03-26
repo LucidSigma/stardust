@@ -4,17 +4,17 @@
 
 #include <box2d/box2d.h>
 
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
 #include "stardust/physics/AABB.h"
 #include "stardust/physics/Physics.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace physics
     {
-        class Rectangle
+        class Rectangle final
         {
         private:
             b2PolygonShape m_polygon{ };
@@ -26,24 +26,23 @@ namespace stardust
             Rectangle() = default;
             explicit Rectangle(const f32 width);
             Rectangle(const f32 width, const f32 height);
-            ~Rectangle() noexcept = default;
 
-            void SetAsSquare(const f32 width);
-            void SetAsSquare(const f32 width, const Vec2& pivot, const f32 rotation);
-            void Set(const f32 width, const f32 height);
-            void Set(const f32 width, const f32 height, const Vec2& pivot, const f32 rotation);
+            auto SetAsSquare(const f32 width) -> void;
+            auto SetAsSquare(const f32 width, const Vector2 pivot, const f32 rotation) -> void;
+            auto Set(const f32 width, const f32 height) -> void;
+            auto Set(const f32 width, const f32 height, const Vector2 pivot, const f32 rotation) -> void;
 
-            [[nodiscard]] inline f32 GetWidth() const noexcept { return m_width; }
-            [[nodiscard]] inline f32 GetHeight() const noexcept { return m_height; }
+            [[nodiscard]] inline auto GetWidth() const noexcept -> f32 { return m_width; }
+            [[nodiscard]] inline auto GetHeight() const noexcept -> f32 { return m_height; }
 
-            [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
-            [[nodiscard]] AABB ComputeAABB(const Vec2& worldPosition, const f32 rotation) const;
-            [[nodiscard]] MassData ComputeMassData(const f32 density) const;
+            [[nodiscard]] auto ContainsPoint(const Vector2 worldPosition, const f32 rotation, const Vector2 point) const -> bool;
+            [[nodiscard]] auto ComputeAABB(const Vector2 worldPosition, const f32 rotation) const -> AABB;
+            [[nodiscard]] auto ComputeMassData(const f32 density) const -> MassData;
 
-            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_polygon; }
-            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_polygon; }
-            [[nodiscard]] inline operator ObserverPtr<b2PolygonShape>() noexcept { return &m_polygon; }
-            [[nodiscard]] inline operator ObserverPtr<const b2PolygonShape>() const noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<b2Shape>() noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<const b2Shape>() const noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<b2PolygonShape>() noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<const b2PolygonShape>() const noexcept { return &m_polygon; }
         };
     }
 }

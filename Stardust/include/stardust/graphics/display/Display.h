@@ -6,46 +6,42 @@
 
 #include <SDL2/SDL.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Types.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Primitives.h"
+#include "stardust/utility/error_handling/Status.h"
 
 namespace stardust
 {
     namespace display
     {
-        enum class DisplayOrientation
-            : std::underlying_type_t<SDL_DisplayOrientation>
+        using Index = u32;
+
+        enum class PresentationMode
+            : i32
         {
-            Unknown = SDL_ORIENTATION_UNKNOWN,
-            Landscape = SDL_ORIENTATION_LANDSCAPE,
-            LandscapeFlipped = SDL_ORIENTATION_LANDSCAPE_FLIPPED,
-            Portrait = SDL_ORIENTATION_PORTRAIT,
-            PortraitFlipped = SDL_ORIENTATION_PORTRAIT_FLIPPED,
+            AdaptiveVSync = -1,
+            Immediate = 0,
+            VSync = 1,
         };
 
-        struct DisplayData
+        struct DisplayData final
         {
             String name;
 
-            UVec2 size;
+            UVector2 size;
             u32 refreshRate;
-            u32 format;
-
-            Pair<IVec2, IVec2> bounds;
-            Pair<IVec2, IVec2> usableBounds;
-
-            DisplayOrientation orientation;
 
             f32 verticalDPI;
             f32 horizontalDPI;
             f32 diagonalDPI;
         };
 
-        [[nodiscard]] extern u32 GetVideoDisplayCount();
-        [[nodiscard]] extern u32 GetVideoDriverCount();
+        [[nodiscard]] extern auto GetVideoDisplayCount() -> u32;
+        [[nodiscard]] extern auto GetDisplayData(const Index displayIndex) -> DisplayData;
+        [[nodiscard]] extern auto GetAllDisplayData() -> List<DisplayData>;
 
-        [[nodiscard]] extern DisplayData GetDisplayData(const i32 displayIndex);
+        [[nodiscard]] extern auto SetPresentationMode(const PresentationMode presentationMode) -> Status;
     }
 }
 

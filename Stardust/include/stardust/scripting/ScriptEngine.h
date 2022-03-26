@@ -4,140 +4,166 @@
 
 #include <functional>
 #include <type_traits>
+#include <tuple>
 #include <utility>
 
 #include <sol/sol.hpp>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Types.h"
-#include "stardust/utility/status/Status.h"
+#include "stardust/types/Containers.h"
+#include "stardust/utility/error_handling/Status.h"
 
 namespace stardust
 {
-    constexpr sol::nil_t Nil = sol::nil;
+    constexpr sol::lua_nil_t Nil = sol::lua_nil;
 
-    class ScriptEngine
+    using Table = sol::table;
+    using TableProxy = sol::table_proxy<const sol::basic_table_core<false, sol::reference>&, sol::detail::proxy_key_t<const String&>>;
+    using GlobalTableProxy = sol::table_proxy<const sol::basic_table_core<true, sol::reference>&, std::tuple<StringView>>;
+
+    class ScriptEngine final
     {
     private:
         sol::state m_luaState{ };
 
     public:
-        ScriptEngine() = default;
-        ~ScriptEngine() noexcept = default;
+        auto Initialise(class Application& application) -> void;
 
-        void Initialise(class Application& application);
+        auto LoadScript(const StringView script) -> Status;
+        [[nodiscard]] auto LoadScriptFile(const StringView scriptFilepath) -> Status;
 
-        [[nodiscard]] Status LoadScript(const StringView& filename);
+        [[nodiscard]] inline auto Get(const StringView variableName) const -> decltype(auto) { return m_luaState[variableName]; }
 
         template <typename T>
-        [[nodiscard]] inline T Get(const StringView& variableName)
+        [[nodiscard]] inline auto Get(const StringView variableName) const -> T
         {
             return m_luaState.get<T>(variableName);
         }
 
         template <typename T>
-        inline void Set(const StringView& variableName, const T& value)
+        inline auto Set(const StringView variableName, const T& value) -> void
         {
             m_luaState[variableName] = value;
         }
 
         template <typename... Args>
-        inline void CreateTable(const StringView& name, Args&&... values)
+        inline auto CreateTable(const StringView name, Args&&... values) -> void
         {
             m_luaState.create_named_table(name, std::forward<Args>(values)...);
         }
 
         template <typename T>
-        [[nodiscard]] inline std::function<T> GetFunction(const StringView& functionName) const
+        [[nodiscard]] inline auto GetFunction(const StringView functionName) const -> std::function<T>
         {
             return static_cast<std::function<T>>(m_luaState[functionName].get<sol::function>());
         }
 
         template <typename... Args>
-        void SetFunction(const StringView& functionName, Args&&... values)
+        auto SetFunction(const StringView functionName, Args&&... values) -> void
         {
             m_luaState.set_function(functionName, values...);
         }
 
-        template <typename ReturnType, typename... Args>
-        [[nodiscard]] ReturnType CallFunction(const StringView& name, Args&&... args) const
+        template <typename T>
+        [[nodiscard]] inline auto GetFromTable(const StringView tableName, const StringView fieldName) const -> T
+        {
+            return Get<Table>(tableName)[fieldName];
+        }
+
+        template <typename T>
+        inline auto SetInTable(const StringView tableName, const StringView fieldName, const T& value) -> void
+        {
+            Get<Table>(tableName)[fieldName] = value;
+        }
+
+        template <typename ReturnType>
+        [[nodiscard]] auto CallFunction(const StringView name) const -> ReturnType
         {
             if constexpr (std::is_same_v<ReturnType, void>)
             {
-                GetFunction<ReturnType(Args...)>(name)(std::forward<Args>(args)...);
+                GetFunction<auto() -> ReturnType>(name)();
             }
             else
             {
-                return GetFunction<ReturnType(Args...)>(name)(std::forward<Args>(args)...);
+                return GetFunction<auto() -> ReturnType>(name)();
             }
         }
 
-        [[nodiscard]] inline decltype(auto) operator [](const StringView& variableName) { return m_luaState[variableName]; }
+        template <typename ReturnType, typename... Args>
+        [[nodiscard]] auto CallFunction(const StringView name, Args&&... args) const -> ReturnType
+        {
+            if constexpr (std::is_same_v<ReturnType, void>)
+            {
+                GetFunction<auto(Args...) -> ReturnType>(name)(std::forward<Args>(args)...);
+            }
+            else
+            {
+                return GetFunction<auto(Args...) -> ReturnType>(name)(std::forward<Args>(args)...);
+            }
+        }
 
-        [[nodiscard]] inline sol::state& GetState() noexcept { return m_luaState; }
-        [[nodiscard]] inline const sol::state& GetState() const noexcept { return m_luaState; }
+        template <typename ReturnType, typename... Args>
+        [[nodiscard]] auto CallFunction(const StringView name, const Args&... args) const -> ReturnType
+        {
+            if constexpr (std::is_same_v<ReturnType, void>)
+            {
+                GetFunction<auto(Args...) -> ReturnType>(name)(args...);
+            }
+            else
+            {
+                return GetFunction<auto(Args...) -> ReturnType>(name)(args...);
+            }
+        }
+
+        template <typename ReturnType>
+        [[nodiscard]] auto CallFunctionFromTable(const StringView tableName, const StringView functionName) const -> ReturnType
+        {
+            if constexpr (std::is_same_v<ReturnType, void>)
+            {
+                Get<Table>(tableName)[functionName].get<sol::function>()();
+            }
+            else
+            {
+                return Get<Table>(tableName)[functionName].get<sol::function>()();
+            }
+        }
+
+        template <typename ReturnType, typename... Args>
+        [[nodiscard]] auto CallFunctionFromTable(const StringView tableName, const StringView functionName, Args&&... args) const -> ReturnType
+        {
+            if constexpr (std::is_same_v<ReturnType, void>)
+            {
+                Get<Table>(tableName)[functionName].get<sol::function>()(std::forward<Args>(args)...);
+            }
+            else
+            {
+                return Get<Table>(tableName)[functionName].get<sol::function>()(std::forward<Args>(args)...);
+            }
+        }
+
+        template <typename ReturnType, typename... Args>
+        [[nodiscard]] auto CallFunctionFromTable(const StringView tableName, const StringView functionName, const Args&... args) const -> ReturnType
+        {
+            if constexpr (std::is_same_v<ReturnType, void>)
+            {
+                Get<Table>(tableName)[functionName].get<sol::function>()(args...);
+            }
+            else
+            {
+                return Get<Table>(tableName)[functionName].get<sol::function>()(args...);
+            }
+        }
+
+        [[nodiscard]] inline auto operator [](const StringView variableName) const -> decltype(auto) { return m_luaState[variableName]; }
+
+        [[nodiscard]] inline auto GetState() noexcept -> sol::state& { return m_luaState; }
+        [[nodiscard]] inline auto GetState() const noexcept -> const sol::state& { return m_luaState; }
 
     private:
-        template <typename T, typename Constructors>
-        void LoadVectorType()
-        {
-            String vectorTypeName = "vec";
-
-            if constexpr (std::is_same_v<T, Vec2>)
-            {
-                vectorTypeName += "2";
-            }
-            else if constexpr (std::is_same_v<T, Vec3>)
-            {
-                vectorTypeName += "3";
-            }
-            else if constexpr (std::is_same_v<T, Vec4>)
-            {
-                vectorTypeName += "4";
-            }
-            else
-            {
-                static_assert(false, "Invalid vector type.");
-            }
-
-            sol::usertype<T> vectorType = m_luaState.new_usertype<T>(
-                vectorTypeName, Constructors{ },
-                "x", &T::x,
-                "y", &T::y,
-                "normalise", [](const T& self) -> T { return glm::normalize(self); },
-                "length", [](const T& self) -> f32 { return glm::length(self); },
-                "distance", [](const T& self, const T& other) -> f32 { return glm::distance(self, other); },
-                "dot", [](const T& self, const T& other) -> f32 { return glm::dot(self, other); },
-                sol::meta_function::addition, sol::resolve<T(const T&, const T&)>(glm::operator +),
-                sol::meta_function::subtraction, sol::resolve<T(const T&, const T&)>(glm::operator -),
-                sol::meta_function::multiplication, sol::resolve<T(const T&, const T&)>(glm::operator *),
-                sol::meta_function::division, sol::resolve<T(const T&, const T&)>(glm::operator /)
-            );
-
-            if constexpr (!std::is_same_v<T, Vec4>)
-            {
-                vectorType.set_function(sol::meta_function::addition, sol::resolve<T(const T&, f32)>(glm::operator +));
-                vectorType.set_function(sol::meta_function::subtraction, sol::resolve<T(const T&, f32)>(glm::operator -));
-                vectorType.set_function(sol::meta_function::multiplication, sol::resolve<T(const T&, const f32)>(glm::operator *));
-                vectorType.set_function(sol::meta_function::division, sol::resolve<T(const T&, const f32)>(glm::operator /));
-            }
-
-            if constexpr (std::is_same_v<T, Vec3> || std::is_same_v<T, Vec4>)
-            {
-                vectorType.set_function("z", &T::z);
-            }
-
-            if constexpr (std::is_same_v<T, Vec4>)
-            {
-                vectorType.set_function("w", &T::w);
-            }
-
-            if constexpr (std::is_same_v<T, Vec3>)
-            {
-                vectorType.set_function("cross", [](const T& self, const T& other) -> T { return glm::cross(self, other); });
-            }
-        }
+        auto LoadApplicationFunctions(class Application& application) -> void;
+        auto LoadMathFunctions() -> void;
+        auto LoadGraphicsFunctions(class Application& application) -> void;
+        auto LoadAnimationFunctions() -> void;
+        auto LoadUIFunctions() -> void;
     };
 }
 

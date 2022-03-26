@@ -1,7 +1,10 @@
 #include "stardust/physics/world/World.h"
 
+#include <memory>
 #include <utility>
 
+#include "stardust/ecs/components/RigidBodyComponent.h"
+#include "stardust/ecs/entity/Entity.h"
 #include "stardust/math/Math.h"
 
 namespace stardust
@@ -10,11 +13,11 @@ namespace stardust
     {
         namespace
         {
-            class RaycastCallback
+            class RaycastCallback final
                 : public b2RayCastCallback
             {
             private:
-                const Vec2& m_origin;
+                const Vector2 m_origin;
                 CollisionLayer m_layerMask;
 
                 bool& m_hasHitFixture;
@@ -23,22 +26,24 @@ namespace stardust
                 const World& m_world;
 
             public:
-                inline RaycastCallback(const Vec2& origin, const CollisionLayer layerMask, bool& hasHitFixture, RaycastHit& raycastHitData, const World& world)
+                inline RaycastCallback(const Vector2 origin, const CollisionLayer layerMask, bool& hasHitFixture, RaycastHit& raycastHitData, const World& world)
                     : m_origin(origin), m_layerMask(layerMask), m_hasHitFixture(hasHitFixture), m_raycastHitData(raycastHitData), m_world(world)
                 { }
 
                 virtual ~RaycastCallback() noexcept override = default;
 
-                [[nodiscard]] inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
+                [[nodiscard]] inline virtual auto ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) -> f32 override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
                         m_hasHitFixture = true;
 
                         m_raycastHitData.collider = Collider(fixture, m_world);
+                        m_raycastHitData.entityHandle = m_raycastHitData.collider.GetOwningBody()->GetAssociatedEntityHandle();
+
                         m_raycastHitData.fraction = fraction;
-                        m_raycastHitData.normal = Vec2{ normal.x, normal.y };
-                        m_raycastHitData.point = Vec2{ point.x, point.y };
+                        m_raycastHitData.normal = Vector2{ normal.x, normal.y };
+                        m_raycastHitData.point = Vector2{ point.x, point.y };
 
                         m_raycastHitData.distance = glm::distance(m_origin, m_raycastHitData.point);
 
@@ -51,33 +56,36 @@ namespace stardust
                 }
             };
 
-            class RaycastAllCallback
+            class RaycastAllCallback final
                 : public b2RayCastCallback
             {
             private:
-                const Vec2& m_origin;
+                const Vector2 m_origin;
                 CollisionLayer m_layerMask;
 
-                Vector<RaycastHit>& m_raycastHits;
+                List<RaycastHit>& m_raycastHits;
 
                 const World& m_world;
 
             public:
-                inline RaycastAllCallback(const Vec2& origin, const CollisionLayer layerMask, Vector<RaycastHit>& raycastHits, const World& world)
+                inline RaycastAllCallback(const Vector2 origin, const CollisionLayer layerMask, List<RaycastHit>& raycastHits, const World& world)
                     : m_origin(origin), m_layerMask(layerMask), m_raycastHits(raycastHits), m_world(world)
                 { }
 
                 virtual ~RaycastAllCallback() noexcept override = default;
 
-                [[nodiscard]] inline virtual f32 ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) override
+                [[nodiscard]] inline virtual auto ReportFixture(b2Fixture* const fixture, const b2Vec2& point, const b2Vec2& normal, const f32 fraction) -> f32 override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
                         m_raycastHits.emplace_back();
+
                         m_raycastHits.back().collider = Collider(fixture, m_world);
+                        m_raycastHits.back().entityHandle = m_raycastHits.back().collider.GetOwningBody()->GetAssociatedEntityHandle();
+
                         m_raycastHits.back().fraction = fraction;
-                        m_raycastHits.back().normal = Vec2{ normal.x, normal.y };
-                        m_raycastHits.back().point = Vec2{ point.x, point.y };
+                        m_raycastHits.back().normal = Vector2{ normal.x, normal.y };
+                        m_raycastHits.back().point = Vector2{ point.x, point.y };
                         m_raycastHits.back().distance = glm::distance(m_origin, m_raycastHits.back().point);
 
                         return 1.0f;
@@ -89,7 +97,7 @@ namespace stardust
                 }
             };
 
-            class OverlapBoxCallback
+            class OverlapBoxCallback final
                 : public b2QueryCallback
             {
             private:
@@ -105,7 +113,7 @@ namespace stardust
 
                 virtual ~OverlapBoxCallback() noexcept override = default;
 
-                [[nodiscard]] inline virtual bool ReportFixture(b2Fixture* const fixture) override
+                [[nodiscard]] inline virtual auto ReportFixture(b2Fixture* const fixture) -> bool override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
@@ -120,29 +128,29 @@ namespace stardust
                 }
             };
 
-            class OverlapBoxAllCallback
+            class OverlapBoxAllCallback final
                 : public b2QueryCallback
             {
             private:
                 CollisionLayer m_layerMask;
-                Vector<Collider>& m_hitColliders;
+                List<Collider>& m_hitColliders;
 
                 const World& m_world;
 
             public:
-                inline OverlapBoxAllCallback(Vector<Collider>& hitColliders, const CollisionLayer layerMask, const World& world)
+                inline OverlapBoxAllCallback(List<Collider>& hitColliders, const CollisionLayer layerMask, const World& world)
                     : m_hitColliders(hitColliders), m_layerMask(layerMask), m_world(world)
                 { }
 
                 virtual ~OverlapBoxAllCallback() noexcept override = default;
 
-                [[nodiscard]] inline virtual bool ReportFixture(b2Fixture* const fixture) override
+                [[nodiscard]] inline virtual auto ReportFixture(b2Fixture* const fixture) -> bool override
                 {
                     if (fixture->GetFilterData().categoryBits & m_layerMask)
                     {
                         m_hitColliders.emplace_back(fixture, m_world);
                     }
-                    
+
                     return true;
                 }
             };
@@ -152,10 +160,10 @@ namespace stardust
             : m_world(world)
         { }
 
-        void World::CollisionListener::BeginContact(b2Contact* const contact)
+        auto World::CollisionListener::BeginContact(b2Contact* const contact) -> void
         {
-            const ObserverPtr<b2Body> firstBody = contact->GetFixtureA()->GetBody();
-            const ObserverPtr<b2Body> secondBody = contact->GetFixtureB()->GetBody();
+            const ObserverPointer<b2Body> firstBody = contact->GetFixtureA()->GetBody();
+            const ObserverPointer<b2Body> secondBody = contact->GetFixtureB()->GetBody();
 
             const bool isSensorContact = contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor();
 
@@ -175,10 +183,10 @@ namespace stardust
             }
         }
 
-        void World::CollisionListener::EndContact(b2Contact* const contact)
+        auto World::CollisionListener::EndContact(b2Contact* const contact) -> void
         {
-            const ObserverPtr<b2Body> firstBody = contact->GetFixtureA()->GetBody();
-            const ObserverPtr<b2Body> secondBody = contact->GetFixtureB()->GetBody();
+            const ObserverPointer<b2Body> firstBody = contact->GetFixtureA()->GetBody();
+            const ObserverPointer<b2Body> secondBody = contact->GetFixtureB()->GetBody();
 
             const bool isSensorContact = contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor();
 
@@ -198,39 +206,44 @@ namespace stardust
             }
         }
 
-        World::World()
-            : m_handle(std::make_unique<b2World>(b2Vec2_zero))
+        World::World(Scene& scene, const Vector2 gravity)
         {
+            Initialise(scene, gravity);
+        }
+
+        auto World::Initialise(Scene& scene, const Vector2 gravity) -> void
+        {
+            m_handle = std::make_unique<b2World>(b2Vec2{ gravity.x, gravity.y });
             m_handle->SetContactListener(&m_collisionListener);
+
+            m_scene = &scene;
         }
 
-        World::World(const Vec2& gravity)
-            : m_handle(std::make_unique<b2World>(b2Vec2{ gravity.x, gravity.y }))
+        auto World::Step(const f64 timestep) const -> void
         {
-            m_handle->SetContactListener(&m_collisionListener);
+            m_handle->Step(static_cast<f32>(timestep), static_cast<i32>(s_velocityIterations), static_cast<i32>(s_positionIterations));
         }
 
-        void World::Step(const f32 timestep) const
+        auto World::CreateBody(const Body::CreateInfo& createInfo, const ObserverPointer<EntityBundle> entityBundle) -> ObserverPointer<Body>
         {
-            m_handle->Step(timestep, static_cast<i32>(s_velocityIterations), static_cast<i32>(s_positionIterations));
-        }
+            Entity entity = m_scene->CreateEntity(entityBundle);
+            Body body(*this, createInfo, entity.GetHandle());
 
-        ObserverPtr<Body> World::CreateBody(const Body::CreateInfo& createInfo)
-        {
-            Body body(*this, createInfo);
-            const b2Body* rawBodyHandle = body.GetRawHandle();
+            const ObserverPointer<const b2Body> rawBodyHandle = body.GetRawHandle();
             m_bodies[rawBodyHandle] = std::move(body);
+
+            entity.AddComponent<components::RigidBody>(&m_bodies[rawBodyHandle]);
 
             return &m_bodies[rawBodyHandle];
         }
 
-        void World::DestroyBody(ObserverPtr<const Body> body) noexcept
+        auto World::DestroyBody(const ObserverPointer<const Body> body) noexcept -> void
         {
             m_bodies.erase(body->GetRawHandle());
             m_handle->DestroyBody(body->GetRawHandle());
         }
 
-        [[nodiscard]] ObserverPtr<Body> World::LookupBody(const ObserverPtr<const b2Body> bodyHandle)
+        [[nodiscard]] auto World::LookupBody(const ObserverPointer<const b2Body> bodyHandle) -> ObserverPointer<Body>
         {
             if (m_bodies.contains(bodyHandle))
             {
@@ -242,7 +255,7 @@ namespace stardust
             }
         }
 
-        [[nodiscard]] ObserverPtr<const Body> World::LookupBody(const ObserverPtr<const b2Body> bodyHandle) const
+        [[nodiscard]] auto World::LookupBody(const ObserverPointer<const b2Body> bodyHandle) const -> ObserverPointer<const Body>
         {
             if (m_bodies.contains(bodyHandle))
             {
@@ -254,14 +267,19 @@ namespace stardust
             }
         }
 
-        [[nodiscard]] Optional<RaycastHit> World::Raycast(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::Raycast(const Vector2 origin, const Vector2 direction, const f32 distance, const CollisionLayer layerMask) const -> Optional<RaycastHit>
         {
-            const Vec2 normalisedDirection = glm::normalize(direction);
-            const Vec2 destinationPoint = origin + normalisedDirection * distance;
+            if (distance == 0.0f || direction == Vector2Zero) [[unlikely]]
+            {
+                return None;
+            }
+
+            const Vector2 normalisedDirection = glm::normalize(direction);
+            const Vector2 destinationPoint = origin + normalisedDirection * distance;
 
             if (origin == destinationPoint)
             {
-                return NullOpt;
+                return None;
             }
 
             bool hasHitAnything = false;
@@ -276,61 +294,95 @@ namespace stardust
             }
             else
             {
-                return NullOpt;
+                return None;
             }
         }
 
-        [[nodiscard]] Vector<RaycastHit> World::RaycastAll(const Vec2& origin, const Vec2& direction, const f32 distance, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::RaycastAll(const Vector2 origin, const Vector2 direction, const f32 distance, const CollisionLayer layerMask) const -> List<RaycastHit>
         {
-            const Vec2 normalisedDirection = glm::normalize(direction);
-            const Vec2 destinationPoint = origin + normalisedDirection * distance;
+            if (distance == 0.0f || direction == Vector2Zero) [[unlikely]]
+            {
+                return { };
+            }
+
+            const Vector2 normalisedDirection = glm::normalize(direction);
+            const Vector2 destinationPoint = origin + normalisedDirection * distance;
 
             if (origin == destinationPoint)
             {
                 return { };
             }
 
-            Vector<RaycastHit> raycastHits{ };
+            List<RaycastHit> raycastHits{ };
             RaycastAllCallback callback(origin, layerMask, raycastHits, *this);
             m_handle->RayCast(&callback, b2Vec2{ origin.x, origin.y }, b2Vec2{ destinationPoint.x, destinationPoint.y });
 
             return raycastHits;
         }
 
-        [[nodiscard]] bool World::RaycastBox(const AABB& box, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::RaycastBox(const AABB& box, const CollisionLayer layerMask) const -> bool
         {
-            const auto upRaycastHit = Raycast(box.GetLowerBound(), Vec2Up, box.GetSize().y, layerMask);
-
-            if (upRaycastHit.has_value())
+            if (const auto upRaycastHit = Raycast(box.GetLowerBound(), Vector2Up, box.GetSize().y, layerMask); 
+                upRaycastHit.has_value())
             {
                 return true;
             }
 
-            const auto downRaycastHit = Raycast(box.GetUpperBound(), Vec2Down, box.GetSize().y, layerMask);
-
-            if (downRaycastHit.has_value())
+            if (const auto downRaycastHit = Raycast(box.GetUpperBound(), Vector2Down, box.GetSize().y, layerMask); 
+                downRaycastHit.has_value())
             {
                 return true;
             }
 
-            const auto leftRaycastHit = Raycast(Vec2{ box.GetUpperBound().x, box.GetLowerBound().y }, Vec2Left, box.GetSize().x, layerMask);
-
-            if (downRaycastHit.has_value())
+            if (const auto leftRaycastHit = Raycast(Vector2{ box.GetUpperBound().x, box.GetLowerBound().y }, Vector2Left, box.GetSize().x, layerMask);
+                leftRaycastHit.has_value())
             {
                 return true;
             }
 
-            const auto rightRaycastHit = Raycast(Vec2{ box.GetLowerBound().x, box.GetUpperBound().y }, Vec2Right, box.GetSize().x, layerMask);
+            const auto rightRaycastHit = Raycast(Vector2{ box.GetLowerBound().x, box.GetUpperBound().y }, Vector2Right, box.GetSize().x, layerMask);
 
             return rightRaycastHit.has_value();
         }
 
-        [[nodiscard]] bool World::RaycastBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::RaycastBox(const Vector2 centre, const Vector2 halfSize, const CollisionLayer layerMask) const -> bool
         {
             return RaycastBox(AABB(centre, halfSize), layerMask);
         }
 
-        [[nodiscard]] Optional<Collider> World::QueryBox(const AABB& box, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::RaycastBoxAll(const AABB& box, const CollisionLayer layerMask) const -> HashSet<Collider>
+        {
+            HashSet<Collider> overlappingColliders{ };
+
+            for (const auto& upRaycastHit : RaycastAll(box.GetLowerBound(), Vector2Up, box.GetSize().y, layerMask))
+            {
+                overlappingColliders.insert(upRaycastHit.collider);
+            }
+
+            for (const auto& downRaycastHit : RaycastAll(box.GetUpperBound(), Vector2Down, box.GetSize().y, layerMask))
+            {
+                overlappingColliders.insert(downRaycastHit.collider);
+            }
+
+            for (const auto& leftRaycastHit : RaycastAll(Vector2{ box.GetUpperBound().x, box.GetLowerBound().y }, Vector2Left, box.GetSize().x, layerMask))
+            {
+                overlappingColliders.insert(leftRaycastHit.collider);
+            }
+
+            for (const auto& rightRaycastHit : RaycastAll(Vector2{ box.GetLowerBound().x, box.GetUpperBound().y }, Vector2Right, box.GetSize().x, layerMask))
+            {
+                overlappingColliders.insert(rightRaycastHit.collider);
+            }
+
+            return overlappingColliders;
+        }
+
+        [[nodiscard]] auto World::RaycastBoxAll(const Vector2 centre, const Vector2 halfSize, const CollisionLayer layerMask) const -> HashSet<Collider>
+        {
+            return RaycastBoxAll(AABB(centre, halfSize), layerMask);
+        }
+
+        [[nodiscard]] auto World::QueryBox(const AABB& box, const CollisionLayer layerMask) const -> Optional<Collider>
         {
             Collider hitFixture;
             OverlapBoxCallback callback(hitFixture, layerMask, *this);
@@ -343,11 +395,11 @@ namespace stardust
             }
             else
             {
-                return NullOpt;
+                return None;
             }
         }
 
-        [[nodiscard]] Optional<Collider> World::QueryBox(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::QueryBox(const Vector2 centre, const Vector2 halfSize, const CollisionLayer layerMask) const -> Optional<Collider>
         {
             const AABB box(centre, halfSize);
 
@@ -362,13 +414,13 @@ namespace stardust
             }
             else
             {
-                return NullOpt;
+                return None;
             }
         }
 
-        [[nodiscard]] Vector<Collider> World::QueryBoxAll(const AABB& box, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::QueryBoxAll(const AABB& box, const CollisionLayer layerMask) const -> List<Collider>
         {
-            Vector<Collider> hitFixtures{ };
+            List<Collider> hitFixtures{ };
             OverlapBoxAllCallback callback(hitFixtures, layerMask, *this);
 
             m_handle->QueryAABB(&callback, box);
@@ -376,11 +428,11 @@ namespace stardust
             return hitFixtures;
         }
 
-        [[nodiscard]] Vector<Collider> World::QueryBoxAll(const Vec2& centre, const Vec2& halfSize, const CollisionLayer layerMask) const
+        [[nodiscard]] auto World::QueryBoxAll(const Vector2 centre, const Vector2 halfSize, const CollisionLayer layerMask) const -> List<Collider>
         {
             const AABB box(centre, halfSize);
 
-            Vector<Collider> hitFixtures{ };
+            List<Collider> hitFixtures{ };
             OverlapBoxAllCallback callback(hitFixtures, layerMask, *this);
 
             m_handle->QueryAABB(&callback, box);
@@ -388,24 +440,24 @@ namespace stardust
             return hitFixtures;
         }
 
-        [[nodiscard]] Vec2 World::GetGravity() const
+        [[nodiscard]] auto World::GetGravity() const -> Vector2
         {
             const b2Vec2 gravity = m_handle->GetGravity();
 
-            return Vec2{ gravity.x, gravity.y };
+            return Vector2{ gravity.x, gravity.y };
         }
 
-        void World::SetGravity(const Vec2& gravity) const
+        auto World::SetGravity(const Vector2 gravity) const -> void
         {
             m_handle->SetGravity(b2Vec2{ gravity.x, gravity.y });
         }
 
-        [[nodiscard]] bool World::IsSleepingAllowed() const
+        [[nodiscard]] auto World::IsSleepingAllowed() const -> bool
         {
             return m_handle->GetAllowSleeping();
         }
 
-        void World::AllowSleeping(const bool allowSleeping) const
+        auto World::AllowSleeping(const bool allowSleeping) const -> void
         {
             return m_handle->SetAllowSleeping(allowSleeping);
         }

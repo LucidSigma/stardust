@@ -1,20 +1,14 @@
-#include "stardust/graphics/backend/OpenGL.h"
-
-#include <SDL2/SDL.h>
-
-#ifdef WIN32
-    #include <windows.h>
+#ifdef STARDUST_PLATFORM_WINDOWS
+#include <Windows.h>
 #endif
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/Types.h"
-#include "stardust/debug/logging/Log.h"
+#include <ANGLE/GLES3/gl3.h>
 
-#ifndef WIN32
-    #define __cdecl
-#endif
+#include "stardust/debug/logging/Logging.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Primitives.h"
 
-#ifdef WIN32
+#ifdef STARDUST_PLATFORM_WINDOWS
 extern "C"
 {
     _declspec(dllexport) DWORD NvOptimusEnablement = 0x00'00'00'01u;
@@ -26,61 +20,59 @@ namespace stardust
 {
     namespace opengl
     {
-        [[nodiscard]] Status InitialiseLoader()
+        namespace
         {
-            return gladLoadGLLoader(static_cast<GLADloadproc>(SDL_GL_GetProcAddress)) != 0
-                ? Status::Success
-                : Status::Fail;
-        }
-
-        void InitialiseDebugCallback()
-        {
-            glDebugMessageCallback(DebugMessageCallback, nullptr);
-            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        }
-
-        void __cdecl DebugMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const GLchar* message, const void* userParams) noexcept
-        {
-            switch (severity)
+            enum class Error
+                : GLenum
             {
-            case GL_DEBUG_SEVERITY_HIGH:
-                Log::EngineError("[OPENGL ERROR]: {}", message);
+                NoError = GL_NO_ERROR,
+                InvalidEnum = GL_INVALID_ENUM,
+                InvalidValue = GL_INVALID_VALUE,
+                InvalidOperation = GL_INVALID_OPERATION,
+                InvalidFramebufferOperation = GL_INVALID_FRAMEBUFFER_OPERATION,
+                OutOfMemory = GL_OUT_OF_MEMORY,
+            };
 
-                break;
+            [[nodiscard]] inline auto GetCurrentError() noexcept -> Error
+            {
+                return static_cast<Error>(glGetError());
+            }
 
-            case GL_DEBUG_SEVERITY_MEDIUM:
-                Log::EngineWarn("[OPENGL WARNING]: {}", message);
+            [[nodiscard]] auto GetErrorString(const Error error) -> String
+            {
+                switch (error)
+                {
+                case Error::NoError:
+                    return "No error";
 
-                break;
+                case Error::InvalidEnum:
+                    return "Invalid enum";
 
-            case GL_DEBUG_SEVERITY_LOW:
-                Log::EngineDebug("[OPENGL PERFORMANCE]: {}", message);
+                case Error::InvalidValue:
+                    return "Invalid value";
 
-                break;
+                case Error::InvalidOperation:
+                    return "Invalid operation";
 
-            case GL_DEBUG_SEVERITY_NOTIFICATION:
-            default:
-                break;
+                case Error::InvalidFramebufferOperation:
+                    return "Invalid framebuffer operation";
+
+                case Error::OutOfMemory:
+                    return "Out of memory";
+
+                [[unlikely]] default:
+                    return "";
+                }
             }
         }
 
-        [[nodiscard]] VersionInfo GetVersion()
+        auto CheckErrors() -> void
         {
-            GLint openGLMajorVersion = 0;
-            glGetIntegerv(GL_MAJOR_VERSION, &openGLMajorVersion);
-
-            GLint openGLMinorVersion = 0;
-            glGetIntegerv(GL_MINOR_VERSION, &openGLMinorVersion);
-
-            return VersionInfo{
-                .major = static_cast<u32>(openGLMajorVersion),
-                .minor = static_cast<u32>(openGLMinorVersion),
-                .patch = 0u,
-            };
+            if (const Error error = GetCurrentError();
+                error != Error::NoError)
+            {
+                Log::EngineError("OpenGL error: {} [Error code: {}]", GetErrorString(error), static_cast<u32>(error));
+            }
         }
     }
 }
-
-#ifndef WIN32
-    #undef __cdecl
-#endif

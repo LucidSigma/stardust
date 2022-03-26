@@ -1,29 +1,33 @@
 #include "stardust/text/font/FontCache.h"
 
+#include <memory>
+
 namespace stardust
 {
-    FontCache::FontCache(const StringView& fontFilepath)
-        : m_filepath(fontFilepath)
-    { }
-
-    void FontCache::SetFont(const StringView& fontFilepath)
+    FontCache::FontCache(const Font::CreateInfo& createInfo)
     {
-        m_filepath = fontFilepath;
+        SetFontData(createInfo);
+    }
+    
+    auto FontCache::SetFontData(const Font::CreateInfo& createInfo) -> void
+    {
+        m_createInfo = createInfo;
     }
 
-    [[nodiscard]] Status FontCache::Add(const FontSize pointSize)
+    [[nodiscard]] auto FontCache::Add(const Font::Size pointSize) -> Status
     {
         if (!m_pointSizes.contains(pointSize))
         {
-            m_pointSizes.emplace(pointSize, Font(m_filepath, pointSize));
+            m_createInfo.pointSize = pointSize;
+            m_pointSizes[pointSize] = std::make_unique<Font>(m_createInfo);
         }
 
-        return m_pointSizes[pointSize].IsValid() ? Status::Success : Status::Fail;
+        return m_pointSizes[pointSize]->IsValid() ? Status::Success : Status::Fail;
     }
 
-    [[nodiscard]] Status  FontCache::Add(const Vector<FontSize>& pointSizes)
+    [[nodiscard]] auto FontCache::Add(const List<Font::Size>& pointSizes) -> Status
     {
-        for (const FontSize pointSize : pointSizes)
+        for (const Font::Size pointSize : pointSizes)
         {
             if (Add(pointSize) != Status::Success)
             {
@@ -34,12 +38,12 @@ namespace stardust
         return Status::Success;
     }
 
-    [[nodiscard]] Font& FontCache::Get(const FontSize pointSize)
+    [[nodiscard]] auto FontCache::Get(const Font::Size pointSize) -> Font&
     {
-        return m_pointSizes[pointSize];
+        return *m_pointSizes[pointSize];
     }
 
-    void FontCache::Remove(const FontSize pointSize)
+    auto FontCache::Remove(const Font::Size pointSize) -> void
     {
         m_pointSizes.erase(pointSize);
     }

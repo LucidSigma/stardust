@@ -9,8 +9,11 @@ namespace stardust
     protected:
         INonmovable() = default;
 
+        INonmovable(const INonmovable&) = default;
+        auto operator =(const INonmovable&) -> INonmovable& = default;
+
         INonmovable(INonmovable&&) noexcept = delete;
-        INonmovable& operator =(INonmovable&&) noexcept = delete;
+        auto operator =(INonmovable&&) noexcept -> INonmovable& = delete;
 
         ~INonmovable() noexcept = default;
     };

@@ -4,15 +4,15 @@
 
 #include <box2d/box2d.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Types.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace physics
     {
-        class AABB
+        class AABB final
         {
         private:
             b2AABB m_aabb{ };
@@ -20,40 +20,46 @@ namespace stardust
         public:
             AABB() = default;
             AABB(const b2AABB& aabb);
-            explicit AABB(const Pair<Vec2, Vec2>& bounds);
-            AABB(const Vec2& centre, const Vec2& halfSize);
-            ~AABB() noexcept = default;
+            explicit AABB(const Pair<Vector2, Vector2>& bounds);
+            AABB(const Vector2 centre, const Vector2 halfSize);
 
-            void Combine(const AABB& other);
-            void Combine(const AABB& first, const AABB& second);
+            auto Combine(const AABB& other) -> void;
+            auto Combine(const AABB& first, const AABB& second) -> void;
 
-            void Expand(f32 amount);
-            void Expand(Vec2 amount);
+            auto Expand(Vector2 amount) -> void;
+            auto Expand(f32 amount) -> void;
+            auto Expand(f32 xAmount, f32 yAmount) -> void;
+            auto Shrink(const Vector2 amount) -> void;
+            auto Shrink(const f32 amount) -> void;
+            auto Shrink(const f32 xAmount, const f32 yAmount) -> void;
 
-            [[nodiscard]] bool Contains(const Vec2& point) const;
-            [[nodiscard]] bool Contains(const AABB& aabb) const;
+            [[nodiscard]] auto Contains(const Vector2 point) const -> bool;
+            [[nodiscard]] auto Contains(const AABB& aabb) const -> bool;
 
-            [[nodiscard]] bool IsValid() const;
+            [[nodiscard]] auto IsValid() const -> bool;
 
-            [[nodiscard]] Vec2 GetLowerBound() const;
-            void SetLowerBound(const Vec2& lowerBound);
+            [[nodiscard]] auto GetLowerBound() const -> Vector2;
+            auto SetLowerBound(const Vector2 lowerBound) -> void;
 
-            [[nodiscard]] Vec2 GetUpperBound() const;
-            void SetUpperBound(const Vec2& upperBound);
+            [[nodiscard]] auto GetUpperBound() const -> Vector2;
+            auto SetUpperBound(const Vector2 upperBound) -> void;
 
-            [[nodiscard]] f32 GetWidth() const;
-            [[nodiscard]] f32 GetHeight() const;
-            [[nodiscard]] f32 GetHalfWidth() const;
-            [[nodiscard]] f32 GetHalfHeight() const;
+            [[nodiscard]] auto GetWidth() const -> f32;
+            [[nodiscard]] auto GetHeight() const -> f32;
+            [[nodiscard]] auto GetHalfWidth() const -> f32;
+            [[nodiscard]] auto GetHalfHeight() const -> f32;
 
-            [[nodiscard]] Vec2 GetCentre() const;
-            void SetCentre(const Vec2& centre);
+            [[nodiscard]] auto GetCentre() const -> Vector2;
+            auto SetCentre(const Vector2 centre) -> void;
+            auto ShiftCentre(const Vector2 offset) -> void;
+            auto ShiftCentre(const f32 xOffset, const f32 yOffset) -> void;
 
-            [[nodiscard]] Vec2 GetExtents() const;
-            [[nodiscard]] Vec2 GetSize() const;
+            [[nodiscard]] auto GetHalfSize() const -> Vector2;
+            [[nodiscard]] auto GetSize() const -> Vector2;
+            auto SetSize(const Vector2 size) -> void;
 
-            [[nodiscard]] f32 GetArea() const;
-            [[nodiscard]] f32 GetPerimeter() const;
+            [[nodiscard]] auto GetArea() const -> f32;
+            [[nodiscard]] auto GetPerimeter() const->f32;
 
             [[nodiscard]] inline operator b2AABB() const noexcept { return m_aabb; }
         };

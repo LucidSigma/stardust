@@ -2,26 +2,33 @@
 #ifndef STARDUST_UTILITY_H
 #define STARDUST_UTILITY_H
 
-#include "stardust/data/Containers.h"
+#include "stardust/graphics/Graphics.h"
+#include "stardust/types/Containers.h"
+#include "stardust/utility/error_handling/Status.h"
 
 namespace stardust
 {
     namespace utility
     {
         template <typename... Types>
-        struct Overload
-            : Types...
+        struct VariantOverloader final
+            : public Types...
         {
             using Types::operator ()...;
         };
 
         template <typename... Types>
-        Overload(Types...) -> Overload<Types...>;
+        VariantOverloader(Types...) -> VariantOverloader<Types...>;
 
-        [[nodiscard]] String ToBase64(const StringView& data);
-        [[nodiscard]] String FromBase64(const StringView& base64);
+        template <typename T>
+        constexpr bool DependentTrue = true;
 
-        extern void OpenURL(const StringView& url);
+        template <typename T>
+        constexpr bool DependentFalse = false;
+
+        extern auto OpenURL(const StringView url) -> void;
+
+        extern auto WriteToPNG(const StringView filepath, const graphics::PixelData& pixelData) -> Status;
     }
 
     namespace util = utility;

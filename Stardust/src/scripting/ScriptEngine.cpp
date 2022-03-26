@@ -1,56 +1,107 @@
 #include "stardust/scripting/ScriptEngine.h"
 
+#include <lua/lua.h>
+
 #include "stardust/application/Application.h"
-#include "stardust/debug/logging/Log.h"
-#include "stardust/filesystem/vfs/VFS.h"
-#include "stardust/math/Math.h"
+#include "stardust/filesystem/vfs/VirtualFilesystem.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    namespace
+    auto ScriptEngine::Initialise(Application& application) -> void
     {
-        struct ApplicationWrapper
-        {
-            Application* const application = nullptr;
+        m_luaState.open_libraries(
+            sol::lib::base,
+            sol::lib::coroutine,
+            sol::lib::io,
+            sol::lib::math,
+            sol::lib::package,
+            sol::lib::string,
+            sol::lib::table,
+            sol::lib::utf8
+        );
 
-            inline void FinishCurrentScene() noexcept { application->FinishCurrentScene(); }
-            inline void ForceQuit() noexcept { application->ForceQuit(); }
+        LoadApplicationFunctions(application);
+        LoadMathFunctions();
+        LoadGraphicsFunctions(application);
+        LoadAnimationFunctions();
+        LoadUIFunctions();
 
-            [[nodiscard]] inline f64 GetElapsedTime() const noexcept { return application->GetElapsedTime(); }
-        };
+        LoadScript(R"LUA(
+            function create_set(values)
+                local set = { }
+
+                for _, value in ipairs(values) do
+                    set[value] = true
+                end
+
+                return set
+            end
+        )LUA");
     }
 
-    void ScriptEngine::Initialise(Application& application)
+    auto ScriptEngine::LoadScript(const StringView script) -> Status
     {
-        m_luaState.open_libraries(sol::lib::base, sol::lib::math, sol::lib::package, sol::lib::table);
+        const sol::protected_function_result scriptResult = m_luaState.safe_script(
+            script,
+    #ifdef NDEBUG
+            sol::script_pass_on_error
+    #else
+            sol::script_throw_on_error
+    #endif
+        );
 
-        SetFunction("finish_current_scene", &ApplicationWrapper::FinishCurrentScene, ApplicationWrapper{ &application });
-        SetFunction("force_quit", &ApplicationWrapper::ForceQuit, ApplicationWrapper{ &application });
-        SetFunction("get_elapsed_time", &ApplicationWrapper::GetElapsedTime, ApplicationWrapper{ &application });
-
-        SetFunction("log_info", &Log::Info<>);
-        SetFunction("log_debug", &Log::Debug<>);
-        SetFunction("log_trace", &Log::Trace<>);
-        SetFunction("log_warn", &Log::Warn<>);
-        SetFunction("log_error", &Log::Error<>);
-        SetFunction("log_critical", &Log::Critical<>);
-
-        LoadVectorType<Vec2, sol::constructors<Vec2(), Vec2(f32), Vec2(f32, f32), Vec2(const Vec2&)>>();
-        LoadVectorType<Vec3, sol::constructors<Vec3(), Vec3(f32), Vec3(f32, f32, f32), Vec3(const Vec3&)>>();
-        LoadVectorType<Vec4, sol::constructors<Vec4(), Vec4(f32), Vec4(f32, f32, f32, f32), Vec4(const Vec4&)>>();
+        return scriptResult.valid() ? Status::Success : Status::Fail;
     }
 
-    [[nodiscard]] Status ScriptEngine::LoadScript(const StringView& filename)
+    [[nodiscard]] auto ScriptEngine::LoadScriptFile(const StringView scriptFilepath) -> Status
     {
-        const String script = vfs::ReadFileString(filename);
+        auto scriptReadResult = vfs::ReadFileString(scriptFilepath);
 
-        if (script.empty())
+        if (scriptReadResult.is_err())
         {
             return Status::Fail;
         }
 
-        const auto scriptResult = m_luaState.safe_script(script, sol::script_pass_on_error);
-
-        return scriptResult.valid() ? Status::Success : Status::Fail;
+        const String script = std::move(scriptReadResult).unwrap();
+        
+        return LoadScript(script);
     }
+}
+
+template <typename T, typename Handler>
+auto sol_lua_check(const sol::types<stardust::Optional<T>> types, lua_State* const L, const stardust::i32 index, Handler&& handler, sol::stack::record& tracking) -> bool
+{
+    const stardust::i32 absoluteIndex = lua_absindex(L, index);
+    const bool success = sol::stack::check<T>(L, absoluteIndex, handler) || sol::stack::check<sol::lua_nil_t>(L, absoluteIndex, handler);
+    tracking.use(1);
+
+    return success;
+}
+
+template <typename T>
+auto sol_lua_get(const sol::types<stardust::Optional<T>> types, lua_State* const L, const stardust::i32 index, sol::stack::record& tracking) -> stardust::Optional<T>
+{
+    const stardust::i32 absoluteIndex = lua_absindex(L, index);
+    const sol::optional<T> getResult = sol::stack::check_get<T>(L, absoluteIndex);
+    tracking.use(1);
+
+    if (getResult.has_value())
+    {
+        return getResult.value();
+    }
+    else
+    {
+        return stardust::None;
+    }
+}
+
+template <typename T>
+auto sol_lua_push(lua_State* const L, const stardust::Optional<T>& value) -> stardust::i32
+{
+    const stardust::i32 amount = value.has_value()
+        ? sol::stack::push(L, value.value())
+        : sol::stack::push(L, sol::lua_nil);
+
+    return amount;
 }

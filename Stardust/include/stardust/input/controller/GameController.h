@@ -4,32 +4,43 @@
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 
+#include <limits>
+#include <type_traits>
+
 #include <SDL2/SDL.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
-#include "stardust/input/controller/GameControllerCodes.h"
 #include "stardust/graphics/colour/Colour.h"
+#include "stardust/input/controller/GameControllerCodes.h"
+#include "stardust/input/joystick/Joystick.h"
 #include "stardust/math/Math.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    class GameController
+    class GameController final
         : private INoncopyable
-
     {
     public:
-        struct ButtonState
+        using ID = i32;
+        using InstanceID = SDL_JoystickID;
+        using PlayerIndex = u32;
+
+        static constexpr PlayerIndex InvalidPlayerIndex = std::numeric_limits<PlayerIndex>::max();
+
+        struct ButtonState final
         {
-            struct DPad
+            struct DPad final
             {
                 bool up;
                 bool down;
                 bool left;
                 bool right;
-            } dPad;
+            };
+
+            DPad dPad;
 
             bool a;
             bool b;
@@ -52,116 +63,166 @@ namespace stardust
             Array<bool, 4u> paddles;
         };
 
-        struct Axes
+        struct Axes final
         {
-            struct Thumbstick
+            struct Thumbstick final
             {
-                i16 x;
-                i16 y;
+                f32 x;
+                f32 y;
             };
 
             Thumbstick left;
             Thumbstick right;
 
-            i16 leftTrigger;
-            i16 rightTrigger;
+            f32 leftTrigger;
+            f32 rightTrigger;
         };
 
-        struct TouchpadFingerInfo
+        struct TouchpadFingerInfo final
         {
-            Vec2 position;
+            Vector2 position;
             f32 pressure;
 
             bool isTouching;
         };
 
+        enum class ThumbstickInputType
+        {
+            Orthogonal,
+            Radial,
+        };
+
+        enum class Type
+            : std::underlying_type_t<SDL_GameControllerType>
+        {
+            Xbox360 = SDL_CONTROLLER_TYPE_XBOX360,
+            XboxOne = SDL_CONTROLLER_TYPE_XBOXONE,
+            PS3 = SDL_CONTROLLER_TYPE_PS3,
+            PS4 = SDL_CONTROLLER_TYPE_PS4,
+            PS5 = SDL_CONTROLLER_TYPE_PS5,
+            NintendoSwitchPro = SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO,
+            AmazonLuna = SDL_CONTROLLER_TYPE_AMAZON_LUNA,
+            GoogleStadia = SDL_CONTROLLER_TYPE_GOOGLE_STADIA,
+            Virtual = SDL_CONTROLLER_TYPE_VIRTUAL,
+            Other = SDL_CONTROLLER_TYPE_UNKNOWN,
+        };
+
     private:
-        struct GameControllerDestroyer
+        struct GameControllerDestroyer final
         {
             void operator ()(SDL_GameController* const gameController) const noexcept;
         };
 
-        i32 m_id = 0;
-        u32 m_playerIndex = 0u;
+        inline static ThumbstickInputType s_leftThumbstickInputType = ThumbstickInputType::Orthogonal;
+        inline static ThumbstickInputType s_rightThumbstickInputType = ThumbstickInputType::Orthogonal;
 
-        UniquePtr<SDL_GameController, GameControllerDestroyer> m_handle = nullptr;
+        ID m_id = 0;
+        PlayerIndex m_playerIndex = InvalidPlayerIndex;
 
-        ButtonState m_currentButtons;
-        ButtonState m_previousButtons;
-        Axes m_axes;
-        Vector<TouchpadFingerInfo> m_touchpadFingers{ };
-        Vec3 m_accelerometerState = Vec3Zero;
-        Vec3 m_gyroscopeState = Vec3Zero;
+        String m_name;
+        String m_guid;
 
-        bool m_hasLED = false;
+        UniquePointer<SDL_GameController, GameControllerDestroyer> m_handle = nullptr;
+
+        ButtonState m_currentButtonsState{ };
+        ButtonState m_previousButtonsState{ };
+
+        Axes m_axes{ };
+        f32 m_previousLeftTriggerState = 0.0f;
+        f32 m_previousRightTriggerState = 0.0f;
+
+        List<TouchpadFingerInfo> m_touchpadFingers{ };
+        Vector3 m_accelerometerState = Vector3Zero;
+        Vector3 m_gyroscopeState = Vector3Zero;
+
         bool m_hasTouchpad = false;
-
-        bool m_canRumble = false;
-        bool m_canRumbleTriggers = false;
 
         bool m_hasAccelerometer = false;
         bool m_hasGyroscope = false;
 
     public:
-        friend class Input;
+        [[nodiscard]] inline static auto GetLeftThumbstickInputType() noexcept -> ThumbstickInputType { return s_leftThumbstickInputType; }
+        [[nodiscard]] inline static auto GetRightThumbstickInputType() noexcept -> ThumbstickInputType { return s_rightThumbstickInputType; }
+        inline static auto SetLeftThumbstickInputType(const ThumbstickInputType thumbstickInputType) noexcept -> void { s_leftThumbstickInputType = thumbstickInputType; }
+        inline static auto SetRightThumbstickInputType(const ThumbstickInputType thumbstickInputType) noexcept -> void { s_rightThumbstickInputType = thumbstickInputType; }
 
-        explicit GameController(const i32 id);
+        explicit GameController(const ID id);
 
         GameController(GameController&& other) noexcept;
-        GameController& operator =(GameController&& other) noexcept;
+        auto operator =(GameController&& other) noexcept -> GameController&;
 
         ~GameController() noexcept = default;
 
-        [[nodiscard]] bool IsButtonDown(const GameControllerButton button) const;
-        [[nodiscard]] bool IsButtonPressed(const GameControllerButton button) const;
-        [[nodiscard]] bool IsButtonUp(const GameControllerButton button) const;
+        [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_handle != nullptr; }
 
-        [[nodiscard]] bool IsAnyButtonDown(const Vector<GameControllerButton>& buttons) const;
-        [[nodiscard]] bool IsAnyButtonPressed(const Vector<GameControllerButton>& buttons) const;
-        [[nodiscard]] bool IsAnyButtonUp(const Vector<GameControllerButton>& buttons) const;
+        auto Update(const class InputController& inputController) -> void;
 
-        [[nodiscard]] bool AreAllButtonsDown(const Vector<GameControllerButton>& buttons) const;
-        [[nodiscard]] bool AreAllButtonsPressed(const Vector<GameControllerButton>& buttons) const;
-        [[nodiscard]] bool AreAllButtonsUp(const Vector<GameControllerButton>& buttons) const;
+        [[nodiscard]] auto IsButtonDown(const GameControllerButton button) const -> bool;
+        [[nodiscard]] auto IsButtonPressed(const GameControllerButton button) const -> bool;
+        [[nodiscard]] auto IsButtonUp(const GameControllerButton button) const -> bool;
 
-        [[nodiscard]] inline bool CanRumble() const noexcept { return m_canRumble; }
-        void Rumble(const f32 lowFrequency, const f32 highFrequency, const u32 milliseconds) const;
-        void StopRumbling() const;
+        [[nodiscard]] auto IsAnyButtonDown(const List<GameControllerButton>& buttons) const -> bool;
+        [[nodiscard]] auto IsAnyButtonPressed(const List<GameControllerButton>& buttons) const -> bool;
+        [[nodiscard]] auto IsAnyButtonUp(const List<GameControllerButton>& buttons) const -> bool;
 
-        [[nodiscard]] inline bool CanRumbleTriggers() const noexcept { return m_canRumbleTriggers; }
-        void RumbleTriggers(const f32 leftIntensity, const f32 rightIntensity, const u32 milliseconds) const;
-        void StopRumblingTriggers() const;
+        [[nodiscard]] auto AreAllButtonsDown(const List<GameControllerButton>& buttons) const -> bool;
+        [[nodiscard]] auto AreAllButtonsPressed(const List<GameControllerButton>& buttons) const -> bool;
+        [[nodiscard]] auto AreAllButtonsUp(const List<GameControllerButton>& buttons) const -> bool;
 
-        [[nodiscard]] inline bool HasLED() const noexcept { return m_hasLED; }
-        void SetLED(const Colour& colour) const;
+        [[nodiscard]] auto AreNoButtonsDown(const List<GameControllerButton>& buttons) const -> bool;
+        [[nodiscard]] auto AreNoButtonsPressed(const List<GameControllerButton>& buttons) const -> bool;
+        [[nodiscard]] auto AreNoButtonsUp(const List<GameControllerButton>& buttons) const -> bool;
 
-        [[nodiscard]] inline bool HasTouchpad() const noexcept { return m_hasTouchpad; }
-        [[nodiscard]] u32 GetSupportedTouchpadFingerCount() const;
+        [[nodiscard]] auto IsTriggerDown(const GameControllerTrigger trigger) const -> bool;
+        [[nodiscard]] auto IsTriggerPressed(const GameControllerTrigger trigger) const -> bool;
+        [[nodiscard]] auto IsTriggerUp(const GameControllerTrigger trigger) const -> bool;
 
-        [[nodiscard]] inline bool HasAccelerometer() const noexcept { return m_hasAccelerometer; }
-        [[nodiscard]] inline const Vec3& GetAccelerometerData() const noexcept { return m_accelerometerState; }
-        [[nodiscard]] inline bool HasGyroscope() const noexcept { return m_hasGyroscope; }
-        [[nodiscard]] inline const Vec3& GetGyroscopeData() const noexcept { return m_gyroscopeState; }
+        [[nodiscard]] auto CanRumble() const -> bool;
+        auto Rumble(const f32 lowFrequency, const f32 highFrequency, const u32 milliseconds) const -> void;
+        auto StopRumbling() const -> void;
 
-        [[nodiscard]] inline i32 GetID() const noexcept { return m_id; }
-        [[nodiscard]] inline const Axes& GetAxes() const noexcept { return m_axes; }
-        [[nodiscard]] inline const Vector<TouchpadFingerInfo>& GetTouchpadFingers() const noexcept { return m_touchpadFingers; }
+        [[nodiscard]] auto CanRumbleTriggers() const -> bool;
+        auto RumbleTriggers(const f32 leftIntensity, const f32 rightIntensity, const u32 milliseconds) const -> void;
+        auto StopRumblingTriggers() const -> void;
 
-        [[nodiscard]] inline u32 GetPlayerIndex() const noexcept { return m_playerIndex; }
-        [[nodiscard]] inline void SetPlayerIndex(const u32 playerIndex) noexcept { m_playerIndex = playerIndex; }
+        [[nodiscard]] auto HasLED() const -> bool;
+        auto SetLED(const Colour& colour) const -> void;
 
-        [[nodiscard]] String GetName() const;
+        [[nodiscard]] inline auto HasTouchpad() const noexcept -> bool { return m_hasTouchpad; }
+        [[nodiscard]] auto GetSupportedTouchpadFingerCount() const -> u32;
 
-        [[nodiscard]] inline SDL_GameController* const GetRawHandle() const noexcept { return m_handle.get(); }
-        [[nodiscard]] SDL_Joystick* const GetRawJoystickHandle() const;
+        [[nodiscard]] inline auto HasAccelerometer() const noexcept -> bool { return m_hasAccelerometer; }
+        [[nodiscard]] inline auto GetAccelerometerData() const noexcept -> const Vector3 { return m_accelerometerState; }
+        [[nodiscard]] inline auto HasGyroscope() const noexcept -> bool { return m_hasGyroscope; }
+        [[nodiscard]] inline auto GetGyroscopeData() const noexcept -> const Vector3 { return m_gyroscopeState; }
+
+        [[nodiscard]] inline auto GetID() const noexcept -> ID { return m_id; }
+        [[nodiscard]] auto GetInstanceID() const -> InstanceID;
+
+        [[nodiscard]] inline auto GetAxes() const noexcept -> const Axes& { return m_axes; }
+        [[nodiscard]] inline auto GetTouchpadFingers() const noexcept -> const List<TouchpadFingerInfo>& { return m_touchpadFingers; }
+
+        [[nodiscard]] inline auto GetPlayerIndex() const noexcept -> PlayerIndex { return m_playerIndex; }
+        [[nodiscard]] inline auto SetPlayerIndex(const PlayerIndex playerIndex) noexcept -> void { m_playerIndex = playerIndex; }
+
+        [[nodiscard]] inline auto GetName() const noexcept -> const String& { return m_name; }
+        [[nodiscard]] inline auto GetGUID() const noexcept -> const String& { return m_guid; }
+        [[nodiscard]] auto GetType() const noexcept -> Type;
+
+        [[nodiscard]] inline auto GetRawHandle() const noexcept -> SDL_GameController* { return m_handle.get(); }
+        [[nodiscard]] auto GetRawJoystickHandle() const -> SDL_Joystick*;
+
+        [[nodiscard]] explicit operator Joystick() const;
 
     private:
-        [[nodiscard]] static bool GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept;
-    
-        void UpdateButtons();
-        void UpdateAxes();
-        void UpdateTouchpadFingers();
-        void UpdateSensors();
+        [[nodiscard]] static auto GetButtonState(const GameControllerButton button, const ButtonState& buttonState) noexcept -> bool;
+
+        auto UpdateButtons() -> void;
+        auto UpdateAxes(const class InputController& inputController) -> void;
+        [[nodiscard]] auto GetNormalisedThumbstickValue(const Vector2 rawAxisData, const f32 deadzone, const ThumbstickInputType thumbstickInputType) -> Axes::Thumbstick;
+        [[nodiscard]] auto GetNormalisedTriggerValue(const i16 rawAxisData, const f32 deadzone) -> f32;
+        auto UpdateTouchpadFingers() -> void;
+        auto UpdateSensors() -> void;
     };
 }
 

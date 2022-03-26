@@ -2,88 +2,52 @@
 #ifndef STARDUST_PARTICLE_SYSTEM_H
 #define STARDUST_PARTICLE_SYSTEM_H
 
-#include "stardust/animation/Easings.h"
-#include "stardust/camera/Camera2D.h"
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
-#include "stardust/graphics/colour/Colour.h"
-#include "stardust/graphics/colour/Colours.h"
-#include "stardust/graphics/renderer/Renderer.h"
-#include "stardust/graphics/texture/Texture.h"
-#include "stardust/math/Math.h"
+#include "stardust/ecs/components/SpriteComponent.h"
+#include "stardust/ecs/components/TransformComponent.h"
+#include "stardust/particles/Particle.h"
 #include "stardust/particles/ParticleData.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    class ParticleSystem
+    class ParticleSystem final
     {
-    private:
-        struct Particle
-        {
-            Vec2 position = Vec2Zero;
-            f32 rotation = 0.0f;
+        static constexpr usize s_MaxParticleCount = 4'000u;
 
-            Vec2 velocity = Vec2Zero;
-            f32 acceleration = 1.0f;
-
-            f32 angularVelocity = 0.0f;
-            f32 angularAcceleration = 1.0f;
-
-            bool isAffectedByGravity = false;
-            bool isAffectedByWind = false;
-
-            Vec2 size = Vec2One;
-            f32 sizeUpdateMultipler = 1.0f;
-
-            Colour currentColour = colours::White;
-            Colour startColour = colours::White;
-            Colour endColour = colours::White;
-            ObserverPtr<const Texture> texture = nullptr;
-            Optional<TextureCoordinatePair> textureArea = NullOpt;
-
-            EasingFunction colourEasingFunction = easings::EaseLinear;
-
-            f32 lifetime = 0.0f;
-            f32 lifetimeRemaining = 0.0f;
-
-            bool isActive = false;
-        };
-
-        static constexpr usize s_ParticleCount = 1'000u;
-
-        Vector<Particle> m_particlePool;
-        usize m_particlePoolIndex = s_ParticleCount - 1u;
-        HashMap<usize, ObserverPtr<Particle>> m_activeParticles{ };
+        List<Particle> m_particlePool;
+        usize m_particlePoolIndex = 0u;
+        HashMap<usize, ObserverPointer<Particle>> m_activeParticles{ };
 
         f32 m_gravity = 0.0f;
         f32 m_wind = 0.0f;
 
     public:
-        [[nodiscard]] static constexpr usize GetMaxParticleCount() noexcept { return s_ParticleCount; }
+        [[nodiscard]] static constexpr auto MaxParticleCount() noexcept -> usize { return s_MaxParticleCount; }
 
         ParticleSystem();
-        ~ParticleSystem() noexcept = default;
 
-        void Update(const f32 deltaTime);
-        void RenderInWorld(Renderer& renderer, const Camera2D& camera) const;
-        void RenderOnScreen(Renderer& renderer) const;
+        auto Update(const f32 deltaTime) -> void;
 
-        void Emit(const ParticleData& particleData);
-        void KillAllParticles();
+        [[nodiscard]] auto GenerateParticleComponents() const -> Generator<const Pair<components::Transform, components::Sprite>>;
 
-        void RepositionAllActiveParticles(const Vec2& relativePosition);
-        void ResizeAllActiveParticles(const f32 relativeScale);
+        auto Emit(const ParticleData& particleData) -> void;
+        auto KillAllParticles() -> void;
 
-        [[nodiscard]] inline usize GetActiveParticleCount() const noexcept { return m_activeParticles.size(); }
+        auto RepositionAllActiveParticles(const Vector2 relativePosition) -> void;
+        auto ResizeAllActiveParticles(const f32 relativeScale) -> void;
 
-        [[nodiscard]] inline f32 GetGravity() const noexcept { return m_gravity; }
-        [[nodiscard]] inline void SetGravity(const f32 gravity) noexcept { m_gravity = gravity; }
+        [[nodiscard]] inline auto GetActiveParticleCount() const noexcept -> usize { return m_activeParticles.size(); }
 
-        [[nodiscard]] inline f32 GetWind() const noexcept { return m_wind; }
-        [[nodiscard]] inline void SetWind(const f32 wind) noexcept { m_wind = wind; }
+        [[nodiscard]] inline auto GetGravity() const noexcept -> f32 { return m_gravity; }
+        [[nodiscard]] inline auto SetGravity(const f32 gravity) noexcept -> void { m_gravity = gravity; }
+
+        [[nodiscard]] inline auto GetWind() const noexcept -> f32 { return m_wind; }
+        [[nodiscard]] inline auto SetWind(const f32 wind) noexcept -> void { m_wind = wind; }
     };
 }
+
 
 #endif

@@ -4,19 +4,19 @@
 
 #include <box2d/box2d.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
 #include "stardust/physics/geometry/Edge.h"
 #include "stardust/physics/AABB.h"
 #include "stardust/physics/Physics.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace physics
     {
-        class Chain
+        class Chain final
         {
         private:
             b2ChainShape m_chain{ };
@@ -24,30 +24,28 @@ namespace stardust
         public:
             Chain() = default;
             Chain(const b2ChainShape& shapeHandle);
-            explicit Chain(const Vector<Vec2>& vertices);
-            Chain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB);
-            ~Chain() noexcept = default;
+            explicit Chain(const List<Vector2>& vertices);
+            Chain(const List<Vector2>& vertices, const Vector2 ghostVertexA, const Vector2 ghostVertexB);
 
-            void CreateLoop(const Vector<Vec2>& vertices);
-            void CreateChain(const Vector<Vec2>& vertices, const Vec2& ghostVertexA, const Vec2& ghostVertexB);
+            auto CreateLoop(const List<Vector2>& vertices) -> void;
+            auto CreateChain(const List<Vector2>& vertices, const Vector2 ghostVertexA, const Vector2 ghostVertexB) -> void;
 
-            void Clear();
+            auto Clear() -> void;
 
-            [[nodiscard]] Vector<Vec2> GetVertices() const;
-            [[nodiscard]] inline u32 GetVertexCount() const noexcept { return static_cast<u32>(m_chain.m_count); }
-            [[nodiscard]] Pair<Vec2, Vec2> GetGhostVertices() const;
+            [[nodiscard]] auto GetVertices() const -> List<Vector2>;
+            [[nodiscard]] inline auto GetVertexCount() const noexcept -> u32 { return static_cast<u32>(m_chain.m_count); }
+            [[nodiscard]] auto GetGhostVertices() const -> Pair<Vector2, Vector2>;
 
-            [[nodiscard]] Edge GetChildEdge(const u32 childEdgeIndex) const;
-            [[nodiscard]] inline u32 GetChildEdgeCount() const noexcept { return static_cast<u32>(m_chain.GetChildCount()); }
+            [[nodiscard]] auto GetChildEdge(const u32 childEdgeIndex) const -> Edge;
+            [[nodiscard]] inline auto GetChildEdgeCount() const noexcept -> u32 { return static_cast<u32>(m_chain.GetChildCount()); }
 
-            [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
-            [[nodiscard]] AABB ComputeEdgeAABB(const Vec2& worldPosition, const f32 rotation, const u32 childEdgeIndex) const;
-            [[nodiscard]] MassData ComputeMassData(const f32 density) const;
+            [[nodiscard]] auto ComputeEdgeAABB(const Vector2 worldPosition, const f32 rotation, const u32 childEdgeIndex) const -> AABB;
+            [[nodiscard]] auto ComputeMassData(const f32 density) const -> MassData;
 
-            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_chain; }
-            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_chain; }
-            [[nodiscard]] inline operator ObserverPtr<b2ChainShape>() noexcept { return &m_chain; }
-            [[nodiscard]] inline operator ObserverPtr<const b2ChainShape>() const noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPointer<b2Shape>() noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPointer<const b2Shape>() const noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPointer<b2ChainShape>() noexcept { return &m_chain; }
+            [[nodiscard]] inline operator ObserverPointer<const b2ChainShape>() const noexcept { return &m_chain; }
         };
     }
 }

@@ -2,17 +2,20 @@
 #ifndef STARDUST_BUFFER_USAGE_H
 #define STARDUST_BUFFER_USAGE_H
 
-#include <glad/glad.h>
+#include <ANGLE/GLES3/gl3.h>
 
 namespace stardust
 {
-    enum class BufferUsage
-        : GLenum
+    namespace graphics
     {
-        Static = GL_STATIC_DRAW,
-        Dynamic = GL_DYNAMIC_DRAW,
-        Stream = GL_STREAM_DRAW,
-    };
+        enum class BufferUsage
+            : GLenum
+        {
+            Stream = GL_STREAM_DRAW,
+            Static = GL_STATIC_DRAW,
+            Dynamic = GL_DYNAMIC_DRAW,
+        };
+    }
 }
 
 #endif

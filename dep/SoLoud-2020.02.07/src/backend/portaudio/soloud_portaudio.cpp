@@ -92,29 +92,40 @@ namespace SoLoud
 
 	void soloud_portaudio_deinit(SoLoud::Soloud * /*aSoloud*/)
 	{
-		dll_Pa_CloseStream(gStream);
-		dll_Pa_Terminate();
+		//dll_Pa_CloseStream(gStream);
+		Pa_CloseStream(gStream);
+		//dll_Pa_Terminate();
+		Pa_Terminate();
 	}
 
 	result portaudio_init(SoLoud::Soloud *aSoloud, unsigned int aFlags, unsigned int aSamplerate, unsigned int aBuffer, unsigned int aChannels)
 	{
-		if (!dll_Pa_found())
-			return DLL_NOT_FOUND;
+		//if (!dll_Pa_found())
+		//	return DLL_NOT_FOUND;
 
 		aSoloud->mBackendCleanupFunc = soloud_portaudio_deinit;
-		if (0 != dll_Pa_Initialize())
+		//if (0 != dll_Pa_Initialize())
+		auto error = Pa_Initialize();
+		printf("%s\n", Pa_GetErrorText(error));
+
+		if (0 != error)
 		{
 			return UNKNOWN_ERROR;
 		}
 
-		if (0 != dll_Pa_OpenDefaultStream(&gStream, 0, aChannels, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud))
+		//if (0 != dll_Pa_OpenDefaultStream(&gStream, 0, aChannels, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud))
+		error = Pa_OpenDefaultStream(&gStream, 0, aChannels, paFloat32, aSamplerate, paFramesPerBufferUnspecified, portaudio_callback, (void*)aSoloud);
+		if (0 != error)
 		{
-			dll_Pa_Terminate();
+			//dll_Pa_Terminate();
+			printf("%s\n", Pa_GetErrorText(error));
+			Pa_Terminate();
 			return UNKNOWN_ERROR;
 		}
 
 		aSoloud->postinit_internal(aSamplerate, aBuffer * aChannels, aFlags, aChannels);
-		dll_Pa_StartStream(gStream);
+		//dll_Pa_StartStream(gStream);
+		Pa_StartStream(gStream);
 		aSoloud->mBackendString = "PortAudio";
 
 		return 0;

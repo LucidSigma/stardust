@@ -2,26 +2,21 @@
 #ifndef STARDUST_SAMPLER_H
 #define STARDUST_SAMPLER_H
 
-#include <glad/glad.h>
-
-#include "stardust/data/Types.h"
-#include "stardust/graphics/colour/Colour.h"
+#include <ANGLE/GLES3/gl3.h>
 
 namespace stardust
 {
-    struct Sampler
+    namespace graphics
     {
-        enum class Wrap
+        enum class TextureWrap
             : GLint
         {
             Repeat = GL_REPEAT,
             MirroredRepeat = GL_MIRRORED_REPEAT,
             ClampToEdge = GL_CLAMP_TO_EDGE,
-            MirroredClampToEdge = GL_MIRROR_CLAMP_TO_EDGE,
-            ClampToBorder = GL_CLAMP_TO_BORDER,
         };
 
-        enum class MinFilter
+        enum class TextureMinFilter
             : GLint
         {
             Nearest = GL_NEAREST,
@@ -32,23 +27,26 @@ namespace stardust
             LinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR,
         };
 
-        enum class MagFilter
+        enum class TextureMagFilter
             : GLint
         {
             Nearest = GL_NEAREST,
             Linear = GL_LINEAR,
         };
 
-        Wrap sWrap = Wrap::Repeat;
-        Wrap tWrap = Wrap::Repeat;
-        Optional<Colour> borderColour = NullOpt;
+        struct Sampler final
+        {
+            TextureWrap horizontalWrap = TextureWrap::Repeat;
+            TextureWrap verticalWrap = TextureWrap::Repeat;
 
-        MinFilter minFilter = MinFilter::Nearest;
-        MagFilter magFilter = MagFilter::Nearest;
+            TextureMinFilter minFilter = TextureMinFilter::Nearest;
+            TextureMagFilter magFilter = TextureMagFilter::Nearest;
 
-        bool generateMipmaps = false;
-        bool enableAnisotropicFiltering = false;
-    };
+            bool generateMipmaps = false;
+        };
+
+        constexpr Sampler DefaultSampler{ };
+    }
 }
 
 #endif

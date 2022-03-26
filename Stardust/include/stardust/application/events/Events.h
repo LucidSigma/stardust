@@ -2,122 +2,328 @@
 #ifndef STARDUST_EVENTS_H
 #define STARDUST_EVENTS_H
 
-#include <type_traits>
-
-#include <SDL2/SDL.h>
-
-#include "stardust/data/Types.h"
+#include "stardust/input/controller/GameController.h"
 #include "stardust/input/controller/GameControllerCodes.h"
+#include "stardust/input/joystick/Joystick.h"
+#include "stardust/input/joystick/JoystickCodes.h"
 #include "stardust/input/keyboard/KeyCodes.h"
-#include "stardust/input/mouse/MouseButtonCodes.h"
+#include "stardust/input/keyboard/VirtualKeyCodes.h"
+#include "stardust/input/mouse/MouseCodes.h"
+#include "stardust/input/touch/TouchDevice.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
+#include "stardust/window/Window.h"
 
 namespace stardust
 {
-    using Event = SDL_Event;
-    using WindowEvent = SDL_WindowEvent;
-    using DisplayEvent = SDL_DisplayEvent;
-
-    enum class EventType
-        : std::underlying_type_t<SDL_EventType>
+    enum class EventStatus
     {
-        Quit = SDL_QUIT,
-        LocaleChange = SDL_LOCALECHANGED,
-
-        Display = SDL_DISPLAYEVENT,
-        Window = SDL_WINDOWEVENT,
-        InternalWindow = SDL_SYSWMEVENT,
-
-        KeyDown = SDL_KEYDOWN,
-        KeyUp = SDL_KEYUP,
-        TextEdit = SDL_TEXTEDITING,
-        TextInput = SDL_TEXTINPUT,
-        KeymapChange = SDL_KEYMAPCHANGED,
-
-        MouseMotion = SDL_MOUSEMOTION,
-        MouseButtonDown = SDL_MOUSEBUTTONDOWN,
-        MouseButtonUp = SDL_MOUSEBUTTONUP,
-        MouseScroll = SDL_MOUSEWHEEL,
-
-        JoystickAxisMotion = SDL_JOYAXISMOTION,
-        JoystickBallMotion = SDL_JOYBALLMOTION,
-        JoystickHatMotion = SDL_JOYHATMOTION,
-        JoystickButtonDown = SDL_JOYBUTTONDOWN,
-        JoystickButtonUp = SDL_JOYBUTTONUP,
-        JoystickDeviceAdd = SDL_JOYDEVICEADDED,
-        JoystickDeviceRemove = SDL_JOYDEVICEREMOVED,
-
-        GameControllerAxisMotion = SDL_CONTROLLERAXISMOTION,
-        GameControllerButtonDown = SDL_CONTROLLERBUTTONDOWN,
-        GameControllerButtonUp = SDL_CONTROLLERBUTTONUP,
-        GameControllerDeviceAdd = SDL_CONTROLLERDEVICEADDED,
-        GameControllerDeviceRemove = SDL_CONTROLLERDEVICEREMOVED,
-        GameControllerDeviceRemap = SDL_CONTROLLERDEVICEREMAPPED,
-        GameControllerTouchpadTouch = SDL_CONTROLLERTOUCHPADDOWN,
-        GameControllerTouchpadMotion = SDL_CONTROLLERTOUCHPADMOTION,
-        GameControllerTouchpadRelease = SDL_CONTROLLERTOUCHPADUP,
-        GameControllerSensorUpdate = SDL_CONTROLLERSENSORUPDATE,
-
-        ClipboardUpdate = SDL_CLIPBOARDUPDATE,
-
-        DropFile = SDL_DROPFILE,
-        DropText = SDL_DROPTEXT,
-        DropBegin = SDL_DROPBEGIN,
-        DropComplete = SDL_DROPCOMPLETE,
-
-        AudioDeviceAdd = SDL_AUDIODEVICEADDED,
-        AudioDeviceRemove = SDL_AUDIODEVICEREMOVED,
+        NotHandled,
+        Handled,
     };
 
-    enum class WindowEventType
-        : std::underlying_type_t<SDL_WindowEventID>
+    namespace events
     {
-        Show = SDL_WINDOWEVENT_SHOWN,
-        Hide = SDL_WINDOWEVENT_HIDDEN,
-        Expose = SDL_WINDOWEVENT_EXPOSED,
+        struct KeyDown final
+        {
+            KeyCode keyCode;
+            VirtualKeyCode virtualKeyCode;
 
-        Moved = SDL_WINDOWEVENT_MOVED,
-        ExternalResize = SDL_WINDOWEVENT_RESIZED,
-        SizeChange = SDL_WINDOWEVENT_SIZE_CHANGED,
+            u32 modState;
 
-        Minimise = SDL_WINDOWEVENT_MINIMIZED,
-        Maximise = SDL_WINDOWEVENT_MAXIMIZED,
-        Restore = SDL_WINDOWEVENT_RESTORED,
+            bool isRepeat;
+        };
 
-        MouseEnter = SDL_WINDOWEVENT_ENTER,
-        MouseLeave = SDL_WINDOWEVENT_LEAVE,
-        KeyboardFocusGain = SDL_WINDOWEVENT_FOCUS_GAINED,
-        KeyboardFocusLoss = SDL_WINDOWEVENT_FOCUS_LOST,
+        struct KeyUp final
+        {
+            KeyCode keyCode;
+            VirtualKeyCode virtualKeyCode;
 
-        Close = SDL_WINDOWEVENT_CLOSE,
+            u32 modState;
 
-        TakeFocus = SDL_WINDOWEVENT_TAKE_FOCUS,
-        HitTest = SDL_WINDOWEVENT_HIT_TEST,
-    };
+            bool isRepeat;
+        };
 
-    enum class DisplayEventType
-        : std::underlying_type_t<SDL_DisplayEventID>
-    {
-        OrientationChange = SDL_DISPLAYEVENT_ORIENTATION,
+        struct TextInput final
+        {
+            String text;
+        };
 
-        Connect = SDL_DISPLAYEVENT_CONNECTED,
-        Disconnect = SDL_DISPLAYEVENT_DISCONNECTED,
-    };
+        struct MouseButtonDown final
+        {
+            MouseButton mouseButton;
+            IVector2 coordinates;
 
-    [[nodiscard]] inline EventType GetEventType(const Event& event) noexcept { return static_cast<EventType>(event.type); }
-    [[nodiscard]] inline WindowEventType GetWindowEventType(const WindowEvent& windowEvent) noexcept { return static_cast<WindowEventType>(windowEvent.event); }
-    [[nodiscard]] inline DisplayEventType GetDisplayEventType(const DisplayEvent& displayEvent) noexcept { return static_cast<DisplayEventType>(displayEvent.event); }
+            u32 clickCount;
+        };
 
-    [[nodiscard]] extern KeyCode GetEventKeyCode(const Event& event) noexcept;
-    [[nodiscard]] extern MouseButton GetEventMouseButton(const Event& event) noexcept;
-    [[nodiscard]] extern GameControllerButton GetEventGameControllerButton(const Event& event) noexcept;
+        struct MouseButtonUp final
+        {
+            MouseButton mouseButton;
+            IVector2 coordinates;
 
-    [[nodiscard]] extern bool IsEventEnqueued(const EventType eventType) noexcept;
+            u32 clickCount;
+        };
 
-    [[nodiscard]] extern bool IsEventTypeEnabled(const EventType eventType) noexcept;
-    extern void SetEventState(const EventType eventType, const bool isEnabled) noexcept;
+        struct MouseMotion final
+        {
+            IVector2 coordinates;
+            IVector2 relativeCoordinates;
+        };
 
-    extern Event WaitForEvent();
-    extern Optional<Event> WaitForEvent(const u32 millisecondTimeout = 0u);
+        struct MouseScroll final
+        {
+            i32 scrollAmount;
+            f32 preciseScrollAmount;
+        };
+
+        struct GameControllerAdded final
+        {
+            ObserverPointer<GameController> gameController;
+        };
+
+        struct GameControllerRemoved final
+        {
+            ObserverPointer<const GameController> gameController;
+        };
+
+        struct GameControllerButtonDown final
+        {
+            ObserverPointer<const GameController> gameController;
+            GameControllerButton button;
+        };
+
+        struct GameControllerButtonUp final
+        {
+            ObserverPointer<const GameController> gameController;
+            GameControllerButton button;
+        };
+
+        struct GameControllerAxisMotion final
+        {
+            ObserverPointer<const GameController> gameController;
+
+            GameControllerAxis axis;
+            f32 value;
+        };
+
+        struct GameControllerTouchpadFingerDown final
+        {
+            ObserverPointer<const GameController> gameController;
+
+            usize fingerIndex;
+            Vector2 position;
+            f32 pressure;
+        };
+
+        struct GameControllerTouchpadFingerUp final
+        {
+            ObserverPointer<const GameController> gameController;
+
+            usize fingerIndex;
+            Vector2 position;
+        };
+
+        struct GameControllerTouchpadFingerMotion final
+        {
+            ObserverPointer<const GameController> gameController;
+
+            usize fingerIndex;
+            Vector2 position;
+            f32 pressure;
+        };
+
+        struct GameControllerAccelerometerUpdate final
+        {
+            ObserverPointer<const GameController> gameController;
+            Vector3 acceleration;
+        };
+
+        struct GameControllerGyroscopeUpdate final
+        {
+            ObserverPointer<const GameController> gameController;
+            Vector3 rotation;
+        };
+
+        struct JoystickAdded final
+        {
+            ObserverPointer<Joystick> joystick;
+        };
+
+        struct JoystickRemoved final
+        {
+            ObserverPointer<const Joystick> joystick;
+        };
+
+        struct JoystickButtonDown final
+        {
+            ObserverPointer<const Joystick> joystick;
+
+            Joystick::ButtonID button;
+        };
+
+        struct JoystickButtonUp final
+        {
+            ObserverPointer<const Joystick> joystick;
+
+            Joystick::ButtonID button;
+        };
+
+        struct JoystickAxisMotion final
+        {
+            ObserverPointer<const Joystick> joystick;
+
+            Joystick::AxisID axis;
+            f32 value;
+        };
+
+        struct JoystickHatSwitchMotion final
+        {
+            ObserverPointer<const Joystick> joystick;
+
+            Joystick::HatSwitchID hatSwitch;
+            JoystickHatSwitchDirection direction;
+        };
+
+        struct JoystickTrackballMotion final
+        {
+            ObserverPointer<const Joystick> joystick;
+
+            Joystick::TrackballID trackball;
+            Vector2 relativeMotion;
+        };
+
+        struct TouchFingerDown final
+        {
+            TouchDevice touchDevice;
+            TouchDevice::FingerID fingerID;
+
+            Vector2 position;
+            f32 pressure;
+
+            bool isOnGameWindow;
+        };
+
+        struct TouchFingerUp final
+        {
+            TouchDevice touchDevice;
+            TouchDevice::FingerID fingerID;
+
+            Vector2 position;
+
+            bool isOnGameWindow;
+        };
+
+        struct TouchFingerMotion final
+        {
+            TouchDevice touchDevice;
+            TouchDevice::FingerID fingerID;
+
+            Vector2 position;
+            Vector2 deltaPosition;
+            f32 pressure;
+
+            bool isOnGameWindow;
+        };
+
+        struct MultiTouchFingerGesture final
+        {
+            TouchDevice touchDevice;
+
+            u32 fingerCount;
+            Vector2 normalisedCentre;
+
+            f32 pinchAmount;
+            f32 rotationAmount;
+        };
+
+        struct DollarGesturePerformed final
+        {
+            TouchDevice touchDevice;
+            TouchDevice::GestureID gestureID;
+
+            u32 fingerCount;
+            Vector2 normalisedCentre;
+
+            f32 errorAmount;
+        };
+
+        struct DollarGestureRecorded final
+        {
+            TouchDevice touchDevice;
+            TouchDevice::GestureID gestureID;
+        };
+
+        struct WindowShown final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowHidden final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowMoved final
+        {
+            ObserverPointer<const Window> window;
+            IVector2 newPosition;
+        };
+
+        struct WindowResized final
+        {
+            ObserverPointer<const Window> window;
+            UVector2 newSize;
+        };
+
+        struct WindowMinimised final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowMaximised final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowRestored final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowMouseEnter final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowMouseExit final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowFocusGained final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct WindowFocusLost final
+        {
+            ObserverPointer<const Window> window;
+        };
+
+        struct LocaleChanged final
+        {
+            String newLocaleName;
+        };
+
+        struct UserEvent final
+        {
+            i32 code;
+            Optional<Any> userData;
+        };
+    }
 }
 
 #endif

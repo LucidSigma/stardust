@@ -5,11 +5,11 @@
 #include <chrono>
 #include <ratio>
 
-#include "stardust/data/Types.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    class Stopwatch
+    class Stopwatch final
     {
     private:
         using Clock = std::chrono::high_resolution_clock;
@@ -26,38 +26,37 @@ namespace stardust
         u64 m_pausedTickCount = 0u;
 
     public:
-        [[nodiscard]] static constexpr u64 GetPrecision() noexcept { return s_Precision; }
+        [[nodiscard]] static constexpr auto GetPrecision() noexcept -> u64 { return s_Precision; }
 
-        [[nodiscard]] static constexpr bool CanCountMicroseconds() noexcept { return s_CanCountMicroseconds; }
-        [[nodiscard]] static constexpr bool CanCountNanoseconds() noexcept { return s_CanCountNanoseconds; }
+        [[nodiscard]] static constexpr auto CanCountMicroseconds() noexcept -> bool { return s_CanCountMicroseconds; }
+        [[nodiscard]] static constexpr auto CanCountNanoseconds() noexcept -> bool { return s_CanCountNanoseconds; }
 
         explicit Stopwatch(const bool startTicking = false);
-        ~Stopwatch() noexcept = default;
 
-        void Start();
-        void Stop();
-        void Restart();
+        auto Start() -> void;
+        auto Stop() -> void;
+        auto Restart() -> void;
 
-        void Pause();
-        void Resume();
+        auto Pause() -> void;
+        auto Resume() -> void;
 
-        [[nodiscard]] inline bool IsRunning() const noexcept { return m_isRunning && !m_isPaused; }
-        [[nodiscard]] inline bool IsStopped() const noexcept { return !m_isRunning; }
-        [[nodiscard]] inline bool IsPaused() const noexcept { return m_isRunning && m_isPaused; }
+        [[nodiscard]] inline auto IsRunning() const noexcept -> bool { return m_isRunning && !m_isPaused; }
+        [[nodiscard]] inline auto IsStopped() const noexcept -> bool { return !m_isRunning; }
+        [[nodiscard]] inline auto IsPaused() const noexcept -> bool { return m_isRunning && m_isPaused; }
 
-        [[nodiscard]] u32 GetElapsedSeconds() const;
-        [[nodiscard]] u64 GetElapsedMilliseconds() const;
-        [[nodiscard]] u64 GetElapsedMicroseconds() const;
-        [[nodiscard]] u64 GetElapsedNanoseconds() const;
-        
-        [[nodiscard]] inline bool HasPassedSeconds(const u32 seconds) const { return GetElapsedSeconds() >= seconds; }
-        [[nodiscard]] inline bool HasPassedMilliSeconds(const u64 milliseconds) const { return GetElapsedMilliseconds() >= milliseconds; }
-        [[nodiscard]] inline bool HasPassedMicroSeconds(const u64 microseconds) const { return GetElapsedMicroseconds() >= microseconds; }
-        [[nodiscard]] inline bool HasPassedNanoSeconds(const u64 nanoseconds) const { return GetElapsedNanoseconds() >= nanoseconds; }
+        [[nodiscard]] auto GetElapsedSeconds() const -> u32;
+        [[nodiscard]] auto GetElapsedMilliseconds() const -> u64;
+        [[nodiscard]] auto GetElapsedMicroseconds() const -> u64;
+        [[nodiscard]] auto GetElapsedNanoseconds() const -> u64;
+
+        [[nodiscard]] inline auto HasPassedSeconds(const u32 seconds) const -> bool { return GetElapsedSeconds() >= seconds; }
+        [[nodiscard]] inline auto HasPassedMilliSeconds(const u64 milliseconds) const -> bool { return GetElapsedMilliseconds() >= milliseconds; }
+        [[nodiscard]] inline auto HasPassedMicroSeconds(const u64 microseconds) const -> bool { return GetElapsedMicroseconds() >= microseconds; }
+        [[nodiscard]] inline auto HasPassedNanoSeconds(const u64 nanoseconds) const -> bool { return GetElapsedNanoseconds() >= nanoseconds; }
 
     private:
-        [[nodiscard]] u64 GetTimeSinceEpoch() const;
-        [[nodiscard]] u64 GetElapsedTime(const u64 magnitude) const;
+        [[nodiscard]] auto GetTimeSinceEpoch() const -> u64;
+        [[nodiscard]] auto GetElapsedTime(const u64 magnitude) const -> u64;
     };
 }
 

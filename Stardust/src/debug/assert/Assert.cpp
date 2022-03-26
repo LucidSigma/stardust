@@ -2,10 +2,10 @@
 
 #include <format>
 
-#include "stardust/debug/logging/Log.h"
-#include "stardust/debug/message_box/MessageBox.h"
+#include "stardust/debug/logging/Logging.h"
+#include "stardust/utility/message_box/MessageBox.h"
 
-#ifndef WIN32
+#ifndef STARDUST_PLATFORM_WINDOWS
     #define __cdecl
 #endif
 
@@ -15,66 +15,76 @@ namespace stardust
     {
         namespace
         {
-            [[nodiscard]] SDL_AssertState __cdecl AssertionHandler(const SDL_AssertData* const assertionData, void* const userData)
+            [[nodiscard]] auto __cdecl AssertionHandler(const SDL_AssertData* const assertionData, void* const userData) -> SDL_AssertState
             {
                 const String errorMessage = std::format(
                     "Assertion failure at {} ({}:{}); triggered {} {}.\n\tFailing condition: \"{}\".",
-                    assertionData->function, assertionData->filename, assertionData->linenum,
-                    assertionData->trigger_count, assertionData->trigger_count == 1 ? "time" : "times",
+                    assertionData->function,
+                    assertionData->filename,
+                    assertionData->linenum,
+                    assertionData->trigger_count,
+                    assertionData->trigger_count == 1u ? "time" : "times",
                     assertionData->condition
                 );
 
                 Log::Error("{}", errorMessage);
 
-                const message_box::ButtonID selectedButton = message_box::ShowComplex("Assertion Failed", errorMessage, message_box::Type::Warning, Vector<message_box::ButtonData>{
-                    message_box::ButtonData{
-                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_IGNORE),
-                        .text = "Ignore",
-                        .flags = { message_box::ButtonFlag::ReturnKeyDefault, message_box::ButtonFlag::EscapeKeyDefault },
-                    },
-                    message_box::ButtonData{
-                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_ALWAYS_IGNORE),
-                        .text = "Always Ignore",
-                        .flags = { },
-                    },
-                    message_box::ButtonData{
-                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_BREAK),
-                        .text = "Break",
-                        .flags = { },
-                    },
-                    message_box::ButtonData{
-                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_RETRY),
-                        .text = "Retry",
-                        .flags = { },
-                    },
-                    message_box::ButtonData{
-                        .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_ABORT),
-                        .text = "Abort",
-                        .flags = { },
-                    },
-                });
+                const message_box::ButtonID selectedButton = message_box::ShowComplex(
+                    "Assertion Failed",
+                    errorMessage,
+                    message_box::Type::Warning,
+                    List<message_box::ButtonData>{
+                        message_box::ButtonData{
+                            .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_IGNORE),
+                            .text = "Ignore",
+                            .flags = { message_box::ButtonFlag::ReturnKeyDefault, message_box::ButtonFlag::EscapeKeyDefault },
+                        },
+                        message_box::ButtonData{
+                            .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_ALWAYS_IGNORE),
+                            .text = "Always Ignore",
+                            .flags = { },
+                        },
+                        message_box::ButtonData{
+                            .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_BREAK),
+                            .text = "Break",
+                            .flags = { },
+                        },
+                        message_box::ButtonData{
+                            .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_RETRY),
+                            .text = "Retry",
+                            .flags = { },
+                        },
+                        message_box::ButtonData{
+                            .id = static_cast<message_box::ButtonID>(SDL_ASSERTION_ABORT),
+                            .text = "Abort",
+                            .flags = { },
+                        },
+                    }
+                );
 
                 return static_cast<SDL_AssertState>(selectedButton);
             }
         }
 
-        [[nodiscard]] Vector<AssertionData> GetAssertionReport()
+        [[nodiscard]] auto GetAssertionReport() -> List<AssertionData>
         {
-            Vector<AssertionData> assertionReport{ };
+            List<AssertionData> assertionReport{ };
             const SDL_AssertData* currentAssertion = SDL_GetAssertionReport();
 
             while (currentAssertion != nullptr)
             {
-                assertionReport.emplace_back(AssertionData{
-                    .isAlwaysIgnored = static_cast<bool>(currentAssertion->always_ignore),
+                assertionReport.emplace_back(
+                    AssertionData{
+                        .isAlwaysIgnored = static_cast<bool>(currentAssertion->always_ignore),
 
-                    .triggerCount = currentAssertion->trigger_count,
-                    .condition = currentAssertion->condition,
+                        .triggerCount = currentAssertion->trigger_count,
+                        .condition = currentAssertion->condition,
 
-                    .filename = currentAssertion->filename,
-                    .lineNumber = static_cast<u32>(currentAssertion->linenum),
-                    .functionName = currentAssertion->function,
-                });
+                        .filename = currentAssertion->filename,
+                        .lineNumber = static_cast<u32>(currentAssertion->linenum),
+                        .functionName = currentAssertion->function,
+                    }
+                );
 
                 currentAssertion = currentAssertion->next;
             }
@@ -82,23 +92,23 @@ namespace stardust
             return assertionReport;
         }
 
-        void ResetAssertionReport()
+        auto ClearAssertions() -> void
         {
             SDL_ResetAssertionReport();
         }
 
-        void InitialiseAssertionCallback()
+        auto InitialiseAssertionCallback() -> void
         {
             SDL_SetAssertionHandler(AssertionHandler, nullptr);
         }
 
-        void ResetAssertionCallback()
+        auto ResetAssertionCallback() -> void
         {
             SDL_SetAssertionHandler(SDL_GetDefaultAssertionHandler(), nullptr);
         }
     }
 }
 
-#ifndef WIN32
+#ifndef STARDUST_PLATFORM_WINDOWS
     #undef __cdecl
 #endif

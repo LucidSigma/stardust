@@ -6,24 +6,25 @@ namespace stardust
 {
     namespace clipboard
     {
-        [[nodiscard]] bool HasText()
+        [[nodiscard]] auto HasText() -> bool
         {
-            return SDL_HasClipboardText();
+            return SDL_HasClipboardText() == SDL_TRUE;
         }
 
-        [[nodiscard]] String GetText()
+        [[nodiscard]] auto GetText() -> String
         {
             char* clipboardTextPointer = SDL_GetClipboardText();
             const String clipboardText(clipboardTextPointer);
 
             SDL_free(clipboardTextPointer);
+            clipboardTextPointer = nullptr;
 
             return clipboardText;
         }
 
-        void SetText(const String& text)
+        auto SetText(const StringView text) -> void
         {
-            SDL_SetClipboardText(text.c_str());
+            SDL_SetClipboardText(text.data());
         }
     }
 }

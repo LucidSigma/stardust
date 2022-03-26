@@ -2,16 +2,19 @@
 #ifndef STARDUST_TIME_H
 #define STARDUST_TIME_H
 
-#include "stardust/data/Types.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    extern void WaitForNanoseconds(const u64 nanoseconds);
-    extern void WaitForMicroseconds(const u32 microseconds);
-    extern void WaitForMilliseconds(const u32 milliseconds);
+    namespace time
+    {
+        extern auto WaitForNanoseconds(const u64 nanoseconds) -> void;
+        extern auto WaitForMicroseconds(const u64 microseconds) -> void;
+        extern auto WaitForMilliseconds(const u32 milliseconds) -> void;
 
-    extern void WaitForSeconds(const u32 seconds);
-    extern void WaitForSeconds(const f32 seconds);
+        extern auto WaitForSeconds(const u32 seconds) -> void;
+        extern auto WaitForSeconds(const f32 seconds) -> void;
+    }
 }
 
 #endif

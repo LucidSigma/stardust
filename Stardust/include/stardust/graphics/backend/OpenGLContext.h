@@ -6,36 +6,40 @@
 
 #include <SDL2/SDL.h>
 
-#include "stardust/data/Pointers.h"
-#include "stardust/utility/status/Status.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/utility/error_handling/Status.h"
 #include "stardust/window/Window.h"
 
 namespace stardust
 {
-    class OpenGLContext
-        : private INoncopyable
+    namespace opengl
     {
-    private:
-        SDL_GLContext m_handle = nullptr;
-        ObserverPtr<const Window> m_window = nullptr;
+        class Context final
+            : private INoncopyable
+        {
+        private:
+            SDL_GLContext m_handle = nullptr;
+            ObserverPointer<const Window> m_window = nullptr;
 
-    public:
-        OpenGLContext() = default;
-        explicit OpenGLContext(const Window& window);
+        public:
+            Context() = default;
+            explicit Context(const Window& window);
 
-        OpenGLContext(OpenGLContext&& other) noexcept;
-        OpenGLContext& operator =(OpenGLContext&& other) noexcept;
+            Context(Context&& other) noexcept;
+            auto operator =(Context&& other) noexcept -> Context&;
 
-        ~OpenGLContext() noexcept;
+            ~Context() noexcept;
 
-        void Initialise(const Window& window);
-        void Destroy() noexcept;
+            auto Initialise(const Window& window) -> void;
+            auto Destroy() noexcept -> void;
 
-        [[nodiscard]] Status MakeCurrent() const;
+            [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_handle != nullptr; }
 
-        [[nodiscard]] bool IsValid() const noexcept { return m_handle != nullptr; }
-        [[nodiscard]] inline SDL_GLContext const GetRawHandle() const noexcept { return m_handle; }
-    };
+            [[nodiscard]] auto MakeCurrent() -> Status;
+
+            [[nodiscard]] inline auto GetRawHandle() const noexcept -> SDL_GLContext { return m_handle; }
+        };
+    }
 }
 
 #endif

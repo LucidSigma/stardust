@@ -2,17 +2,17 @@
 #ifndef STARDUST_CLIPBOARD_H
 #define STARDUST_CLIPBOARD_H
 
-#include "stardust/data/Containers.h"
+#include "stardust/types/Containers.h"
 
 namespace stardust
 {
     namespace clipboard
     {
-        [[nodiscard]] extern bool HasText();
+        [[nodiscard]] extern auto HasText() -> bool;
 
-        [[nodiscard]] extern String GetText();
-        extern void SetText(const String& text);
+        [[nodiscard]] extern auto GetText() -> String;
+        extern auto SetText(const StringView text) -> void;
     }
 }
 
-#endif CLIPBOARD_H
+#endif

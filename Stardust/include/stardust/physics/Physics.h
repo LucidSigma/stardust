@@ -2,10 +2,12 @@
 #ifndef STARDUST_PHYSICS_H
 #define STARDUST_PHYSICS_H
 
+#include <limits>
+
 #include <box2d/box2d.h>
 
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Types.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
@@ -14,7 +16,8 @@ namespace stardust
         using Shape = b2Shape;
         using CollisionLayer = u16;
 
-        constexpr CollisionLayer AllLayers = 0xFFFF;
+        constexpr CollisionLayer AllLayers = std::numeric_limits<u16>::max();
+        constexpr CollisionLayer NoLayers = 0u;
 
         enum class ShapeType
         {
@@ -24,10 +27,10 @@ namespace stardust
             Chain = b2Shape::e_chain,
         };
 
-        struct MassData
+        struct MassData final
         {
             f32 mass;
-            Vec2 centre;
+            Vector2 centre;
             f32 momentOfInertia;
         };
     }

@@ -1,13 +1,34 @@
 #include "stardust/audio/SoundSystem.h"
 
+#include <memory>
+#include <utility>
+
 namespace stardust
 {
     namespace audio
     {
-        SoundSystem::SoundSystem()
-            : m_soLoudHandle(std::make_unique<SoLoud::Soloud>()), m_listener(*this)
+        SoundSystem::SoundSystem(SoundSystem&& other) noexcept
         {
-            Initialise();
+            Destroy();
+
+            std::swap(m_soLoudHandle, other.m_soLoudHandle);
+            m_listener = std::move(other.m_listener);
+
+            std::swap(m_didInitialiseSuccessfully, other.m_didInitialiseSuccessfully);
+            std::swap(m_errorString, other.m_errorString);
+        }
+
+        auto SoundSystem::operator =(SoundSystem&& other) noexcept -> SoundSystem&
+        {
+            Destroy();
+
+            std::swap(m_soLoudHandle, other.m_soLoudHandle);
+            m_listener = std::move(other.m_listener);
+
+            std::swap(m_didInitialiseSuccessfully, other.m_didInitialiseSuccessfully);
+            std::swap(m_errorString, other.m_errorString);
+
+            return *this;
         }
 
         SoundSystem::~SoundSystem() noexcept
@@ -15,178 +36,22 @@ namespace stardust
             Destroy();
         }
 
-        void SoundSystem::Update() const
+        auto SoundSystem::Initialise() -> void
         {
-            m_soLoudHandle->update3dAudio();
-        }
+            m_soLoudHandle = std::make_unique<SoLoud::Soloud>();
 
-        SoundSource SoundSystem::PlaySound(Sound& sound, const bool startPaused)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->play(sound.GetRawHandle(), -1.0f, 0.0f, startPaused);
-    
-            return SoundSource(soundHandle, *this);
-        }
-    
-        SoundSource SoundSystem::PlaySound(SoundStream& soundStream, const bool startPaused)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->play(soundStream.GetRawHandle(), -1.0f, 0.0f, startPaused);
-    
-            return SoundSource(soundHandle, *this);
-        }
-    
-        SoundSource SoundSystem::Play3DSound(Sound& sound, const Vec3& position, const Vec3& velocity, const bool startPaused)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->play3d(
-                sound.GetRawHandle(),
-                position.x, position.y, position.z,
-                velocity.x, velocity.y, velocity.z,
-                1.0f, startPaused
-            );
-    
-            return SoundSource(soundHandle, *this, position, velocity);
-        }
-    
-        SoundSource SoundSystem::Play3DSound(SoundStream& soundStream, const Vec3& position, const Vec3& velocity, const bool startPaused)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->play3d(
-                soundStream.GetRawHandle(),
-                position.x, position.y, position.z,
-                velocity.x, velocity.y, velocity.z,
-                1.0f, startPaused
-            );
-    
-            return SoundSource(soundHandle, *this, position, velocity);
-        }
-    
-        SoundSource SoundSystem::PlaySoundWithDelay(Sound& sound, const f32 secondsDelay)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->playClocked(secondsDelay, sound.GetRawHandle());
-    
-            return SoundSource(soundHandle, *this);
-        }
-    
-        SoundSource SoundSystem::PlaySoundWithDelay(SoundStream& soundStream, const f32 secondsDelay)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->playClocked(secondsDelay, soundStream.GetRawHandle());
-    
-            return SoundSource(soundHandle, *this);
-        }
-    
-        SoundSource SoundSystem::Play3DSoundWithDelay(Sound& sound, const f32 secondsDelay, const Vec3& position, const Vec3& velocity)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->play3dClocked(
-                secondsDelay, sound.GetRawHandle(),
-                position.x, position.y, position.z,
-                velocity.x, velocity.y, velocity.z,
-                1.0f
-            );
-    
-            return SoundSource(soundHandle, *this, position, velocity);
-        }
-    
-        SoundSource SoundSystem::Play3DSoundWithDelay(SoundStream& soundStream, const f32 secondsDelay, const Vec3& position, const Vec3& velocity)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->play3dClocked(
-                secondsDelay, soundStream.GetRawHandle(),
-                position.x, position.y, position.z,
-                velocity.x, velocity.y, velocity.z,
-                1.0f
-            );
-    
-            return SoundSource(soundHandle, *this, position, velocity);
-        }
-    
-        SoundSource SoundSystem::PlaySoundInBackground(Sound& sound, const bool startPaused)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->playBackground(sound.GetRawHandle(), -1.0f, 0.0f, startPaused);
-    
-            return SoundSource(soundHandle, *this);
-        }
-    
-        SoundSource SoundSystem::PlaySoundInBackground(SoundStream& soundStream, const bool startPaused)
-        {
-            const SoLoud::handle soundHandle = m_soLoudHandle->playBackground(soundStream.GetRawHandle(), -1.0f, 0.0f, startPaused);
-    
-            return SoundSource(soundHandle, *this);
-        }
-
-        void SoundSystem::StopAllSounds() const
-        {
-            m_soLoudHandle->stopAll();
-        }
-
-        void SoundSystem::PauseAllSounds() const
-        {
-            m_soLoudHandle->setPauseAll(true);
-        }
-
-        void SoundSystem::ResumeAllSounds() const
-        {
-            m_soLoudHandle->setPauseAll(false);
-        }
-
-        void SoundSystem::FadeVolumeGlobal(const f32 volumeToFadeTo, const f32 seconds) const
-        {
-            m_soLoudHandle->fadeGlobalVolume(volumeToFadeTo, seconds);
-        }
-
-        void SoundSystem::OscillateGlobalVolume(const f32 toVolume, const f32 fromVolume, const f32 frequency) const
-        {
-            m_soLoudHandle->oscillateGlobalVolume(fromVolume, toVolume, frequency);
-        }
-
-        void SoundSystem::ResetGlobalVolumeOscillation() const
-        {
-            m_soLoudHandle->oscillateGlobalVolume(1.0f, 1.0f, 0.0);
-        }
-
-        [[nodiscard]] unsigned int SoundSystem::GetPlayingSoundCount() const
-        {
-            return m_soLoudHandle->getActiveVoiceCount();
-        }
-
-        [[nodiscard]] bool SoundSystem::IsSoundPlaying() const
-        {
-            return m_soLoudHandle->getActiveVoiceCount() > 0u;
-        }
-
-        [[nodiscard]] f32 SoundSystem::GetGlobalVolume() const noexcept
-        {
-            return m_soLoudHandle->getGlobalVolume();
-        }
-
-        void SoundSystem::SetGlobalVolume(const f32 globalVolume) const noexcept
-        {
-            m_soLoudHandle->setGlobalVolume(globalVolume);
-        }
-
-        [[nodiscard]] f32 SoundSystem::GetPostClipScaler() const noexcept
-        {
-            return m_soLoudHandle->getPostClipScaler();
-        }
-
-        void SoundSystem::SetPostClipScaler(const f32 postClipScaler) const noexcept
-        {
-            m_soLoudHandle->setPostClipScaler(postClipScaler);
-        }
-
-        [[nodiscard]] f32 SoundSystem::GetSpeedOfSound() const noexcept
-        {
-            return m_soLoudHandle->get3dSoundSpeed();
-        }
-
-        void SoundSystem::SetSpeedOfSound(const f32 speedOfSound) const noexcept
-        {
-            m_soLoudHandle->set3dSoundSpeed(speedOfSound);
-        }
-
-        void SoundSystem::Initialise()
-        {
             const SoLoud::result initialiseStatus = m_soLoudHandle->init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::LEFT_HANDED_3D, SoLoud::Soloud::SDL2);
             m_didInitialiseSuccessfully = initialiseStatus == 0u;
+
+            if (!m_didInitialiseSuccessfully)
+            {
+                m_errorString = m_soLoudHandle->getErrorString(initialiseStatus);
+            }
+
+            m_listener.Initialise(*this);
         }
 
-        void SoundSystem::Destroy()
+        auto SoundSystem::Destroy() noexcept -> void
         {
             if (m_soLoudHandle != nullptr)
             {
@@ -194,6 +59,243 @@ namespace stardust
                 m_soLoudHandle = nullptr;
 
                 m_didInitialiseSuccessfully = false;
+            }
+        }
+
+        auto SoundSystem::Update() const -> void
+        {
+            m_soLoudHandle->update3dAudio();
+        }
+
+        auto SoundSystem::PlaySound(Sound& sound, const SoundPlayData& soundPlayData) -> SoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->play(sound.GetRawHandle(), soundPlayData.volume, soundPlayData.pan, soundPlayData.startPaused);
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return SoundSource(voiceHandle, *this);
+        }
+
+        auto SoundSystem::PlaySound(SoundStream& soundStream, const SoundPlayData& soundPlayData) -> SoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->play(soundStream.GetRawHandle(), soundPlayData.volume, soundPlayData.pan);
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return SoundSource(voiceHandle, *this);
+        }
+
+        auto SoundSystem::PlaySoundClocked(Sound& sound, const f64 fixedTimestep, const SoundPlayData& soundPlayData) -> SoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->playClocked(fixedTimestep, sound.GetRawHandle(), soundPlayData.volume, soundPlayData.pan);
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return SoundSource(voiceHandle, *this);
+        }
+
+        auto SoundSystem::PlaySoundClocked(SoundStream& soundStream, const f64 fixedTimestep, const SoundPlayData& soundPlayData) -> SoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->playClocked(fixedTimestep, soundStream.GetRawHandle(), soundPlayData.volume, soundPlayData.pan);
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return SoundSource(voiceHandle, *this);
+        }
+
+        auto SoundSystem::PlayPositionalSound(Sound& sound, const PositionalSoundPlayData& soundPlayData) -> PositionalSoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->play3d(
+                sound.GetRawHandle(),
+                soundPlayData.position.x,
+                soundPlayData.position.y,
+                0.0f,
+                soundPlayData.velocity.x,
+                soundPlayData.velocity.y,
+                0.0f,
+                soundPlayData.volume,
+                soundPlayData.startPaused
+            );
+
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return PositionalSoundSource(voiceHandle, *this, nullptr, soundPlayData.position, soundPlayData.velocity);
+        }
+
+        auto SoundSystem::PlayPositionalSound(SoundStream& soundStream, const PositionalSoundPlayData& soundPlayData) -> PositionalSoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->play3d(
+                soundStream.GetRawHandle(),
+                soundPlayData.position.x,
+                soundPlayData.position.y,
+                0.0f,
+                soundPlayData.velocity.x,
+                soundPlayData.velocity.y,
+                0.0f,
+                soundPlayData.volume,
+                soundPlayData.startPaused
+            );
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return PositionalSoundSource(voiceHandle, *this, nullptr, soundPlayData.position, soundPlayData.velocity);
+        }
+
+        auto SoundSystem::PlayPositionalSoundClocked(Sound& sound, const f64 fixedTimestep, const PositionalSoundPlayData& soundPlayData) -> PositionalSoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->play3dClocked(
+                fixedTimestep,
+                sound.GetRawHandle(),
+                soundPlayData.position.x,
+                soundPlayData.position.y,
+                0.0f,
+                soundPlayData.velocity.x,
+                soundPlayData.velocity.y,
+                0.0f,
+                soundPlayData.volume
+            );
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return PositionalSoundSource(voiceHandle, *this, nullptr, soundPlayData.position, soundPlayData.velocity);
+        }
+
+        auto SoundSystem::PlayPositionalSoundClocked(SoundStream& soundStream, const f64 fixedTimestep, const PositionalSoundPlayData& soundPlayData) -> PositionalSoundSource
+        {
+            const VoiceHandle voiceHandle = m_soLoudHandle->play3dClocked(
+                fixedTimestep,
+                soundStream.GetRawHandle(),
+                soundPlayData.position.x,
+                soundPlayData.position.y,
+                0.0f,
+                soundPlayData.velocity.x,
+                soundPlayData.velocity.y,
+                0.0f,
+                soundPlayData.volume
+            );
+            SetVoiceHandleParameters(voiceHandle, soundPlayData);
+
+            return PositionalSoundSource(voiceHandle, *this, nullptr, soundPlayData.position, soundPlayData.velocity);
+        }
+
+        auto SoundSystem::PauseAllSounds() const -> void
+        {
+            m_soLoudHandle->setPauseAll(true);
+        }
+
+        auto SoundSystem::ResumeAllSounds() const -> void
+        {
+            m_soLoudHandle->setPauseAll(true);
+        }
+
+        auto SoundSystem::StopAllSounds() const noexcept -> void
+        {
+            m_soLoudHandle->stopAll();
+        }
+
+        auto SoundSystem::FadeGlobalVolume(const f32 targetVolume, const f32 seconds) const -> void
+        {
+            m_soLoudHandle->fadeGlobalVolume(targetVolume, seconds);
+        }
+
+        auto SoundSystem::OscillateGlobalVolume(const f32 toVolume, const f32 fromVolume, const f32 frequency) const -> void
+        {
+            m_soLoudHandle->oscillateGlobalVolume(fromVolume, toVolume, frequency);
+        }
+
+        auto SoundSystem::ResetGlobalVolumeOscillation() const -> void
+        {
+            m_soLoudHandle->oscillateGlobalVolume(1.0f, 1.0f, 0.0);
+        }
+
+        [[nodiscard]] auto SoundSystem::GetPlayingSoundCount() const -> u32
+        {
+            return m_soLoudHandle->getActiveVoiceCount();
+        }
+
+        [[nodiscard]] auto SoundSystem::IsAnySoundPlaying() const -> bool
+        {
+            return m_soLoudHandle->getActiveVoiceCount() > 0u;
+        }
+
+        [[nodiscard]] auto SoundSystem::GetGlobalVolume() const noexcept -> f32
+        {
+            return m_soLoudHandle->getGlobalVolume();
+        }
+
+        auto SoundSystem::SetGlobalVolume(const f32 globalVolume) const noexcept -> void
+        {
+            m_soLoudHandle->setGlobalVolume(globalVolume);
+        }
+
+        [[nodiscard]] auto SoundSystem::GetPostClipScaler() const noexcept -> f32
+        {
+            return m_soLoudHandle->getPostClipScaler();
+        }
+
+        auto SoundSystem::SetPostClipScaler(const f32 postClipScaler) const noexcept -> void
+        {
+            m_soLoudHandle->setPostClipScaler(postClipScaler);
+        }
+
+        [[nodiscard]] auto SoundSystem::GetSpeedOfSound() const noexcept -> f32
+        {
+            return m_soLoudHandle->get3dSoundSpeed();
+        }
+
+        void SoundSystem::SetSpeedOfSound(const f32 speedOfSound) const noexcept
+        {
+        m_soLoudHandle->set3dSoundSpeed(speedOfSound);
+        }
+
+        auto SoundSystem::SetVoiceHandleParameters(const VoiceHandle voiceHandle, const SoundPlayData& soundPlayData) const -> void
+        {
+            if (soundPlayData.protect)
+            {
+                m_soLoudHandle->setProtectVoice(voiceHandle, true);
+            }
+
+            if (soundPlayData.relativePlaySpeed != 1.0f)
+            {
+                m_soLoudHandle->setRelativePlaySpeed(voiceHandle, soundPlayData.relativePlaySpeed);
+            }
+
+            if (soundPlayData.loop)
+            {
+                m_soLoudHandle->setLooping(voiceHandle, true);
+            }
+        }
+
+        auto SoundSystem::SetVoiceHandleParameters(const VoiceHandle voiceHandle, const PositionalSoundPlayData& soundPlayData) const -> void
+        {
+            if (soundPlayData.protect)
+            {
+                m_soLoudHandle->setProtectVoice(voiceHandle, true);
+            }
+
+            if (soundPlayData.relativePlaySpeed != 1.0f)
+            {
+                m_soLoudHandle->setRelativePlaySpeed(voiceHandle, soundPlayData.relativePlaySpeed);
+            }
+
+            if (soundPlayData.loop)
+            {
+                m_soLoudHandle->setLooping(voiceHandle, true);
+            }
+
+            m_soLoudHandle->set3dSourceAttenuation(voiceHandle, static_cast<u32>(soundPlayData.attenuation.model), soundPlayData.attenuation.rolloffFactor);
+            m_soLoudHandle->set3dSourceMinMaxDistance(voiceHandle, soundPlayData.attenuation.minDistance, soundPlayData.attenuation.maxDistance);
+
+            switch (soundPlayData.inaudibleBehaviour)
+            {
+            case InaudibleBehaviour::KeepTicking:
+                m_soLoudHandle->setInaudibleBehavior(voiceHandle, true, false);
+
+                break;
+
+            case InaudibleBehaviour::Pause:
+                m_soLoudHandle->setInaudibleBehavior(voiceHandle, false, false);
+
+                break;
+
+            case InaudibleBehaviour::Kill:
+                m_soLoudHandle->setInaudibleBehavior(voiceHandle, false, true);
+
+                break;
             }
         }
     }

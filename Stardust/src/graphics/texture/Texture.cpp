@@ -1,293 +1,379 @@
 #include "stardust/graphics/texture/Texture.h"
 
-#include <cstring>
 #include <utility>
 
 #include <stb/stb_image.h>
 
-#include "stardust/debug/logging/Log.h"
-#include "stardust/filesystem/vfs/VFS.h"
-#include "stardust/graphics/colour/Colour.h"
+#include "stardust/debug/logging/Logging.h"
+#include "stardust/filesystem/vfs/VirtualFilesystem.h"
 
 namespace stardust
 {
-    void Texture::ResetActiveTexture()
+    namespace graphics
     {
-        glActiveTexture(GL_TEXTURE0);
-    }
-
-    Texture::Texture(const StringView& filepath, const Sampler& sampler)
-    {
-        Initialise(filepath, sampler);
-    }
-
-    Texture::Texture(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
-    {
-        Initialise(surface, flipVertically, sampler);
-    }
-    
-    Texture::Texture(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
-    {
-        Initialise(data, extent, channelCount, sampler);
-    }
-
-    Texture::Texture(const Vec2& size, const Sampler& sampler)
-    {
-        Initialise(size, sampler);
-    }
-
-    Texture::Texture(Texture&& other) noexcept
-    {
-        Destroy();
-
-        std::swap(m_id, other.m_id);
-        std::swap(m_size, other.m_size);
-        std::swap(m_isValid, other.m_isValid);
-    }
-
-    Texture& Texture::operator =(Texture&& other) noexcept
-    {
-        Destroy();
-
-        std::swap(m_id, other.m_id);
-        std::swap(m_size, other.m_size);
-        std::swap(m_isValid, other.m_isValid);
-
-        return *this;
-    }
-
-    Texture::~Texture() noexcept
-    {
-        Destroy();
-    }
-
-    void Texture::Initialise(const StringView& filepath, const Sampler& sampler)
-    {
-        glGenTextures(1, &m_id);
-        m_isValid = LoadFromImageFile(filepath, sampler) == Status::Success;
-    }
-
-    void Texture::Initialise(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
-    {
-        glGenTextures(1, &m_id);
-        m_isValid = LoadFromSDLSurface(surface, flipVertically, sampler) == Status::Success;
-    }
-
-    void Texture::Initialise(const Vector<ubyte>& data, const UVec2& extent, const u32 channelCount, const Sampler& sampler)
-    {
-        glGenTextures(1, &m_id);
-
-        constexpr i32 DefaultPixelAlignment = 4;
-
-        if (const i32 imageMemorySize = static_cast<i32>(extent.x * channelCount * extent.y);
-            imageMemorySize % DefaultPixelAlignment != 0)
+        auto TextureCoordinatePair::Inset(const Texture& texture, const f32 texelCount) -> void
         {
-            glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
+            const Vector2 halfTexelSize = 0.5f * texelCount / Vector2(texture.GetSize());
+
+            lowerLeft += halfTexelSize;
+            upperRight -= halfTexelSize;
         }
 
-        m_size.x = extent.x;
-        m_size.y = extent.y;
-        const auto [internalFormat, format] = s_componentMap.at(static_cast<i32>(channelCount));
-
-        SetupParameters(internalFormat, format, data.data(), sampler);
-
-        glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
-        m_isValid = true;
-    }
-
-    void Texture::Initialise(const Vec2& size, const Sampler& sampler)
-    {
-        glGenTextures(1, &m_id);
-        m_size = size;
-
-        SetupParameters(GL_RGB8, GL_RGB, nullptr, sampler);
-        m_isValid = true;
-    }
-
-    void Texture::Destroy() noexcept
-    {
-        if (m_id != 0u)
+        auto TextureCoordinatePair::Inset(const Texture& texture, const Vector2 texelCount) -> void
         {
+            Inset(texture, texelCount.x, texelCount.y);
+        }
+
+        auto TextureCoordinatePair::Inset(const Texture& texture, const f32 uTexelCount, const f32 vTexelCount) -> void
+        {
+            const f32 uTexelSize = uTexelCount / static_cast<f32>(texture.GetSize().x);
+            const f32 vTexelSize = vTexelCount / static_cast<f32>(texture.GetSize().y);
+            const Vector2 texelSize{ uTexelSize, vTexelSize };
+
+            lowerLeft += texelSize;
+            upperRight -= texelSize;
+        }
+
+        auto TextureCoordinatePair::ShiftLowerLeft(const Texture& texture, const f32 texelCount) -> void
+        {
+            const Vector2 texelSize = texelCount / Vector2(texture.GetSize());
+
+            lowerLeft += texelSize;
+        }
+
+        auto TextureCoordinatePair::ShiftLowerLeft(const Texture& texture, const Vector2 texelCount) -> void
+        {
+            ShiftLowerLeft(texture, texelCount.x, texelCount.y);
+        }
+
+        auto TextureCoordinatePair::ShiftLowerLeft(const Texture& texture, const f32 uTexelCount, const f32 vTexelCount) -> void
+        {
+            const f32 uTexelSize = uTexelCount / static_cast<f32>(texture.GetSize().x);
+            const f32 vTexelSize = vTexelCount / static_cast<f32>(texture.GetSize().y);
+            const Vector2 texelSize{ uTexelSize, vTexelSize };
+
+            lowerLeft += texelSize;
+        }
+
+        auto TextureCoordinatePair::ShiftUpperRight(const Texture& texture, const f32 texelCount) -> void
+        {
+            const Vector2 texelSize = texelCount / Vector2(texture.GetSize());
+
+            upperRight += texelSize;
+        }
+
+        auto TextureCoordinatePair::ShiftUpperRight(const Texture& texture, const Vector2 texelCount) -> void
+        {
+            ShiftUpperRight(texture, texelCount.x, texelCount.y);
+        }
+
+        auto TextureCoordinatePair::ShiftUpperRight(const Texture& texture, const f32 uTexelCount, const f32 vTexelCount) -> void
+        {
+            const f32 uTexelSize = uTexelCount / static_cast<f32>(texture.GetSize().x);
+            const f32 vTexelSize = vTexelCount / static_cast<f32>(texture.GetSize().y);
+            const Vector2 texelSize{ uTexelSize, vTexelSize };
+
+            upperRight += texelSize;
+        }
+
+        auto Texture::ResetActiveTexture() -> void
+        {
+            glActiveTexture(GL_TEXTURE0);
+        }
+
+        Texture::Texture(const StringView filepath, const Sampler& sampler)
+        {
+            Initialise(filepath, sampler);
+        }
+
+        Texture::Texture(const UVector2 extent, const u32 channelCount, const Sampler& sampler)
+        {
+            Initialise(extent, channelCount, sampler);
+        }
+
+        Texture::Texture(const List<ubyte>& data, const UVector2 extent, const u32 channelCount, const Sampler& sampler)
+        {
+            Initialise(data, extent, channelCount, sampler);
+        }
+
+        Texture::Texture(const ubyte* const data, const UVector2 extent, const u32 channelCount, const Sampler& sampler)
+        {
+            Initialise(data, extent, channelCount, sampler);
+        }
+
+        Texture::Texture(Texture&& other) noexcept
+        {
+            Destroy();
+
+            std::swap(m_id, other.m_id);
+            std::swap(m_size, other.m_size);
+            std::swap(m_isValid, other.m_isValid);
+        }
+
+        auto Texture::operator =(Texture&& other) noexcept -> Texture&
+        {
+            Destroy();
+
+            std::swap(m_id, other.m_id);
+            std::swap(m_size, other.m_size);
+            std::swap(m_isValid, other.m_isValid);
+
+            return *this;
+        }
+
+        Texture::~Texture() noexcept
+        {
+            Destroy();
+        }
+
+        auto Texture::Initialise(const StringView filepath, const Sampler& sampler) -> void
+        {
+            glGenTextures(1, &m_id);
+            m_isValid = LoadFromImageFile(filepath, sampler) == Status::Success;
+        }
+
+        auto Texture::Initialise(const UVector2 extent, const u32 channelCount, const Sampler& sampler) -> void
+        {
+            Initialise(nullptr, extent, channelCount, sampler);
+        }
+
+        auto Texture::Initialise(const List<ubyte>& data, const UVector2 extent, const u32 channelCount, const Sampler& sampler) -> void
+        {
+            Initialise(data.data(), extent, channelCount, sampler);
+        }
+
+        auto Texture::Initialise(const ubyte* const data, const UVector2 extent, const u32 channelCount, const Sampler& sampler) -> void
+        {
+            glGenTextures(1, &m_id);
+
+            constexpr i32 DefaultPixelAlignment = 4;
+
+            if (const i32 imageMemorySize = static_cast<i32>(extent.x * channelCount * extent.y);
+                imageMemorySize % DefaultPixelAlignment != 0)
+            {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
+            }
+
+            m_size = extent;
+            const auto [internalComponentFormat, pixelFormat] = s_componentMap.at(channelCount);
+
+            SetupParameters(internalComponentFormat, pixelFormat, data, sampler);
+
+            glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
+            m_isValid = true;
+        }
+
+        auto Texture::Destroy() noexcept -> void
+        {
+            if (m_id != s_InvalidID)
+            {
+                Unbind();
+
+                glDeleteTextures(1, &m_id);
+
+                m_id = s_InvalidID;
+                m_size = UVector2Zero;
+                m_isValid = false;
+            }
+        }
+
+        auto Texture::Bind(const BindingIndex bindingIndex) const -> void
+        {
+        #ifndef NDEBUG
+            {
+                GLint maxCombinedTextureImageUnitCount = 0;
+                glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxCombinedTextureImageUnitCount);
+
+                if (bindingIndex >= static_cast<BindingIndex>(maxCombinedTextureImageUnitCount))
+                {
+                    Log::EngineWarn("Texture {} is bound to index {}, but the implementation doesn't support that many binding indices.", m_id, bindingIndex);
+                }
+            }
+        #endif
+
+            glActiveTexture(GL_TEXTURE0 + static_cast<GLint>(bindingIndex));
+            glBindTexture(GL_TEXTURE_2D, m_id);
+        }
+
+        auto Texture::Unbind() const -> void
+        {
+            glBindTexture(GL_TEXTURE_2D, s_InvalidID);
+        }
+
+        auto Texture::SetData(const List<ubyte>& data, const UVector2 extent, const u32 channelCount) -> void
+        {
+            SetData(data.data(), extent, channelCount);
+        }
+
+        auto Texture::SetData(const ubyte* const data, const UVector2 extent, const u32 channelCount) -> void
+        {
+            constexpr i32 DefaultPixelAlignment = 4;
+
+            if (const i32 imageMemorySize = static_cast<i32>(extent.x * channelCount * extent.y);
+                imageMemorySize % DefaultPixelAlignment != 0)
+            {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
+            }
+
+            m_size = extent;
+            const auto [internalComponentFormat, pixelFormat] = s_componentMap.at(channelCount);
+
+            Bind();
+
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                static_cast<GLint>(internalComponentFormat),
+                static_cast<GLsizei>(m_size.x),
+                static_cast<GLsizei>(m_size.y),
+                0,
+                static_cast<GLenum>(pixelFormat),
+                pixelFormat != PixelFormat::DepthStencil ? GL_UNSIGNED_BYTE : GL_UNSIGNED_INT_24_8,
+                data
+            );
+
             Unbind();
-
-            glDeleteTextures(1, &m_id);
-
-            m_id = 0u;
-            m_size = UVec2Zero;
-            m_isValid = false;
-        }
-    }
-
-    void Texture::Bind(const i32 index) const
-    {
-        glActiveTexture(GL_TEXTURE0 + index);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-    }
-
-    void Texture::Unbind() const
-    {
-        glBindTexture(GL_TEXTURE_2D, 0u);
-    }
-
-    [[nodiscard]] SDL_Surface* Texture::FlipSurface(const SDL_Surface* const surface)
-    {
-        SDL_Surface* flippedSurface = SDL_CreateRGBSurface(
-            surface->flags, surface->w, surface->h, static_cast<i32>(surface->format->BytesPerPixel * 8u),
-            surface->format->Rmask, surface->format->Gmask, surface->format->Bmask, surface->format->Amask
-        );
-
-        if (flippedSurface == nullptr)
-        {
-            return nullptr;
+            glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
         }
 
-        const i32 distanceToLastRow = surface->pitch * (surface->h - 1);
-        ubyte* currentDestinationRow = static_cast<ubyte*>(surface->pixels) + distanceToLastRow;
-        ubyte* currentSourceRow = static_cast<ubyte*>(flippedSurface->pixels);
-
-        for (u32 line = 0u; line < static_cast<u32>(surface->h); ++line)
+        auto Texture::SetHorizontalWrapMode(const TextureWrap horizontalWrap) const -> void
         {
-            std::memcpy(currentSourceRow, currentDestinationRow, surface->pitch);
-
-            currentDestinationRow -= surface->pitch;
-            currentSourceRow += surface->pitch;
+            Bind();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(horizontalWrap));
+            Unbind();
         }
 
-        return flippedSurface;
-    }
-
-    [[nodiscard]] Status Texture::LoadFromImageFile(const StringView& filepath, const Sampler& sampler)
-    {
-        const Vector<ubyte> rawTextureData = vfs::ReadFileData(filepath);
-
-        if (rawTextureData.empty())
+        auto Texture::SetVerticalWrapMode(const TextureWrap verticalWrap) const -> void
         {
-            return Status::Fail;
+            Bind();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(verticalWrap));
+            Unbind();
         }
 
-        i32 width = 0;
-        i32 height = 0;
-        i32 componentCount = 0;
-
-        ubyte* data = reinterpret_cast<ubyte*>(stbi_load_from_memory(
-            reinterpret_cast<const stbi_uc*>(rawTextureData.data()),
-            static_cast<i32>(rawTextureData.size()),
-            &width, &height, &componentCount,
-            STBI_default
-        ));
-
-        if (data == nullptr)
+        auto Texture::SetMinFilter(const TextureMinFilter minFilter) const -> void
         {
-            return Status::Fail;
+            Bind();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(minFilter));
+            Unbind();
         }
 
-        constexpr i32 DefaultPixelAlignment = 4;
-
-        if (const i32 imageMemorySize = width * componentCount * height;
-            imageMemorySize % DefaultPixelAlignment != 0)
+        auto Texture::SetMagFilter(const TextureMagFilter magFilter) const -> void
         {
-            glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
+            Bind();
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(magFilter));
+            Unbind();
         }
 
-        m_size.x = static_cast<u32>(width);
-        m_size.y = static_cast<u32>(height);
-        const auto [internalFormat, format] = s_componentMap.at(static_cast<i32>(componentCount));
-
-        SetupParameters(internalFormat, format, data, sampler);
-
-        stbi_image_free(data);
-        data = nullptr;
-
-        glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Texture::LoadFromSDLSurface(SDL_Surface* surface, const bool flipVertically, const Sampler& sampler)
-    {
-        SDL_Surface* targetSurface = surface;
-
-        if (flipVertically)
+        [[nodiscard]] auto Texture::GetSizeFromCoordinates(const TextureCoordinatePair& textureCoordinates) const noexcept -> UVector2
         {
-            targetSurface = FlipSurface(surface);
+            const f32 normalisedWidth = glm::abs(textureCoordinates.upperRight.x - textureCoordinates.lowerLeft.x);
+            const f32 normalisedHeight = glm::abs(textureCoordinates.upperRight.y - textureCoordinates.lowerLeft.y);
 
-            if (targetSurface == nullptr)
+            return UVector2{
+                static_cast<u32>(glm::round(normalisedWidth * GetSize().x)),
+                static_cast<u32>(glm::round(normalisedHeight * GetSize().y)),
+            };
+        }
+
+        [[nodiscard]] auto Texture::GetWidthFromCoordinates(const TextureCoordinatePair& textureCoordinates) const noexcept -> u32
+        {
+            const f32 normalisedWidth = glm::abs(textureCoordinates.upperRight.x - textureCoordinates.lowerLeft.x);
+
+            return static_cast<u32>(glm::round(normalisedWidth * GetSize().x));
+        }
+
+        [[nodiscard]] auto Texture::GetHeightFromCoordinates(const TextureCoordinatePair& textureCoordinates) const noexcept -> u32
+        {
+            const f32 normalisedHeight = glm::abs(textureCoordinates.upperRight.y - textureCoordinates.lowerLeft.y);
+
+            return static_cast<u32>(glm::round(normalisedHeight * GetSize().y));
+        }
+
+        [[nodiscard]] auto Texture::LoadFromImageFile(const StringView filepath, const Sampler& sampler) -> Status
+        {
+            auto textureFileDataResult = vfs::ReadFileBytes(filepath);
+
+            if (textureFileDataResult.is_err())
             {
                 return Status::Fail;
             }
-        }
 
-        constexpr i32 DefaultPixelAlignment = 4;
+            const List<ubyte> textureFileData = std::move(textureFileDataResult).unwrap();
 
-        if (const i32 imageMemorySize = static_cast<i32>(targetSurface->pitch * targetSurface->h);
-            imageMemorySize % DefaultPixelAlignment != 0)
-        {
-            glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
-        }
+            i32 width = 0;
+            i32 height = 0;
+            i32 componentCount = 0;
 
-        m_size.x = targetSurface->w;
-        m_size.y = targetSurface->h;
-        auto [internalFormat, format] = s_componentMap.at(targetSurface->format->BytesPerPixel);
+            stbi_uc* textureData = stbi_load_from_memory(
+                reinterpret_cast<const stbi_uc*>(textureFileData.data()),
+                static_cast<i32>(textureFileData.size()),
+                &width,
+                &height,
+                &componentCount,
+                STBI_default
+            );
 
-        if constexpr (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-        {
-            if (targetSurface->format->format == SDL_PIXELFORMAT_RGB888)
+            if (textureData == nullptr)
             {
-                format = GL_BGR;
+                return Status::Fail;
             }
-            else if (targetSurface->format->format == SDL_PIXELFORMAT_ARGB8888)
+
+            constexpr i32 DefaultPixelAlignment = 4;
+
+            if (const i32 imageMemorySize = width * componentCount * height;
+                imageMemorySize % DefaultPixelAlignment != 0)
             {
-                format = GL_BGRA;
+                glPixelStorei(GL_UNPACK_ALIGNMENT, imageMemorySize % 2 == 0 ? 2 : 1);
             }
+
+            m_size.x = static_cast<u32>(width);
+            m_size.y = static_cast<u32>(height);
+            const auto [internalComponentFormat, pixelFormat] = s_componentMap.at(static_cast<u32>(componentCount));
+
+            SetupParameters(internalComponentFormat, pixelFormat, reinterpret_cast<const ubyte*>(textureData), sampler);
+
+            stbi_image_free(textureData);
+            textureData = nullptr;
+
+            glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
+
+            return Status::Success;
         }
 
-        SetupParameters(internalFormat, format, reinterpret_cast<const ubyte*>(targetSurface->pixels), sampler);
-
-        if (flipVertically)
+        auto Texture::SetupParameters(const InternalComponentFormat internalComponentFormat, const PixelFormat pixelFormat, const ubyte* const data, const Sampler& sampler) -> void
         {
-            SDL_FreeSurface(targetSurface);
-            targetSurface = nullptr;
+            Bind();
+
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                static_cast<GLint>(internalComponentFormat),
+                static_cast<GLsizei>(m_size.x),
+                static_cast<GLsizei>(m_size.y),
+                0,
+                static_cast<GLenum>(pixelFormat),
+                pixelFormat != PixelFormat::DepthStencil ? GL_UNSIGNED_BYTE : GL_UNSIGNED_INT_24_8,
+                data
+            );
+
+            if (sampler.generateMipmaps)
+            {
+                glGenerateMipmap(GL_TEXTURE_2D);
+            }
+
+            const Array<Pair<GLenum, GLint>, 4u> textureParameters{
+                Pair<GLenum, GLint>{ GL_TEXTURE_WRAP_S, static_cast<GLint>(sampler.horizontalWrap) },
+                Pair<GLenum, GLint>{ GL_TEXTURE_WRAP_T, static_cast<GLint>(sampler.verticalWrap) },
+                Pair<GLenum, GLint>{ GL_TEXTURE_MIN_FILTER, static_cast<GLint>(sampler.minFilter) },
+                Pair<GLenum, GLint>{ GL_TEXTURE_MAG_FILTER, static_cast<GLint>(sampler.magFilter) },
+            };
+
+            for (const auto [parameter, value] : textureParameters)
+            {
+                glTexParameteri(GL_TEXTURE_2D, parameter, value);
+            }
+
+            Unbind();
         }
-
-        glPixelStorei(GL_UNPACK_ALIGNMENT, DefaultPixelAlignment);
-
-        return Status::Success;
-    }
-
-    void Texture::SetupParameters(const GLint internalFormat, const GLenum format, const ubyte* data, const Sampler& sampler)
-    {
-        Bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_size.x, m_size.y, 0, format, GL_UNSIGNED_BYTE, data);
-
-        if (sampler.generateMipmaps)
-        {
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-
-        const Array<Pair<GLenum, GLint>, 4u> textureParameters{
-            Pair<GLenum, GLint>{ GL_TEXTURE_WRAP_S, static_cast<GLint>(sampler.sWrap) },
-            Pair<GLenum, GLint>{ GL_TEXTURE_WRAP_T, static_cast<GLint>(sampler.tWrap) },
-            Pair<GLenum, GLint>{ GL_TEXTURE_MIN_FILTER, static_cast<GLint>(sampler.minFilter) },
-            Pair<GLenum, GLint>{ GL_TEXTURE_MAG_FILTER, static_cast<GLint>(sampler.magFilter) },
-        };
-
-        for (auto&& [parameter, value] : textureParameters)
-        {
-            glTexParameteri(GL_TEXTURE_2D, parameter, value);
-        }
-
-        if (sampler.sWrap == Sampler::Wrap::ClampToBorder || sampler.tWrap == Sampler::Wrap::ClampToBorder)
-        {
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(Vec4(sampler.borderColour.value())));
-        }
-
-        if (sampler.enableAnisotropicFiltering)
-        {
-            f32 maxAnisotropy = 0.0f;
-            glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisotropy);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, maxAnisotropy);
-        }
-
-        Unbind();
     }
 }

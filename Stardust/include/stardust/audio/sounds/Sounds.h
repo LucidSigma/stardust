@@ -7,7 +7,7 @@
 #undef min
 #undef max
 
-#include "SoundBase.h"
+#include "stardust/audio/sounds/SoundBase.h"
 
 namespace stardust
 {

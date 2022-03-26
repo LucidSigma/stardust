@@ -1,29 +1,24 @@
 #include "stardust/application/Application.h"
 
+#include <limits>
 #include <string>
-#include <utility>
 
-#include <glad/glad.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <stb/stb_image.h>
-#include <toml++/toml.hpp>
-
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
 #include "stardust/debug/assert/Assert.h"
-#include "stardust/debug/logging/Log.h"
-#include "stardust/debug/message_box/MessageBox.h"
-#include "stardust/filesystem/vfs/VFS.h"
-#include "stardust/filesystem/Filesystem.h"
-#include "stardust/graphics/colour/Colour.h"
+#include "stardust/debug/logging/Logging.h"
+#include "stardust/filesystem/vfs/VirtualFilesystem.h"
 #include "stardust/graphics/backend/OpenGL.h"
 #include "stardust/input/controller/GameController.h"
-#include "stardust/input/Input.h"
-#include "stardust/physics/world/World.h"
-#include "stardust/system/System.h"
-#include "stardust/ui/UI.h"
-#include "stardust/utility/version/Version.h"
+#include "stardust/input/controller/GameControllerCodes.h"
+#include "stardust/input/joystick/Joystick.h"
+#include "stardust/input/joystick/JoystickCodes.h"
+#include "stardust/input/keyboard/KeyCodes.h"
+#include "stardust/input/keyboard/VirtualKeyCodes.h"
+#include "stardust/input/mouse/MouseCodes.h"
+#include "stardust/input/touch/TouchDevice.h"
+#include "stardust/math/Math.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/utility/message_box/MessageBox.h"
 #include "stardust/window/cursor/Cursor.h"
 
 namespace stardust
@@ -40,11 +35,16 @@ namespace stardust
             m_onExit.value()(*this);
         }
 
-        m_entityRegistry.clear();
-        m_globalSceneData.clear();
+        m_globalSceneResources.Clear();
+        m_entityRegistry.ClearAllEntities();
+        m_inputController.GetGameControllerLobby().RemoveAllGameControllers();
+        m_inputController.GetJoystickLobby().RemoveAllJoysticks();
 
-        Input::RemoveAllGameControllers();
-        ui::Shutdown();
+        if (m_soundSystem.IsValid())
+        {
+            m_soundSystem.StopAllSounds();
+            m_soundSystem.Destroy();
+        }
 
         if (m_renderer.IsValid())
         {
@@ -61,12 +61,7 @@ namespace stardust
             m_window.Destroy();
         }
 
-        ResetCursor();
-        
-        if (m_soundSystem.DidInitialiseSuccessfully())
-        {
-            m_soundSystem.StopAllSounds();
-        }
+        cursor::Reset();
 
     #ifndef NDEBUG
         debug::ResetAssertionCallback();
@@ -75,733 +70,1038 @@ namespace stardust
 
         vfs::Quit();
 
-        TTF_Quit();
-        SDL_Quit();
+        if (SDL_WasInit(SDL_INIT_EVERYTHING) != 0u)
+        {
+            SDL_Quit();
+        }
     }
 
-    void Application::Run()
+    auto Application::Run() -> void
     {
         InitialiseScenes();
 
+        m_timestepController.Start();
         SDL_Event event{ };
-        f64 timeAccumulator = 0.0;
-        m_ticksCount = std::chrono::high_resolution_clock::now();
 
-        while (m_isRunning)
+        while (m_isRunning.load(std::memory_order::relaxed))
         {
-            UpdateTime(timeAccumulator);
-            m_soundSystem.Update();
+            m_timestepController.Update(m_elapsedTime);
 
-            while (timeAccumulator >= m_fixedTimestep)
+            while (m_timestepController.HasFixedTimeAccumulated())
             {
                 FixedUpdate();
-                timeAccumulator -= m_fixedTimestep;
+                m_timestepController.UpdateFixedTime();
             }
 
-            ProcessInput();
-            Update();
-            LateUpdate();
+            m_timestepController.UpdateFixedTimeInterpolation();
 
-            Render();
+            ProcessInput();
+
+            PreUpdate();
+            Update();
+            PostUpdate();
+
+            if (!m_timestepController.IsSynchronisingToTargetFrameRate() && !m_timestepController.SkipNextFrame())
+            {
+                Render();
+            }
 
             PollEvents(event);
             UpdateSceneQueue();
         }
-    }
 
-    void Application::FinishCurrentScene() noexcept
-    {
-        m_isCurrentSceneFinished = true;
-    }
-
-    void Application::ForceQuit() noexcept
-    {
-        m_isRunning = false;
-    }
-
-    void Application::RemoveFromGlobalSceneData(const String& dataName)
-    {
-        m_globalSceneData.erase(dataName);
-    }
-
-    [[nodiscard]] Status Application::CreateApplicationConfig(const String& appTOMLFilepath, const char* argv0, AppConfig& out_appConfig)
-    {
-        toml::table tomlData{ };
-        
-        if (filesystem::ReadTOML(appTOMLFilepath, tomlData) == Status::Fail)
+        if (!m_sceneManager.IsEmpty())
         {
-            return Status::Fail;
-        }
-        
-        try
-        {
-            out_appConfig.applicationName = tomlData["application"]["application_name"].value<String>().value();
-            out_appConfig.organisationName = tomlData["application"]["organisation_name"].value<String>().value();
-
-            out_appConfig.allowResizableWindow = tomlData["window"]["can_resize"].value<bool>().value();
-            out_appConfig.windowTitle = tomlData["window"]["title"].value<String>().value();
-
-            out_appConfig.assetsArchiveRelativeFilepath = tomlData["filesystem"]["assets_archive_relative_path"].value<String>().value();
-            out_appConfig.localesArchiveRelativeFilepath = tomlData["filesystem"]["locales_archive_relative_path"].value<String>().value();
-            out_appConfig.logFileRelativeFilepath = tomlData["filesystem"]["log_file_relative_path"].value<String>().value();
-
-            out_appConfig.defaultConfigFilepath = tomlData["filesystem"]["virtual_filepaths"]["default_config_path"].value<String>().value();
-            out_appConfig.gameControllerDatabaseFilepath = tomlData["filesystem"]["virtual_filepaths"]["game_controller_database_path"].value<String>().value();
-            out_appConfig.windowIconFilepath = tomlData["filesystem"]["virtual_filepaths"]["window_icon_path"].value<String>();
-
-            out_appConfig.fixedTimestep = tomlData["physics"]["fixed_timestep"].value<f64>().value();
-            out_appConfig.positionIterations = tomlData["physics"]["position_iterations"].value<u32>().value();
-            out_appConfig.velocityIterations = tomlData["physics"]["velocity_iterations"].value<u32>().value();
-
-            out_appConfig.argv0 = argv0;
-        }
-        catch (const std::bad_optional_access& error)
-        {
-            return Status::Fail;
-        }
-
-        return Status::Success;
-    }
-
-    void Application::Initialise(const CreateInfo& createInfo)
-    {
-        if (filesystem::InitialiseApplicationBaseDirectory() == Status::Fail)
-        {
-            message_box::Show("Filesystem Error", "Failed to get base directory of application.", message_box::Type::Error);
-
-            return;
-        }
-
-        AppConfig appConfig{ };
-
-        if (CreateApplicationConfig(filesystem::GetApplicationBaseDirectory() + createInfo.appTOMLRelativeFilepath, createInfo.argv0, appConfig) == Status::Fail)
-        {
-            message_box::Show("app.toml Error", "Could not find app.toml at " + createInfo.appTOMLRelativeFilepath, message_box::Type::Error);
-
-            return;
-        }
-
-        if (filesystem::InitialiseApplicationPreferenceDirectory(appConfig.organisationName, appConfig.applicationName) == Status::Fail)
-        {
-            message_box::Show("Filesystem Error", "Failed to get preference directory of application.", message_box::Type::Error);
-
-            return;
-        }
-
-    #ifndef NDEBUG
-        {
-            const String logFilepath = filesystem::GetApplicationBaseDirectory() + appConfig.logFileRelativeFilepath;
-            Log::Initialise(appConfig.applicationName, logFilepath);
-            debug::InitialiseAssertionCallback();
-        }
-    #endif
-
-        Log::EngineInfo("Logger initialised [Stardust Version {}].", Version.ToString());
-        Log::EngineDebug("Platform detected: \"{}\".", system::GetPlatformName());
-        Log::EngineDebug("Base directory: \"{}\"", filesystem::GetApplicationBaseDirectory());
-        Log::EngineInfo("ECS initialised.");
-
-        static const Vector<std::function<Status(Application* const, const AppConfig&)>> initialisationFunctions{
-            &Application::InitialiseFilesystem,
-            &Application::InitialiseConfig,
-            &Application::InitialiseLocale,
-            &Application::InitialiseSoundSystem,
-            &Application::InitialiseSDL,
-            &Application::InitialiseWindow,
-            &Application::InitialiseOpenGL,
-            &Application::InitialiseRenderer,
-            &Application::InitialiseTextSystem,
-            &Application::InitialiseUI,
-            &Application::InitialiseScriptEngine,
-            &Application::InitialisePhysics,
-            &Application::InitialiseInput,
-        };
-
-        for (const auto& initialisationFunction : initialisationFunctions)
-        {
-            if (initialisationFunction(this, appConfig) != Status::Success)
-            {
-                return;
-            }
-        }
-
-        m_onInitialise = createInfo.initialiseCallback;
-        m_onExit = createInfo.exitCallback;
-
-        if (m_onInitialise.has_value())
-        {
-            if (m_onInitialise.value()(*this) != Status::Success)
-            {
-                return;
-            }
-        }
-
-        stbi_set_flip_vertically_on_load(true);
-
-        m_didInitialiseSuccessfully = true;
-    }
-
-    [[nodiscard]] Status Application::InitialiseFilesystem(const AppConfig& appConfig)
-    {
-        Log::EngineInfo("Filesystem initialised.");
-
-        if (!vfs::Initialise(appConfig.argv0))
-        {
-            message_box::Show("Filesystem Error", "Virtual filesystem failed to initialise.", message_box::Type::Error);
-            Log::EngineError("Failed to initialise virtual filesystem.");
-
-            return Status::Fail;
-        }
-
-        const String assetsFilepath = filesystem::GetApplicationBaseDirectory() + appConfig.assetsArchiveRelativeFilepath;
-        const String localesFilepath = filesystem::GetApplicationBaseDirectory() + appConfig.localesArchiveRelativeFilepath;
-
-        vfs::AddToSearchPath({
-            assetsFilepath,
-            localesFilepath,
-        });
-
-        Log::EngineInfo("Virtual filesystem initialised.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseConfig(const AppConfig& appConfig)
-    {
-        if (m_config.Initialise(filesystem::GetApplicationPreferenceDirectory(), appConfig.defaultConfigFilepath) == Status::Fail)
-        {
-            message_box::Show("Config Error", "Failed to load config file.", message_box::Type::Error);
-            Log::EngineError("Failed to load config file.");
-
-            return Status::Fail;
-        }
-
-        Log::EngineInfo("Config loaded.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseLocale(const AppConfig&)
-    {
-        m_locale.Initialise("locales");
-
-        if (m_locale.SetLocale(m_config["locale"]) == Status::Fail)
-        {
-            message_box::Show("Locale Error", "Failed to load initial locale files.", message_box::Type::Error);
-            Log::EngineError("Failed to load locale files for initial locale {}.", m_config["locale"]);
-
-            return Status::Fail;
-        }
-
-        Log::EngineInfo("Locale \"{}\" loaded.", m_locale.GetCurrentLocaleName());
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseSoundSystem(const AppConfig&)
-    {
-        if (!m_soundSystem.DidInitialiseSuccessfully())
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["sound"],
-                m_locale["engine"]["errors"]["bodies"]["sound"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to initialise sound system.");
-
-            return Status::Fail;
-        }
-
-        m_volumeManager.AddVolume(audio::VolumeManager::GetMasterVolumeName(), m_config["audio"]["volumes"]["master"]);
-        Log::EngineInfo("Sound system initialised.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseSDL(const AppConfig&)
-    {
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["initialise"],
-                m_locale["engine"]["errors"]["bodies"]["initialise-sdl"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to initialise SDL: {}.", SDL_GetError());
-
-            return Status::Fail;
-        }
-
-        Log::EngineInfo("SDL initialised.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseWindow(const AppConfig& appConfig)
-    {
-        const Vector<Pair<SDL_GLattr, i32>> glWindowAttributes{
-            { SDL_GL_DOUBLEBUFFER, SDL_TRUE },
-            { SDL_GL_CONTEXT_MAJOR_VERSION, 4 },
-            { SDL_GL_CONTEXT_MINOR_VERSION, 6 },
-            { SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE },
-            { SDL_GL_ACCELERATED_VISUAL, SDL_TRUE },
-
-            { SDL_GL_RED_SIZE, 8 },
-            { SDL_GL_GREEN_SIZE, 8 },
-            { SDL_GL_BLUE_SIZE, 8 },
-            { SDL_GL_ALPHA_SIZE, 8 },
-            { SDL_GL_DEPTH_SIZE, 24 },
-            { SDL_GL_STENCIL_SIZE, 8 },
-
-            { SDL_GL_MULTISAMPLEBUFFERS, 1 },
-            { SDL_GL_MULTISAMPLESAMPLES, 4 },
-
-        #if defined(__APPLE__) && !defined(NDEBUG)
-            { SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG },
-        #elif defined(__APPLE__)
-            { SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG },
-        #elif !defined(NDEBUG)
-            { SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG },
-        #endif
-        };
-
-        for (auto&& [attribute, value] : glWindowAttributes)
-        {
-            SDL_GL_SetAttribute(attribute, value);
-        }
-
-        Window::SetMinimiseOnFullscreenFocusLoss(m_config["graphics"]["window"]["enable-fullscreen-minimise"]);
-
-        Vector<Window::CreateFlag> windowCreateFlags{ 
-            Window::CreateFlag::AllowHighDPI,
-            Window::CreateFlag::OpenGL,
-            Window::CreateFlag::Shown,
-        };
-
-        if (appConfig.allowResizableWindow)
-        {
-            windowCreateFlags.push_back(Window::CreateFlag::Resizable);
-        }
-
-        if (m_config["graphics"]["window"]["fullscreen"])
-        {
-            windowCreateFlags.push_back(Window::CreateFlag::HardFullscreen);
-        }
-
-        if (m_config["graphics"]["window"]["borderless"])
-        {
-            windowCreateFlags.push_back(Window::CreateFlag::Borderless);
-        }
-
-        m_window.Initialise(Window::CreateInfo{
-            .title = appConfig.windowTitle,
-            .x = Window::Position::Centred,
-            .y = Window::Position::Centred,
-            .size = UVec2{ m_config["graphics"]["window"]["size"]["width"], m_config["graphics"]["window"]["size"]["height"] },
-            .flags = std::move(windowCreateFlags),
-        });
-
-        if (!m_window.IsValid())
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["window"],
-                m_locale["engine"]["errors"]["bodies"]["window"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to create window: {}.", SDL_GetError());
-
-            return Status::Fail;
-        }
-
-        if (appConfig.windowIconFilepath.has_value() && !appConfig.windowIconFilepath.value().empty())
-        {
-            m_window.SetIcon(appConfig.windowIconFilepath.value(), m_locale);
-        }
-
-        Log::EngineInfo("Window created.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseOpenGL(const AppConfig&)
-    {
-        m_openGLContext.Initialise(m_window);
-        
-        if (!m_openGLContext.IsValid())
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["opengl"],
-                m_locale["engine"]["errors"]["bodies"]["opengl-context"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to create OpenGL context: {}.", SDL_GetError());
-        
-            return Status::Fail;
-        }
-        
-        if (m_openGLContext.MakeCurrent() != Status::Success)
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["opengl"],
-                m_locale["engine"]["errors"]["bodies"]["opengl-current"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to set current OpenGL context: {}.", SDL_GetError());
-        
-            return Status::Fail;
-        }
-
-        if (m_config["graphics"]["vsync"]["enabled"])
-        {
-            const bool useAdaptiveVSync = m_config["graphics"]["vsync"]["adaptive"];
-            bool didAdaptiveVSyncFail = false;
-
-            if (useAdaptiveVSync)
-            {
-                if (Window::SetVSync(VSyncType::Adaptive) != Status::Success)
-                {
-                    Log::EngineWarn("Failed to set adaptive VSync; defaulting to regular VSync.");
-                    didAdaptiveVSyncFail = true;
-                }
-            }
-
-            if (!useAdaptiveVSync || didAdaptiveVSyncFail)
-            {
-                if (Window::SetVSync(VSyncType::Regular) != Status::Success)
-                {
-                    Log::EngineWarn("Failed to set VSync.");
-                    Window::SetVSync(VSyncType::None);
-                }
-            }
-        }
-        else
-        {
-            Window::SetVSync(VSyncType::None);
-        }
-
-        if (opengl::InitialiseLoader() != Status::Success)
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["opengl"],
-                m_locale["engine"]["errors"]["bodies"]["opengl-load"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to load OpenGL functions.");
-
-            return Status::Fail;
-        }
-
-    #ifndef NDEBUG
-        opengl::InitialiseDebugCallback();
-    #endif
-
-        glEnable(GL_SCISSOR_TEST);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        Log::EngineInfo("OpenGL set up successfully.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseRenderer(const AppConfig&)
-    {
-        m_renderer.Initialise(Renderer::CreateInfo{
-            .window = &m_window,
-            .virtualSize = UVec2{
-                m_config["graphics"]["resolution"]["width"],
-                m_config["graphics"]["resolution"]["height"],
-            },
-        });
-
-        if (!m_renderer.IsValid())
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["renderer"],
-                m_locale["engine"]["errors"]["bodies"]["renderer"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to initialise renderer.");
-
-            return Status::Fail;
-        }
-
-        m_renderer.SetAntiAliasing(m_config["graphics"]["anti-aliasing"]);
-        m_renderer.SetClearColour(colours::Black);
-
-        m_camera.Initialise(8.0f, m_renderer);
-        Log::EngineInfo("Renderer and camera created. Camera pixels per unit is {}.", m_camera.GetPixelsPerUnit());
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseTextSystem(const AppConfig&)
-    {
-        if (TTF_Init() != 0)
-        {
-            message_box::Show(
-                m_locale["engine"]["errors"]["titles"]["ttf"],
-                m_locale["engine"]["errors"]["bodies"]["ttf"],
-                message_box::Type::Error
-            );
-            Log::EngineCritical("Failed to initialise SDL_TTF: {}.", TTF_GetError());
-
-            return Status::Fail;
-        }
-
-        Log::EngineInfo("Text subsystem initialised.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseUI(const AppConfig&)
-    {
-        return ui::Initialise(*this);
-    }
-
-    [[nodiscard]] Status Application::InitialiseScriptEngine(const AppConfig&)
-    {
-        m_scriptEngine.Initialise(*this);
-        Log::EngineInfo("Lua script engine initialised.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialisePhysics(const AppConfig& appConfig)
-    {
-        m_fixedTimestep = appConfig.fixedTimestep;
-        physics::World::SetVelocityIterations(appConfig.velocityIterations);
-        physics::World::SetPositionIterations(appConfig.positionIterations);
-        Log::EngineInfo("Physics subsystem initialised.");
-
-        return Status::Success;
-    }
-
-    [[nodiscard]] Status Application::InitialiseInput(const AppConfig& appConfig)
-    {
-        Input::SetGameControllerDeadzone(m_config["input"]["controller-deadzone"]);
-
-        if (Input::InitialiseGameControllerDatabase(appConfig.gameControllerDatabaseFilepath) != Status::Success)
-        {
-            Log::EngineWarn("Game controller database not loaded correctly - some controllers might not work properly.");
-        }
-
-        Log::EngineInfo("Input subsystem initialised.");
-
-        return Status::Success;
-    }
-
-    void Application::InitialiseScenes()
-    {
-        if (m_didInitialiseSuccessfully)
-        {
-            m_isRunning = !m_sceneManager.IsEmpty();
-
-            if (m_isRunning)
-            {
-                if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
-                {
-                    message_box::Show(
-                        m_locale["engine"]["errors"]["titles"]["scene"],
-                        m_locale["engine"]["errors"]["bodies"]["initial-scene"],
-                        message_box::Type::Error
-                    );
-                    Log::EngineError("Failed to load initial scene {}.", m_sceneManager.CurrentScene()->GetName());
-                    m_isRunning = false;
-                }
-                else
-                {
-                    Log::EngineTrace("Initial scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName());
-                }
-            }
-            else [[unlikely]]
-            {
-                message_box::Show(
-                    m_locale["engine"]["warnings"]["titles"]["scene"],
-                    m_locale["engine"]["warnings"]["bodies"]["initial-scene"],
-                    message_box::Type::Warning
-                );
-                Log::EngineWarn("No initial scene loaded.");
-            }
-        }
-        else
-        {
-            m_isRunning = false;
+            m_sceneManager.CurrentScene()->GetLayerStack().RemoveAllLayers();
+            m_sceneManager.CurrentScene()->OnUnload();
         }
     }
 
-    void Application::FixedUpdate()
+    auto Application::ForceQuit() noexcept -> void
     {
-        m_sceneManager.CurrentScene()->FixedUpdate(static_cast<f32>(m_fixedTimestep));
+        m_isRunning.store(false, std::memory_order::relaxed);
     }
 
-    void Application::ProcessInput()
+    auto Application::PushUserEvent(const events::UserEvent& userEvent) -> void
     {
-        Input::UpdateKeyboardState();
-        Input::UpdateMouseState();
-        Input::UpdateGameControllers();
-
-        m_sceneManager.CurrentScene()->ProcessInput(m_inputManager);
+        m_userEvents.push(userEvent);
     }
 
-    void Application::Update()
+    auto Application::FixedUpdate() -> void
     {
-        m_sceneManager.CurrentScene()->Update(m_deltaTime);
+        m_sceneManager.CurrentScene()->FixedUpdate(static_cast<f32>(m_timestepController.GetFixedTimestep()));
     }
 
-    void Application::LateUpdate()
+    auto Application::ProcessInput() -> void
     {
-        m_sceneManager.CurrentScene()->LateUpdate(m_deltaTime);
+        m_inputController.Update();
+
+        m_sceneManager.CurrentScene()->ProcessInput(m_inputController, m_inputManager);
     }
 
-    void Application::Render()
+    auto Application::PreUpdate() -> void
     {
-        m_renderer.Clear();
-        m_renderer.BeginFrame();
+        m_sceneManager.CurrentScene()->PreUpdate(static_cast<f32>(m_timestepController.GetDeltaTime()));
+    }
 
+    auto Application::Update() -> void
+    {
+        m_sceneManager.CurrentScene()->Update(static_cast<f32>(m_timestepController.GetDeltaTime()));
+    }
+
+    auto Application::PostUpdate() -> void
+    {
+        m_sceneManager.CurrentScene()->PostUpdate(static_cast<f32>(m_timestepController.GetDeltaTime()));
+        m_soundSystem.Update();
+    }
+
+    auto Application::Render() -> void
+    {
         m_sceneManager.CurrentScene()->Render(m_renderer);
 
-        m_renderer.EndFrame(m_camera);
         m_window.Present();
+
+    #ifndef NDEBUG
+        opengl::CheckErrors();
+    #endif
     }
 
-    void Application::PollEvents(Event& event)
+    auto Application::PollEvents(SDL_Event& event) -> void
     {
-        Input::ResetScrollState();
+        m_inputController.GetMouseState().ResetScrollState();
 
         while (SDL_PollEvent(&event) != 0)
         {
-            switch (GetEventType(event))
+            switch (event.type)
             {
-            case EventType::Window:
-                ProcessWindowEvents(event.window);
+            case SDL_QUIT:
+                ForceQuit();
 
                 break;
 
-            case EventType::MouseScroll:
-                Input::UpdateScrollState(event.wheel.y);
+            case SDL_KEYDOWN:
+            {
+                const auto keyDownEvent = events::KeyDown{
+                    .keyCode = static_cast<KeyCode>(event.key.keysym.scancode),
+                    .virtualKeyCode = static_cast<VirtualKeyCode>(event.key.keysym.sym),
+                    .modState = static_cast<u32>(event.key.keysym.mod),
+                    .isRepeat = event.key.repeat != 0u,
+                };
 
-                break;
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnKeyDown(keyDownEvent);
 
-            case EventType::GameControllerDeviceAdd:
-                if (const ObserverPtr<GameController> gameController = Input::AddGameController(event.cdevice.which, m_locale);
-                    gameController != nullptr)
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
                 {
-                    m_sceneManager.CurrentScene()->OnGameControllerAdded(*gameController);
-                }
-                
-                break;
-
-            case EventType::GameControllerDeviceRemove:
-                if (const ObserverPtr<const GameController> gameController = Input::GetGameController(event.cdevice.which);
-                    gameController != nullptr)
-                {
-                    m_sceneManager.CurrentScene()->OnGameControllerRemoved(*gameController);
+                    m_globalEventHandler->OnKeyDown(*this, keyDownEvent);
                 }
 
-                Input::RemoveGameController(event.cdevice.which);
-
-                break;
-
-            case EventType::Quit:
-                m_isRunning = false;
-
-                break;
-
-            default:
                 break;
             }
 
-            m_sceneManager.CurrentScene()->PollEvent(event);
+            case SDL_KEYUP:
+            {
+                const auto keyUpEvent = events::KeyUp{
+                    .keyCode = static_cast<KeyCode>(event.key.keysym.scancode),
+                    .virtualKeyCode = static_cast<VirtualKeyCode>(event.key.keysym.sym),
+                    .modState = static_cast<u32>(event.key.keysym.mod),
+                    .isRepeat = event.key.repeat != 0u,
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnKeyUp(keyUpEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnKeyUp(*this, keyUpEvent);
+                }
+
+                break;
+            }
+
+            case SDL_TEXTINPUT:
+            {
+                const auto textInputEvent = events::TextInput{
+                    .text = event.text.text,
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnTextInput(textInputEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnTextInput(*this, textInputEvent);
+                }
+
+                break;
+            }
+
+            case SDL_MOUSEBUTTONDOWN:
+            {
+                const auto mouseButtonDownEvent = events::MouseButtonDown{
+                    .mouseButton = static_cast<MouseButton>(event.button.button),
+                    .coordinates = IVector2{ event.button.x, event.button.y },
+                    .clickCount = static_cast<u32>(event.button.clicks),
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnMouseButtonDown(mouseButtonDownEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnMouseButtonDown(*this, mouseButtonDownEvent);
+                }
+
+                break;
+            }
+
+            case SDL_MOUSEBUTTONUP:
+            {
+                const auto mouseButtonUpEvent = events::MouseButtonUp{
+                    .mouseButton = static_cast<MouseButton>(event.button.button),
+                    .coordinates = IVector2{ event.button.x, event.button.y },
+                    .clickCount = static_cast<u32>(event.button.clicks),
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnMouseButtonUp(mouseButtonUpEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnMouseButtonUp(*this, mouseButtonUpEvent);
+                }
+
+                break;
+            }
+
+            case SDL_MOUSEMOTION:
+            {
+                const auto mouseMotionEvent = events::MouseMotion{
+                    .coordinates = IVector2{ event.motion.x, event.motion.y },
+                    .relativeCoordinates = IVector2{ event.motion.xrel, event.motion.yrel },
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnMouseMotion(mouseMotionEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnMouseMotion(*this, mouseMotionEvent);
+                }
+
+                break;
+            }
+
+            case SDL_MOUSEWHEEL:
+            {
+                m_inputController.GetMouseState().UpdateScrollState(event.wheel.y, event.wheel.preciseY);
+
+                const auto mouseScrollEvent = events::MouseScroll{
+                    .scrollAmount = event.wheel.y,
+                    .preciseScrollAmount = event.wheel.preciseY,
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnMouseScroll(mouseScrollEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnMouseScroll(*this, mouseScrollEvent);
+                }
+
+                break;
+            }
+
+            case SDL_CONTROLLERDEVICEADDED:
+                if (const ObserverPointer<GameController> gameController = m_inputController.GetGameControllerLobby().AddGameController(event.cdevice.which);
+                    gameController != nullptr)
+                {
+                    Log::EngineInfo("Game controller \"{}\" added (ID: {}; GUID: {}).", gameController->GetName(), gameController->GetID(), gameController->GetGUID());
+
+                    const auto gameControllerAddedEvent = events::GameControllerAdded{
+                        .gameController = gameController,
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerAdded(gameControllerAddedEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerAdded(*this, gameControllerAddedEvent);
+                    }
+                }
+                else
+                {
+                    message_box::ShowComplex(
+                        m_locale["engine"]["warnings"]["titles"]["game-controller"],
+                        m_locale({ "engine", "warnings", "bodies", "game-controller" }, {
+                            { "GAME_CONTROLLER_ID", std::to_string(event.cdevice.which) },
+                        }),
+                        message_box::Type::Warning,
+                        List<message_box::ButtonData>{
+                            message_box::ButtonData{
+                                .id = 0,
+                                .text = m_locale["engine"]["buttons"]["continue"],
+                                .flags = {
+                                    message_box::ButtonFlag::ReturnKeyDefault,
+                                    message_box::ButtonFlag::EscapeKeyDefault,
+                                },
+                            },
+                        }
+                    );
+
+                    Log::EngineWarn("Failed to add game controller (ID: {}).", event.cdevice.which);
+                }
+
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+                if (const ObserverPointer<const GameController> gameController = m_inputController.GetGameControllerLobby().GetGameController(event.cdevice.which);
+                    gameController != nullptr)
+                {
+                    Log::EngineInfo("Game controller {} removed.", gameController->GetID());
+
+                    const auto gameControllerRemovedEvent = events::GameControllerRemoved{
+                        .gameController = gameController,
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerRemoved(gameControllerRemovedEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerRemoved(*this, gameControllerRemovedEvent);
+                    }
+                }
+
+                m_inputController.GetGameControllerLobby().RemoveGameController(event.cdevice.which);
+
+                break;
+
+            case SDL_CONTROLLERBUTTONDOWN:
+                if (m_inputController.GetGameControllerLobby().DoesGameControllerExist(event.cbutton.which))
+                {
+                    const auto gameControllerButtonDownEvent = events::GameControllerButtonDown{
+                        .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.cbutton.which),
+                        .button = static_cast<GameControllerButton>(static_cast<SDL_GameControllerButton>(event.cbutton.button)),
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerButtonDown(gameControllerButtonDownEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerButtonDown(*this, gameControllerButtonDownEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_CONTROLLERBUTTONUP:
+                if (m_inputController.GetGameControllerLobby().DoesGameControllerExist(event.cbutton.which))
+                {
+                    const auto gameControllerButtonUpEvent = events::GameControllerButtonUp{
+                        .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.cbutton.which),
+                        .button = static_cast<GameControllerButton>(static_cast<SDL_GameControllerButton>(event.cbutton.button)),
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerButtonUp(gameControllerButtonUpEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerButtonUp(*this, gameControllerButtonUpEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_CONTROLLERAXISMOTION:
+                if (m_inputController.GetGameControllerLobby().DoesGameControllerExist(event.caxis.which))
+                {
+                    const auto gameControllerAxisMotionEvent = events::GameControllerAxisMotion{
+                        .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.caxis.which),
+                        .axis = static_cast<GameControllerAxis>(static_cast<SDL_GameControllerAxis>(event.caxis.axis)),
+                        .value = glm::clamp(static_cast<f32>(event.caxis.value) / static_cast<f32>(std::numeric_limits<i16>::max()), -1.0f, 1.0f),
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerAxisMotion(gameControllerAxisMotionEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerAxisMotion(*this, gameControllerAxisMotionEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_CONTROLLERTOUCHPADDOWN:
+                if (m_inputController.GetGameControllerLobby().DoesGameControllerExist(event.ctouchpad.which))
+                {
+                    const auto gameControllerTouchpadFingerDownEvent = events::GameControllerTouchpadFingerDown{
+                        .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.ctouchpad.which),
+                        .fingerIndex = static_cast<usize>(event.ctouchpad.finger),
+                        .position = Vector2{ event.ctouchpad.x, event.ctouchpad.y },
+                        .pressure = event.ctouchpad.pressure,
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerTouchpadFingerDown(gameControllerTouchpadFingerDownEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerTouchpadFingerDown(*this, gameControllerTouchpadFingerDownEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_CONTROLLERTOUCHPADUP:
+                if (m_inputController.GetGameControllerLobby().DoesGameControllerExist(event.ctouchpad.which))
+                {
+                    const auto gameControllerTouchpadFingerUpEvent = events::GameControllerTouchpadFingerUp{
+                        .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.ctouchpad.which),
+                        .fingerIndex = static_cast<usize>(event.ctouchpad.finger),
+                        .position = Vector2{ event.ctouchpad.x, event.ctouchpad.y },
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerTouchpadFingerUp(gameControllerTouchpadFingerUpEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerTouchpadFingerUp(*this, gameControllerTouchpadFingerUpEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_CONTROLLERTOUCHPADMOTION:
+                if (m_inputController.GetGameControllerLobby().DoesGameControllerExist(event.ctouchpad.which))
+                {
+                    const auto gameControllerTouchpadFingerMotionEvent = events::GameControllerTouchpadFingerMotion{
+                        .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.ctouchpad.which),
+                        .fingerIndex = static_cast<usize>(event.ctouchpad.finger),
+                        .position = Vector2{ event.ctouchpad.x, event.ctouchpad.y },
+                        .pressure = event.ctouchpad.pressure,
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerTouchpadFingerMotion(gameControllerTouchpadFingerMotionEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnGameControllerTouchpadFingerMotion(*this, gameControllerTouchpadFingerMotionEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_CONTROLLERSENSORUPDATE:
+                if (m_inputController.GetGameControllerLobby().DoesGameControllerExist(event.csensor.which))
+                {
+                    switch (event.csensor.sensor)
+                    {
+                    case SDL_SENSOR_ACCEL:
+                    {
+                        const auto gameControllerAccelerometerUpdateEvent = events::GameControllerAccelerometerUpdate{
+                            .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.csensor.which),
+                            .acceleration = Vector3{ event.csensor.data[0], event.csensor.data[1], event.csensor.data[2] },
+                        };
+
+                        const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerAccelerometerUpdate(gameControllerAccelerometerUpdateEvent);
+
+                        if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                        {
+                            m_globalEventHandler->OnGameControllerAccelerometerUpdate(*this, gameControllerAccelerometerUpdateEvent);
+                        }
+
+                        break;
+                    }
+
+                    case SDL_SENSOR_GYRO:
+                    {
+                        const auto gameControllerGyroscopeUpdateEvent = events::GameControllerGyroscopeUpdate{
+                            .gameController = m_inputController.GetGameControllerLobby().GetGameController(event.csensor.which),
+                            .rotation = Vector3{ event.csensor.data[0], event.csensor.data[1], event.csensor.data[2] },
+                        };
+
+                        const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnGameControllerGyroscopeUpdate(gameControllerGyroscopeUpdateEvent);
+
+                        if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                        {
+                            m_globalEventHandler->OnGameControllerGyroscopeUpdate(*this, gameControllerGyroscopeUpdateEvent);
+                        }
+
+                        break;
+                    }
+                    }
+                }
+
+                break;
+
+            case SDL_JOYDEVICEADDED:
+                if (SDL_IsGameController(event.jdevice.which))
+                {
+                    break;
+                }
+
+                if (const ObserverPointer<Joystick> joystick = m_inputController.GetJoystickLobby().AddJoystick(event.jdevice.which);
+                    joystick != nullptr)
+                {
+                    Log::EngineInfo("Joystick \"{}\" added (ID: {}; GUID: {}).", joystick->GetName(), joystick->GetID(), joystick->GetGUID());
+
+                    const auto joystickAddedEvent = events::JoystickAdded{
+                        .joystick = joystick,
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnJoystickAdded(joystickAddedEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnJoystickAdded(*this, joystickAddedEvent);
+                    }
+                }
+                else
+                {
+                    message_box::ShowComplex(
+                        m_locale["engine"]["warnings"]["titles"]["joystick"],
+                        m_locale({ "engine", "warnings", "bodies", "joystick" }, {
+                            { "JOYSTICK_ID", std::to_string(event.jdevice.which) },
+                        }),
+                        message_box::Type::Warning,
+                        List<message_box::ButtonData>{
+                            message_box::ButtonData{
+                                .id = 0,
+                                .text = m_locale["engine"]["buttons"]["continue"],
+                                .flags = {
+                                    message_box::ButtonFlag::ReturnKeyDefault,
+                                    message_box::ButtonFlag::EscapeKeyDefault,
+                                },
+                            },
+                        }
+                    );
+
+                    Log::EngineWarn("Failed to add joystick (ID: {}).", event.jdevice.which);
+                }
+
+                break;
+
+            case SDL_JOYDEVICEREMOVED:
+                if (SDL_IsGameController(event.jdevice.which))
+                {
+                    break;
+                }
+
+                if (const ObserverPointer<const Joystick> joystick = m_inputController.GetJoystickLobby().GetJoystick(event.jdevice.which);
+                    joystick != nullptr)
+                {
+                    Log::EngineInfo("Joystick {} removed.", joystick->GetID());
+
+                    const auto joystickRemovedEvent = events::JoystickRemoved{
+                        .joystick = joystick,
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnJoystickRemoved(joystickRemovedEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnJoystickRemoved(*this, joystickRemovedEvent);
+                    }
+                }
+
+                m_inputController.GetJoystickLobby().RemoveJoystick(event.jdevice.which);
+
+                break;
+
+            case SDL_JOYBUTTONDOWN:
+                if (m_inputController.GetJoystickLobby().DoesJoystickExist(event.jbutton.which))
+                {
+                    const auto joystickButtonDownEvent = events::JoystickButtonDown{
+                        .joystick = m_inputController.GetJoystickLobby().GetJoystick(event.jbutton.which),
+                        .button = static_cast<Joystick::ButtonID>(event.jbutton.button),
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnJoystickButtonDown(joystickButtonDownEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnJoystickButtonDown(*this, joystickButtonDownEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_JOYBUTTONUP:
+                if (m_inputController.GetJoystickLobby().DoesJoystickExist(event.jbutton.which))
+                {
+                    const auto joystickButtonUpEvent = events::JoystickButtonUp{
+                        .joystick = m_inputController.GetJoystickLobby().GetJoystick(event.jbutton.which),
+                        .button = static_cast<Joystick::ButtonID>(event.jbutton.button),
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnJoystickButtonUp(joystickButtonUpEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnJoystickButtonUp(*this, joystickButtonUpEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_JOYAXISMOTION:
+                if (m_inputController.GetJoystickLobby().DoesJoystickExist(event.jaxis.which))
+                {
+                    const auto joystickAxisMotionEvent = events::JoystickAxisMotion{
+                        .joystick = m_inputController.GetJoystickLobby().GetJoystick(event.jaxis.which),
+                        .axis = static_cast<Joystick::AxisID>(event.jaxis.axis),
+                        .value = glm::clamp(static_cast<f32>(event.jaxis.value) / static_cast<f32>(std::numeric_limits<i16>::max()), -1.0f, 1.0f),
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnJoystickAxisMotion(joystickAxisMotionEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnJoystickAxisMotion(*this, joystickAxisMotionEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_JOYHATMOTION:
+                if (m_inputController.GetJoystickLobby().DoesJoystickExist(event.jhat.which))
+                {
+                    const auto joystickHatSwitchMotionEvent = events::JoystickHatSwitchMotion{
+                        .joystick = m_inputController.GetJoystickLobby().GetJoystick(event.jhat.which),
+                        .hatSwitch = static_cast<Joystick::HatSwitchID>(event.jhat.hat),
+                        .direction = static_cast<JoystickHatSwitchDirection>(event.jhat.value),
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnJoystickHatSwitchMotion(joystickHatSwitchMotionEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnJoystickHatSwitchMotion(*this, joystickHatSwitchMotionEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_JOYBALLMOTION:
+                if (m_inputController.GetJoystickLobby().DoesJoystickExist(event.jball.which))
+                {
+                    const auto joystickTrackballMotionEvent = events::JoystickTrackballMotion{
+                        .joystick = m_inputController.GetJoystickLobby().GetJoystick(event.jball.which),
+                        .trackball = static_cast<Joystick::TrackballID>(event.jball.ball),
+                        .relativeMotion = Vector2{
+                            static_cast<f32>(event.jball.xrel),
+                            static_cast<f32>(event.jball.yrel),
+                        },
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnJoystickTrackballMotion(joystickTrackballMotionEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnJoystickTrackballMotion(*this, joystickTrackballMotionEvent);
+                    }
+                }
+
+                break;
+
+            case SDL_FINGERDOWN:
+            {
+                const auto touchFingerDownEvent = events::TouchFingerDown{
+                    .touchDevice = TouchDevice(event.tfinger.touchId),
+                    .fingerID = event.tfinger.fingerId,
+                    .position = Vector2{ event.tfinger.x, event.tfinger.y },
+                    .pressure = event.tfinger.pressure,
+                    .isOnGameWindow = static_cast<Window::ID>(event.tfinger.windowID) == m_window.GetID(),
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnTouchFingerDown(touchFingerDownEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnTouchFingerDown(*this, touchFingerDownEvent);
+                }
+
+                break;
+            }
+
+            case SDL_FINGERUP:
+            {
+                const auto touchFingerUpEvent = events::TouchFingerUp{
+                    .touchDevice = TouchDevice(event.tfinger.touchId),
+                    .fingerID = event.tfinger.fingerId,
+                    .position = Vector2{ event.tfinger.x, event.tfinger.y },
+                    .isOnGameWindow = static_cast<Window::ID>(event.tfinger.windowID) == m_window.GetID(),
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnTouchFingerUp(touchFingerUpEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnTouchFingerUp(*this, touchFingerUpEvent);
+                }
+
+                break;
+            }
+
+            case SDL_FINGERMOTION:
+            {
+                const auto touchFingerMotionEvent = events::TouchFingerMotion{
+                    .touchDevice = TouchDevice(event.tfinger.touchId),
+                    .fingerID = event.tfinger.fingerId,
+                    .position = Vector2{ event.tfinger.x, event.tfinger.y },
+                    .deltaPosition = Vector2{ event.tfinger.dx, event.tfinger.dy },
+                    .pressure = event.tfinger.pressure,
+                    .isOnGameWindow = static_cast<Window::ID>(event.tfinger.windowID) == m_window.GetID(),
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnTouchFingerMotion(touchFingerMotionEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnTouchFingerMotion(*this, touchFingerMotionEvent);
+                }
+
+                break;
+            }
+
+            case SDL_MULTIGESTURE:
+            {
+                const auto multiTouchFingerGestureEvent = events::MultiTouchFingerGesture{
+                    .touchDevice = TouchDevice(event.mgesture.touchId),
+                    .fingerCount = static_cast<u32>(event.mgesture.numFingers),
+                    .normalisedCentre = Vector2{ event.mgesture.x, event.mgesture.y },
+                    .pinchAmount = event.mgesture.dDist,
+                    .rotationAmount = event.mgesture.dTheta,
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnMultiTouchFingerGesture(multiTouchFingerGestureEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnMultiTouchFingerGesture(*this, multiTouchFingerGestureEvent);
+                }
+
+                break;
+            }
+
+            case SDL_DOLLARGESTURE:
+            {
+                const auto dollarGesturePerformedEvent = events::DollarGesturePerformed{
+                    .touchDevice = TouchDevice(event.dgesture.touchId),
+                    .gestureID = event.dgesture.gestureId,
+                    .fingerCount = static_cast<u32>(event.dgesture.numFingers),
+                    .normalisedCentre = Vector2{ event.dgesture.x, event.dgesture.y },
+                    .errorAmount = event.dgesture.error,
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnDollarGesturePerformed(dollarGesturePerformedEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnDollarGesturePerformed(*this, dollarGesturePerformedEvent);
+                }
+
+                break;
+            }
+
+            case SDL_DOLLARRECORD:
+            {
+                const auto dollarGestureRecordedEvent = events::DollarGestureRecorded{
+                    .touchDevice = TouchDevice(event.dgesture.touchId),
+                    .gestureID = event.dgesture.gestureId,
+                };
+
+                const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnDollarGestureRecorded(dollarGestureRecordedEvent);
+
+                if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                {
+                    m_globalEventHandler->OnDollarGestureRecorded(*this, dollarGestureRecordedEvent);
+                }
+
+                break;
+            }
+
+            case SDL_WINDOWEVENT:
+                ProcessWindowEvent(event.window);
+
+                break;
+
+            case SDL_USEREVENT:
+                switch (event.user.code)
+                {
+                case Locale::ChangeEventCode:
+                {
+                    const String newLocale = static_cast<const char*>(event.user.data1);
+                    Log::EngineInfo("Locale changed to {}.", newLocale);
+
+                    const auto localeChangedEvent = events::LocaleChanged{
+                        .newLocaleName = newLocale,
+                    };
+
+                    const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnLocaleChanged(localeChangedEvent);
+
+                    if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+                    {
+                        m_globalEventHandler->OnLocaleChanged(*this, localeChangedEvent);
+                    }
+
+                    break;
+                }
+                }
+
+                break;
+            }
+        }
+
+        while (!m_userEvents.empty())
+        {
+            const events::UserEvent& userEvent = m_userEvents.front();
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnUserEvent(userEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnUserEvent(*this, userEvent);
+            }
+
+            m_userEvents.pop();
         }
     }
 
-    void Application::ProcessWindowEvents(const WindowEvent& windowEvent)
+    auto Application::ProcessWindowEvent(const SDL_WindowEvent& windowEvent) -> void
     {
-        switch (GetWindowEventType(windowEvent))
+        switch (windowEvent.event)
         {
-        case WindowEventType::SizeChange:
-            m_window.ProcessResize(UVec2{ windowEvent.data1, windowEvent.data2 });
-            m_renderer.ProcessResize();
-            m_camera.Refresh();
+        case SDL_WINDOWEVENT_SHOWN:
+        {
+            const auto windowShownEvent = events::WindowShown{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowShown(windowShownEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowShown(*this, windowShownEvent);
+            }
 
             break;
+        }
 
-        case WindowEventType::Minimise:
-        case WindowEventType::KeyboardFocusLoss:
+        case SDL_WINDOWEVENT_HIDDEN:
+        {
+            const auto windowHiddenEvent = events::WindowHidden{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowHidden(windowHiddenEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowHidden(*this, windowHiddenEvent);
+            }
+
+            break;
+        }
+
+        case SDL_WINDOWEVENT_MOVED:
+        {
+            const auto windowMovedEvent = events::WindowMoved{
+                .window = &m_window,
+                .newPosition = IVector2{ windowEvent.data1, windowEvent.data2 },
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowMoved(windowMovedEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowMoved(*this, windowMovedEvent);
+            }
+
+            break;
+        }
+
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+        {
+            m_window.ProcessResize(UVector2{
+                windowEvent.data1,
+                windowEvent.data2,
+                });
+
+            m_camera.ResetVirtualScreenSize(UVector2{
+                windowEvent.data1,
+                windowEvent.data2,
+                });
+
+            m_renderer.ProcessResize();
+
+            const auto windowResizedEvent = events::WindowResized{
+                .window = &m_window,
+                .newSize = m_window.GetSize(),
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowResized(windowResizedEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowResized(*this, windowResizedEvent);
+            }
+
+            break;
+        }
+
+        case SDL_WINDOWEVENT_MINIMIZED:
+        {
             m_hasWindowFocus = false;
 
-            break;
+            const auto windowMinimisedEvent = events::WindowMinimised{
+                .window = &m_window,
+            };
 
-        case WindowEventType::KeyboardFocusGain:
-            m_hasWindowFocus = true;
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowMinimised(windowMinimisedEvent);
 
-            if (Input::IsMouseInRelativeMode())
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
             {
-                Input::ClearRelativeMouseState();
+                m_globalEventHandler->OnWindowMinimised(*this, windowMinimisedEvent);
             }
 
             break;
+        }
 
-        default:
+        case SDL_WINDOWEVENT_MAXIMIZED:
+        {
+            const auto windowMaximisedEvent = events::WindowMaximised{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowMaximised(windowMaximisedEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowMaximised(*this, windowMaximisedEvent);
+            }
+
             break;
+        }
+
+        case SDL_WINDOWEVENT_RESTORED:
+        {
+            m_hasWindowFocus = true;
+
+            const auto windowRestoredEvent = events::WindowRestored{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowRestored(windowRestoredEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowRestored(*this, windowRestoredEvent);
+            }
+
+            break;
+        }
+
+        case SDL_WINDOWEVENT_ENTER:
+        {
+            const auto windowMouseEnterEvent = events::WindowMouseEnter{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowMouseEnter(windowMouseEnterEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowMouseEnter(*this, windowMouseEnterEvent);
+            }
+
+            break;
+        }
+
+        case SDL_WINDOWEVENT_LEAVE:
+        {
+            const auto windowMouseExitEvent = events::WindowMouseExit{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowMouseExit(windowMouseExitEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowMouseExit(*this, windowMouseExitEvent);
+            }
+
+            break;
+        }
+
+        case SDL_WINDOWEVENT_FOCUS_GAINED:
+        {
+            m_hasWindowFocus = true;
+
+            const auto windowFocusGainedEvent = events::WindowFocusGained{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowFocusGained(windowFocusGainedEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowFocusGained(*this, windowFocusGainedEvent);
+            }
+
+            break;
+        }
+
+        case SDL_WINDOWEVENT_FOCUS_LOST:
+        {
+            m_hasWindowFocus = false;
+
+            const auto windowFocusLostEvent = events::WindowFocusLost{
+                .window = &m_window,
+            };
+
+            const EventStatus eventStatus = m_sceneManager.CurrentScene()->OnWindowFocusLost(windowFocusLostEvent);
+
+            if (eventStatus == EventStatus::NotHandled && m_globalEventHandler != nullptr)
+            {
+                m_globalEventHandler->OnWindowFocusLost(*this, windowFocusLostEvent);
+            }
+
+            break;
+        }
         }
     }
 
-    void Application::UpdateTime(f64& timeAccumulator)
+    auto Application::UpdateSceneQueue() -> void
     {
-        const auto newTicks = std::chrono::high_resolution_clock::now();
-        const auto frameTicks = newTicks - m_ticksCount;
-        const f64 preciseDeltaTime = static_cast<f64>(frameTicks.count()) / static_cast<f64>(std::chrono::high_resolution_clock::period::den);
-
-        m_deltaTime = static_cast<f32>(preciseDeltaTime);
-        m_ticksCount = newTicks;
-        m_elapsedTime += preciseDeltaTime;
-        timeAccumulator += preciseDeltaTime;
-    }
-
-    void Application::UpdateSceneQueue()
-    {
-        if (m_isCurrentSceneFinished)
+        if (m_sceneManager.CurrentScene()->IsFinished())
         {
+            m_sceneManager.CurrentScene()->GetLayerStack().RemoveAllLayers();
+            m_sceneManager.CurrentScene()->OnUnload();
+
             Log::EngineTrace("Scene \"{}\" finished.", m_sceneManager.CurrentScene()->GetName());
 
-            m_sceneManager.CurrentScene()->OnUnload();
             m_sceneManager.PopScene();
 
-            m_renderer.SetClearColour(colours::Black);
             m_camera.ResetTransform();
-            m_entityRegistry.clear();
             m_soundSystem.GetListener().Reset();
 
             if (!m_sceneManager.IsEmpty())
             {
-                if (m_sceneManager.CurrentScene()->OnLoad() == Status::Fail)
+                if (m_sceneManager.CurrentScene()->OnLoad() != Status::Success)
                 {
                     message_box::Show(
                         m_locale["engine"]["errors"]["titles"]["scene"],
-                        m_locale["engine"]["errors"]["bodies"]["next-scene"],
+                        m_locale({ "engine", "errors", "bodies", "next-scene" }, {
+                            { "SCENE_NAME", m_sceneManager.CurrentScene()->GetName() },
+                        }),
                         message_box::Type::Error
                     );
                     Log::EngineError("Failed to load scene {}.", m_sceneManager.CurrentScene()->GetName());
 
-                    m_isRunning = false;
+                    m_isRunning.store(false, std::memory_order::relaxed);
                 }
                 else
                 {
                     Log::EngineTrace("Scene \"{}\" loaded.", m_sceneManager.CurrentScene()->GetName());
                 }
             }
-
-            m_isCurrentSceneFinished = false;
         }
 
         if (m_sceneManager.IsEmpty())
         {
-            m_isRunning = false;
+            m_isRunning.store(false, std::memory_order::relaxed);
         }
     }
 }
