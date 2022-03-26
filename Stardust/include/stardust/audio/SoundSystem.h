@@ -3,81 +3,93 @@
 #define STARDUST_SOUND_SYSTEM_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
-#include "stardust/utility/interfaces/INonmovable.h"
+
+#include <type_traits>
 
 #include <soloud/soloud.h>
 #undef min
 #undef max
 
+#include "stardust/audio/listener/Listener.h"
 #include "stardust/audio/sounds/Sounds.h"
-#include "stardust/audio/Listener.h"
-#include "stardust/audio/SoundSource.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
-#include "stardust/math/Math.h"
+#include "stardust/audio/source/PositionalSoundSource.h"
+#include "stardust/audio/source/SoundSource.h"
+#include "stardust/audio/Audio.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace audio
     {
-        class SoundSystem
-            : private INoncopyable, private INonmovable
+        class SoundSystem final
+            : private INoncopyable
         {
         private:
-            UniquePtr<SoLoud::Soloud> m_soLoudHandle;
+            UniquePointer<SoLoud::Soloud> m_soLoudHandle = nullptr;
             Listener m_listener;
 
             bool m_didInitialiseSuccessfully = false;
+            String m_errorString{ };
 
         public:
-            SoundSystem();
+            friend class MixingBus;
+
+            SoundSystem() = default;
+            SoundSystem(SoundSystem&& other) noexcept;
+            auto operator =(SoundSystem&& other) noexcept -> SoundSystem&;
             ~SoundSystem() noexcept;
 
-            void Update() const;
+            auto Initialise() -> void;
+            auto Destroy() noexcept -> void;
 
-            [[nodiscard]] inline bool DidInitialiseSuccessfully() const noexcept { return m_didInitialiseSuccessfully; }
+            [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_soLoudHandle != nullptr && m_didInitialiseSuccessfully; }
 
-            SoundSource PlaySound(Sound& sound, const bool startPaused = false);
-            SoundSource PlaySound(SoundStream& soundStream, const bool startPaused = false);
-            SoundSource Play3DSound(Sound& sound, const Vec3& position, const Vec3& velocity = Vec3Zero, const bool startPaused = false);
-            SoundSource Play3DSound(SoundStream& soundStream, const Vec3& position, const Vec3& velocity = Vec3Zero, const bool startPaused = false);
+            auto Update() const -> void;
 
-            SoundSource PlaySoundWithDelay(Sound& sound, const f32 secondsDelay);
-            SoundSource PlaySoundWithDelay(SoundStream& soundStream, const f32 secondsDelay);
-            SoundSource Play3DSoundWithDelay(Sound& sound, const f32 secondsDelay, const Vec3& position, const Vec3& velocity = Vec3Zero);
-            SoundSource Play3DSoundWithDelay(SoundStream& soundStream, const f32 secondsDelay, const Vec3& position, const Vec3& velocity = Vec3Zero);
+            auto PlaySound(Sound& sound, const SoundPlayData& soundPlayData = SoundPlayData{ }) -> SoundSource;
+            auto PlaySound(SoundStream& soundStream, const SoundPlayData& soundPlayData = SoundPlayData{ }) -> SoundSource;
+            auto PlaySoundClocked(Sound& sound, const f64 fixedTimestep, const SoundPlayData& soundPlayData = SoundPlayData{ }) -> SoundSource;
+            auto PlaySoundClocked(SoundStream& soundStream, const f64 fixedTimestep, const SoundPlayData& soundPlayData = SoundPlayData{ }) -> SoundSource;
 
-            SoundSource PlaySoundInBackground(Sound& sound, const bool startPaused = false);
-            SoundSource PlaySoundInBackground(SoundStream& soundStream, const bool startPaused = false);
+            auto PlayPositionalSound(Sound& sound, const PositionalSoundPlayData& soundPlayData = PositionalSoundPlayData{ }) -> PositionalSoundSource;
+            auto PlayPositionalSound(SoundStream& soundStream, const PositionalSoundPlayData& soundPlayData = PositionalSoundPlayData{ }) -> PositionalSoundSource;
+            auto PlayPositionalSoundClocked(Sound& sound, const f64 fixedTimestep, const PositionalSoundPlayData& soundPlayData = PositionalSoundPlayData{ }) -> PositionalSoundSource;
+            auto PlayPositionalSoundClocked(SoundStream& soundStream, const f64 fixedTimestep, const PositionalSoundPlayData& soundPlayData = PositionalSoundPlayData{ }) -> PositionalSoundSource;
 
-            void PauseAllSounds() const;
-            void ResumeAllSounds() const;
-            void StopAllSounds() const;
+            auto PauseAllSounds() const -> void;
+            auto ResumeAllSounds() const -> void;
+            auto StopAllSounds() const noexcept -> void;
 
-            void FadeVolumeGlobal(const f32 volumeToFadeTo, const f32 seconds) const;
+            auto FadeGlobalVolume(const f32 targetVolume, const f32 seconds) const -> void;
 
-            void OscillateGlobalVolume(const f32 toVolume, const f32 fromVolume, const f32 frequency) const;
-            void ResetGlobalVolumeOscillation() const;
+            auto OscillateGlobalVolume(const f32 toVolume, const f32 fromVolume, const f32 frequency) const -> void;
+            auto ResetGlobalVolumeOscillation() const -> void;
 
-            [[nodiscard]] unsigned int GetPlayingSoundCount() const;
-            [[nodiscard]] bool IsSoundPlaying() const;
+            [[nodiscard]] auto GetPlayingSoundCount() const -> u32;
+            [[nodiscard]] auto IsAnySoundPlaying() const -> bool;
 
-            [[nodiscard]] f32 GetGlobalVolume() const noexcept;
-            void SetGlobalVolume(const f32 globalVolume) const noexcept;
+            [[nodiscard]] auto GetGlobalVolume() const noexcept -> f32;
+            auto SetGlobalVolume(const f32 globalVolume) const noexcept -> void;
 
-            [[nodiscard]] f32 GetPostClipScaler() const noexcept;
-            void SetPostClipScaler(const f32 postClipScaler) const noexcept;
+            [[nodiscard]] auto GetPostClipScaler() const noexcept -> f32;
+            auto SetPostClipScaler(const f32 postClipScaler) const noexcept -> void;
 
-            [[nodiscard]] f32 GetSpeedOfSound() const noexcept;
+            [[nodiscard]] auto GetSpeedOfSound() const noexcept -> f32;
             void SetSpeedOfSound(const f32 speedOfSound) const noexcept;
 
-            [[nodiscard]] SoLoud::Soloud& GetRawHandle() noexcept { return *m_soLoudHandle.get(); }
-            [[nodiscard]] Listener& GetListener() noexcept { return m_listener; }
+            [[nodiscard]] inline auto GetListener() noexcept -> Listener& { return m_listener; }
+            [[nodiscard]] inline auto GetListener() const noexcept -> const Listener& { return m_listener; }
+
+            [[nodiscard]] auto GetRawHandle() noexcept -> SoLoud::Soloud& { return *m_soLoudHandle.get(); }
+            [[nodiscard]] auto GetRawHandle() const noexcept -> const SoLoud::Soloud& { return *m_soLoudHandle.get(); }
+
+            [[nodiscard]] auto GetErrorString() const noexcept -> const String& { return m_errorString; }
 
         private:
-            void Initialise();
-            void Destroy();
+            auto SetVoiceHandleParameters(const VoiceHandle voiceHandle, const SoundPlayData& soundPlayData) const -> void;
+            auto SetVoiceHandleParameters(const VoiceHandle voiceHandle, const PositionalSoundPlayData& soundPlayData) const -> void;
         };
     }
 }

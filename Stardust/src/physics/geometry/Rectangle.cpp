@@ -16,35 +16,35 @@ namespace stardust
             Set(width, height);
         }
 
-        void Rectangle::SetAsSquare(const f32 width)
+        auto Rectangle::SetAsSquare(const f32 width) -> void
         {
             m_polygon.SetAsBox(width / 2.0f, width / 2.0f);
             m_width = width;
             m_height = width;
         }
 
-        void Rectangle::SetAsSquare(const f32 width, const Vec2& pivot, const f32 rotation)
+        auto Rectangle::SetAsSquare(const f32 width, const Vector2 pivot, const f32 rotation) -> void
         {
             m_polygon.SetAsBox(width / 2.0f, width / 2.0f, b2Vec2{ pivot.x, pivot.y }, -glm::radians(rotation));
             m_width = width;
             m_height = width;
         }
 
-        void Rectangle::Set(const f32 width, const f32 height)
+        auto Rectangle::Set(const f32 width, const f32 height) -> void
         {
             m_polygon.SetAsBox(width / 2.0f, height / 2.0f);
             m_width = width;
             m_height = height;
         }
 
-        void Rectangle::Set(const f32 width, const f32 height, const Vec2& pivot, const f32 rotation)
+        auto Rectangle::Set(const f32 width, const f32 height, const Vector2 pivot, const f32 rotation) -> void
         {
             m_polygon.SetAsBox(width / 2.0f, height / 2.0f, b2Vec2{ pivot.x, pivot.y }, -glm::radians(rotation));
             m_width = width;
             m_height = height;
         }
 
-        [[nodiscard]] bool Rectangle::TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const
+        [[nodiscard]] auto Rectangle::ContainsPoint(const Vector2 worldPosition, const f32 rotation, const Vector2 point) const -> bool
         {
             b2Transform transform{ };
             transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
@@ -52,7 +52,7 @@ namespace stardust
             return m_polygon.TestPoint(transform, b2Vec2{ point.x, point.y });
         }
 
-        [[nodiscard]] AABB Rectangle::ComputeAABB(const Vec2& worldPosition, const f32 rotation) const
+        [[nodiscard]] auto Rectangle::ComputeAABB(const Vector2 worldPosition, const f32 rotation) const -> AABB
         {
             b2Transform transform{ };
             transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
@@ -63,14 +63,14 @@ namespace stardust
             return aabb;
         }
 
-        [[nodiscard]] MassData Rectangle::ComputeMassData(const f32 density) const
+        [[nodiscard]] auto Rectangle::ComputeMassData(const f32 density) const -> MassData
         {
             b2MassData massData{ };
             m_polygon.ComputeMass(&massData, density);
 
             return MassData{
                 .mass = massData.mass,
-                .centre = Vec2{ massData.center.x, massData.center.y },
+                .centre = Vector2{ massData.center.x, massData.center.y },
                 .momentOfInertia = massData.I,
             };
         }

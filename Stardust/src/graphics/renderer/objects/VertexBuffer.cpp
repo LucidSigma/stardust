@@ -4,59 +4,66 @@
 
 namespace stardust
 {
-    VertexBuffer::VertexBuffer(const usize size, const BufferUsage usage)
+    namespace graphics
     {
-        Initialise(size, usage);
-    }
-
-    VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
-    {
-        Destroy();
-
-        std::swap(m_id, other.m_id);
-    }
-
-    VertexBuffer& VertexBuffer::operator =(VertexBuffer&& other) noexcept
-    {
-        Destroy();
-        std::swap(m_id, other.m_id);
-
-        return *this;
-    }
-
-    VertexBuffer::~VertexBuffer() noexcept
-    {
-        Destroy();
-    }
-
-    void VertexBuffer::Initialise(const usize size, const BufferUsage usage)
-    {
-        glGenBuffers(1, &m_id);
-        Bind();
-
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), nullptr, static_cast<GLenum>(usage));
-
-        Unbind();
-    }
-
-    void VertexBuffer::Destroy() noexcept
-    {
-        if (m_id != 0u)
+        VertexBuffer::VertexBuffer(const usize size, const BufferUsage usage)
         {
-            Unbind();
-
-            glDeleteBuffers(1, &m_id);
-            m_id = 0u;
+            Initialise(size, usage);
         }
-    }
 
-    void VertexBuffer::Bind() const
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, m_id);
-    }
+        VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
+        {
+            Destroy();
 
-    void VertexBuffer::Unbind() const
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, 0u);
+            std::swap(m_id, other.m_id);
+        }
+
+        auto VertexBuffer::operator =(VertexBuffer&& other) noexcept -> VertexBuffer&
+        {
+            Destroy();
+            std::swap(m_id, other.m_id);
+
+            return *this;
+        }
+
+        VertexBuffer::~VertexBuffer() noexcept
+        {
+            Destroy();
+        }
+
+        auto VertexBuffer::Initialise(const usize size, const BufferUsage usage) -> void
+        {
+            glGenBuffers(1, &m_id);
+
+            Bind();
+            glBufferData(
+                GL_ARRAY_BUFFER,
+                static_cast<GLsizeiptr>(size),
+                nullptr,
+                static_cast<GLenum>(usage)
+            );
+            Unbind();
+        }
+
+        auto VertexBuffer::Destroy() noexcept -> void
+        {
+            if (m_id != s_InvalidID)
+            {
+                Unbind();
+
+                glDeleteBuffers(1, &m_id);
+                m_id = s_InvalidID;
+            }
+        }
+        
+        auto VertexBuffer::Bind() const noexcept -> void
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, m_id);
+        }
+        
+        auto VertexBuffer::Unbind() const noexcept -> void
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, s_InvalidID);
+        }
     }
 }

@@ -1,0 +1,113 @@
+{
+    "controls": {
+        "axes": {
+            "x": {
+                "keyboard": {
+                    "positive-keys": [7],
+                    "negative-keys": [4]
+                },
+                "controller": {
+                    "positive-buttons": [14],
+                    "negative-buttons": [13],
+                    "axes": [0]
+                },
+                "joystick": {
+                    "axes": [0]
+                }
+            },
+            "y": {
+                "keyboard": {
+                    "positive-keys": [26],
+                    "negative-keys": [22]
+                },
+                "controller": {
+                    "positive-buttons": [11],
+                    "negative-buttons": [12],
+                    "axes": [1]
+                },
+                "joystick": {
+                    "axes": [1]
+                }
+            },
+            "inventory-scroll": {
+                "mouse": {
+                    "axes": [2]
+                }
+            },
+            "cursor-x": {
+                "keyboard": {
+                    "positive-keys": [79],
+                    "negative-keys": [80]
+                },
+                "controller": {
+                    "axes": [2]
+                },
+                "joystick": {
+                    "axes": [2]
+                }
+            },
+            "cursor-y": {
+                "keyboard": {
+                    "positive-keys": [82],
+                    "negative-keys": [81]
+                },
+                "controller": {
+                    "axes": [3]
+                },
+                "joystick": {
+                    "axes": [3]
+                }
+            }
+        },
+        "buttons": {
+            "jump": {
+                "keys": [44],
+                "controller": {
+                    "buttons": [0]
+                }
+            },
+            "amble": {
+                "keys": [224],
+                "controller": {
+                    "buttons": [2]
+                }
+            },
+            "sprint": {
+                "keys": [225],
+                "controller": {
+                    "buttons": [1]
+                }
+            },
+            "item-primary": {
+                "mouse-buttons": [1],
+                "controller": {
+                    "triggers": [4]
+                }
+            },
+            "item-secondary": {
+                "mouse-buttons": [3],
+                "controller": {
+                    "triggers": [5]
+                }
+            },
+            "inventory-scroll-left": {
+                "keys": [45, 86],
+                "controller": {
+                    "buttons": [9]
+                }
+            },
+            "inventory-scroll-right": {
+                "keys": [46, 87],
+                "controller": {
+                    "buttons": [10]
+                }
+            },
+            "screenshot": {
+                "keys": [59]
+            },
+            "quit": {
+                "keys": [41]
+            }
+        }
+    }
+}

@@ -4,27 +4,15 @@
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 
-#include <glad/glad.h>
+#include <ANGLE/GLES3/gl3.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/objects/IndexBuffer.h"
-#include "stardust/graphics/renderer/objects/VertexBuffer.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    class VertexLayout
-        : private INoncopyable
+    namespace graphics
     {
-    public:
-        struct Attribute
-        {
-            u32 elementCount;
-            GLenum dataType;
-            bool isNormalised;
-        };
-
         enum class DrawMode
             : GLenum
         {
@@ -35,50 +23,49 @@ namespace stardust
             Triangles = GL_TRIANGLES,
             TriangleStrip = GL_TRIANGLE_STRIP,
             TriangleFan = GL_TRIANGLE_FAN,
-            Patches = GL_PATCHES,
         };
 
-    private:
-        struct AttributeState
+        class VertexLayout final
+            : private INoncopyable
         {
-            Attribute attribute;
-            usize offset;
+        public:
+            using ID = GLuint;
+
+        private:
+            static constexpr ID s_InvalidID = 0u;
+
+            ID m_id = s_InvalidID;
+
+        public:
+            friend class VertexLayoutBuilder;
+
+            [[nodiscard]] static constexpr auto InvalidID() noexcept -> ID { return s_InvalidID; }
+
+            VertexLayout() = default;
+
+            VertexLayout(VertexLayout&& other) noexcept;
+            auto operator =(VertexLayout&& other) noexcept -> VertexLayout&;
+
+            ~VertexLayout() noexcept;
+
+            auto Destroy() noexcept -> void;
+
+            [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_id != s_InvalidID; }
+
+            auto Bind() const noexcept -> void;
+            auto Unbind() const noexcept -> void;
+
+            auto Draw(const u32 vertexCount, const u32 offset = 0u, const DrawMode drawMode = DrawMode::Triangles) const -> void;
+            auto DrawInstanced(const u32 vertexCount, const u32 instanceCount, const u32 offset = 0u, const DrawMode drawMode = DrawMode::Triangles) const -> void;
+
+            auto DrawIndexed(const IndexBuffer& indexBuffer, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const -> void;
+            auto DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const -> void;
+            auto DrawIndexedInstanced(const IndexBuffer& indexBuffer, const u32 instanceCount, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const -> void;
+            auto DrawIndexedInstanced(const IndexBuffer& indexBuffer, const u32 indexCount, const u32 instanceCount, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const -> void;
+
+            [[nodiscard]] inline auto GetID() const noexcept -> ID { return m_id; }
         };
-
-        GLuint m_id = 0u;
-
-        Vector<ReferenceWrapper<const VertexBuffer>> m_vertexBuffers{ };
-        Queue<AttributeState> m_attributes{ };
-        usize m_vertexSize = 0u;
-
-    public:
-        VertexLayout() = default;
-
-        VertexLayout(VertexLayout&& other) noexcept;
-        VertexLayout& operator =(VertexLayout&& other) noexcept;
-
-        ~VertexLayout() noexcept;
-
-        VertexLayout& AddAttribute(const Attribute& attribute);
-        VertexLayout& AddVertexBuffer(const VertexBuffer& vertexBuffer);
-        void Initialise();
-
-        void Destroy() noexcept;
-
-        [[nodiscard]] inline bool IsValid() const noexcept { return m_id != 0u; }
-
-        void Bind() const;
-        void Unbind() const;
-
-        void Draw(const u32 count, const u32 offset = 0u, const DrawMode drawMode = DrawMode::Triangles) const;
-        void DrawIndexed(const IndexBuffer& indexBuffer, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
-        void DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer = true, const DrawMode drawMode = DrawMode::Triangles) const;
-
-        [[nodiscard]] inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
-
-    private:
-        [[nodiscard]] static usize GetDataTypeSize(const GLenum dataType);
-    };
+    }
 }
 
 #endif

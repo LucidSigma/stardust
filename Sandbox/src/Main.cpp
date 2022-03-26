@@ -4,14 +4,21 @@
 
 #include "TestScene.h"
 
-int main([[maybe_unused]] const int argc, char* argv[])
+auto main([[maybe_unused]] const sd::i32 argc, char* argv[]) -> sd::i32
 {
     sd::Application application(sd::Application::CreateInfo{
         .appTOMLRelativeFilepath = "app.toml",
         .argv0 = argv[0],
 
-        .initialiseCallback = sd::Application::InitialiseCallback([](const auto& application) -> sd::Status { sd::Log::Debug("Application initialised."); return sd::Status::Success; }),
-        .exitCallback = sd::NullOpt,
+        .initialiseCallback = sd::Application::InitialiseCallback(
+            [](const auto& application) -> sd::Status
+            {
+                sd::Log::Debug("Application initialised.");
+                
+                return sd::Status::Success;
+            }
+        ),
+        .exitCallback = sd::None,
     });
 
     if (!application.DidInitialiseSuccessfully())

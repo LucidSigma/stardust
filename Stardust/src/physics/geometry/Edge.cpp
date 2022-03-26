@@ -10,17 +10,17 @@ namespace stardust
             : m_edge(shapeHandle)
         { }
 
-        Edge::Edge(const Vec2& vertexA, const Vec2& vertexB)
+        Edge::Edge(const Vector2 vertexA, const Vector2 vertexB)
         {
             SetTwoSided(vertexA, vertexB);
         }
 
-        Edge::Edge(const Vec2& ghostVertexA, const Vec2& vertexA, const Vec2& vertexB, const Vec2& ghostVertexB)
+        Edge::Edge(const Vector2 ghostVertexA, const Vector2 vertexA, const Vector2 vertexB, const Vector2 ghostVertexB)
         {
             SetOneSided(ghostVertexA, vertexA, vertexB, ghostVertexB);
         }
 
-        void Edge::SetOneSided(const Vec2& ghostVertexA, const Vec2& vertexA, const Vec2& vertexB, const Vec2& ghostVertexB)
+        auto Edge::SetOneSided(const Vector2 ghostVertexA, const Vector2 vertexA, const Vector2 vertexB, const Vector2 ghostVertexB) -> void
         {
             m_edge.SetOneSided(
                 b2Vec2{ ghostVertexA.x, ghostVertexA.y },
@@ -30,7 +30,7 @@ namespace stardust
             );
         }
 
-        void Edge::SetTwoSided(const Vec2& vertexA, const Vec2& vertexB)
+        auto Edge::SetTwoSided(const Vector2 vertexA, const Vector2 vertexB) -> void
         {
             m_edge.SetTwoSided(
                 b2Vec2{ vertexA.x, vertexA.y },
@@ -38,31 +38,23 @@ namespace stardust
             );
         }
 
-        [[nodiscard]] Pair<Vec2, Vec2> Edge::GetVertices() const
+        [[nodiscard]] auto Edge::GetVertices() const -> Pair<Vector2, Vector2>
         {
-            const Vec2 vertexA{ m_edge.m_vertex1.x, m_edge.m_vertex1.y };
-            const Vec2 vertexB{ m_edge.m_vertex2.x, m_edge.m_vertex2.y };
+            const Vector2 vertexA{ m_edge.m_vertex1.x, m_edge.m_vertex1.y };
+            const Vector2 vertexB{ m_edge.m_vertex2.x, m_edge.m_vertex2.y };
 
-            return  Pair<Vec2, Vec2>{ vertexA, vertexB };
+            return  Pair<Vector2, Vector2>{ vertexA, vertexB };
         }
 
-        [[nodiscard]] Pair<Vec2, Vec2> Edge::GetGhostVertices() const
+        [[nodiscard]] auto Edge::GetGhostVertices() const -> Pair<Vector2, Vector2>
         {
-            const Vec2 ghostVertexA{ m_edge.m_vertex0.x, m_edge.m_vertex0.y };
-            const Vec2 ghostVertexB{ m_edge.m_vertex3.x, m_edge.m_vertex3.y };
+            const Vector2 ghostVertexA{ m_edge.m_vertex0.x, m_edge.m_vertex0.y };
+            const Vector2 ghostVertexB{ m_edge.m_vertex3.x, m_edge.m_vertex3.y };
 
-            return  Pair<Vec2, Vec2>{ ghostVertexA, ghostVertexB };
+            return  Pair<Vector2, Vector2>{ ghostVertexA, ghostVertexB };
         }
 
-        [[nodiscard]] bool Edge::TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const
-        {
-            b2Transform transform{ };
-            transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
-
-            return m_edge.TestPoint(transform, b2Vec2{ point.x, point.y });
-        }
-
-        [[nodiscard]] AABB Edge::ComputeAABB(const Vec2& worldPosition, const f32 rotation) const
+        [[nodiscard]] auto Edge::ComputeAABB(const Vector2 worldPosition, const f32 rotation) const -> AABB
         {
             b2Transform transform{ };
             transform.Set(b2Vec2{ worldPosition.x, worldPosition.y }, -glm::radians(rotation));
@@ -73,14 +65,14 @@ namespace stardust
             return aabb;
         }
 
-        [[nodiscard]] MassData Edge::ComputeMassData(const f32 density) const
+        [[nodiscard]] auto Edge::ComputeMassData(const f32 density) const -> MassData
         {
             b2MassData massData{ };
             m_edge.ComputeMass(&massData, density);
 
             return MassData{
                 .mass = massData.mass,
-                .centre = Vec2{ massData.center.x, massData.center.y },
+                .centre = Vector2{ massData.center.x, massData.center.y },
                 .momentOfInertia = massData.I,
             };
         }

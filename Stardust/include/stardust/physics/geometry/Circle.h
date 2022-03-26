@@ -4,10 +4,9 @@
 
 #include <box2d/box2d.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 #include "stardust/math/Math.h"
 #include "stardust/physics/AABB.h"
 #include "stardust/physics/Physics.h"
@@ -16,7 +15,7 @@ namespace stardust
 {
     namespace physics
     {
-        class Circle
+        class Circle final
         {
         private:
             b2CircleShape m_circle{ };
@@ -24,23 +23,22 @@ namespace stardust
         public:
             Circle() = default;
             Circle(const b2CircleShape& shapeHandle);
-            explicit Circle(const f32 radius, const Vec2& position = Vec2Zero);
-            ~Circle() noexcept = default;
+            explicit Circle(const f32 radius, const Vector2 position = Vector2Zero);
 
-            [[nodiscard]] Vec2 GetPosition() const noexcept;
-            void SetPosition(const Vec2& position) noexcept;
-            
-            [[nodiscard]] inline f32 GetRadius() const noexcept { return m_circle.m_radius; }
-            [[nodiscard]] inline void SetRadius(const f32 radius) noexcept { m_circle.m_radius = radius; }
+            [[nodiscard]] auto GetPosition() const noexcept -> Vector2;
+            auto SetPosition(const Vector2 position) noexcept -> void;
 
-            [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
-            [[nodiscard]] AABB ComputeAABB(const Vec2& worldPosition, const f32 rotation) const;
-            [[nodiscard]] MassData ComputeMassData(const f32 density) const;
+            [[nodiscard]] inline auto GetRadius() const noexcept -> f32 { return m_circle.m_radius; }
+            [[nodiscard]] inline auto SetRadius(const f32 radius) noexcept -> void { m_circle.m_radius = radius; }
 
-            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_circle; }
-            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_circle; }
-            [[nodiscard]] inline operator ObserverPtr<b2CircleShape>() noexcept { return &m_circle; }
-            [[nodiscard]] inline operator ObserverPtr<const b2CircleShape>() const noexcept { return &m_circle; }
+            [[nodiscard]] auto ContainsPoint(const Vector2 worldPosition, const f32 rotation, const Vector2 point) const -> bool;
+            [[nodiscard]] auto ComputeAABB(const Vector2 worldPosition, const f32 rotation) const -> AABB;
+            [[nodiscard]] auto ComputeMassData(const f32 density) const -> MassData;
+
+            [[nodiscard]] inline operator ObserverPointer<b2Shape>() noexcept { return &m_circle; }
+            [[nodiscard]] inline operator ObserverPointer<const b2Shape>() const noexcept { return &m_circle; }
+            [[nodiscard]] inline operator ObserverPointer<b2CircleShape>() noexcept { return &m_circle; }
+            [[nodiscard]] inline operator ObserverPointer<const b2CircleShape>() const noexcept { return &m_circle; }
         };
     }
 }

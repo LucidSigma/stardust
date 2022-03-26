@@ -4,119 +4,156 @@
 
 #include <functional>
 
-#include <nlohmann/json.hpp>
-
-#include "stardust/animation/Easings.h"
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
+#include "stardust/animation/easings/Easings.h"
 #include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
 #include "stardust/graphics/texture/Texture.h"
 #include "stardust/graphics/colour/Colour.h"
+#include "stardust/scripting/ScriptEngine.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    using KeyFrame = u32;
-
-    class Animation
+    namespace animation
     {
-    public:
-        using Event = std::function<void()>;
-
-    private:
-        inline static HashMap<String, EasingFunction> s_customEasingFunctions{ };
-
-        Vector<Pair<KeyFrame, TextureCoordinatePair>> m_spriteFrames{ };
-        Vector<Pair<KeyFrame, Vec2>> m_positionOffsetFrames{ };
-        Vector<Pair<KeyFrame, Quaternion>> m_rotationFrames{ };
-        Vector<Pair<KeyFrame, Vec2>> m_scaleFrames{ };
-        Vector<Pair<KeyFrame, Vec2>> m_shearFrames{ };
-        Vector<Pair<KeyFrame, Colour>> m_colourFrames{ };
-
-        EasingFunction m_positionOffsetEasing = easings::EaseLinear;
-        EasingFunction m_rotationEasing = easings::EaseLinear;
-        EasingFunction m_scaleEasing = easings::EaseLinear;
-        EasingFunction m_shearEasing = easings::EaseLinear;
-        EasingFunction m_colourEasing = easings::EaseLinear;
-
-        HashMap<KeyFrame, Vector<Event>> m_eventCallbacks{ };
-
-        KeyFrame m_currentKeyFrame = 0u;
-        KeyFrame m_maxKeyFrame = 0u;
-
-        usize m_currentSpriteIndex = 0u;
-        usize m_currentPositionOffsetIndex = 0u;
-        usize m_currentRotationIndex = 0u;
-        usize m_currentScaleIndex = 0u;
-        usize m_currentShearIndex = 0u;
-        usize m_currentColourIndex = 0u;
-
-        u32 m_fps = 0u;
-        f32 m_secondsPerFrame = 0.0f;
-
-        bool m_didLoadSuccessfully = false;
-
-    public:
-        static void AddCustomEasingFunction(const String& name, const EasingFunction& easingFunction);
-
-        Animation() = default;
-        explicit Animation(const StringView& filepath);
-        Animation(const StringView& filepath, const TextureAtlas& textureAtlas);
-        ~Animation() noexcept = default;
-
-        void Initialise(const StringView& filepath);
-        void Initialise(const StringView& filepath, const TextureAtlas& textureAtlas);
-
-        void AddEvent(const KeyFrame keyFrame, const Event& event);
-
-        void Step();
-
-        [[nodiscard]] const TextureCoordinatePair& GetSprite() const;
-        [[nodiscard]] Vec2 GetPositionOffset(const f32 frameInterpolation) const;
-        [[nodiscard]] f32 GetRotation(const f32 frameInterpolation) const;
-        [[nodiscard]] Vec2 GetScale(const f32 frameInterpolation) const;
-        [[nodiscard]] Vec2 GetShear(const f32 frameInterpolation) const;
-        [[nodiscard]] Colour GetColour(const f32 frameInterpolation) const;
-
-        void Reset();
-
-        [[nodiscard]] inline KeyFrame GetCurrentKeyFrame() const noexcept { return m_currentKeyFrame; }
-        [[nodiscard]] inline u32 GetFrameCount() const noexcept { return m_maxKeyFrame; }
-        [[nodiscard]] inline u32 GetFPS() const noexcept { return m_fps; }
-        [[nodiscard]] inline f32 GetSecondsPerFrame() const noexcept { return m_secondsPerFrame; }
-
-        [[nodiscard]] inline bool IsValid() const noexcept { return m_didLoadSuccessfully; }
-
-    private:
-        [[nodiscard]] static Optional<EasingFunction> GetEasingFunction(const String& name);
-
-        void LoadFromFile(const StringView& filepath, const ObserverPtr<const TextureAtlas>& textureAtlas);
-        void LoadAttributes(const nlohmann::json& data, const ObserverPtr<const TextureAtlas>& textureAtlas, const StringView& filepath);
-        void LoadEasings(const nlohmann::json& data, const StringView& filepath);
-        void AddDefaultKeyFrames();
-
-        template <typename T>
-        void StepAttribute(const Vector<Pair<KeyFrame, T>> keyFrames, usize& currentIndex)
+        class Animation final
         {
-            if (keyFrames.size() <= 1u)
+        public:
+            using KeyFrame = u32;
+            using Event = std::function<auto() -> void>;
+
+            enum class Attribute
             {
-                return;
-            }
+                Position,
+                Rotation,
+                Scale,
+                Shear,
+                Colour,
+            };
 
-            const KeyFrame nextFrame = currentIndex == keyFrames.size() - 1u
-                ? 0u
-                : keyFrames[currentIndex + 1u].first;
-
-            if (m_currentKeyFrame == nextFrame)
+            struct KeyFrameData final
             {
-                ++currentIndex;
-                currentIndex %= keyFrames.size();
-            }
-        }
+                Optional<String> subTextureName;
+                Optional<Vector2> position;
+                Optional<f32> rotation;
+                Optional<Vector2> scale;
+                Optional<Vector2> shear;
+                Optional<Colour> colour;
+            };
 
-        [[nodiscard]] f32 GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation, const EasingFunction& easingFunction) const;
-    };
+            struct CreateInfo final
+            {
+                f32 fps = 0.0f;
+                usize length = 0u;
+
+                HashMap<Attribute, EasingFunction> attributeEasings{ };
+                HashMap<KeyFrame, KeyFrameData> keyFrames{ };
+                HashMap<KeyFrame, Event> events{ };
+
+                ObserverPointer<const graphics::TextureAtlas> textureAtlas = nullptr;
+            };
+
+        private:
+            template <typename A>
+            struct AttributeData final
+            {
+                struct KeyFrameData final
+                {
+                    KeyFrame keyFrame;
+                    A value;
+
+                    [[nodiscard]] friend inline auto operator <(const KeyFrameData& lhs, const KeyFrameData& rhs) noexcept -> bool
+                    {
+                        return lhs.keyFrame < rhs.keyFrame;
+                    }
+                };
+
+                List<KeyFrameData> keyFrames{ };
+                usize currentIndex = 0u;
+
+                EasingFunction easing = easings::EaseLinear;
+
+                auto Step(const KeyFrame currentKeyFrame) -> void
+                {
+                    if (keyFrames.size() <= 1u)
+                    {
+                        return;
+                    }
+
+                    const KeyFrame nextFrame = currentIndex == keyFrames.size() - 1u
+                        ? 0u
+                        : keyFrames[currentIndex + 1u].keyFrame;
+
+                    if (currentKeyFrame == nextFrame)
+                    {
+                        ++currentIndex;
+                        currentIndex %= keyFrames.size();
+                    }
+                }
+            };
+
+            inline static HashMap<String, EasingFunction> s_customEasingFunctions{ };
+
+            KeyFrame m_currentKeyFrame = 0u;
+            KeyFrame m_maxKeyFrame = 0u;
+
+            f32 m_fps = 0u;
+            f32 m_secondsPerFrame = 0.0f;
+
+            AttributeData<graphics::TextureCoordinatePair> m_textureAreaFrames{ };
+            AttributeData<Vector2> m_positionFrames{ };
+            AttributeData<Quaternion> m_rotationFrames{ };
+
+            AttributeData<Vector2> m_scaleFrames{ };
+            AttributeData<Vector2> m_shearFrames{ };
+            AttributeData<Colour> m_colourFrames{ };
+
+            HashMap<KeyFrame, List<Event>> m_eventCallbacks{ };
+            ObserverPointer<const graphics::TextureAtlas> m_textureAtlas = nullptr;
+
+        public:
+            Animation() = default;
+            Animation(const Table& scriptTable, const ObserverPointer<const graphics::TextureAtlas> textureAtlas, const HashMap<KeyFrame, Event>& events = { });
+            explicit Animation(const CreateInfo& createInfo);
+
+            auto Initialise(const Table& scriptTable, const ObserverPointer<const graphics::TextureAtlas> textureAtlas, const HashMap<KeyFrame, Event>& events = { }) -> void;
+            auto Initialise(const CreateInfo& createInfo) -> void;
+
+            auto AddEvent(const KeyFrame keyFrame, const Event& event) -> void;
+
+            auto Step() -> void;
+            auto Reset() -> void;
+
+            [[nodiscard]] auto GetTextureArea() const -> const graphics::TextureCoordinatePair&;
+            [[nodiscard]] auto GetPosition(const f32 frameInterpolation) const -> Vector2;
+            [[nodiscard]] auto GetRotation(const f32 frameInterpolation) const -> f32;
+            [[nodiscard]] auto GetScale(const f32 frameInterpolation) const -> Vector2;
+            [[nodiscard]] auto GetShear(const f32 frameInterpolation) const -> Vector2;
+            [[nodiscard]] auto GetColour(const f32 frameInterpolation) const -> Colour;
+
+            [[nodiscard]] inline auto GetCurrentKeyFrame() const noexcept -> KeyFrame { return m_currentKeyFrame; }
+            [[nodiscard]] inline auto GetFrameCount() const noexcept -> u32 { return m_maxKeyFrame; }
+
+            [[nodiscard]] inline auto GetFPS() const noexcept -> f32 { return m_fps; }
+            auto SetFPS(const f32 fps) noexcept -> void;
+            [[nodiscard]] inline auto GetSecondsPerFrame() const noexcept -> f32 { return m_secondsPerFrame; }
+
+            [[nodiscard]] inline auto GetTextureAtlas() const noexcept -> ObserverPointer<const graphics::TextureAtlas> { return m_textureAtlas; }
+
+        private:
+            auto AddKeyFrame(const KeyFrame keyFrame, const KeyFrameData& keyFrameData) -> void;
+            auto SetAttributeEasing(const Attribute attribute, const EasingFunction& easingFunction) -> void;
+
+            [[nodiscard]] auto LoadCreateInfoFromTable(const Table& scriptTable, const ObserverPointer<const graphics::TextureAtlas> textureAtlas, const HashMap<KeyFrame, Event>& events) -> CreateInfo;
+            auto AddDefaultKeyFrames() -> void;
+
+            [[nodiscard]] auto GetPercentageBetweenFrames(const KeyFrame currentFrame, KeyFrame nextFrame, const f32 frameInterpolation, const EasingFunction& easingFunction) const -> f32;
+        };
+    }
+
+    namespace anim = animation;
 }
 
 #endif

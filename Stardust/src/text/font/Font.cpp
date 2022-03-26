@@ -2,49 +2,54 @@
 
 #include <utility>
 
-#include "stardust/filesystem/vfs/VFS.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <harfbuzz/hb-ft.h>
+
+#include "stardust/filesystem/vfs/VirtualFilesystem.h"
 
 namespace stardust
 {
-    void Font::FontDestroyer::operator()(TTF_Font* const font) const noexcept
+    auto Font::TextureFontDeleter::operator()(ftgl::texture_font_t* const font) const noexcept -> void
     {
-        if (TTF_WasInit() != 0)
-        {
-            TTF_CloseFont(font);
-        }
+        ftgl::texture_font_delete(font);
     }
 
-    Font::Font(const StringView& fontFilepath, const FontSize pointSize)
+    auto Font::TextureAtlasDeleter::operator()(ftgl::texture_atlas_t* const textureAtlas) const noexcept -> void
     {
-        Initialise(fontFilepath, pointSize);
+        ftgl::texture_atlas_delete(textureAtlas);
+    }
+
+    auto Font::ShaperFontDeleter::operator()(hb_font_t* const shaperFont) const noexcept -> void
+    {
+        hb_font_destroy(shaperFont);
+    }
+
+    Font::Font(const CreateInfo& createInfo)
+    {
+        Initialise(createInfo);
     }
 
     Font::Font(Font&& other) noexcept
-        : m_handle(nullptr), m_pointSize(0u)
-    {
-        if (m_fontFileRWOps != nullptr)
-        {
-            SDL_RWclose(m_fontFileRWOps);
-            m_fontFileRWOps = nullptr;
-            m_fontFileData.clear();
-        }
-
-        std::swap(m_handle, other.m_handle);
-        std::swap(m_pointSize, other.m_pointSize);
-
-        std::swap(m_fontFileRWOps, other.m_fontFileRWOps);
-        std::swap(m_fontFileData, other.m_fontFileData);
-    }
-
-    Font& Font::operator =(Font&& other) noexcept
     {
         Destroy();
 
-        m_handle = std::exchange(other.m_handle, nullptr);
-        m_pointSize = std::exchange(other.m_pointSize, 0u);
+        std::swap(m_handle, other.m_handle);
+        std::swap(m_textureAtlasHandle, other.m_textureAtlasHandle);
+        std::swap(m_shaper, other.m_shaper);
+        std::swap(m_fontData, other.m_fontData);
+        std::swap(m_texture, other.m_texture);
+    }
 
-        m_fontFileRWOps = std::exchange(other.m_fontFileRWOps, nullptr);
-        m_fontFileData = std::exchange(other.m_fontFileData, { });
+    auto Font::operator =(Font&& other) noexcept -> Font&
+    {
+        Destroy();
+
+        std::swap(m_handle, other.m_handle);
+        std::swap(m_textureAtlasHandle, other.m_textureAtlasHandle);
+        std::swap(m_shaper, other.m_shaper);
+        std::swap(m_fontData, other.m_fontData);
+        std::swap(m_texture, other.m_texture);
 
         return *this;
     }
@@ -54,213 +59,266 @@ namespace stardust
         Destroy();
     }
 
-    void Font::Initialise(const StringView& fontFilepath, const FontSize pointSize)
+    auto Font::Initialise(const CreateInfo& createInfo) -> void
     {
-        m_fontFileData = vfs::ReadFileData(fontFilepath);
+        auto fontFileResult = vfs::ReadFileBytes(createInfo.filepath);
 
-        if (m_fontFileData.empty())
+        if (fontFileResult.is_err())
         {
             return;
         }
 
-        m_fontFileRWOps = SDL_RWFromConstMem(m_fontFileData.data(), static_cast<i32>(m_fontFileData.size()));
+        m_fontData = std::move(fontFileResult).unwrap();
 
-        if (m_fontFileRWOps == nullptr)
+        m_textureAtlasHandle = UniquePointer<ftgl::texture_atlas_t, TextureAtlasDeleter>(
+            ftgl::texture_atlas_new(
+                static_cast<usize>(createInfo.textureAtlasSize.x),
+                static_cast<usize>(createInfo.textureAtlasSize.y),
+                static_cast<usize>(createInfo.textureAtlasDepth)
+            )
+        );
+
+        if (m_textureAtlasHandle == nullptr)
         {
-            m_fontFileData.clear();
-
             return;
         }
 
-        m_handle = UniquePtr<TTF_Font, FontDestroyer>(TTF_OpenFontRW(m_fontFileRWOps, SDL_FALSE, static_cast<i32>(pointSize)));
+        m_handle = UniquePointer<ftgl::texture_font_t, TextureFontDeleter>(
+            ftgl::texture_font_new_from_memory(
+                m_textureAtlasHandle.get(),
+                createInfo.pointSize,
+                m_fontData.data(),
+                m_fontData.size()
+            )
+        );
 
-        if (m_handle != nullptr)
+        if (m_handle == nullptr)
         {
-            m_pointSize = pointSize;
+            return;
         }
-        else
+
+        m_handle->rendermode = static_cast<ftgl::rendermode_t>(createInfo.renderMode);
+        m_handle->outline_thickness = createInfo.outlineThickness;
+
+        m_shaper = UniquePointer<hb_font_t, ShaperFontDeleter>(
+            hb_ft_font_create_referenced(m_handle->face)
+        );
+
+        if (m_shaper == nullptr)
         {
-            SDL_RWclose(m_fontFileRWOps);
-            m_fontFileRWOps = nullptr;
-            m_fontFileData.clear();
+            return;
         }
+
+        hb_font_set_ptem(m_shaper.get(), createInfo.pointSize);
+
+        m_texture.Initialise(
+            m_textureAtlasHandle->data,
+            UVector2{
+                static_cast<u32>(m_textureAtlasHandle->width),
+                static_cast<u32>(m_textureAtlasHandle->height),
+            },
+            static_cast<u32>(m_textureAtlasHandle->depth),
+            createInfo.sampler
+        );
+
+        if (!m_texture.IsValid())
+        {
+            return;
+        }
+
+        m_textureAtlasHandle->id = m_texture.GetID();
     }
 
-    void Font::Destroy() noexcept
+    auto Font::Destroy() noexcept -> void
     {
+        if (m_texture.IsValid())
+        {
+            m_texture.Destroy();
+        }
+
+        if (m_shaper != nullptr)
+        {
+            m_shaper = nullptr;
+        }
+
         if (m_handle != nullptr)
         {
             m_handle = nullptr;
+        }
 
-            SDL_RWclose(m_fontFileRWOps);
-            m_fontFileRWOps = nullptr;
-            m_fontFileData.clear();
-
-            m_pointSize = 0u;
+        if (m_textureAtlasHandle != nullptr)
+        {
+            m_textureAtlasHandle = nullptr;
         }
     }
 
-    [[nodiscard]] Vector<Font::Style> Font::GetStyles() const
+    [[nodiscard]] auto Font::GetGlyphFromCodepoint(const u32 codepoint) const -> Glyph
     {
-        constexpr Array<Style, 4u> AllFontStyles{
-            Style::Bold,
-            Style::Italic,
-            Style::Underline,
-            Style::Strikethrough
+        return GetGlyphFromIndex(GetGlyphIndexFromCodepoint(codepoint));
+    }
+
+    [[nodiscard]] auto Font::GetGlyphFromIndex(const u32 glyphIndex) const -> Glyph
+    {
+        ftgl::texture_glyph_t* glyphPointer = ftgl::texture_font_get_glyph_gi(m_handle.get(), glyphIndex);
+
+        while (glyphPointer == nullptr)
+        {
+            ResizeTextureAtlas();
+            glyphPointer = ftgl::texture_font_get_glyph_gi(m_handle.get(), glyphIndex);
+        }
+
+        const Glyph glyph{
+            .codepoint = glyphPointer->codepoint,
+            .size = UVector2{
+                glyphPointer->width,
+                glyphPointer->height,
+            },
+            .bearing = IVector2{
+                glyphPointer->offset_x,
+                glyphPointer->offset_y,
+            },
+            .advance = Vector2{
+                glyphPointer->advance_x,
+                glyphPointer->advance_y,
+            },
+            .textureCoordinates = graphics::TextureCoordinatePair{
+                .lowerLeft = Vector2{
+                    glyphPointer->s0,
+                    glyphPointer->t1,
+                },
+                .upperRight = Vector2{
+                    glyphPointer->s1,
+                    glyphPointer->t0,
+                },
+            },
         };
 
-        const i32 styleBitmask = TTF_GetFontStyle(GetRawHandle());
-        Vector<Style> appliedStyles{ };
+        return glyph;
+    }
 
-        for (const Style style : AllFontStyles)
+    [[nodiscard]] auto Font::GetGlyphTextureCoordinatesFromCodepoint(const u32 codepoint) const -> graphics::TextureCoordinatePair
+    {
+        return GetGlyphTextureCoordinatesFromIndex(GetGlyphIndexFromCodepoint(codepoint));
+    }
+
+    [[nodiscard]] auto Font::GetGlyphTextureCoordinatesFromIndex(const u32 glyphIndex) const -> graphics::TextureCoordinatePair
+    {
+        ftgl::texture_glyph_t* glyphPointer = ftgl::texture_font_get_glyph_gi(m_handle.get(), glyphIndex);
+
+        while (glyphPointer == nullptr)
         {
-            if (styleBitmask & static_cast<i32>(style))
-            {
-                appliedStyles.push_back(style);
-            }
+            ResizeTextureAtlas();
+            glyphPointer = ftgl::texture_font_get_glyph_gi(m_handle.get(), glyphIndex);
         }
 
-        if (appliedStyles.empty())
+        return graphics::TextureCoordinatePair{
+            .lowerLeft = Vector2{
+                glyphPointer->s0,
+                glyphPointer->t1,
+            },
+            .upperRight = Vector2{
+                glyphPointer->s1,
+                glyphPointer->t0,
+            },
+        };
+    }
+
+    [[nodiscard]] auto Font::FindGlyphFromCodepoint(const u32 codepoint) const -> Optional<Glyph>
+    {
+        return FindGlyphFromIndex(GetGlyphIndexFromCodepoint(codepoint));
+    }
+
+    [[nodiscard]] auto Font::FindGlyphFromIndex(const u32 glyphIndex) const -> Optional<Glyph>
+    {
+        ftgl::texture_glyph_t* glyphPointer = ftgl::texture_font_find_glyph_gi(m_handle.get(), glyphIndex);
+
+        if (glyphPointer == nullptr)
         {
-            appliedStyles.push_back(Style::Normal);
+            return None;
         }
 
-        return appliedStyles;
+        const Glyph glyph{
+            .codepoint = glyphPointer->codepoint,
+            .size = UVector2{
+                glyphPointer->width,
+                glyphPointer->height,
+            },
+            .bearing = IVector2{
+                glyphPointer->offset_x,
+                glyphPointer->offset_y,
+            },
+            .advance = Vector2{
+                glyphPointer->advance_x,
+                glyphPointer->advance_y,
+            },
+            .textureCoordinates = graphics::TextureCoordinatePair{
+                .lowerLeft = Vector2{
+                    glyphPointer->s0,
+                    glyphPointer->t1,
+                },
+                .upperRight = Vector2{
+                    glyphPointer->s1,
+                    glyphPointer->t0,
+                },
+            },
+        };
+
+        return glyph;
     }
 
-    void Font::SetStyles(const Vector<Style>& styles) const
+    [[nodiscard]] auto Font::ContainsGlyphCodepoint(const u32 codepoint) const -> bool
     {
-        i32 styleBitmask = 0;
+        return ftgl::texture_font_find_glyph_gi(
+            m_handle.get(),
+            GetGlyphIndexFromCodepoint(codepoint)
+        )!= nullptr;
+    }
 
-        for (const Style style : styles)
+    [[nodiscard]] auto Font::ContainsGlyphIndex(const u32 glyphIndex) const -> bool
+    {
+        return ftgl::texture_font_find_glyph_gi(m_handle.get(), glyphIndex) != nullptr;
+    }
+
+    [[nodiscard]] auto Font::GetGlyphIndexFromCodepoint(const u32 codepoint) const -> u32
+    {
+        return FT_Get_Char_Index(m_handle->face, codepoint);
+    }
+
+    [[nodiscard]] auto Font::GetTexture() const -> const graphics::Texture&
+    {
+        if (m_textureAtlasHandle->modified != '\0')
         {
-            styleBitmask |= static_cast<i32>(style);
+            m_texture.SetData(
+                m_textureAtlasHandle->data,
+                UVector2{
+                    static_cast<u32>(m_textureAtlasHandle->width),
+                    static_cast<u32>(m_textureAtlasHandle->height),
+                },
+                static_cast<u32>(m_textureAtlasHandle->depth)
+            );
+
+            m_textureAtlasHandle->modified = '\0';
         }
 
-        TTF_SetFontStyle(GetRawHandle(), styleBitmask);
+        return m_texture;
     }
 
-    void Font::ClearStyles() const
+    [[nodiscard]] auto Font::GetInternalTextureAtlasSize() const noexcept -> UVector2
     {
-        TTF_SetFontStyle(GetRawHandle(), static_cast<i32>(Style::Normal));
+        return UVector2{
+            static_cast<u32>(m_textureAtlasHandle->width),
+            static_cast<u32>(m_textureAtlasHandle->height),
+        };
     }
 
-    [[nodiscard]] u32 Font::GetOutlineThickness() const
+    auto Font::ResizeTextureAtlas() const -> void
     {
-        return static_cast<u32>(TTF_GetFontOutline(GetRawHandle()));
-    }
+        const UVector2 textureAtlasSize = GetInternalTextureAtlasSize();
 
-    void Font::SetOutlineThickness(const u32 outlineThickness) const
-    {
-        TTF_SetFontOutline(GetRawHandle(), static_cast<int>(outlineThickness));
-    }
-
-    void Font::RemoveOutline() const
-    {
-        TTF_SetFontOutline(GetRawHandle(), 0);
-    }
-
-    [[nodiscard]] Font::Hinting Font::GetHinting() const
-    {
-        return static_cast<Hinting>(TTF_GetFontHinting(GetRawHandle()));
-    }
-
-    void Font::SetHinting(const Hinting hinting) const
-    {
-        TTF_SetFontHinting(GetRawHandle(), static_cast<i32>(hinting));
-    }
-
-    [[nodiscard]] u32 Font::GetKerning() const
-    {
-        return static_cast<u32>(TTF_GetFontKerning(GetRawHandle()));
-    }
-
-    void Font::SetKerning(const u32 kerning) const
-    {
-        TTF_SetFontKerning(GetRawHandle(), static_cast<i32>(kerning));
-    }
-
-    [[nodiscard]] u32 Font::GetKerningBetweenGlyphs(const char16_t leftGlyph, const char16_t rightGlyph) const
-    {
-        return static_cast<u32>(TTF_GetFontKerningSizeGlyphs(GetRawHandle(), static_cast<u16>(leftGlyph), static_cast<u16>(rightGlyph)));
-    }
-
-    [[nodiscard]] u32 Font::GetMaximumHeight() const
-    {
-        return static_cast<u32>(TTF_FontHeight(GetRawHandle()));
-    }
-
-    [[nodiscard]] i32 Font::GetFontAscent() const
-    {
-        return TTF_FontAscent(GetRawHandle());
-    }
-
-    [[nodiscard]] i32 Font::GetFontDescent() const
-    {
-        return TTF_FontDescent(GetRawHandle());
-    }
-
-    [[nodiscard]] u32 Font::GetLineSkip() const
-    {
-        return static_cast<u32>(TTF_FontLineSkip(GetRawHandle()));
-    }
-
-    [[nodiscard]] bool Font::IsFixedWidth() const
-    {
-        return static_cast<bool>(TTF_FontFaceIsFixedWidth(GetRawHandle()));
-    }
-
-    [[nodiscard]] Optional<usize> Font::GetGlyphIndex(const char16_t glyph) const
-    {
-        const int glyphIndex = TTF_GlyphIsProvided(GetRawHandle(), static_cast<u16>(glyph));
-
-        if (glyphIndex != 0)
-        {
-            return static_cast<usize>(glyphIndex);
-        }
-        else
-        {
-            return NullOpt;
-        }
-    }
-
-    [[nodiscard]] bool Font::DoesGlyphExist(const char16_t glyph) const
-    {
-        return GetGlyphIndex(glyph).has_value();
-    }
-
-    [[nodiscard]] Font::GlyphMetrics Font::GetGlyphMetrics(const char16_t glyph) const
-    {
-        GlyphMetrics glyphMetrics{ };
-
-        TTF_GlyphMetrics(
-            GetRawHandle(),
-            static_cast<u16>(glyph),
-            &glyphMetrics.minOffset.x,
-            &glyphMetrics.maxOffset.x,
-            &glyphMetrics.minOffset.y,
-            &glyphMetrics.maxOffset.y,
-            &glyphMetrics.advance
+        ftgl::texture_font_enlarge_atlas(
+            m_handle.get(),
+            static_cast<usize>(textureAtlasSize.x) * 2u,
+            static_cast<usize>(textureAtlasSize.y) * 2u
         );
-
-        return glyphMetrics;
-    }
-
-    [[nodiscard]] UVec2 Font::GetTextSize(const String& text) const
-    {
-        i32 textWidth = 0;
-        i32 textHeight = 0;
-        TTF_SizeUTF8(GetRawHandle(), text.c_str(), &textWidth, &textHeight);
-
-        return UVec2{ textWidth, textHeight };
-    }
-
-    [[nodiscard]] UVec2 Font::GetTextSize(const UTF16String& text) const
-    {
-        i32 textWidth = 0;
-        i32 textHeight = 0;
-        TTF_SizeUNICODE(GetRawHandle(), reinterpret_cast<const u16*>(text.data()), &textWidth, &textHeight);
-
-        return UVec2{ textWidth, textHeight };
     }
 }

@@ -1,19 +1,18 @@
 #include "stardust/particles/ParticleSystem.h"
 
-#include "stardust/graphics/renderer/FlipType.h"
-#include "stardust/scene/components/Components.h"
-#include "stardust/utility/random/Random.h"
+#include "stardust/math/random/Random.h"
+#include "stardust/math/Math.h"
 
 namespace stardust
 {
     ParticleSystem::ParticleSystem()
     {
-        m_particlePool.resize(s_ParticleCount);
+        m_particlePool.resize(s_MaxParticleCount);
     }
 
-    void ParticleSystem::Update(const f32 deltaTime)
+    auto ParticleSystem::Update(const f32 deltaTime) -> void
     {
-        Vector<usize> particlesToRemove{ };
+        List<usize> particlesToRemove{ };
 
         for (auto& [particleID, particle] : m_activeParticles)
         {
@@ -30,30 +29,39 @@ namespace stardust
             }
 
             particle->lifetimeRemaining -= deltaTime;
-            particle->velocity *= 1.0f + (particle->acceleration * deltaTime);
-            particle->angularVelocity *= 1.0f + (particle->angularAcceleration * deltaTime);
+            particle->velocity += particle->acceleration * deltaTime;
+            particle->angularVelocity += particle->angularAcceleration * deltaTime;
 
             if (particle->isAffectedByGravity)
             {
                 particle->velocity.y += m_gravity * deltaTime;
             }
 
+            particle->position += particle->velocity * deltaTime;
+
             if (particle->isAffectedByWind)
             {
-                particle->velocity.x += m_wind * deltaTime;
+                particle->position.x += m_wind * deltaTime;
             }
 
-            particle->position += particle->velocity * deltaTime;
             particle->rotation += particle->angularVelocity * deltaTime;
-            particle->size *= 1.0f + (particle->sizeUpdateMultipler * deltaTime);
+            particle->size *= particle->sizeUpdateMultiplier * deltaTime;
 
             particle->currentColour = Colour(
                 glm::lerp(
-                    Vec4(particle->endColour),
-                    Vec4(particle->startColour),
-                    particle->colourEasingFunction(particle->lifetimeRemaining / particle->lifetime)
+                    Vector4(particle->endColour),
+                    Vector4(particle->startColour),
+                    particle->colourEasingFunction(particle->lifetimeRemaining / particle->totalLifetime)
                 )
             );
+
+            if (particle->callback.has_value())
+            {
+                if (particle->callback.value()(*particle, particle->callbackUserData) == ParticleCallbackResult::Kill)
+                {
+                    particlesToRemove.push_back(particleID);
+                }
+            }
         }
 
         for (const auto particleID : particlesToRemove)
@@ -62,111 +70,96 @@ namespace stardust
         }
     }
 
-    void ParticleSystem::RenderInWorld(Renderer& renderer, const Camera2D& camera) const
+    [[nodiscard]] auto ParticleSystem::GenerateParticleComponents() const -> Generator<const Pair<components::Transform, components::Sprite>>
     {
-        for (const auto& [particleID, particle] : m_activeParticles)
+        for (const auto [particleID, particle] : m_activeParticles)
         {
             if (!particle->isActive) [[unlikely]]
             {
                 continue;
             }
 
-            if (particle->texture == nullptr)
-            {
-                renderer.DrawWorldRect(
-                    components::Transform(particle->position, particle->rotation, NullOpt, particle->size),
-                    particle->currentColour,
-                    camera
-                );
-            }
-            else
-            {
-                renderer.DrawWorldRect(
-                    components::Transform(particle->position, particle->rotation, NullOpt, particle->size),
-                    components::Sprite(*particle->texture, particle->textureArea, particle->currentColour),
-                    camera
-                );
-            }
+            co_yield {
+                components::Transform{
+                    .translation = particle->position,
+                    .scale = particle->size,
+                    .reflection = particle->reflection,
+                    .rotation = particle->rotation,
+                    .pivot = particle->pivot,
+                    .shear = particle->shear,
+                },
+                components::Sprite{
+                    .texture = particle->texture,
+                    .subTextureArea = particle->textureArea,
+                    .colourMod = particle->currentColour,
+                },
+            };
         }
     }
 
-    void ParticleSystem::RenderOnScreen(Renderer& renderer) const
-    {
-        for (const auto& [particleID, particle] : m_activeParticles)
-        {
-            if (!particle->isActive)
-            {
-                continue;
-            }
-
-            if (particle->texture == nullptr)
-            {
-                renderer.DrawScreenRect(
-                    components::ScreenTransform(IVec2(particle->position), IVec2(particle->size), FlipType::None, particle->rotation, NullOpt),
-                    particle->currentColour
-                );
-            }
-            else
-            {
-                renderer.DrawScreenRect(
-                    components::ScreenTransform(IVec2(particle->position), IVec2(particle->size), FlipType::None, particle->rotation, NullOpt),
-                    components::Sprite(*particle->texture, particle->textureArea, particle->currentColour)
-                );
-            }
-        }
-    }
-
-    void ParticleSystem::Emit(const ParticleData& particleData)
+    auto ParticleSystem::Emit(const ParticleData& particleData) -> void
     {
         Particle& particle = m_particlePool[m_particlePoolIndex];
 
         particle.position = particleData.initialPosition;
         particle.rotation = particleData.initialRotation;
 
-        particle.velocity.x = Random::GenerateFloat(particleData.minVelocity.x, particleData.maxVelocity.x);
-        particle.velocity.y = Random::GenerateFloat(particleData.minVelocity.y, particleData.maxVelocity.y);
-        particle.acceleration = particleData.acceleration;
+        particle.velocity.x = Random::GenerateFloat(particleData.initialVelocityRange.first.x, particleData.initialVelocityRange.second.x);
+        particle.velocity.y = Random::GenerateFloat(particleData.initialVelocityRange.first.y, particleData.initialVelocityRange.second.y);
+        particle.acceleration = Random::GenerateFloat(particleData.initialAccelerationRange.first, particleData.initialAccelerationRange.second);
 
-        particle.angularVelocity = Random::GenerateFloat(particleData.minAngularVelocity, particleData.maxAngularVelocity);
-        particle.angularAcceleration = particleData.angularAcceleration;
+        particle.angularVelocity = Random::GenerateFloat(particleData.initialAngularVelocityRange.first, particleData.initialAngularVelocityRange.second);
+        particle.angularAcceleration = Random::GenerateFloat(particleData.initialAngularAccelerationRange.first, particleData.initialAngularAccelerationRange.second);
+        particle.pivot = particleData.pivot;
 
         particle.isAffectedByGravity = particleData.isAffectedByGravity;
         particle.isAffectedByWind = particleData.isAffectedByWind;
 
-        particle.size.x = Random::GenerateFloat(particleData.minSize.x, particleData.maxSize.x);
-        particle.size.y = particleData.keepAsSquare ? particle.size.x : Random::GenerateFloat(particleData.minSize.y, particleData.maxSize.y);
-        particle.sizeUpdateMultipler = particleData.sizeUpdateMultipler;
+        particle.size.x = Random::GenerateFloat(particleData.initialSizeRange.first.x, particleData.initialSizeRange.second.x);
+        particle.size.y = particleData.keepAsSquare ? particle.size.x : Random::GenerateFloat(particleData.initialSizeRange.first.y, particleData.initialSizeRange.second.y);
+        particle.sizeUpdateMultiplier = particleData.sizeUpdateMultiplier;
 
-        if (particleData.shiftToCentre)
+        if (particleData.initialShearRange.has_value())
         {
-            particle.position -= particle.size / 2.0f;
+            particle.shear = Vector2Zero;
+            particle.shear.value().x = Random::GenerateFloat(particleData.initialShearRange.value().first.x, particleData.initialShearRange.value().second.x);
+            particle.shear.value().y = Random::GenerateFloat(particleData.initialShearRange.value().first.y, particleData.initialShearRange.value().second.y);
+        }
+        else
+        {
+            particle.shear = None;
         }
 
         particle.currentColour = particleData.startColour;
         particle.startColour = particleData.startColour;
         particle.endColour = particleData.endColour;
+
         particle.texture = particleData.texture;
         particle.textureArea = particleData.textureArea;
+        particle.reflection = particleData.reflection;
 
         particle.colourEasingFunction = particleData.colourEasingFunction;
 
-        particle.lifetime = Random::GenerateFloat(particleData.minLifetime, particleData.maxLifetime);
-        particle.lifetimeRemaining = particle.lifetime;
+        particle.totalLifetime = Random::GenerateFloat(particleData.initialLifetimeRange.first, particleData.initialLifetimeRange.second);
+        particle.lifetimeRemaining = particle.totalLifetime;
+
+        particle.callback = particleData.callback;
+        particle.callbackUserData = particleData.callbackUserData;
 
         particle.isActive = true;
 
         m_activeParticles.insert({ m_particlePoolIndex, &m_particlePool[m_particlePoolIndex] });
 
-        --m_particlePoolIndex;
-        m_particlePoolIndex %= s_ParticleCount;
+        ++m_particlePoolIndex;
+        m_particlePoolIndex %= s_MaxParticleCount;
     }
 
-    void ParticleSystem::KillAllParticles()
+    auto ParticleSystem::KillAllParticles() -> void
     {
         m_activeParticles.clear();
     }
 
-    void ParticleSystem::RepositionAllActiveParticles(const Vec2& relativePosition)
+    auto ParticleSystem::RepositionAllActiveParticles(const Vector2 relativePosition) -> void
     {
         for (auto& [particleID, particle] : m_activeParticles)
         {
@@ -174,7 +167,7 @@ namespace stardust
         }
     }
 
-    void ParticleSystem::ResizeAllActiveParticles(const f32 relativeScale)
+    auto ParticleSystem::ResizeAllActiveParticles(const f32 relativeScale) -> void
     {
         for (auto& [particleID, particle] : m_activeParticles)
         {

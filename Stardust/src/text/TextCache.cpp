@@ -1,141 +1,72 @@
 #include "stardust/text/TextCache.h"
 
-#include "stardust/data/Types.h"
+#include "stardust/utility/unicode/Unicode.h"
 
 namespace stardust
 {
-    TextCache::TextCache(const Font& font, const Sampler& sampler)
+    TextCache::TextCache(TextWriter& textWriter)
     {
-        Initialise(font, sampler);
+        Initialise(textWriter);
     }
 
-    void TextCache::Initialise(const Font& font, const Sampler& sampler)
+    auto TextCache::Initialise(TextWriter& textWriter) -> void
     {
-        m_font = &font;
-        m_sampler = sampler;
+        m_textWriter = &textWriter;
+
+        m_font = &m_textWriter->GetFont();
+        m_currentFontTextureAtlasSize = m_font->GetInternalTextureAtlasSize();
     }
 
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const char glyph)
+    [[nodiscard]] auto TextCache::Get(const String& text, const Markup& markup, const bool resetTextWriterCaret) -> const List<GlyphRenderInfo>&
     {
-        return Get(text::GlyphInfo{
-            .glyph = glyph,
-            .outline = NullOpt,
-        });
-    }
+        CheckIfFontChanged();
 
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const text::GlyphInfo& glyphInfo)
-    {
-        if (const auto textLocation = m_glyphs.find(glyphInfo);
+        if (const auto textLocation = m_glyphs.find(text);
             textLocation == std::cend(m_glyphs))
         {
-            const auto insertionResult = m_glyphs.emplace(glyphInfo, text::RenderGlyph(*m_font, glyphInfo, m_sampler));
-            ObserverPtr<const Texture> glyphTexture = &insertionResult.first->second;
-
-            return glyphTexture;
-        }
-        else
-        {
-            return &textLocation->second;
-        }
-    }
-
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const char16_t glyph)
-    {
-        return Get(text::UTF16GlyphInfo{
-            .glyph = glyph,
-            .outline = NullOpt,
-        });
-    }
-
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const text::UTF16GlyphInfo& glyphInfo)
-    {
-        if (const auto textLocation = m_utf16glyphs.find(glyphInfo);
-            textLocation == std::cend(m_utf16glyphs))
-        {
-            const auto insertionResult = m_utf16glyphs.emplace(glyphInfo, text::RenderGlyph(*m_font, glyphInfo, m_sampler));
-            ObserverPtr<const Texture> glyphTexture = &insertionResult.first->second;
-
-            return glyphTexture;
-        }
-        else
-        {
-            return &textLocation->second;
-        }
-    }
-    
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const String& text)
-    {
-        if (const auto textLocation = m_quickTextLookup.find(text);
-            textLocation != std::cend(m_quickTextLookup))
-        {
-            return textLocation->second;
-        }
-        else
-        {
-            return Get(text::TextInfo{
-                .text = text,
-                .outline = NullOpt,
-                .wrapLength = NullOpt,
-            });
-        }
-    }
-
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const text::TextInfo& textInfo)
-    {
-        if (const auto textLocation = m_textures.find(textInfo);
-            textLocation == std::cend(m_textures))
-        {
-            const auto insertionResult = m_textures.emplace(textInfo, text::RenderText(*m_font, textInfo, m_sampler));
-            ObserverPtr<const Texture> textTexture = &insertionResult.first->second;
-
-            if (!textInfo.outline.has_value() && !textInfo.wrapLength.has_value() && !m_quickTextLookup.contains(textInfo.text))
+            if (resetTextWriterCaret)
             {
-                m_quickTextLookup.insert({ textInfo.text, textTexture });
+                m_textWriter->ResetCaretLocation();
             }
+
+            const auto markupInsertionResult = m_glyphs.emplace(text, HashMap<Markup, List<GlyphRenderInfo>>{ });
+            HashMap<Markup, List<GlyphRenderInfo>>& newGlyphs = markupInsertionResult.first->second;
         
-            return textTexture;
+            const auto glyphInsertionResult = newGlyphs.emplace(markup, m_textWriter->WriteText(text, markup));
+        
+            return glyphInsertionResult.first->second;
+        }
+        else if (const auto markupLocation = textLocation->second.find(markup);
+            markupLocation == std::cend(textLocation->second))
+        {
+            const auto glyphInsertionResult = textLocation->second.emplace(markup, m_textWriter->WriteText(text, markup));
+        
+            return glyphInsertionResult.first->second;
         }
         else
         {
-            return &textLocation->second;
+            return markupLocation->second;
         }
     }
 
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const UTF16String& text)
+    [[nodiscard]] auto TextCache::Get(const UTF8String& text, const Markup& markup, const bool resetTextWriterCaret) -> const List<GlyphRenderInfo>&
     {
-        if (const auto textLocation = m_quickUTF16TextLookup.find(text);
-            textLocation != std::cend(m_quickUTF16TextLookup))
-        {
-            return textLocation->second;
-        }
-        else
-        {
-            return Get(text::UTF16TextInfo{
-                .text = text,
-                .outline = NullOpt,
-                .wrapLength = NullOpt,
-            });
-        }
+        return Get(unicode::UTF8ToStandardString(text), markup, resetTextWriterCaret);
     }
 
-    [[nodiscard]] ObserverPtr<const Texture> TextCache::Get(const text::UTF16TextInfo& textInfo)
+    auto TextCache::Clear() -> void
     {
-        if (const auto textLocation = m_utf16Textures.find(textInfo);
-            textLocation == std::cend(m_utf16Textures))
-        {
-            const auto insertionResult = m_utf16Textures.emplace(textInfo, text::RenderText(*m_font, textInfo, m_sampler));
-            ObserverPtr<const Texture> textTexture = &insertionResult.first->second;
+        m_glyphs.clear();
+    }
 
-            if (!textInfo.outline.has_value() && !textInfo.wrapLength.has_value() && !m_quickUTF16TextLookup.contains(textInfo.text))
-            {
-                m_quickUTF16TextLookup.insert({ textInfo.text, textTexture });
-            }
-
-            return textTexture;
-        }
-        else
+    auto TextCache::CheckIfFontChanged() -> void
+    {
+        if (m_font != &m_textWriter->GetFont() || m_textWriter->GetFont().GetInternalTextureAtlasSize() != m_currentFontTextureAtlasSize)
         {
-            return &textLocation->second;
+            Clear();
+
+            m_font = &m_textWriter->GetFont();
+            m_currentFontTextureAtlasSize = m_font->GetInternalTextureAtlasSize();
         }
     }
 }

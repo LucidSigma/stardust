@@ -2,193 +2,146 @@
 
 #include <utility>
 
-#include "stardust/debug/logging/Log.h"
-#include "stardust/math/Math.h"
-
 namespace stardust
 {
-    VertexLayout::VertexLayout(VertexLayout&& other) noexcept
+    namespace graphics
     {
-        Destroy();
-
-        std::swap(m_id, other.m_id);
-        std::swap(m_vertexBuffers, other.m_vertexBuffers);
-        std::swap(m_attributes, other.m_attributes);
-        std::swap(m_vertexSize, other.m_vertexSize);
-    }
-
-    VertexLayout& VertexLayout::operator =(VertexLayout&& other) noexcept
-    {
-        Destroy();
-
-        std::swap(m_id, other.m_id);
-        std::swap(m_vertexBuffers, other.m_vertexBuffers);
-        std::swap(m_attributes, other.m_attributes);
-        std::swap(m_vertexSize, other.m_vertexSize);
-
-        return *this;
-    }
-
-    VertexLayout::~VertexLayout() noexcept
-    {
-        Destroy();
-    }
-
-    VertexLayout& VertexLayout::AddAttribute(const Attribute& attribute)
-    {
-        m_attributes.push(AttributeState{
-            .attribute = attribute,
-            .offset = m_vertexSize 
-        });
-        m_vertexSize += attribute.elementCount * GetDataTypeSize(attribute.dataType);
-
-        return *this;
-    }
-
-    VertexLayout& VertexLayout::AddVertexBuffer(const VertexBuffer& vertexBuffer)
-    {
-        m_vertexBuffers.push_back(std::cref(vertexBuffer));
-
-        return *this;
-    }
-
-    void VertexLayout::Initialise()
-    {
-        glGenVertexArrays(1, &m_id);
-        Bind();
-
-    #ifndef NDEBUG
+        VertexLayout::VertexLayout(VertexLayout&& other) noexcept
         {
-            GLint maxAttributeCount = 0;
-            glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttributeCount);
+            Destroy();
 
-            if (m_attributes.size() > static_cast<usize>(maxAttributeCount))
+            std::swap(m_id, other.m_id);
+        }
+
+        auto VertexLayout::operator =(VertexLayout&& other) noexcept -> VertexLayout&
+        {
+            Destroy();
+            std::swap(m_id, other.m_id);
+
+            return *this;
+        }
+
+        VertexLayout::~VertexLayout() noexcept
+        {
+            Destroy();
+        }
+
+        auto VertexLayout::Destroy() noexcept -> void
+        {
+            if (m_id != s_InvalidID)
             {
-                Log::EngineError("Max number of vertex attributes exceeded in vertex array {}.", m_id);
+                Unbind();
+
+                glDeleteVertexArrays(1, &m_id);
+                m_id = s_InvalidID;
             }
         }
-    #endif
 
-        for (const auto& vertexBuffer : m_vertexBuffers)
+        auto VertexLayout::Bind() const noexcept -> void
         {
-            vertexBuffer.get().Bind();
+            glBindVertexArray(m_id);
         }
 
-        u32 currentVertexLocation = 0u;
-
-        while (!m_attributes.empty())
+        auto VertexLayout::Unbind() const noexcept -> void
         {
-            constexpr GLuint MaxVertexInputElementCount = 4u;
+            glBindVertexArray(s_InvalidID);
+        }
 
-            const auto& [attribute, offset] = m_attributes.front();
-            const u32 vertexInputSlotCount = static_cast<u32>(glm::ceil(
-                static_cast<f32>(attribute.elementCount) / static_cast<f32>(MaxVertexInputElementCount)
-            ));
+        auto VertexLayout::Draw(const u32 vertexCount, const u32 offset, const DrawMode drawMode) const -> void
+        {
+            glDrawArrays(static_cast<GLenum>(drawMode), static_cast<GLint>(offset), static_cast<GLsizei>(vertexCount));
+        }
 
-            for (u32 i = 0u; i < vertexInputSlotCount; ++i)
+        auto VertexLayout::DrawInstanced(const u32 vertexCount, const u32 instanceCount, const u32 offset, const DrawMode drawMode) const -> void
+        {
+            glDrawArraysInstanced(
+                static_cast<GLenum>(drawMode),
+                static_cast<GLint>(offset),
+                static_cast<GLsizei>(vertexCount),
+                static_cast<GLsizei>(instanceCount)
+            );
+        }
+
+        auto VertexLayout::DrawIndexed(const IndexBuffer& indexBuffer, const bool bindIndexBuffer, const DrawMode drawMode) const -> void
+        {
+            if (bindIndexBuffer)
             {
-                glVertexAttribPointer(
-                    currentVertexLocation,
-                    attribute.elementCount,
-                    attribute.dataType,
-                    attribute.isNormalised ? GL_FALSE : GL_TRUE,
-                    static_cast<GLsizei>(m_vertexSize),
-                    reinterpret_cast<const GLvoid*>(offset)
-                );
-
-                glEnableVertexAttribArray(currentVertexLocation);
-                ++currentVertexLocation;
+                indexBuffer.Bind();
             }
 
-            m_attributes.pop();
-        }
+            glDrawElements(
+                static_cast<GLenum>(drawMode),
+                static_cast<GLsizei>(indexBuffer.GetIndexCount()),
+                static_cast<GLenum>(indexBuffer.GetDataType()),
+                nullptr
+            );
 
-        Unbind();
-
-        for (const auto& vertexBuffer : m_vertexBuffers)
-        {
-            vertexBuffer.get().Unbind();
-        }
-
-        m_vertexBuffers.clear();
-    }
-
-    void VertexLayout::Destroy() noexcept
-    {
-        if (m_id != 0u)
-        {
-            Unbind();
-
-            glDeleteVertexArrays(1, &m_id);
-
-            m_id = 0u;
-            m_vertexBuffers.clear();
-            m_vertexSize = 0u;
-
-            if (!m_attributes.empty())
+            if (bindIndexBuffer)
             {
-                m_attributes = { };
+                indexBuffer.Unbind();
             }
         }
-    }
 
-    void VertexLayout::Bind() const
-    {
-        glBindVertexArray(m_id);
-    }
-
-    void VertexLayout::Unbind() const
-    {
-        glBindVertexArray(0u);
-    }
-
-    void VertexLayout::Draw(const u32 count, const u32 offset, const DrawMode drawMode) const
-    {
-        glDrawArrays(static_cast<GLenum>(drawMode), offset, count);
-    }
-
-    void VertexLayout::DrawIndexed(const IndexBuffer& indexBuffer, const bool bindIndexBuffer, const DrawMode drawMode) const
-    {
-        if (bindIndexBuffer)
+        auto VertexLayout::DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer, const DrawMode drawMode) const -> void
         {
-            indexBuffer.Bind();
+            if (bindIndexBuffer)
+            {
+                indexBuffer.Bind();
+            }
+
+            glDrawElements(
+                static_cast<GLenum>(drawMode),
+                static_cast<GLsizei>(indexCount),
+                static_cast<GLenum>(indexBuffer.GetDataType()),
+                nullptr
+            );
+
+            if (bindIndexBuffer)
+            {
+                indexBuffer.Unbind();
+            }
         }
 
-        glDrawElements(static_cast<GLenum>(drawMode), indexBuffer.GetIndexCount(), indexBuffer.GetDataType(), nullptr);
-
-        if (bindIndexBuffer)
+        auto VertexLayout::DrawIndexedInstanced(const IndexBuffer& indexBuffer, const u32 instanceCount, const bool bindIndexBuffer, const DrawMode drawMode) const -> void
         {
-            indexBuffer.Unbind();
-        }
-    }
+            if (bindIndexBuffer)
+            {
+                indexBuffer.Bind();
+            }
 
-    void VertexLayout::DrawIndexed(const IndexBuffer& indexBuffer, const u32 indexCount, const bool bindIndexBuffer, const DrawMode drawMode) const
-    {
-        if (bindIndexBuffer)
+            glDrawElementsInstanced(
+                static_cast<GLenum>(drawMode),
+                static_cast<GLsizei>(indexBuffer.GetIndexCount()),
+                static_cast<GLenum>(indexBuffer.GetDataType()),
+                nullptr,
+                static_cast<GLsizei>(instanceCount)
+            );
+
+            if (bindIndexBuffer)
+            {
+                indexBuffer.Unbind();
+            }
+        }
+
+        auto VertexLayout::DrawIndexedInstanced(const IndexBuffer& indexBuffer, const u32 indexCount, const u32 instanceCount, const bool bindIndexBuffer, const DrawMode drawMode) const -> void
         {
-            indexBuffer.Bind();
+            if (bindIndexBuffer)
+            {
+                indexBuffer.Bind();
+            }
+
+            glDrawElementsInstanced(
+                static_cast<GLenum>(drawMode),
+                static_cast<GLsizei>(indexCount),
+                static_cast<GLenum>(indexBuffer.GetDataType()),
+                nullptr,
+                static_cast<GLsizei>(instanceCount)
+            );
+
+            if (bindIndexBuffer)
+            {
+                indexBuffer.Unbind();
+            }
         }
-
-        glDrawElements(static_cast<GLenum>(drawMode), indexCount, indexBuffer.GetDataType(), nullptr);
-
-        if (bindIndexBuffer)
-        {
-            indexBuffer.Unbind();
-        }
-    }
-
-    [[nodiscard]] usize VertexLayout::GetDataTypeSize(const GLenum dataType)
-    {
-        static const HashMap<GLenum, usize> sizeLookup{
-            { GL_FLOAT, sizeof(GLfloat) },
-            { GL_INT, sizeof(GLint) },
-            { GL_UNSIGNED_INT, sizeof(GLuint) },
-            { GL_SHORT, sizeof(GLshort) },
-            { GL_UNSIGNED_SHORT, sizeof(GLushort) },
-            { GL_BYTE, sizeof(GLbyte) },
-            { GL_UNSIGNED_BYTE, sizeof(GLubyte) },
-        };
-
-        return sizeLookup.at(dataType);
     }
 }

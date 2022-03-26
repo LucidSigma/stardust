@@ -2,96 +2,180 @@
 #ifndef STARDUST_INPUT_MANAGER_H
 #define STARDUST_INPUT_MANAGER_H
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
-#include "stardust/input/controller/GameControllerCodes.h"
 #include "stardust/input/controller/GameController.h"
+#include "stardust/input/controller/GameControllerCodes.h"
+#include "stardust/input/joystick/Joystick.h"
+#include "stardust/input/joystick/JoystickCodes.h"
 #include "stardust/input/keyboard/KeyCodes.h"
-#include "stardust/input/mouse/MouseButtonCodes.h"
-#include "stardust/input/AxisType.h"
+#include "stardust/input/mouse/MouseCodes.h"
+#include "stardust/input/InputController.h"
+#include "stardust/preferences/ControlPrefs.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    class InputManager
+    class InputManager final
     {
     private:
-        struct ButtonInput
+        enum class JoystickAxisSign
+            : i32
         {
-            HashSet<KeyCode> keys{ };
-            HashSet<MouseButton> mouseButtons{ };
-            HashSet<GameControllerButton> controllerButtons{ };
+            Negative = -1,
+            Both = 0,
+            Positive = 1,
         };
 
-        struct AxisInput
+        struct JoystickAxisInfo final
         {
-            HashMap<AxisType, bool> axes{ };
+            JoystickAxisSign sign = JoystickAxisSign::Both;
+            bool isInverted = true;
+        };
 
+        struct ButtonInput final
+        {
+            HashSet<KeyCode> keys{ };
+
+            HashSet<MouseButton> mouseButtons{ };
+
+            HashSet<GameControllerButton> gameControllerButtons{ };
+            HashSet<GameControllerTrigger> gameControllerTriggers{ };
+
+            HashSet<Joystick::ButtonID> joystickButtons{ };
+            HashSet<Joystick::AxisID> joystickAxes{ };
+            HashMap<Joystick::HatSwitchID, HashSet<JoystickHatSwitchDirection>> joystickHatSwitchDirections{ };
+        };
+
+        struct AxisInput final
+        {
             HashSet<KeyCode> positiveKeys{ };
             HashSet<KeyCode> negativeKeys{ };
 
             HashSet<MouseButton> positiveMouseButtons{ };
             HashSet<MouseButton> negativeMouseButtons{ };
+            HashSet<MouseAxis> mouseAxes{ };
 
-            HashSet<GameControllerButton> positiveControllerButtons{ };
-            HashSet<GameControllerButton> negativeControllerButtons{ };
+            HashSet<GameControllerButton> positiveGameControllerButtons{ };
+            HashSet<GameControllerButton> negativeGameControllerButtons{ };
+            HashSet<GameControllerTrigger> positiveGameControllerTriggers{ };
+            HashSet<GameControllerTrigger> negativeGameControllerTriggers{ };
+            HashMap<GameControllerAxis, bool> gameControllerAxes{ };
+
+            HashSet<Joystick::ButtonID> positiveJoystickButtons{ };
+            HashSet<Joystick::ButtonID> negativeJoystickButtons{ };
+            HashMap<Joystick::AxisID, JoystickAxisInfo> joystickAxes{ };
+            HashSet<Joystick::HatSwitchID> joystickXHatSwitches{ };
+            HashSet<Joystick::HatSwitchID> joystickYHatSwitches{ };
+            HashSet<Joystick::TrackballID> joystickXTrackballs{ };
+            HashSet<Joystick::TrackballID> joystickYTrackballs{ };
         };
 
         HashMap<String, ButtonInput> m_buttons{ };
         HashMap<String, AxisInput> m_axes{ };
 
+        ObserverPointer<const InputController> m_inputController = nullptr;
+
     public:
         InputManager() = default;
-        ~InputManager() noexcept = default;
+        InputManager(const InputController& inputController);
 
-        void AddToButton(const String& buttonName, const KeyCode key);
-        void AddToButton(const String& buttonName, const Vector<KeyCode>& keys);
-        void AddToButton(const String& buttonName, const MouseButton button);
-        void AddToButton(const String& buttonName, const Vector<MouseButton>& buttons);
-        void AddToButton(const String& buttonName, const GameControllerButton button);
-        void AddToButton(const String& buttonName, const Vector<GameControllerButton>& buttons);
+        auto Initialise(const InputController& inputController) -> void;
 
-        void RemoveButton(const String& buttonName);
-        void RemoveFromButton(const String& buttonName, const KeyCode key);
-        void RemoveFromButton(const String& buttonName, const MouseButton button);
-        void RemoveFromButton(const String& buttonName, const GameControllerButton button);
+        auto AddKeyToButton(const String& buttonName, const KeyCode key) -> void;
+        auto AddMouseButtonToButton(const String& buttonName, const MouseButton button) -> void;
+        auto AddGameControllerButtonToButton(const String& buttonName, const GameControllerButton button) -> void;
+        auto AddGameControllerTriggerToButton(const String& buttonName, const GameControllerTrigger trigger) -> void;
+        auto AddJoystickButtonToButton(const String& buttonName, const Joystick::ButtonID button) -> void;
+        auto AddJoystickAxisToButton(const String& buttonName, const Joystick::AxisID axis) -> void;
+        auto AddJoystickHatSwitchToButton(const String& buttonName, const Joystick::HatSwitchID hatSwitch, const JoystickHatSwitchDirection direction) -> void;
 
-        [[nodiscard]] bool IsButtonDown(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
-        [[nodiscard]] bool IsButtonPressed(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
-        [[nodiscard]] bool IsButtonUp(const String& buttonName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
+        auto RemoveKeyFromButton(const String& buttonName, const KeyCode key) -> void;
+        auto RemoveMouseButtonFromButton(const String& buttonName, const MouseButton button) -> void;
+        auto RemoveGameControllerButtonFromButton(const String& buttonName, const GameControllerButton button) -> void;
+        auto RemoveGameControllerTriggerFromButton(const String& buttonName, const GameControllerTrigger trigger) -> void;
+        auto RemoveJoystickButtonFromButton(const String& buttonName, const Joystick::ButtonID button) -> void;
+        auto RemoveJoystickAxisFromButton(const String& buttonName, const Joystick::AxisID axis) -> void;
+        auto RemoveJoystickHatSwitchDirectionFromButton(const String& buttonName, const Joystick::HatSwitchID hatSwitch, const JoystickHatSwitchDirection direction) -> void;
+        auto RemoveJoystickHatSwitchFromButton(const String& buttonName, const Joystick::HatSwitchID hatSwitch) -> void;
 
-        void AddToAxis(const String& axisName, const AxisType axisType, const bool inverted = false);
+        auto RemoveButton(const String& buttonName) -> void;
+        auto ClearAllButtons() -> void;
 
-        void AddToPositiveAxis(const String& axisName, const KeyCode key);
-        void AddToPositiveAxis(const String& axisName, const Vector<KeyCode>& keys);
-        void AddToPositiveAxis(const String& axisName, const MouseButton button);
-        void AddToPositiveAxis(const String& axisName, const Vector<MouseButton>& buttons);
-        void AddToPositiveAxis(const String& axisName, const GameControllerButton button);
-        void AddToPositiveAxis(const String& axisName, const Vector<GameControllerButton>& buttons);
+        [[nodiscard]] auto HasButton(const String& buttonName) -> bool;
 
-        void AddToNegativeAxis(const String& axisName, const KeyCode key);
-        void AddToNegativeAxis(const String& axisName, const Vector<KeyCode>& keys);
-        void AddToNegativeAxis(const String& axisName, const MouseButton button);
-        void AddToNegativeAxis(const String& axisName, const Vector<MouseButton>& buttons);
-        void AddToNegativeAxis(const String& axisName, const GameControllerButton button);
-        void AddToNegativeAxis(const String& axisName, const Vector<GameControllerButton>& buttons);
+        [[nodiscard]] auto IsButtonDown(const String& buttonName, const List<ObserverPointer<const GameController>>& gameControllers = { }, const List<ObserverPointer<const Joystick>>& joysticks = { }) const -> bool;
+        [[nodiscard]] auto IsButtonPressed(const String& buttonName, const List<ObserverPointer<const GameController>>& gameControllers = { }, const List<ObserverPointer<const Joystick>>& joysticks = { }) const -> bool;
+        [[nodiscard]] auto IsButtonUp(const String& buttonName, const List<ObserverPointer<const GameController>>& gameControllers = { }, const List<ObserverPointer<const Joystick>>& joysticks = { }) const -> bool;
 
-        void InvertAxis(const String& axisName, const AxisType axisType, const bool isInverted);
+        auto AddKeyToPositiveAxis(const String& axisName, const KeyCode key) -> void;
+        auto AddKeyToNegativeAxis(const String& axisName, const KeyCode key) -> void;
 
-        void RemoveAxis(const String& axisName);
-        void RemoveFromAxis(const String& axisName, const AxisType axisType);
-        void RemoveFromPositiveAxis(const String& axisName, const KeyCode key);
-        void RemoveFromPositiveAxis(const String& axisName, const MouseButton button);
-        void RemoveFromPositiveAxis(const String& axisName, const GameControllerButton button);
-        void RemoveFromNegativeAxis(const String& axisName, const KeyCode key);
-        void RemoveFromNegativeAxis(const String& axisName, const MouseButton button);
-        void RemoveFromNegativeAxis(const String& axisName, const GameControllerButton button);
+        auto AddMouseButtonToPositiveAxis(const String& axisName, const MouseButton button) -> void;
+        auto AddMouseButtonToNegativeAxis(const String& axisName, const MouseButton button) -> void;
+        auto AddMouseAxisToAxis(const String& axisName, const MouseAxis axis) -> void;
 
-        [[nodiscard]] i32 GetAxis(const String& axisName, const Vector<ObserverPtr<const GameController>>& gameControllers = { }) const;
+        auto AddGameControllerButtonToPositiveAxis(const String& axisName, const GameControllerButton button) -> void;
+        auto AddGameControllerButtonToNegativeAxis(const String& axisName, const GameControllerButton button) -> void;
+        auto AddGameControllerTriggerToPositiveAxis(const String& axisName, const GameControllerTrigger trigger) -> void;
+        auto AddGameControllerTriggerToNegativeAxis(const String& axisName, const GameControllerTrigger trigger) -> void;
+        auto AddGameControllerAxisToAxis(const String& axisName, const GameControllerAxis axis, const bool isInverted = false) -> void;
+
+        auto AddJoystickButtonToPositiveAxis(const String& axisName, const Joystick::ButtonID button) -> void;
+        auto AddJoystickButtonToNegativeAxis(const String& axisName, const Joystick::ButtonID button) -> void;
+        auto AddJoystickAxisToPositiveAxis(const String& axisName, const Joystick::AxisID axis) -> void;
+        auto AddJoystickAxisToNegativeAxis(const String& axisName, const Joystick::AxisID axis) -> void;
+        auto AddJoystickAxisToAxis(const String& axisName, const Joystick::AxisID axis, const bool isInverted = false) -> void;
+        auto AddJoystickHatSwitchXToAxis(const String& axisName, const Joystick::HatSwitchID hatSwitch) -> void;
+        auto AddJoystickHatSwitchYToAxis(const String& axisName, const Joystick::HatSwitchID hatSwitch) -> void;
+        auto AddJoystickTrackballXToAxis(const String& axisName, const Joystick::TrackballID trackball) -> void;
+        auto AddJoystickTrackballYToAxis(const String& axisName, const Joystick::TrackballID trackball) -> void;
+
+        auto RemoveKeyFromPositiveAxis(const String& axisName, const KeyCode key) -> void;
+        auto RemoveKeyFromNegativeAxis(const String& axisName, const KeyCode key) -> void;
+
+        auto RemoveMouseButtonFromPositiveAxis(const String& axisName, const MouseButton button) -> void;
+        auto RemoveMouseButtonFromNegativeAxis(const String& axisName, const MouseButton button) -> void;
+        auto RemoveMouseAxisFromAxis(const String& axisName, const MouseAxis axis) -> void;
+
+        auto RemoveGameControllerButtonFromPositiveAxis(const String& axisName, const GameControllerButton button) -> void;
+        auto RemoveGameControllerButtonFromNegativeAxis(const String& axisName, const GameControllerButton button) -> void;
+        auto RemoveGameControllerTriggerFromPositiveAxis(const String& axisName, const GameControllerTrigger trigger) -> void;
+        auto RemoveGameControllerTriggerFromNegativeAxis(const String& axisName, const GameControllerTrigger trigger) -> void;
+        auto RemoveGameControllerAxisFromAxis(const String& axisName, const GameControllerAxis axis) -> void;
+
+        auto RemoveJoystickButtonFromPositiveAxis(const String& axisName, const Joystick::ButtonID button) -> void;
+        auto RemoveJoystickButtonFromNegativeAxis(const String& axisName, const Joystick::ButtonID button) -> void;
+        auto RemoveJoystickAxisFromAxis(const String& axisName, const Joystick::AxisID axis) -> void;
+        auto RemoveJoystickHatSwitchXFromAxis(const String& axisName, const Joystick::HatSwitchID hatSwitch) -> void;
+        auto RemoveJoystickHatSwitchYFromAxis(const String& axisName, const Joystick::HatSwitchID hatSwitch) -> void;
+        auto RemoveJoystickTrackballXFromAxis(const String& axisName, const Joystick::TrackballID trackball) -> void;
+        auto RemoveJoystickTrackballYFromAxis(const String& axisName, const Joystick::TrackballID trackball) -> void;
+
+        auto RemoveAxis(const String& axisName) -> void;
+        auto ClearAllAxes() -> void;
+
+        [[nodiscard]] auto IsAxisInverted(const String& axisName, const GameControllerAxis gameControllerAxis) const -> bool;
+        [[nodiscard]] auto IsAxisInverted(const String& axisName, const Joystick::AxisID joystickAxis) const -> bool;
+        auto InvertAxis(const String& axisName, const GameControllerAxis gameControllerAxis, const bool invertAxis) -> void;
+        auto InvertAxis(const String& axisName, const Joystick::AxisID joystickAxis, const bool invertAxis) -> void;
+
+        [[nodiscard]] auto HasAxis(const String& axisName) -> bool;
+
+        [[nodiscard]] auto GetAxis(const String& axisName, const List<ObserverPointer<const GameController>>& gameControllers = { }, const List<ObserverPointer<const Joystick>>& joysticks = { }) const -> i32;
+        [[nodiscard]] auto GetAxisRaw(const String& axisName, const List<ObserverPointer<const GameController>>& gameControllers = { }, const List<ObserverPointer<const Joystick>>& joysticks = { }) const -> f32;
+        [[nodiscard]] auto GetClampedAxisRaw(const String& axisName, const List<ObserverPointer<const GameController>>& gameControllers = { }, const List<ObserverPointer<const Joystick>>& joysticks = { }) const -> f32;
+
+        auto LoadFromControlPrefs(const ControlPrefs& controlPrefs) -> void;
 
     private:
-        [[nodiscard]] i32 GetAxisValueFromType(const AxisType axisType, const bool isInverted, const Vector<ObserverPtr<const GameController>>& gameControllers) const;
-        [[nodiscard]] i32 GetAxisValueFromButtons(const AxisInput& axisData, const Vector<ObserverPtr<const GameController>>& gameControllers) const;
+        [[nodiscard]] auto GetAxisValueFromKeyboard(const AxisInput& axisData) const -> f32;
+        [[nodiscard]] auto GetAxisValueFromMouse(const AxisInput& axisData) const -> f32;
+        [[nodiscard]] auto GetAxisValueFromGameControllers(const AxisInput& axisData, const List<ObserverPointer<const GameController>>& gameControllers) const -> f32;
+        [[nodiscard]] auto GetAxisValueFromJoysticks(const AxisInput& axisData, const List<ObserverPointer<const Joystick>>& joysticks) const -> f32;
+
+        auto LoadAxesFromControlPrefs(const ControlPrefs& controlPrefs) -> void;
+        auto LoadButtonsFromControlPrefs(const ControlPrefs& controlPrefs) -> void;
     };
 }
 

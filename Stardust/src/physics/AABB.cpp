@@ -8,13 +8,13 @@ namespace stardust
             : m_aabb(aabb)
         { }
 
-        AABB::AABB(const Pair<Vec2, Vec2>& bounds)
+        AABB::AABB(const Pair<Vector2, Vector2>& bounds)
         {
             m_aabb.lowerBound = b2Vec2{ bounds.first.x, bounds.first.y };
             m_aabb.upperBound = b2Vec2{ bounds.second.x, bounds.second.y };
         }
 
-        AABB::AABB(const Vec2& centre, const Vec2& halfSize)
+        AABB::AABB(const Vector2 centre, const Vector2 halfSize)
         {
             m_aabb.lowerBound = b2Vec2{
                 centre.x - halfSize.x,
@@ -27,28 +27,17 @@ namespace stardust
             };
         }
 
-        void AABB::Combine(const AABB& other)
+        auto AABB::Combine(const AABB& other) -> void
         {
             m_aabb.Combine(other);
         }
 
-        void AABB::Combine(const AABB& first, const AABB& second)
+        auto AABB::Combine(const AABB& first, const AABB& second) -> void
         {
             m_aabb.Combine(first, second);
         }
 
-        void AABB::Expand(f32 amount)
-        {
-            amount /= 2.0f;
-
-            m_aabb.lowerBound.x -= amount;
-            m_aabb.lowerBound.y -= amount;
-
-            m_aabb.upperBound.x += amount;
-            m_aabb.upperBound.y += amount;
-        }
-
-        void AABB::Expand(Vec2 amount)
+        auto AABB::Expand(Vector2 amount) -> void
         {
             amount /= 2.0f;
 
@@ -59,72 +48,103 @@ namespace stardust
             m_aabb.upperBound.y += amount.y;
         }
 
-        [[nodiscard]] bool AABB::Contains(const Vec2& point) const
+        auto AABB::Expand(f32 amount) -> void
+        {
+            amount /= 2.0f;
+
+            m_aabb.lowerBound.x -= amount;
+            m_aabb.lowerBound.y -= amount;
+
+            m_aabb.upperBound.x += amount;
+            m_aabb.upperBound.y += amount;
+        }
+
+        auto AABB::Expand(f32 xAmount, f32 yAmount) -> void
+        {
+            Expand(Vector2{ xAmount, yAmount });
+        }
+
+        auto AABB::Shrink(const Vector2 amount) -> void
+        {
+            Expand(-amount);
+        }
+
+        auto AABB::Shrink(const f32 amount) -> void
+        {
+            Expand(-amount);
+        }
+
+        auto AABB::Shrink(const f32 xAmount, const f32 yAmount) -> void
+        {
+            Expand(-xAmount, -yAmount);
+        }
+
+        [[nodiscard]] auto AABB::Contains(const Vector2 point) const -> bool
         {
             return point.x > m_aabb.lowerBound.x && point.x < m_aabb.upperBound.x &&
                 point.y > m_aabb.lowerBound.y && point.y < m_aabb.upperBound.y;
         }
 
-        [[nodiscard]] bool AABB::Contains(const AABB& aabb) const
+        [[nodiscard]] auto AABB::Contains(const AABB& aabb) const -> bool
         {
             return m_aabb.Contains(aabb);
         }
 
-        [[nodiscard]] bool AABB::IsValid() const
+        [[nodiscard]] auto AABB::IsValid() const -> bool
         {
             return m_aabb.IsValid();
         }
 
-        [[nodiscard]] Vec2 AABB::GetLowerBound() const
+        [[nodiscard]] auto AABB::GetLowerBound() const -> Vector2
         {
-            return Vec2{ m_aabb.lowerBound.x, m_aabb.lowerBound.y };
+            return Vector2{ m_aabb.lowerBound.x, m_aabb.lowerBound.y };
         }
 
-        void AABB::SetLowerBound(const Vec2& lowerBound)
+        auto AABB::SetLowerBound(const Vector2 lowerBound) -> void
         {
             m_aabb.lowerBound.x = lowerBound.x;
             m_aabb.lowerBound.y = lowerBound.y;
         }
 
-        [[nodiscard]] Vec2 AABB::GetUpperBound() const
+        [[nodiscard]] auto AABB::GetUpperBound() const -> Vector2
         {
-            return Vec2{ m_aabb.upperBound.x, m_aabb.upperBound.y };
+            return Vector2{ m_aabb.upperBound.x, m_aabb.upperBound.y };
         }
 
-        void AABB::SetUpperBound(const Vec2& upperBound)
+        auto AABB::SetUpperBound(const Vector2 upperBound) -> void
         {
             m_aabb.upperBound.x = upperBound.x;
             m_aabb.upperBound.y = upperBound.y;
         }
 
-        [[nodiscard]] f32 AABB::GetWidth() const
+        [[nodiscard]] auto AABB::GetWidth() const -> f32
         {
             return m_aabb.upperBound.x - m_aabb.lowerBound.x;
         }
 
-        [[nodiscard]] f32 AABB::GetHeight() const
+        [[nodiscard]] auto AABB::GetHeight() const -> f32
         {
             return m_aabb.upperBound.y - m_aabb.lowerBound.y;
         }
 
-        [[nodiscard]] f32 AABB::GetHalfWidth() const
+        [[nodiscard]] auto AABB::GetHalfWidth() const -> f32
         {
             return GetWidth() / 2.0f;
         }
 
-        [[nodiscard]] f32 AABB::GetHalfHeight() const
+        [[nodiscard]] auto AABB::GetHalfHeight() const -> f32
         {
             return GetHeight() / 2.0f;
         }
 
-        [[nodiscard]] Vec2 AABB::GetCentre() const
+        [[nodiscard]] auto AABB::GetCentre() const -> Vector2
         {
             const b2Vec2 centre = m_aabb.GetCenter();
 
-            return Vec2{ centre.x, centre.y };
+            return Vector2{ centre.x, centre.y };
         }
 
-        void AABB::SetCentre(const Vec2& centre)
+        auto AABB::SetCentre(const Vector2 centre) -> void
         {
             const f32 halfWidth = GetHalfWidth();
             const f32 halfHeight = GetHalfHeight();
@@ -140,24 +160,40 @@ namespace stardust
             };
         }
 
-        [[nodiscard]] Vec2 AABB::GetExtents() const
+        auto AABB::ShiftCentre(const Vector2 offset) -> void
+        {
+            SetCentre(GetCentre() + offset);
+        }
+
+        auto AABB::ShiftCentre(const f32 xOffset, const f32 yOffset) -> void
+        {
+            ShiftCentre(Vector2{ xOffset, yOffset });
+        }
+
+        [[nodiscard]] auto AABB::GetHalfSize() const -> Vector2
         {
             const b2Vec2 extents = m_aabb.GetExtents();
 
-            return Vec2{ extents.x, extents.y };
+            return Vector2{ extents.x, extents.y };
         }
 
-        [[nodiscard]] Vec2 AABB::GetSize() const
+        [[nodiscard]] auto AABB::GetSize() const -> Vector2
         {
-            return GetExtents() * 2.0f;
+            return GetHalfSize() * 2.0f;
         }
 
-        [[nodiscard]] f32 AABB::GetArea() const
+        auto AABB::SetSize(const Vector2 size) -> void
+        {
+            const Vector2 oldSize = GetSize();
+            Expand(size - oldSize);
+        }
+
+        [[nodiscard]] auto AABB::GetArea() const -> f32
         {
             return GetWidth() * GetHeight();
         }
 
-        [[nodiscard]] f32 AABB::GetPerimeter() const
+        [[nodiscard]] auto AABB::GetPerimeter() const -> f32
         {
             return m_aabb.GetPerimeter();
         }

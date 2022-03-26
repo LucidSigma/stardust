@@ -2,52 +2,65 @@
 #ifndef STARDUST_TEXTURE_ATLAS_H
 #define STARDUST_TEXTURE_ATLAS_H
 
-#include "stardust/utility/interfaces/INoncopyable.h"
-
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Types.h"
 #include "stardust/graphics/texture/Texture.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
+#include "stardust/types/MathTypes.h"
 
 namespace stardust
 {
-    class TextureAtlas
-        : private INoncopyable
+    namespace graphics
     {
-    private:
-        Texture m_texture;
+        class TextureAtlas final
+        {
+        public:
+            using SubTextureID = u32;
 
-        HashMap<String, TextureCoordinatePair> m_subtextures{ };
-        HashMap<String, u32> m_subtextureIDs{ };
+            struct SubTextureData final
+            {
+                SubTextureID id;
+                String name;
 
-        bool m_isValid = false;
+                UVector2 topLeftCoordinates;
+                UVector2 size;
+            };
 
-    public:
-        TextureAtlas() = default;
-        explicit TextureAtlas(const StringView& filepath);
+        private:
+            ObserverPointer<const Texture> m_texture = nullptr;
 
-        TextureAtlas(TextureAtlas&& other) noexcept;
-        TextureAtlas& operator =(TextureAtlas&& other) noexcept;
+            HashMap<String, TextureCoordinatePair> m_subTextureCoordinates{ };
+            HashMap<String, SubTextureID> m_subTextureIDs{ };
 
-        ~TextureAtlas() noexcept;
+            bool m_isValid = false;
 
-        void Initialise(const StringView& filepath);
-        void Destroy() noexcept;
+        public:
+            TextureAtlas() = default;
+            TextureAtlas(const Texture& texture, const StringView jsonFilepath);
+            TextureAtlas(const Texture& texture, const List<SubTextureData>& subTextures);
 
-        [[nodiscard]] inline bool IsValid() const noexcept { return m_isValid && IsTextureValid(); }
-        [[nodiscard]] inline bool IsTextureValid() const noexcept { return m_texture.IsValid(); }
+            auto Initialise(const Texture& texture, const StringView jsonFilepath) -> void;
+            auto Initialise(const Texture& texture, const List<SubTextureData>& subTextures) -> void;
 
-        [[nodiscard]] inline const TextureCoordinatePair& GetSubtexture(const String& name) const { return m_subtextures.at(name); }
-        [[nodiscard]] inline u32 GetSubtextureID(const String& name) const { return m_subtextureIDs.at(name); }
-        [[nodiscard]] inline const TextureCoordinatePair& operator [](const String& name) const { return GetSubtexture(name); }
+            auto AddSubTexture(const SubTextureData& subTextureData) -> void;
 
-        [[nodiscard]] inline Texture& GetTexture() noexcept { return m_texture; }
-        [[nodiscard]] inline const Texture& GetTexture() const noexcept { return m_texture; }
-        [[nodiscard]] inline const decltype(m_subtextures)& GetSubtextures() const noexcept { return m_subtextures; }
-        [[nodiscard]] inline const decltype(m_subtextureIDs)& GetSubtextureIDs() const noexcept { return m_subtextureIDs; }
+            [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_isValid && m_texture->IsValid(); }
 
-        [[nodiscard]] inline const usize GetSubtextureCount() const noexcept { return m_subtextures.size(); }
-    };
+            [[nodiscard]] inline auto GetSubTexture(const String& name) const -> const TextureCoordinatePair& { return m_subTextureCoordinates.at(name); }
+            [[nodiscard]] inline auto GetSubTextureID(const String& name) const -> SubTextureID { return m_subTextureIDs.at(name); }
+            [[nodiscard]] inline auto operator [](const String& name) const -> const TextureCoordinatePair& { return GetSubTexture(name); }
+
+            [[nodiscard]] inline auto GetTexture() const noexcept -> const Texture& { return *m_texture; }
+            [[nodiscard]] inline auto GetAllSubTextures() const noexcept -> const decltype(m_subTextureCoordinates)& { return m_subTextureCoordinates; }
+            [[nodiscard]] inline auto GetSubTextureIDs() const noexcept -> const decltype(m_subTextureIDs)& { return m_subTextureIDs; }
+
+            [[nodiscard]] inline auto GetSubTextureCount() const noexcept -> u32 { return static_cast<u32>(m_subTextureIDs.size()); }
+
+            [[nodiscard]] auto GetSubTextureSize(const String& subTextureName) const noexcept -> UVector2;
+            [[nodiscard]] auto GetSubTextureWidth(const String& subTextureName) const noexcept -> u32;
+            [[nodiscard]] auto GetSubTextureHeight(const String& subTextureName) const noexcept -> u32;
+        };
+    }
 }
 
 #endif

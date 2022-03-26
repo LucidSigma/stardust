@@ -2,82 +2,91 @@
 #ifndef STARDUST_TILEMAP_H
 #define STARDUST_TILEMAP_H
 
+#include <functional>
+
 #include "stardust/camera/Camera2D.h"
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
-#include "stardust/graphics/renderer/Renderer.h"
-#include "stardust/graphics/texture/Texture.h"
-#include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
+#include "stardust/ecs/components/SpriteComponent.h"
+#include "stardust/ecs/components/TransformComponent.h"
 #include "stardust/graphics/colour/Colour.h"
 #include "stardust/graphics/colour/Colours.h"
+#include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
+#include "stardust/graphics/texture/Texture.h"
 #include "stardust/math/Math.h"
+#include "stardust/tilemap/Tile.h"
+#include "stardust/tilemap/Tileset.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    using Tile = u32;
-
-    constexpr Tile EmptyTile = 0u;
-
-    class Tilemap
+    class Tilemap final
     {
     private:
-        Vector<Vector<Tile>> m_tiles{ };
-        
-        Vec2 m_position = Vec2Zero;
-        UVec2 m_size = UVec2Zero;
-        Vec2 m_tileSize = Vec2One;
+        struct OnScreenBoundary final
+        {
+            i32 leftX;
+            i32 rightX;
 
-        HashMap<Tile, TextureCoordinatePair> m_tileTextureCoordinates{ };
-        HashMap<Tile, ObserverPtr<const Texture>> m_tileTextureLookup{ };
-        HashMap<String, Tile> m_tileNames{ };
+            i32 bottomY;
+            i32 topY;
+        };
+
+        List<Tile> m_tiles{ };
+
+        UVector2 m_size = UVector2Zero;
+        Vector2 m_tileSize = Vector2One;
+
+        ObserverPointer<const Tileset> m_tileset = nullptr;
 
         Colour m_colourMod = colours::White;
 
     public:
         Tilemap() = default;
-        Tilemap(const Vector<Tile>& tiles, const u32 width, const Vec2& tileSize = Vec2One);
-        explicit Tilemap(const Vector<Vector<Tile>>& tiles, const Vec2& tileSize = Vec2One);
+        Tilemap(const List<Tile>& tiles, const u32 width, const Vector2 tileSize = Vector2One);
+        explicit Tilemap(const List<List<Tile>>& tiles, const Vector2 tileSize = Vector2One);
         ~Tilemap() noexcept = default;
 
-        void Initialise(const Vector<Tile>& tiles, const u32 width, const Vec2& tileSize = Vec2One);
-        void Initialise(const Vector<Vector<Tile>>& tiles, const Vec2& tileSize = Vec2One);
+        auto Initialise(const List<Tile>& tiles, const u32 width, const Vector2 tileSize = Vector2One) -> void;
+        auto Initialise(const List<List<Tile>>& tiles, const Vector2 tileSize = Vector2One) -> void;
 
-        void AddTileTextures(const TextureAtlas& textureAtlas);
-        [[nodiscard]] Optional<Tile> GetTileID(const String& name) const;
+        [[nodiscard]] auto GetTileset() const noexcept -> ObserverPointer<const Tileset> { return m_tileset; }
+        inline auto SetTileset(const Tileset& tileset) noexcept -> void { m_tileset = &tileset; }
 
-        void Render(Renderer& renderer, const Camera2D& camera) const;
+        [[nodiscard]] inline auto GetTiles() const noexcept -> const List<Tile>& { return m_tiles; }
+        [[nodiscard]] auto GetOnScreenTiles(const Vector2 translation, const Camera2D& camera) -> const List<Pair<components::Transform, components::Sprite>>;
+        [[nodiscard]] auto IterateOnScreenTiles(const Vector2 translation, const Camera2D& camera) -> Generator<const Pair<components::Transform, components::Sprite>>;
 
-        [[nodiscard]] Tile GetTile(const UVec2& coordinates) const;
-        void SetTile(const UVec2& coordinates, const Tile tile);
-        void EraseTile(const UVec2& coordinates);
-        [[nodiscard]] bool HasTile(const UVec2& coordinates) const;
+        [[nodiscard]] auto GetTile(const UVector2 coordinates) const -> Tile;
+        auto SetTile(const UVector2 coordinates, const Tile tile) -> void;
+        auto EraseTile(const UVector2 coordinates) -> void;
+        [[nodiscard]] auto HasTile(const UVector2 coordinates) const -> bool;
 
-        [[nodiscard]] bool ContainsTile(const Tile tile) const;
+        [[nodiscard]] auto ContainsTile(const Tile tile) -> bool;
 
-        void FillTiles(const UVec2& topLeft, const UVec2& size, const Tile tile);
-        void EraseTiles(const UVec2& topLeft, const UVec2& size);
-        void FloodFill(const UVec2& origin, const Tile tile);
-        void ClearAllTiles();
+        auto FillTiles(const UVector2 topLeft, const UVector2 size, const Tile tile) -> void;
+        auto EraseTiles(const UVector2 topLeft, const UVector2 size) -> void;
+        auto FloodFill(const UVector2 origin, const Tile tile) -> void;
+        auto ClearAllTiles() -> void;
 
-        [[nodiscard]] bool IsAnyTileInArea(const UVec2& topLeft, const UVec2& size) const;
-        [[nodiscard]] bool AreAllTilesFilled(const UVec2& topLeft, const UVec2& size) const;
-        [[nodiscard]] bool IsAreaFilledWithTile(const UVec2& topLeft, const UVec2& size, const Tile tile) const;
-        [[nodiscard]] bool IsAreaEmpty(const UVec2& topLeft, const UVec2& size) const;
+        [[nodiscard]] auto IsAnyTileInArea(const UVector2 topLeft, const UVector2 size) const -> bool;
+        [[nodiscard]] auto AreAllTilesFilled(const UVector2 topLeft, const UVector2 size) const -> bool;
+        [[nodiscard]] auto IsAreaFilledWithTile(const UVector2 topLeft, const UVector2 size, const Tile tile) const -> bool;
+        [[nodiscard]] auto DoesAreaContainTile(const UVector2 topLeft, const UVector2 size, const Tile tile) const -> bool;
+        [[nodiscard]] auto IsAreaEmpty(const UVector2 topLeft, const UVector2 size) const -> bool;
 
-        [[nodiscard]] inline const Vector<Vector<Tile>>& GetTiles() const noexcept { return m_tiles; }
+        [[nodiscard]] inline auto GetSize() const noexcept -> const UVector2 { return m_size; }
+        auto Resize(const UVector2 newSize, const Tile fillerTile = EmptyTile) -> void;
 
-        [[nodiscard]] inline const UVec2& GetSize() const noexcept { return m_size; }
-        void Resize(const UVec2& newSize, const Tile fillerTile = EmptyTile);
+        [[nodiscard]] inline auto GetTileSize() const noexcept -> const Vector2 { return m_tileSize; }
+        inline auto SetTileSize(const Vector2 tileSize) noexcept -> void { m_tileSize = tileSize; }
 
-        [[nodiscard]] inline const Vec2& GetPosition() const noexcept { return m_position; }
-        inline void SetPosition(const Vec2& position) noexcept { m_position = position; }
-        [[nodiscard]] inline const Vec2& GetTileSize() const noexcept { return m_tileSize; }
-        inline void SetTileSize(const Vec2& tileSize) noexcept { m_tileSize = tileSize; }
+        [[nodiscard]] inline auto GetColourMod() const noexcept -> const Colour& { return m_colourMod; }
+        inline auto SetColourMod(const Colour& colourMod) noexcept -> void { m_colourMod = colourMod; }
 
-        [[nodiscard]] inline const Colour& GetColourMod() const noexcept { return m_colourMod; }
-        inline void SetColourMod(const Colour& colourMod) noexcept { m_colourMod = colourMod; }
+    private:
+        [[nodiscard]] auto GetOnScreenBoundaries(const Vector2 translation, const Camera2D& camera) const ->OnScreenBoundary;
     };
 }
 

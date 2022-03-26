@@ -6,31 +6,35 @@
 
 #include <box2d/box2d.h>
 
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
 #include "stardust/physics/AABB.h"
 #include "stardust/physics/Physics.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace physics
     {
-        class Collider
+        class Collider final
         {
         public:
-            struct Filter
+            using GroupIndex = i32;
+
+            struct Filter final
             {
                 CollisionLayer layers = 0x0001;
                 CollisionLayer collidesWith = AllLayers;
 
-                i16 groupIndex = 0;
+                GroupIndex groupIndex = 0;
             };
 
-            struct CreateInfo
+            struct CreateInfo final
             {
-                ObserverPtr<const Shape> shape = nullptr;
+                ObserverPointer<const Shape> shape = nullptr;
 
-                f32 friction = 0.2;
+                f32 friction = 0.0f;
                 f32 restitution = 0.0f;
                 f32 restitutionThreshold = 1.0f * b2_lengthUnitsPerMeter;
                 f32 density = 0.0f;
@@ -41,49 +45,51 @@ namespace stardust
             };
 
         private:
-            ObserverPtr<b2Fixture> m_handle = nullptr;
-            ObserverPtr<const class Body> m_owningBody = nullptr;
+            ObserverPointer<b2Fixture> m_handle = nullptr;
+            ObserverPointer<const class Body> m_owningBody = nullptr;
 
         public:
             Collider() = default;
             Collider(const class Body& body, const CreateInfo& createInfo);
-            Collider(const ObserverPtr<b2Fixture> fixtureHandle, const class World& world);
-            ~Collider() noexcept = default;
+            Collider(const ObserverPointer<b2Fixture> fixtureHandle, const class World& world);
 
-            [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
+            [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_handle != nullptr; }
 
-            [[nodiscard]] ShapeType GetShapeType() const;
+            [[nodiscard]] auto GetShapeType() const -> ShapeType;
 
-            [[nodiscard]] ObserverPtr<b2Shape> GetShape();
-            [[nodiscard]] ObserverPtr<const b2Shape> GetShape() const;
+            [[nodiscard]] auto GetShape() -> ObserverPointer<b2Shape>;
+            [[nodiscard]] auto GetShape() const -> ObserverPointer<const b2Shape>;
 
-            [[nodiscard]] f32 GetFriction() const;
-            void SetFriction(const f32 friction) const;
+            [[nodiscard]] auto GetVertexCount() const -> u32;
+            [[nodiscard]] auto GetVertices() const -> List<Vector2>;
 
-            [[nodiscard]] f32 GetRestitution() const;
-            void SetRestitution(const f32 restitution) const;
+            [[nodiscard]] auto GetFriction() const -> f32;
+            auto SetFriction(const f32 friction) const -> void;
 
-            [[nodiscard]] f32 GetRestitutionThreshold() const;
-            void SetRestitutionThreshold(const f32 restitutionThreshold) const;
+            [[nodiscard]] auto GetRestitution() const -> f32;
+            auto SetRestitution(const f32 restitution) const -> void;
 
-            [[nodiscard]] f32 GetDensity() const;
-            void SetDensity(const f32 density) const;
+            [[nodiscard]] auto GetRestitutionThreshold() const -> f32;
+            auto SetRestitutionThreshold(const f32 restitutionThreshold) const -> void;
 
-            [[nodiscard]] bool IsSensor() const;
-            void SetSensor(const bool isSensor) const;
+            [[nodiscard]] auto GetDensity() const -> f32;
+            auto SetDensity(const f32 density) const -> void;
 
-            [[nodiscard]] Filter GetFilterData() const;
-            void SetFilterData(const Filter& filterData) const;
-            void Refilter() const;
+            [[nodiscard]] auto IsSensor() const -> bool;
+            auto SetSensor(const bool isSensor) const -> void;
 
-            [[nodiscard]] AABB GetAABB() const;
-            [[nodiscard]] MassData GetMassData() const;
+            [[nodiscard]] auto GetFilterData() const -> Filter;
+            auto SetFilterData(const Filter& filterData) const -> void;
+            auto Refilter() const -> void;
 
-            [[nodiscard]] inline ObserverPtr<const class Body> GetOwningBody() const noexcept { return m_owningBody; }
-            [[nodiscard]] inline ObserverPtr<b2Fixture> GetRawHandle() const noexcept { return m_handle; }
+            [[nodiscard]] auto GetAABB() const -> AABB;
+            [[nodiscard]] auto GetMassData() const -> MassData;
 
-            [[nodiscard]] inline bool operator ==(const Collider& other) const noexcept = default;
-            [[nodiscard]] inline bool operator !=(const Collider& other) const noexcept = default;
+            [[nodiscard]] inline auto GetOwningBody() const noexcept -> ObserverPointer<const class Body> { return m_owningBody; }
+            [[nodiscard]] inline auto GetRawHandle() const noexcept -> ObserverPointer<b2Fixture> { return m_handle; }
+
+            [[nodiscard]] inline auto operator ==(const Collider& other) const noexcept -> bool = default;
+            [[nodiscard]] inline auto operator !=(const Collider& other) const noexcept -> bool = default;
         };
     }
 }
@@ -93,9 +99,9 @@ namespace std
     template <>
     struct hash<stardust::physics::Collider>
     {
-        [[nodiscard]] inline std::size_t operator ()(const stardust::physics::Collider& collider) const noexcept
+        [[nodiscard]] inline auto operator ()(const stardust::physics::Collider& collider) const noexcept -> stardust::usize
         {
-            return std::hash<stardust::ObserverPtr<b2Fixture>>()(collider.GetRawHandle());
+            return std::hash<stardust::ObserverPointer<b2Fixture>>()(collider.GetRawHandle());
         }
     };
 }

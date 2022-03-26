@@ -3,36 +3,42 @@
 #define STARDUST_FONT_CACHE_H
 
 #include "stardust/utility/interfaces/INoncopyable.h"
+#include "stardust/utility/interfaces/INonmovable.h"
 
-#include "stardust/data/Containers.h"
 #include "stardust/text/font/Font.h"
-#include "stardust/utility/status/Status.h"
+#include "stardust/utility/error_handling/Status.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Pointers.h"
 
 namespace stardust
 {
-    class FontCache
+    class FontCache final
         : private INoncopyable
     {
     private:
-        HashMap<FontSize, Font> m_pointSizes{ };
+        HashMap<Font::Size, UniquePointer<Font>> m_pointSizes{ };
 
-        String m_filepath;
-        
+        Font::CreateInfo m_createInfo{ };
+
     public:
         FontCache() = default;
-        explicit FontCache(const StringView& fontFilepath);
+        explicit FontCache(const Font::CreateInfo& createInfo);
+
+        FontCache(FontCache&&) noexcept = default;
+        auto operator =(FontCache&&) noexcept -> FontCache& = default;
+
         ~FontCache() noexcept = default;
 
-        void SetFont(const StringView& fontFilepath);
+        auto SetFontData(const Font::CreateInfo& createInfo) -> void;
 
-        [[nodiscard]] Status Add(const FontSize pointSize);
-        [[nodiscard]] Status Add(const Vector<FontSize>& pointSizes);
-        [[nodiscard]] Font& Get(const FontSize pointSize);
-        void Remove(const FontSize pointSize);
+        [[nodiscard]] auto Add(const Font::Size pointSize) -> Status;
+        [[nodiscard]] auto Add(const List<Font::Size>& pointSizes) -> Status;
+        [[nodiscard]] auto Get(const Font::Size pointSize) -> Font&;
+        auto Remove(const Font::Size pointSize) -> void;
 
-        [[nodiscard]] inline Font& operator [](const FontSize pointSize) { return Get(pointSize); }
+        [[nodiscard]] inline auto operator [](const Font::Size pointSize) -> Font& { return Get(pointSize); }
 
-        [[nodiscard]] inline bool Has(const FontSize pointSize) const { return m_pointSizes.contains(pointSize); }
+        [[nodiscard]] inline auto Has(const Font::Size pointSize) const -> bool { return m_pointSizes.contains(pointSize); }
     };
 }
 

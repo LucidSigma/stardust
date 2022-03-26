@@ -1,240 +1,119 @@
 #include "stardust/ui/UI.h"
 
-#include <cstdio>
-#include <cstring>
-#include <utility>
-
-#include <RmlUi/Core.h>
-
-#include "stardust/application/Application.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
-#include "stardust/filesystem/vfs/VirtualFileHandle.h"
-#include "stardust/utility/status/Status.h"
+#include <SDL2/SDL.h>
 
 namespace stardust
 {
     namespace ui
     {
-        namespace
+        [[nodiscard]] auto GetRelativePositionFromAnchor(const Anchor anchor, const UVector2 parentSize, const UVector2 componentSize, const IVector2 anchorOffset) -> IVector2
         {
-            class SystemInferface
-                : public Rml::SystemInterface
+            switch (anchor)
             {
-            private:
-                ObserverPtr<const Application> m_application = nullptr;
+            case Anchor::TopLeft:
+                return IVector2Zero + anchorOffset;
 
-            public:
-                SystemInferface() = default;
-                virtual ~SystemInferface() noexcept = default;
+            case Anchor::TopCentre:
+                return IVector2{
+                    static_cast<i32>(parentSize.x / 2 - componentSize.x / 2),
+                    0,
+                } + anchorOffset;
 
-                void Initialise(const Application& application)
-                {
-                    m_application = &application;
-                }
+            case Anchor::TopRight:
+                return IVector2{
+                    static_cast<i32>(parentSize.x - componentSize.x),
+                    0,
+                } + anchorOffset;
 
-                [[nodiscard]] virtual f64 GetElapsedTime() override
-                {
-                    return m_application->GetElapsedTime();
-                }
-            };
+            case Anchor::CentreLeft:
+                return IVector2{
+                    0,
+                    static_cast<i32>(parentSize.y / 2 - componentSize.y / 2),
+                } + anchorOffset;
 
-            class FileInterface
-                : public Rml::FileInterface
-            {
-            private:
-                ObserverPtr<const Application> m_application = nullptr;
+            case Anchor::Centre:
+                return IVector2{
+                    static_cast<i32>(parentSize.x / 2 - componentSize.x / 2),
+                    static_cast<i32>(parentSize.y / 2 - componentSize.y / 2),
+                } + anchorOffset;
 
-                HashMap<Rml::FileHandle, vfs::VirtualFileHandle> m_handles{ };
-                u32 m_fileHandleIDCounter = 1u;
+            case Anchor::CentreRight:
+                return IVector2{
+                    static_cast<i32>(parentSize.x - componentSize.x),
+                    static_cast<i32>(parentSize.y / 2 - componentSize.y / 2),
+                } + anchorOffset;
 
-            public:
-                FileInterface() = default;
-                virtual ~FileInterface() noexcept = default;
+            case Anchor::BottomLeft:
+                return IVector2{
+                    0,
+                    static_cast<i32>(parentSize.y - componentSize.y),
+                } + anchorOffset;
 
-                void Initialise(const Application& application)
-                {
-                    m_application = &application;
-                }
+            case Anchor::BottomCentre:
+                return IVector2{
+                    static_cast<i32>(parentSize.x / 2 - componentSize.x / 2),
+                    static_cast<i32>(parentSize.y - componentSize.y),
+                } + anchorOffset;
 
-                [[nodiscard]] virtual Rml::FileHandle Open(const Rml::String& filepath) override
-                {
-                    const auto [iterator, wasInserted] = m_handles.insert({ Rml::FileHandle(m_fileHandleIDCounter), vfs::VirtualFileHandle() });
-                    ++m_fileHandleIDCounter;
+            case Anchor::BottomRight:
+                return IVector2{
+                    static_cast<i32>(parentSize.x - componentSize.x),
+                    static_cast<i32>(parentSize.y - componentSize.y),
+                } + anchorOffset;
 
-                    if (!wasInserted) [[unlikely]]
-                    {
-                        return Rml::FileHandle(0u);
-                    }
-
-                    iterator->second.Open(filepath, vfs::VirtualFileHandle::OpenMode::Read);
-
-                    if (!iterator->second.IsValid())
-                    {
-                        return Rml::FileHandle(0u);
-                    }
-
-                    return iterator->first;
-                }
-
-                virtual void Close(const Rml::FileHandle fileHandle) override
-                {
-                    if (m_handles.contains(fileHandle)) [[likely]]
-                    {
-                        m_handles[fileHandle].Close();
-                    }
-                }
-
-                [[nodiscard]] virtual usize Read(void* const buffer, const usize bufferSize, const Rml::FileHandle fileHandle) override
-                {
-                    if (!m_handles.contains(fileHandle)) [[unlikely]]
-                    {
-                        return 0u;
-                    }
-
-                    const Vector<ubyte> data = m_handles[fileHandle].Read(bufferSize);
-
-                    if (data.empty())
-                    {
-                        return 0u;
-                    }
-
-                    std::memcpy(buffer, data.data(), data.size());
-
-                    return data.size();
-                }
-
-                [[nodiscard]] virtual bool Seek(const Rml::FileHandle fileHandle, const long offset, const i32 origin) override
-                {
-                    if (!m_handles.contains(fileHandle)) [[unlikely]]
-                    {
-                        return false;
-                    }
-
-                    i64 virtualOffset = 0u;
-
-                    switch (origin)
-                    {
-                    case SEEK_CUR:
-                        {
-                            const Optional<i64> pointerLocation = m_handles[fileHandle].Tell();
-
-                            if (!pointerLocation.has_value())
-                            {
-                                return false;
-                            }
-
-                            virtualOffset += pointerLocation.value();
-
-                            break;
-                        }
-
-                    case SEEK_END:
-                        virtualOffset += static_cast<i64>(m_handles[fileHandle].Size());
-
-                        break;
-
-                    case SEEK_SET:
-                    default:
-                        break;
-                    }
-
-                    virtualOffset += static_cast<i64>(offset);
-
-                    return m_handles[fileHandle].Seek(static_cast<u64>(virtualOffset)) == Status::Success;
-                }
-
-                [[nodiscard]] usize Tell(const Rml::FileHandle fileHandle) override
-                {
-                    if (m_handles.contains(fileHandle)) [[likely]]
-                    {
-                        const Optional<i64> pointerLocation = m_handles[fileHandle].Tell();
-
-                        return pointerLocation.has_value() ? static_cast<usize>(pointerLocation.value()) : 0u;
-                    }
-
-                    return 0u;
-                }
-
-                [[nodiscard]] usize Length(const Rml::FileHandle fileHandle) override
-                {
-                    if (m_handles.contains(fileHandle)) [[likely]]
-                    {
-                        return m_handles[fileHandle].Size();
-                    }
-
-                    return 0u;
-                }
-
-                [[nodiscard]] bool LoadFile(const Rml::String& filepath, Rml::String& out_data) override
-                {
-                    out_data = vfs::ReadFileString(filepath);
-
-                    return out_data.empty();
-                }
-            };
-
-            class RenderInterface
-                : public Rml::RenderInterface
-            {
-            private:
-                ObserverPtr<const Application> m_application = nullptr;
-
-            public:
-                RenderInterface() = default;
-                virtual ~RenderInterface() noexcept = default;
-
-                void Initialise(const Application& application)
-                {
-                    m_application = &application;
-                }
-
-                virtual void RenderGeometry(Rml::Vertex* vertices, const i32 vertexCount, i32* const indices, const i32 indexCount, const Rml::TextureHandle textureHandle, const Rml::Vector2f& translation) override
-                {
-
-                }
-
-                virtual void EnableScissorRegion(const bool enable) override
-                {
-                    m_application->GetRenderer().EnableScissorRect(enable);
-                }
-
-                virtual void SetScissorRegion(const i32 x, const i32 y, const i32 width, const i32 height) override
-                {
-                    m_application->GetRenderer().SetScissorRect(IVec2{ x, y }, UVec2{ static_cast<u32>(width), static_cast<u32>(height) });
-                }
-            };
-
-            SystemInferface systemInterface;
-            FileInterface fileInterface;
-            RenderInterface renderInterface;
-        }
-    
-        [[nodiscard]] Status Initialise(const Application& application)
-        {
-            systemInterface.Initialise(application);
-            Rml::SetSystemInterface(&systemInterface);
-
-            fileInterface.Initialise(application);
-            Rml::SetFileInterface(&fileInterface);
-
-            renderInterface.Initialise(application);
-            Rml::SetRenderInterface(&renderInterface);
-
-            return Rml::Initialise() ? Status::Success : Status::Fail;
+            [[unlikely]] default:
+                return IVector2Zero;
+            }
         }
 
-        void Shutdown() noexcept
+        [[nodiscard]] auto GetScreenPositionFromAnchor(const Anchor anchor, const Window& window, const UVector2 componentSize, const IVector2 anchorOffset) -> IVector2
         {
-            Rml::Shutdown();
+            const UVector2 screenSize = window.GetDrawableSize();
+
+            return GetRelativePositionFromAnchor(anchor, screenSize, componentSize, anchorOffset);
+        }
+
+        auto GetVirtualScreenPositionFromAnchor(const Anchor anchor, const Camera2D& camera, const UVector2 componentSize, const IVector2 anchorOffset) -> IVector2
+        {
+            const UVector2 virtualScreenSize = camera.GetVirtualScreenSize();
+
+            return GetRelativePositionFromAnchor(anchor, virtualScreenSize, componentSize, anchorOffset);
         }
         
-        [[nodiscard]] Status LoadFontFace(const StringView& filepath, const bool isFallbackFace)
+        [[nodiscard]] auto DoesRectangleContainPoint(const geometry::ScreenRectangle& rectangle, const geometry::ScreenPoint point) -> bool
         {
-            return Rml::LoadFontFace(filepath.data(), isFallbackFace)
-                ? Status::Success
-                : Status::Fail;
+            const SDL_Point convertedPoint{
+                .x = point.x,
+                .y = point.y,
+            };
+
+            const SDL_Rect convertedRectangle{
+                .x = rectangle.topLeft.x,
+                .y = rectangle.topLeft.y,
+                .w = static_cast<i32>(rectangle.size.x),
+                .h = static_cast<i32>(rectangle.size.y),
+            };
+
+            return SDL_PointInRect(&convertedPoint, &convertedRectangle) == SDL_TRUE;
+        }
+
+        [[nodiscard]] auto DoesRectanglesHaveIntersection(const geometry::ScreenRectangle& rectangleA, const geometry::ScreenRectangle& rectangleB) -> bool
+        {
+            const SDL_Rect convertedRectangleA{
+                .x = rectangleA.topLeft.x,
+                .y = rectangleA.topLeft.y,
+                .w = static_cast<i32>(rectangleA.size.x),
+                .h = static_cast<i32>(rectangleA.size.y),
+            };
+
+            const SDL_Rect convertedRectangleB{
+                .x = rectangleB.topLeft.x,
+                .y = rectangleB.topLeft.y,
+                .w = static_cast<i32>(rectangleB.size.x),
+                .h = static_cast<i32>(rectangleB.size.y),
+            };
+
+            return SDL_HasIntersection(&convertedRectangleA, &convertedRectangleB) == SDL_TRUE;
         }
     }
 }

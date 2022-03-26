@@ -2,7 +2,7 @@
 
 namespace stardust
 {
-    void SceneManager::PopScene()
+    auto SceneManager::PopScene() -> void
     {
         m_scenes.pop();
     }

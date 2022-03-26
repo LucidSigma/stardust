@@ -1,177 +1,186 @@
 #include "stardust/math/Math.h"
 
-#include "stardust/utility/random/Random.h"
-
 namespace stardust
 {
-    // All of these functions are based on Unity's C# implementation of SmoothDamp, which itself is based on the algorithm from Game Programming Gems 4 Chapter 1.10.
-    [[nodiscard]] f32 SmoothDamp(const f32 currentValue, const f32 targetValue, f32& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
+    [[nodiscard]] auto SmoothDamp(const f32 currentValue, const f32 targetValue, f32& smoothing, const f32 smoothingTime, const f32 deltaTime) -> f32
     {
         const f32 omega = 2.0f / smoothingTime;
         const f32 x = omega * deltaTime;
         const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
-        
+
         const f32 valueDelta = currentValue - targetValue;
         const f32 newTargetValue = currentValue - valueDelta;
-        
-        const f32 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
-        velocitySmoothing = (velocitySmoothing - omega * velocitySmoothingDelta) * exponential;
-        
-        f32 smoothingResult = newTargetValue + (valueDelta + velocitySmoothingDelta) * exponential;
-        
+
+        const f32 smoothingDelta = (smoothing + omega * valueDelta) * deltaTime;
+        smoothing = (smoothing - omega * smoothingDelta) * exponential;
+
+        f32 smoothingResult = newTargetValue + (valueDelta + smoothingDelta) * exponential;
+
         const bool doesOriginalValueOvershoot = targetValue - currentValue > 0.0f;
         const bool doesNewValueOvershoot = smoothingResult > targetValue;
 
         if (doesOriginalValueOvershoot == doesNewValueOvershoot)
         {
             smoothingResult = targetValue;
-            velocitySmoothing = (smoothingResult - targetValue) / deltaTime;
+            smoothing = (smoothingResult - targetValue) / deltaTime;
         }
 
         return smoothingResult;
     }
 
-    [[nodiscard]] Vec2 SmoothDamp(const Vec2 currentValue, const Vec2 targetValue, Vec2& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
+    [[nodiscard]] auto SmoothDamp(const Vector2 currentValue, const Vector2 targetValue, Vector2& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Vector2
     {
         const f32 omega = 2.0f / smoothingTime;
         const f32 x = omega * deltaTime;
         const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 
-        const Vec2 valueDelta = currentValue - targetValue;
-        const Vec2 newTargetValue = currentValue - valueDelta;
+        const Vector2 valueDelta = currentValue - targetValue;
+        const Vector2 newTargetValue = currentValue - valueDelta;
 
-        const Vec2 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
-        velocitySmoothing = (velocitySmoothing - omega * velocitySmoothingDelta) * exponential;
+        const Vector2 smoothingDelta = (smoothing + omega * valueDelta) * deltaTime;
+        smoothing = (smoothing - omega * smoothingDelta) * exponential;
 
-        Vec2 smoothingResult = newTargetValue + (valueDelta + velocitySmoothingDelta) * exponential;
+        Vector2 smoothingResult = newTargetValue + (valueDelta + smoothingDelta) * exponential;
 
-        const Vec2 originalMinusCurrent = targetValue - currentValue;
-        const Vec2 resultMinusOriginal = smoothingResult - targetValue;
+        const Vector2 originalMinusCurrent = targetValue - currentValue;
+        const Vector2 resultMinusOriginal = smoothingResult - targetValue;
 
         if (glm::dot(originalMinusCurrent, resultMinusOriginal) > 0.0f)
         {
             smoothingResult = targetValue;
-            velocitySmoothing = (smoothingResult - targetValue) / deltaTime;
+            smoothing = (smoothingResult - targetValue) / deltaTime;
         }
 
         return smoothingResult;
     }
 
-    [[nodiscard]] Vec3 SmoothDamp(const Vec3 currentValue, const Vec3 targetValue, Vec3& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
+    [[nodiscard]] auto SmoothDamp(const Vector3 currentValue, const Vector3 targetValue, Vector3& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Vector3
     {
         const f32 omega = 2.0f / smoothingTime;
         const f32 x = omega * deltaTime;
         const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 
-        const Vec3 valueDelta = currentValue - targetValue;
-        const Vec3 newTargetValue = currentValue - valueDelta;
+        const Vector3 valueDelta = currentValue - targetValue;
+        const Vector3 newTargetValue = currentValue - valueDelta;
 
-        const Vec3 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
-        velocitySmoothing = (velocitySmoothing - omega * velocitySmoothingDelta) * exponential;
+        const Vector3 smoothingDelta = (smoothing + omega * valueDelta) * deltaTime;
+        smoothing = (smoothing - omega * smoothingDelta) * exponential;
 
-        Vec3 smoothingResult = newTargetValue + (valueDelta + velocitySmoothingDelta) * exponential;
+        Vector3 smoothingResult = newTargetValue + (valueDelta + smoothingDelta) * exponential;
 
-        const Vec3 originalMinusCurrent = targetValue - currentValue;
-        const Vec3 resultMinusOriginal = smoothingResult - targetValue;
+        const Vector3 originalMinusCurrent = targetValue - currentValue;
+        const Vector3 resultMinusOriginal = smoothingResult - targetValue;
 
         if (glm::dot(originalMinusCurrent, resultMinusOriginal) > 0.0f)
         {
             smoothingResult = targetValue;
-            velocitySmoothing = (smoothingResult - targetValue) / deltaTime;
+            smoothing = (smoothingResult - targetValue) / deltaTime;
         }
 
         return smoothingResult;
     }
-    
-    [[nodiscard]] Vec4 SmoothDamp(const Vec4 currentValue, const Vec4 targetValue, Vec4& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime)
+
+    [[nodiscard]] auto SmoothDamp(const Vector4 currentValue, const Vector4 targetValue, Vector4& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Vector4
     {
         const f32 omega = 2.0f / smoothingTime;
         const f32 x = omega * deltaTime;
         const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
 
-        const Vec4 valueDelta = currentValue - targetValue;
-        const Vec4 newTargetValue = currentValue - valueDelta;
+        const Vector4 valueDelta = currentValue - targetValue;
+        const Vector4 newTargetValue = currentValue - valueDelta;
 
-        const Vec4 velocitySmoothingDelta = (velocitySmoothing + omega * valueDelta) * deltaTime;
-        velocitySmoothing = (velocitySmoothing - omega * velocitySmoothingDelta) * exponential;
+        const Vector4 smoothingDelta = (smoothing + omega * valueDelta) * deltaTime;
+        smoothing = (smoothing - omega * smoothingDelta) * exponential;
 
-        Vec4 smoothingResult = newTargetValue + (valueDelta + velocitySmoothingDelta) * exponential;
+        Vector4 smoothingResult = newTargetValue + (valueDelta + smoothingDelta) * exponential;
 
-        const Vec4 originalMinusCurrent = targetValue - currentValue;
-        const Vec4 resultMinusOriginal = smoothingResult - targetValue;
+        const Vector4 originalMinusCurrent = targetValue - currentValue;
+        const Vector4 resultMinusOriginal = smoothingResult - targetValue;
 
         if (glm::dot(originalMinusCurrent, resultMinusOriginal) > 0.0f)
         {
             smoothingResult = targetValue;
-            velocitySmoothing = (smoothingResult - targetValue) / deltaTime;
+            smoothing = (smoothingResult - targetValue) / deltaTime;
         }
 
         return smoothingResult;
     }
 
-    [[nodiscard]] Vec2 SetMagnitude(const Vec2& vector, const f32 magnitude)
+    [[nodiscard]] auto SmoothDamp(const Quaternion& currentValue, const Quaternion& targetValue, Quaternion& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Quaternion
+    {
+        const f32 omega = 2.0f / smoothingTime;
+        const f32 x = omega * deltaTime;
+        const f32 exponential = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+
+        const Quaternion valueDelta = currentValue - targetValue;
+        const Quaternion newTargetValue = currentValue - valueDelta;
+
+        const Quaternion smoothingDelta = (smoothing + omega * valueDelta) * deltaTime;
+        smoothing = (smoothing - omega * smoothingDelta) * exponential;
+
+        Quaternion smoothingResult = newTargetValue + (valueDelta + smoothingDelta) * exponential;
+
+        const Quaternion originalMinusCurrent = targetValue - currentValue;
+        const Quaternion resultMinusOriginal = smoothingResult - targetValue;
+
+        if (glm::dot(originalMinusCurrent, resultMinusOriginal) > 0.0f)
+        {
+            smoothingResult = targetValue;
+            smoothing = (smoothingResult - targetValue) / deltaTime;
+        }
+
+        return smoothingResult;
+    }
+
+    [[nodiscard]] auto SetMagnitude(const Vector2 vector, const f32 magnitude) -> Vector2
     {
         return glm::normalize(vector) * magnitude;
     }
 
-    [[nodiscard]] Vec3 SetMagnitude(const Vec3& vector, const f32 magnitude)
+    [[nodiscard]] auto SetMagnitude(const Vector3 vector, const f32 magnitude) -> Vector3
     {
         return glm::normalize(vector) * magnitude;
     }
 
-    [[nodiscard]] Vec4 SetMagnitude(const Vec4& vector, const f32 magnitude)
+    [[nodiscard]] auto SetMagnitude(const Vector4 vector, const f32 magnitude) -> Vector4
     {
         return glm::normalize(vector) * magnitude;
     }
 
-    [[nodiscard]] Vec2 LimitMagnitude(const Vec2& vector, const f32 maxMagnitude)
+    [[nodiscard]] auto LimitMagnitude(const Vector2 vector, const f32 maxMagnitude) -> Vector2
     {
         const f32 magnitude = glm::length(vector);
 
         return magnitude > maxMagnitude ? SetMagnitude(vector, maxMagnitude) : vector;
     }
 
-    [[nodiscard]] Vec3 LimitMagnitude(const Vec3& vector, const f32 maxMagnitude)
+    [[nodiscard]] auto LimitMagnitude(const Vector3 vector, const f32 maxMagnitude) -> Vector3
     {
         const f32 magnitude = glm::length(vector);
 
         return magnitude > maxMagnitude ? SetMagnitude(vector, maxMagnitude) : vector;
     }
 
-    [[nodiscard]] Vec4 LimitMagnitude(const Vec4& vector, const f32 maxMagnitude)
+    [[nodiscard]] auto LimitMagnitude(const Vector4 vector, const f32 maxMagnitude) -> Vector4
     {
         const f32 magnitude = glm::length(vector);
 
         return magnitude > maxMagnitude ? SetMagnitude(vector, maxMagnitude) : vector;
     }
 
-    [[nodiscard]] Vec2 RandomVec2(const f32 min, const f32 max)
+    [[nodiscard]] auto InterpolateAngles(const f32 startAngle, const f32 endAngle, const f32 amount) -> f32
     {
-        return Vec2{ Random::GenerateFloat(min, max), Random::GenerateFloat(min, max) };
+        const Quaternion startQuaternion = glm::angleAxis(glm::radians(startAngle), Vector3Forward);
+        const Quaternion endQuaternion = glm::angleAxis(glm::radians(endAngle), Vector3Forward);
+
+        return glm::degrees(glm::roll(glm::slerp(startQuaternion, endQuaternion, amount)));
     }
 
-    [[nodiscard]] Vec3 RandomVec3(const f32 min, const f32 max)
+    [[nodiscard]] auto InterpolateAngles(const f32 startAngle, const f32 endAngle, const f32 amount, const i32 additionalSpinCount) -> f32
     {
-        return Vec3{ Random::GenerateFloat(min, max), Random::GenerateFloat(min, max), Random::GenerateFloat(min, max) };
-    }
+        const Quaternion startQuaternion = glm::angleAxis(glm::radians(startAngle), Vector3Forward);
+        const Quaternion endQuaternion = glm::angleAxis(glm::radians(endAngle), Vector3Forward);
 
-    [[nodiscard]] Vec4 RandomVec4(const f32 min, const f32 max)
-    {
-        return Vec4{ Random::GenerateFloat(min, max), Random::GenerateFloat(min, max), Random::GenerateFloat(min, max), Random::GenerateFloat(min, max) };
-    }
-
-    [[nodiscard]] Vec2 RandomUnitVec2()
-    {
-        return glm::normalize(RandomVec2(-1.0f, 1.0f));
-    }
-
-    [[nodiscard]] Vec3 RandomUnitVec3()
-    {
-        return glm::normalize(RandomVec3(-1.0f, 1.0f));
-    }
-
-    [[nodiscard]] Vec4 RandomUnitVec4()
-    {
-        return glm::normalize(RandomVec4(-1.0f, 1.0f));
+        return glm::degrees(glm::roll(glm::slerp(startQuaternion, endQuaternion, amount, additionalSpinCount)));
     }
 }

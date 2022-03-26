@@ -3,51 +3,59 @@
 #define STARDUST_ANIMATOR_H
 
 #include "stardust/animation/Animation.h"
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
-#include "stardust/graphics/texture/texture_atlas/TextureAtlas.h"
-#include "stardust/graphics/texture/Texture.h"
+#include "stardust/ecs/components/ScreenTransformComponent.h"
+#include "stardust/ecs/components/SpriteComponent.h"
+#include "stardust/ecs/components/TransformComponent.h"
 #include "stardust/graphics/colour/Colour.h"
+#include "stardust/graphics/texture/Texture.h"
+#include "stardust/math/Math.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    class Animator
+    namespace animation
     {
-    private:
-        HashMap<String, ObserverPtr<Animation>> m_animations{ };
-        ObserverPtr<Animation> m_currentAnimation = nullptr;
+        class Animator final
+        {
+        private:
+            HashMap<String, ObserverPointer<Animation>> m_animations{ };
+            ObserverPointer<Animation> m_currentAnimation = nullptr;
 
-        f32 m_speed = 1.0f;
-        f32 m_frameTimeAccumulator = 0.0f;
-        f32 m_currentFramePercentage = 0.0f;
+            f32 m_speed = 1.0f;
+            f32 m_frameTimeAccumulator = 0.0f;
+            f32 m_currentFramePercentage = 0.0f;
 
-    public:
-        Animator() = default;
-        ~Animator() noexcept = default;
+        public:
+            auto AddAnimation(const String& animationName, Animation& animation, const bool setAsCurrent = false) -> void;
+            auto AddAnimations(const List<Pair<String, ObserverPointer<Animation>>>& animations) -> void;
+            auto RemoveAnimation(const String& animationName) -> void;
+            [[nodiscard]] auto HasAnimation(const String& animationName) -> bool;
 
-        void AddAnimation(const String& animationName, Animation& animation, const bool setAsCurrent = false);
-        void AddAnimations(const Vector<Pair<String, ObserverPtr<Animation>>>& animations);
-        void RemoveAnimation(const String& animationName);
+            auto Update(const f32 deltaTime) -> void;
 
-        void Update(const f32 deltaTime);
+            [[nodiscard]] auto GetTextureArea() const -> const graphics::TextureCoordinatePair&;
+            [[nodiscard]] auto GetPosition() const->Vector2;
+            [[nodiscard]] auto GetRotation() const->f32;
+            [[nodiscard]] auto GetScale() const->Vector2;
+            [[nodiscard]] auto GetShear() const->Vector2;
+            [[nodiscard]] auto GetColour() const->Colour;
 
-        [[nodiscard]] const TextureCoordinatePair& GetSprite() const;
-        [[nodiscard]] Vec2 GetPositionOffset() const;
-        [[nodiscard]] f32 GetRotation() const;
-        [[nodiscard]] Vec2 GetScale() const;
-        [[nodiscard]] Vec2 GetShear() const;
-        [[nodiscard]] Colour GetColour() const;
+            [[nodiscard]] auto GetTransform(const Vector2 worldPosition = Vector2Zero, const Optional<Vector2>& pivot = None) const -> components::Transform;
+            [[nodiscard]] auto GetScreenTransform(const Optional<IVector2>& pivot = None) const -> components::ScreenTransform;
+            [[nodiscard]] auto GetSprite() const -> components::Sprite;
 
-        void SkipToFrame(KeyFrame frame) const;
+            auto SkipToFrame(Animation::KeyFrame frame) const -> void;
 
-        [[nodiscard]] inline ObserverPtr<const Animation> GetCurrentAnimation() const noexcept { return m_currentAnimation; }
-        void SetCurrentAnimation(const String& animationName);
+            [[nodiscard]] inline auto GetCurrentAnimation() const noexcept -> ObserverPointer<const Animation> { return m_currentAnimation; }
+            auto SetCurrentAnimation(const String& animationName) -> void;
 
-        [[nodiscard]] inline f32 GetSpeed() const noexcept { return m_speed; }
-        inline void SetSpeed(const f32 speed) noexcept { m_speed = speed; }
-    };
+            [[nodiscard]] inline auto GetSpeed() const noexcept -> f32 { return m_speed; }
+            inline auto SetSpeed(const f32 speed) noexcept -> void { m_speed = speed; }
+        };
+    }
 }
 
 #endif

@@ -4,49 +4,48 @@
 
 #include <box2d/box2d.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
 #include "stardust/physics/AABB.h"
 #include "stardust/physics/Physics.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace physics
     {
-        class Polygon
+        class Polygon final
         {
         private:
             b2PolygonShape m_polygon{ };
 
         public:
-            [[nodiscard]] static constexpr u32 GetMaxVertices() noexcept { return b2_maxPolygonVertices; }
+            [[nodiscard]] static constexpr auto GetMaxVertices() noexcept -> u32 { return b2_maxPolygonVertices; }
 
             Polygon() = default;
             Polygon(const b2PolygonShape& shapeHandle);
-            explicit Polygon(const Vector<Vec2>& points);
-            ~Polygon() noexcept = default;
+            explicit Polygon(const List<Vector2>& points);
 
-            void Set(const Vector<Vec2>& points);
-            void SetAsBox(const f32 width, const f32 height);
-            void SetAsBox(const f32 width, const f32 height, const Vec2& pivot, const f32 rotation);
+            auto Set(const List<Vector2>& points) -> void;
+            auto SetAsBox(const f32 width, const f32 height) -> void;
+            auto SetAsBox(const f32 width, const f32 height, const Vector2 pivot, const f32 rotation) -> void;
 
-            [[nodiscard]] Vec2 GetCentroid() const noexcept;
-            [[nodiscard]] Vector<Vec2> GetVertices() const;
-            [[nodiscard]] Vector<Vec2> GetNormals() const;
-            [[nodiscard]] inline u32 GetVertexCount() const noexcept { return static_cast<u32>(m_polygon.m_count); }
+            [[nodiscard]] auto GetCentroid() const noexcept -> Vector2;
+            [[nodiscard]] auto GetVertices() const -> List<Vector2>;
+            [[nodiscard]] auto GetNormals() const -> List<Vector2>;
+            [[nodiscard]] inline auto GetVertexCount() const noexcept -> u32 { return static_cast<u32>(m_polygon.m_count); }
 
-            [[nodiscard]] bool TestPoint(const Vec2& worldPosition, const f32 rotation, const Vec2& point) const;
-            [[nodiscard]] AABB ComputeAABB(const Vec2& worldPosition, const f32 rotation) const;
-            [[nodiscard]] MassData ComputeMassData(const f32 density) const;
+            [[nodiscard]] auto ContainsPoint(const Vector2 worldPosition, const f32 rotation, const Vector2 point) const -> bool;
+            [[nodiscard]] auto ComputeAABB(const Vector2 worldPosition, const f32 rotation) const -> AABB;
+            [[nodiscard]] auto ComputeMassData(const f32 density) const -> MassData;
 
-            [[nodiscard]] bool IsConvex() const;
+            [[nodiscard]] auto IsConvex() const -> bool;
 
-            [[nodiscard]] inline operator ObserverPtr<b2Shape>() noexcept { return &m_polygon; }
-            [[nodiscard]] inline operator ObserverPtr<const b2Shape>() const noexcept { return &m_polygon; }
-            [[nodiscard]] inline operator ObserverPtr<b2PolygonShape>() noexcept { return &m_polygon; }
-            [[nodiscard]] inline operator ObserverPtr<const b2PolygonShape>() const noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<b2Shape>() noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<const b2Shape>() const noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<b2PolygonShape>() noexcept { return &m_polygon; }
+            [[nodiscard]] inline operator ObserverPointer<const b2PolygonShape>() const noexcept { return &m_polygon; }
         };
     }
 }

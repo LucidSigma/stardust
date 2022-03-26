@@ -1,0 +1,50 @@
+{
+    "engine": {
+        "buttons": {
+            "continue": "Continue"
+        },
+        "errors": {
+            "bodies": {
+                "custom-event-allocation": "Failed to allocate custom SDL2 events. Error: ${SDL2_ERROR}.",
+                "direct3d-compiler-hint": "Failed to set Direct3D compiler hint.",
+                "gles-driver-hint": "Failed to set OpenGL ES driver hint.",
+                "initial-scene": "Failed to load initial scene \"${SCENE_NAME}\".",
+                "initialise-sdl": "Failed to initialise SDL2. Error: ${SDL2_ERROR}.",
+                "next-scene": "Failed to load next scene \"${SCENE_NAME}\".",
+                "opengl-context": "Failed to create OpenGL context. Error: ${SDL2_ERROR}.",
+                "opengl-make-current": "Failed to set current OpenGL context. Error: ${SDL2_ERROR}.",
+                "renderer": "Failed to initialise renderer.",
+                "sound-system": "Failed to initialise sound system. Error: ${SOLOUD_ERROR}.",
+                "window": "Failed to create window. Error: ${SDL2_ERROR}."
+            },
+            "titles": {
+                "audio": "Audio Error",
+                "opengl": "OpenGL Error",
+                "renderer": "Renderer Error",
+                "scene": "Scene Error",
+                "sdl": "SDL2 Error",
+                "window": "Window Error"
+            }
+        },
+        "warnings": {
+            "bodies": {
+                "default-controls": "Failed to load default controls. Some inputs may not work properly.",
+                "game-controller": "Failed to add game controller (ID: ${GAME_CONTROLLER_ID}). It may be unsupported.",
+                "game-controller-database": "Failed to load game controller database. Some game controllers may not work properly.",
+                "joystick": "Failed to add joystick (ID: ${JOYSTICK_ID}). It may be unsupported.",
+                "opengl-attribute": "Failed to set OpenGL attribute ${OPENGL_ATTRIBUTE}. Rendering might not work properly.",
+                "save-preferences": "Failed to save user preferences.",
+                "user-controls": "Failed to load user control prefernces. Using defaults instead.",
+                "window-icon": "Failed to set window icon."
+            },
+            "titles": {
+                "controls": "Controls Warning",
+                "game-controller": "Game Controller Warning",
+                "joystick": "Joystick Warning",
+                "preferences": "Preference Warning",
+                "sdl": "SDL2 Warning",
+                "window": "Window Warning"
+            }
+        }
+    }
+}

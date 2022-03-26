@@ -1,68 +1,67 @@
 #include "stardust/camera/Camera2D.h"
 
-#include "stardust/graphics/renderer/Renderer.h"
-#include "stardust/math/Math.h"
-
 namespace stardust
 {
-    Camera2D::Camera2D(const f32 halfSize, const Renderer& renderer)
+    Camera2D::Camera2D(const f32 halfSize, const UVector2 screenSize)
     {
-        Initialise(halfSize, renderer);
+        Initialise(halfSize, screenSize);
     }
 
-    void Camera2D::Initialise(const f32 halfSize, const Renderer& renderer)
+    auto Camera2D::Initialise(const f32 halfSize, const UVector2 screenSize) -> void
     {
-        m_renderer = &renderer;
-        m_aspectRatio = static_cast<f32>(m_renderer->GetVirtualSize().x) / static_cast<f32>(m_renderer->GetVirtualSize().y);
+        m_virtualScreenSize = screenSize;
+        m_aspectRatio = static_cast<f32>(m_virtualScreenSize.x) / static_cast<f32>(m_virtualScreenSize.y);
+
         SetHalfSize(halfSize);
     }
 
-    void Camera2D::Refresh()
+    auto Camera2D::ResetVirtualScreenSize(const UVector2 screenSize) -> void
     {
-        m_aspectRatio = static_cast<f32>(m_renderer->GetVirtualSize().x) / static_cast<f32>(m_renderer->GetVirtualSize().y);
-        m_pixelsPerUnit = static_cast<f32>(m_renderer->GetVirtualSize().x) / (m_halfSize * 2.0f);
+        m_virtualScreenSize = screenSize;
+        m_aspectRatio = static_cast<f32>(m_virtualScreenSize.x) / static_cast<f32>(m_virtualScreenSize.y);
+        m_pixelsPerUnit = static_cast<f32>(m_virtualScreenSize.x) / (m_halfSize * 2.0f);
 
-        UpdateProjectionMatrix();
+        UpdateProjectionMatrices();
     }
 
-    void Camera2D::ResetTransform()
+    auto Camera2D::ResetTransform() -> void
     {
-        m_position = Vec3Zero;
+        m_position = Vector3{ 0.0f, 0.0f, s_DefaultZ };
         m_rotation = 0.0f;
         m_zoom = 1.0f;
     }
 
-    void Camera2D::SetHalfSize(const f32 halfSize) noexcept
+    auto Camera2D::SetHalfSize(const f32 halfSize) noexcept -> void
     {
         m_halfSize = halfSize;
-        m_pixelsPerUnit = static_cast<f32>(m_renderer->GetVirtualSize().x) / (m_halfSize * 2.0f);
+        m_pixelsPerUnit = static_cast<f32>(m_virtualScreenSize.x) / (m_halfSize * 2.0f);
 
-        UpdateProjectionMatrix();
+        UpdateProjectionMatrices();
     }
 
-    [[nodiscard]] Mat4 Camera2D::GetViewMatrix() const noexcept
+    [[nodiscard]] auto Camera2D::GetViewMatrix() const noexcept -> Matrix4
     {
-        Mat4 viewMatrix{ 1.0f };
-        viewMatrix = glm::rotate(viewMatrix, -glm::radians(m_rotation), Vec3Forward);
-        viewMatrix = glm::scale(viewMatrix, Vec3{ m_zoom, m_zoom, 1.0f });
-        viewMatrix = glm::translate(viewMatrix, Vec3{ -m_position.x, -m_position.y, 0.0f });
+        Matrix4 viewMatrix = Matrix4Identity;
+        viewMatrix = glm::rotate(viewMatrix, -glm::radians(m_rotation), Vector3Forward);
+        viewMatrix = glm::scale(viewMatrix, Vector3{ m_zoom, m_zoom, 1.0f });
+        viewMatrix = glm::translate(viewMatrix, Vector3{ -m_position.x, -m_position.y, 0.0f });
 
         return viewMatrix;
     }
 
-    [[nodiscard]] UVec2 Camera2D::WorldSpaceToScreenSpace(Vec2 position) const noexcept
+    [[nodiscard]] auto Camera2D::WorldSpaceToScreenSpace(Vector2 position) const noexcept -> IVector2
     {
         position.x += m_halfSize;
         position.y -= m_halfSize / m_aspectRatio;
 
         position *= m_pixelsPerUnit;
 
-        return UVec2{ position.x, -position.y };
+        return IVector2{ position.x, -position.y };
     }
 
-    [[nodiscard]] Vec2 Camera2D::ScreenSpaceToWorldSpace(const UVec2& position) const noexcept
+    [[nodiscard]] auto Camera2D::ScreenSpaceToWorldSpace(const IVector2 position) const noexcept -> Vector2
     {
-        Vec2 worldSpace = position;
+        Vector2 worldSpace = position;
         worldSpace.y *= -1.0f;
 
         worldSpace /= m_pixelsPerUnit;
@@ -73,13 +72,46 @@ namespace stardust
         return worldSpace;
     }
 
-    void Camera2D::UpdateProjectionMatrix()
+    [[nodiscard]] auto Camera2D::WorldUnitsToScreenUnits(const f32 worldUnits) const noexcept -> i32
+    {
+        return static_cast<i32>(worldUnits * m_pixelsPerUnit);
+    }
+
+    [[nodiscard]] auto Camera2D::WorldUnitsToScreenUnits(const Vector2 worldUnits) const noexcept -> IVector2
+    {
+        return IVector2{
+            static_cast<i32>(worldUnits.x * m_pixelsPerUnit),
+            static_cast<i32>(worldUnits.y * m_pixelsPerUnit),
+        };
+    }
+
+    [[nodiscard]] auto Camera2D::ScreenUnitsToWorldUnits(const i32 screenUnits) const noexcept -> f32
+    {
+        return static_cast<f32>(screenUnits) / m_pixelsPerUnit;
+    }
+
+    [[nodiscard]] auto Camera2D::ScreenUnitsToWorldUnits(const IVector2 screenUnits) const noexcept -> Vector2
+    {
+        return Vector2{
+            static_cast<f32>(screenUnits.x) / m_pixelsPerUnit,
+            static_cast<f32>(screenUnits.y) / m_pixelsPerUnit,
+        };
+    }
+
+    auto Camera2D::UpdateProjectionMatrices() -> void
     {
         m_projectionMatrix = glm::ortho(
             -m_halfSize,
             m_halfSize,
             -m_halfSize / m_aspectRatio,
             m_halfSize / m_aspectRatio
+        );
+
+        m_screenProjectionMatrix = glm::ortho(
+            0.0f,
+            static_cast<f32>(m_virtualScreenSize.x),
+            static_cast<f32>(m_virtualScreenSize.y),
+            0.0f
         );
     }
 }

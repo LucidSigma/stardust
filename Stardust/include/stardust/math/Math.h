@@ -17,187 +17,202 @@
 #include <glm/gtx/color_space.hpp>
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/hash.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/transform2.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Types.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    constexpr Vec2 Vec2Up{ 0.0f, 1.0f };
-    constexpr Vec2 Vec2Down{ 0.0f, -1.0f };
-    constexpr Vec2 Vec2Left{ -1.0f, 0.0f };
-    constexpr Vec2 Vec2Right{ 1.0f, 0.0f };
-    constexpr Vec2 Vec2Zero{ 0.0f, 0.0f };
-    constexpr Vec2 Vec2One{ 1.0f, 1.0f };
-    constexpr Vec2 Vec2NegOne{ -1.0f, -1.0f };
-    constexpr Vec2 Vec2PosInf{ std::numeric_limits<f32>::infinity(), std::numeric_limits<f32>::infinity() };
-    constexpr Vec2 Vec2NegInf{ -std::numeric_limits<f32>::infinity(), -std::numeric_limits<f32>::infinity() };
+    constexpr Vector2 Vector2Up{ 0.0f, 1.0f };
+    constexpr Vector2 Vector2Down{ 0.0f, -1.0f };
+    constexpr Vector2 Vector2Left{ -1.0f, 0.0f };
+    constexpr Vector2 Vector2Right{ 1.0f, 0.0f };
+    constexpr Vector2 Vector2Zero{ 0.0f, 0.0f };
+    constexpr Vector2 Vector2One{ 1.0f, 1.0f };
+    constexpr Vector2 Vector2NegOne{ -1.0f, -1.0f };
+    constexpr Vector2 Vector2PosInf{ std::numeric_limits<f32>::max(), std::numeric_limits<f32>::max() };
+    constexpr Vector2 Vector2NegInf{ std::numeric_limits<f32>::lowest(), std::numeric_limits<f32>::lowest() };
 
-    constexpr Vec3 Vec3Up{ 0.0f, 1.0f, 0.0f };
-    constexpr Vec3 Vec3Down{ 0.0f, -1.0f, 0.0f };
-    constexpr Vec3 Vec3Left{ -1.0f, 0.0f, 0.0f };
-    constexpr Vec3 Vec3Right{ 1.0f, 0.0f, 0.0f };
-    constexpr Vec3 Vec3Forward{ 0.0f, 0.0f, 1.0f };
-    constexpr Vec3 Vec3Back{ 0.0f, 0.0f, -1.0f };
-    constexpr Vec3 Vec3Zero{ 0.0f, 0.0f, 0.0f };
-    constexpr Vec3 Vec3One{ 1.0f, 1.0f, 1.0f };
-    constexpr Vec3 Vec3NegOne{ -1.0f, -1.0f, -1.0f };
-    constexpr Vec3 Vec3PosInf{ std::numeric_limits<f32>::infinity(), std::numeric_limits<f32>::infinity(), std::numeric_limits<f32>::infinity() };
-    constexpr Vec3 Vec3NegInf{ -std::numeric_limits<f32>::infinity(), -std::numeric_limits<f32>::infinity(), -std::numeric_limits<f32>::infinity() };
+    constexpr Vector3 Vector3Up{ 0.0f, 1.0f, 0.0f };
+    constexpr Vector3 Vector3Down{ 0.0f, -1.0f, 0.0f };
+    constexpr Vector3 Vector3Left{ -1.0f, 0.0f, 0.0f };
+    constexpr Vector3 Vector3Right{ 1.0f, 0.0f, 0.0f };
+    constexpr Vector3 Vector3Forward{ 0.0f, 0.0f, 1.0f };
+    constexpr Vector3 Vector3Back{ 0.0f, 0.0f, -1.0f };
+    constexpr Vector3 Vector3Zero{ 0.0f, 0.0f, 0.0f };
+    constexpr Vector3 Vector3One{ 1.0f, 1.0f, 1.0f };
+    constexpr Vector3 Vector3NegOne{ -1.0f, -1.0f, -1.0f };
+    constexpr Vector3 Vector3PosInf{ std::numeric_limits<f32>::max(), std::numeric_limits<f32>::max(), std::numeric_limits<f32>::max() };
+    constexpr Vector3 Vector3NegInf{ std::numeric_limits<f32>::lowest(), std::numeric_limits<f32>::lowest(), std::numeric_limits<f32>::lowest() };
 
-    constexpr Vec4 Vec4Zero{ 0.0f, 0.0f, 0.0f, 0.0f };
-    constexpr Vec4 Vec4One{ 1.0f, 1.0f, 1.0f, 1.0f };
-    constexpr Vec4 Vec4NegOne{ -1.0f, -1.0f, -1.0f, -1.0f };
-    constexpr Vec4 Vec4PosInf{ std::numeric_limits<f32>::infinity(), std::numeric_limits<f32>::infinity(), std::numeric_limits<f32>::infinity(), std::numeric_limits<f32>::infinity() };
-    constexpr Vec4 Vec4NegInf{ -std::numeric_limits<f32>::infinity(), -std::numeric_limits<f32>::infinity(), -std::numeric_limits<f32>::infinity(), -std::numeric_limits<f32>::infinity() };
+    constexpr Vector4 Vector4Zero{ 0.0f, 0.0f, 0.0f, 0.0f };
+    constexpr Vector4 Vector4One{ 1.0f, 1.0f, 1.0f, 1.0f };
+    constexpr Vector4 Vector4NegOne{ -1.0f, -1.0f, -1.0f, -1.0f };
+    constexpr Vector4 Vector4PosInf{ std::numeric_limits<f32>::max(), std::numeric_limits<f32>::max(), std::numeric_limits<f32>::max(), std::numeric_limits<f32>::max() };
+    constexpr Vector4 Vector4NegInf{ std::numeric_limits<f32>::lowest(), std::numeric_limits<f32>::lowest(), std::numeric_limits<f32>::lowest(), std::numeric_limits<f32>::lowest() };
 
-    constexpr DVec2 DVec2Up{ 0.0, 1.0 };
-    constexpr DVec2 DVec2Down{ 0.0, -1.0 };
-    constexpr DVec2 DVec2Left{ -1.0, 0.0 };
-    constexpr DVec2 DVec2Right{ 1.0, 0.0 };
-    constexpr DVec2 DVec2Zero{ 0.0, 0.0 };
-    constexpr DVec2 DVec2One{ 1.0, 1.0 };
-    constexpr DVec2 DVec2NegOne{ -1.0, -1.0 };
-    constexpr DVec2 DVec2PosInf{ std::numeric_limits<f64>::infinity(), std::numeric_limits<f64>::infinity() };
-    constexpr DVec2 DVec2NegInf{ -std::numeric_limits<f64>::infinity(), -std::numeric_limits<f64>::infinity() };
+    constexpr DVector2 DVector2Up{ 0.0, 1.0 };
+    constexpr DVector2 DVector2Down{ 0.0, -1.0 };
+    constexpr DVector2 DVector2Left{ -1.0, 0.0 };
+    constexpr DVector2 DVector2Right{ 1.0, 0.0 };
+    constexpr DVector2 DVector2Zero{ 0.0, 0.0 };
+    constexpr DVector2 DVector2One{ 1.0, 1.0 };
+    constexpr DVector2 DVector2NegOne{ -1.0, -1.0 };
+    constexpr DVector2 DVector2PosInf{ std::numeric_limits<f64>::max(), std::numeric_limits<f64>::max() };
+    constexpr DVector2 DVector2NegInf{ std::numeric_limits<f64>::lowest(), std::numeric_limits<f64>::lowest() };
 
-    constexpr DVec3 DVec3Up{ 0.0, 1.0, 0.0 };
-    constexpr DVec3 DVec3Down{ 0.0, -1.0, 0.0 };
-    constexpr DVec3 DVec3Left{ -1.0, 0.0, 0.0 };
-    constexpr DVec3 DVec3Right{ 1.0, 0.0, 0.0 };
-    constexpr DVec3 DVec3Forward{ 0.0, 0.0, 1.0 };
-    constexpr DVec3 DVec3Back{ 0.0, 0.0, -1.0 };
-    constexpr DVec3 DVec3Zero{ 0.0, 0.0, 0.0 };
-    constexpr DVec3 DVec3One{ 1.0, 1.0, 1.0 };
-    constexpr DVec3 DVec3NegOne{ -1.0, -1.0, -1.0 };
-    constexpr DVec3 DVec3PosInf{ std::numeric_limits<f64>::infinity(), std::numeric_limits<f64>::infinity(), std::numeric_limits<f64>::infinity() };
-    constexpr DVec3 DVec3NegInf{ -std::numeric_limits<f64>::infinity(), -std::numeric_limits<f64>::infinity(), -std::numeric_limits<f64>::infinity() };
+    constexpr DVector3 DVector3Up{ 0.0, 1.0, 0.0 };
+    constexpr DVector3 DVector3Down{ 0.0, -1.0, 0.0 };
+    constexpr DVector3 DVector3Left{ -1.0, 0.0, 0.0 };
+    constexpr DVector3 DVector3Right{ 1.0, 0.0, 0.0 };
+    constexpr DVector3 DVector3Forward{ 0.0, 0.0, 1.0 };
+    constexpr DVector3 DVector3Back{ 0.0, 0.0, -1.0 };
+    constexpr DVector3 DVector3Zero{ 0.0, 0.0, 0.0 };
+    constexpr DVector3 DVector3One{ 1.0, 1.0, 1.0 };
+    constexpr DVector3 DVector3NegOne{ -1.0, -1.0, -1.0 };
+    constexpr DVector3 DVector3PosInf{ std::numeric_limits<f64>::max(), std::numeric_limits<f64>::max(), std::numeric_limits<f64>::max() };
+    constexpr DVector3 DVector3NegInf{ std::numeric_limits<f64>::lowest(), std::numeric_limits<f64>::lowest(), std::numeric_limits<f64>::lowest() };
 
-    constexpr DVec4 DVec4Zero{ 0.0, 0.0, 0.0, 0.0 };
-    constexpr DVec4 DVec4One{ 1.0, 1.0, 1.0, 1.0 };
-    constexpr DVec4 DVec4NegOne{ -1.0, -1.0, -1.0, -1.0 };
-    constexpr DVec4 DVec4PosInf{ std::numeric_limits<f64>::infinity(), std::numeric_limits<f64>::infinity(), std::numeric_limits<f64>::infinity(), std::numeric_limits<f64>::infinity() };
-    constexpr DVec4 DVec4NegInf{ -std::numeric_limits<f64>::infinity(), -std::numeric_limits<f64>::infinity(), -std::numeric_limits<f64>::infinity(), -std::numeric_limits<f64>::infinity() };
+    constexpr DVector4 DVector4Zero{ 0.0, 0.0, 0.0, 0.0 };
+    constexpr DVector4 DVector4One{ 1.0, 1.0, 1.0, 1.0 };
+    constexpr DVector4 DVector4NegOne{ -1.0, -1.0, -1.0, -1.0 };
+    constexpr DVector4 DVector4PosInf{ std::numeric_limits<f64>::max(), std::numeric_limits<f64>::max(), std::numeric_limits<f64>::max(), std::numeric_limits<f64>::max() };
+    constexpr DVector4 DVector4NegInf{ std::numeric_limits<f64>::lowest(), std::numeric_limits<f64>::lowest(), std::numeric_limits<f64>::lowest(), std::numeric_limits<f64>::lowest() };
 
-    constexpr IVec2 IVec2Up{ 0, 1 };
-    constexpr IVec2 IVec2Down{ 0, -1 };
-    constexpr IVec2 IVec2Left{ -1, 0 };
-    constexpr IVec2 IVec2Right{ 1, 0 };
-    constexpr IVec2 IVec2Zero{ 0, 0 };
-    constexpr IVec2 IVec2One{ 1, 1 };
-    constexpr IVec2 IVec2NegOne{ -1, -1 };
-    constexpr IVec2 IVec2PosInf{ std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max() };
-    constexpr IVec2 IVec2NegInf{ std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min() };
+    constexpr IVector2 IVector2Up{ 0, 1 };
+    constexpr IVector2 IVector2Down{ 0, -1 };
+    constexpr IVector2 IVector2Left{ -1, 0 };
+    constexpr IVector2 IVector2Right{ 1, 0 };
+    constexpr IVector2 IVector2Zero{ 0, 0 };
+    constexpr IVector2 IVector2One{ 1, 1 };
+    constexpr IVector2 IVector2NegOne{ -1, -1 };
+    constexpr IVector2 IVector2PosInf{ std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max() };
+    constexpr IVector2 IVector2NegInf{ std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min() };
 
-    constexpr IVec3 IVec3Up{ 0, 1, 0 };
-    constexpr IVec3 IVec3Down{ 0, -1, 0 };
-    constexpr IVec3 IVec3Left{ -1, 0, 0 };
-    constexpr IVec3 IVec3Right{ 1, 0, 0 };
-    constexpr IVec3 IVec3Forward{ 0, 0, 1 };
-    constexpr IVec3 IVec3Back{ 0, 0, -1 };
-    constexpr IVec3 IVec3Zero{ 0, 0, 0 };
-    constexpr IVec3 IVec3One{ 1, 1, 1 };
-    constexpr IVec3 IVec3NegOne{ -1, -1, -1 };
-    constexpr IVec3 IVec3PosInf{ std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max() };
-    constexpr IVec3 IVec3NegInf{ std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min() };
+    constexpr IVector3 IVector3Up{ 0, 1, 0 };
+    constexpr IVector3 IVector3Down{ 0, -1, 0 };
+    constexpr IVector3 IVector3Left{ -1, 0, 0 };
+    constexpr IVector3 IVector3Right{ 1, 0, 0 };
+    constexpr IVector3 IVector3Forward{ 0, 0, 1 };
+    constexpr IVector3 IVector3Back{ 0, 0, -1 };
+    constexpr IVector3 IVector3Zero{ 0, 0, 0 };
+    constexpr IVector3 IVector3One{ 1, 1, 1 };
+    constexpr IVector3 IVector3NegOne{ -1, -1, -1 };
+    constexpr IVector3 IVector3PosInf{ std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max() };
+    constexpr IVector3 IVector3NegInf{ std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min() };
 
-    constexpr IVec4 IVec4Zero{ 0, 0, 0, 0 };
-    constexpr IVec4 IVec4One{ 1, 1, 1, 1 };
-    constexpr IVec4 IVec4NegOne{ -1, -1, -1, -1 };
-    constexpr IVec4 IVec4PosInf{ std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max() };
-    constexpr IVec4 IVec4NegInf{ std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min() };
+    constexpr IVector4 IVector4Zero{ 0, 0, 0, 0 };
+    constexpr IVector4 IVector4One{ 1, 1, 1, 1 };
+    constexpr IVector4 IVector4NegOne{ -1, -1, -1, -1 };
+    constexpr IVector4 IVector4PosInf{ std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max(), std::numeric_limits<i32>::max() };
+    constexpr IVector4 IVector4NegInf{ std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min(), std::numeric_limits<i32>::min() };
 
-    constexpr LVec2 LVec2Up{ 0l, 1l };
-    constexpr LVec2 LVec2Down{ 0l, -1l };
-    constexpr LVec2 LVec2Left{ -1l, 0l };
-    constexpr LVec2 LVec2Right{ 1l, 0l };
-    constexpr LVec2 LVec2Zero{ 0l, 0l };
-    constexpr LVec2 LVec2One{ 1l, 1l };
-    constexpr LVec2 LVec2NegOne{ -1l, -1l };
-    constexpr LVec2 LVec2PosInf{ std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max() };
-    constexpr LVec2 LVec2NegInf{ std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min() };
+    constexpr LVector2 LVector2Up{ 0ll, 1ll };
+    constexpr LVector2 LVector2Down{ 0ll, -1ll };
+    constexpr LVector2 LVector2Left{ -1ll, 0ll };
+    constexpr LVector2 LVector2Right{ 1ll, 0ll };
+    constexpr LVector2 LVector2Zero{ 0ll, 0ll };
+    constexpr LVector2 LVector2One{ 1ll, 1ll };
+    constexpr LVector2 LVector2NegOne{ -1ll, -1ll };
+    constexpr LVector2 LVector2PosInf{ std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max() };
+    constexpr LVector2 LVector2NegInf{ std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min() };
 
-    constexpr LVec3 LVec3Up{ 0l, 1l, 0l };
-    constexpr LVec3 LVec3Down{ 0l, -1l, 0l };
-    constexpr LVec3 LVec3Left{ -1l, 0l, 0l };
-    constexpr LVec3 LVec3Right{ 1l, 0l, 0l };
-    constexpr LVec3 LVec3Forward{ 0l, 0l, 1l };
-    constexpr LVec3 LVec3Back{ 0l, 0l, -1l };
-    constexpr LVec3 LVec3Zero{ 0l, 0l, 0l };
-    constexpr LVec3 LVec3One{ 1l, 1l, 1l };
-    constexpr LVec3 LVec3NegOne{ -1l, -1l, -1l };
-    constexpr LVec3 LVec3PosInf{ std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max() };
-    constexpr LVec3 LVec3NegInf{ std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min() };
+    constexpr LVector3 LVector3Up{ 0ll, 1ll, 0ll };
+    constexpr LVector3 LVector3Down{ 0ll, -1ll, 0ll };
+    constexpr LVector3 LVector3Left{ -1ll, 0ll, 0ll };
+    constexpr LVector3 LVector3Right{ 1ll, 0ll, 0ll };
+    constexpr LVector3 LVector3Forward{ 0ll, 0ll, 1ll };
+    constexpr LVector3 LVector3Back{ 0ll, 0ll, -1ll };
+    constexpr LVector3 LVector3Zero{ 0ll, 0ll, 0ll };
+    constexpr LVector3 LVector3One{ 1ll, 1ll, 1ll };
+    constexpr LVector3 LVector3NegOne{ -1ll, -1ll, -1ll };
+    constexpr LVector3 LVector3PosInf{ std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max() };
+    constexpr LVector3 LVector3NegInf{ std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min() };
 
-    constexpr LVec4 LVec4Zero{ 0l, 0l, 0l, 0l };
-    constexpr LVec4 LVec4One{ 1l, 1l, 1l, 1l };
-    constexpr LVec4 LVec4NegOne{ -1l, -1l, -1l, -1l };
-    constexpr LVec4 LVec4PosInf{ std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max() };
-    constexpr LVec4 LVec4NegInf{ std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min() };
+    constexpr LVector4 LVectorZero{ 0ll, 0ll, 0ll, 0ll };
+    constexpr LVector4 LVectorOne{ 1ll, 1ll, 1ll, 1ll };
+    constexpr LVector4 LVectorNegOne{ -1ll, -1ll, -1ll, -1ll };
+    constexpr LVector4 LVectorPosInf{ std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max(), std::numeric_limits<i64>::max() };
+    constexpr LVector4 LVectorNegInf{ std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min(), std::numeric_limits<i64>::min() };
 
-    constexpr UVec2 UVec2Zero{ 0u, 0u };
-    constexpr UVec2 UVec2One{ 1u, 1u };
-    constexpr UVec2 UVec2PosInf{ std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max() };
+    constexpr UVector2 UVector2Zero{ 0u, 0u };
+    constexpr UVector2 UVector2One{ 1u, 1u };
+    constexpr UVector2 UVector2PosInf{ std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max() };
 
-    constexpr UVec3 UVec3Zero{ 0u, 0u, 0u };
-    constexpr UVec3 UVec3One{ 1u, 1u, 1u };
-    constexpr UVec3 UVec3PosInf{ std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max() };
+    constexpr UVector3 UVector3Zero{ 0u, 0u, 0u };
+    constexpr UVector3 UVector3One{ 1u, 1u, 1u };
+    constexpr UVector3 UVector3PosInf{ std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max() };
 
-    constexpr UVec4 UVec4Zero{ 0u, 0u, 0u, 0u };
-    constexpr UVec4 UVec4One{ 1u, 1u, 1u, 1u };
-    constexpr UVec4 UVec4PosInf{ std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max() };
+    constexpr UVector4 UVector4Zero{ 0u, 0u, 0u, 0u };
+    constexpr UVector4 UVector4One{ 1u, 1u, 1u, 1u };
+    constexpr UVector4 UVector4PosInf{ std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max(), std::numeric_limits<u32>::max() };
 
-    constexpr ULVec2 ULVec2Zero{ 0ul, 0ul };
-    constexpr ULVec2 ULVec2One{ 1ul, 1ul };
-    constexpr ULVec2 ULVec2PosInf{ std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max() };
+    constexpr ULVector2 ULVector2Zero{ 0ull, 0ull };
+    constexpr ULVector2 ULVector2One{ 1ull, 1ull };
+    constexpr ULVector2 ULVector2PosInf{ std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max() };
 
-    constexpr ULVec3 ULVec3Zero{ 0ul, 0ul, 0ul };
-    constexpr ULVec3 ULVec3One{ 1ul, 1ul, 1ul };
-    constexpr ULVec3 ULVec3PosInf{ std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max() };
+    constexpr ULVector3 ULVector3Zero{ 0ull, 0ull, 0ull };
+    constexpr ULVector3 ULVector3One{ 1ull, 1ull, 1ull };
+    constexpr ULVector3 ULVector3PosInf{ std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max() };
 
-    constexpr ULVec4 ULVec4Zero{ 0ul, 0ul, 0ul, 0ul };
-    constexpr ULVec4 ULVec4One{ 1ul, 1ul, 1ul, 1ul };
-    constexpr ULVec4 ULVec4PosInf{ std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max() };
+    constexpr ULVector4 ULVector4Zero{ 0ull, 0ul, 0ull, 0ull };
+    constexpr ULVector4 ULVector4One{ 1ull, 1ull, 1ull, 1ull };
+    constexpr ULVector4 ULVector4PosInf{ std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max(), std::numeric_limits<u64>::max() };
 
-    constexpr BVec2 BVec2True{ true, true };
-    constexpr BVec2 BVec2False{ false, false };
+    constexpr Matrix2 Matrix2Identity{ 1.0f };
+    constexpr Matrix3 Matrix3Identity{ 1.0f };
+    constexpr Matrix4 Matrix4Identity{ 1.0f };
 
-    constexpr BVec3 BVec3True{ true, true, true };
-    constexpr BVec3 BVec3False{ false, false, false };
+    constexpr DMatrix2 DMatrix2Identity{ 1.0 };
+    constexpr DMatrix3 DMatrix3Identity{ 1.0 };
+    constexpr DMatrix4 DMatrix4Identity{ 1.0 };
 
-    constexpr BVec4 BVec4True{ true, true, true, true };
-    constexpr BVec4 BVec4False{ false, false, false, false };
+    constexpr IMatrix2 IMatrix2Identity{ 1 };
+    constexpr IMatrix3 IMatrix3Identity{ 1 };
+    constexpr IMatrix4 IMatrix4Identity{ 1 };
+
+    constexpr LMatrix2 LMatrix2Identity{ 1ll };
+    constexpr LMatrix3 LMatrix3Identity{ 1ll };
+    constexpr LMatrix4 LMatrix4Identity{ 1ll };
+
+    constexpr UMatrix2 UMatrix2Identity{ 1u };
+    constexpr UMatrix3 UMatrix3Identity{ 1u };
+    constexpr UMatrix4 UMatrix4Identity{ 1u };
+
+    constexpr ULMatrix2 ULMatrix2Identity{ 1ull };
+    constexpr ULMatrix3 ULMatrix3Identity{ 1ull };
+    constexpr ULMatrix4 ULMatrix4Identity{ 1ull };
+
+    constexpr Quaternion QuaterionIdentity{ 1.0f, 0.0f, 0.0f, 0.0f };
+    constexpr DQuaternion DQuaterionIdentity{ 1.0, 0.0, 0.0, 0.0 };
 
     template <typename T>
-    [[nodiscard]] inline T MapRange(const T value, const Pair<T, T>& inputRange, const Pair<T, T>& outputRange) noexcept
+    [[nodiscard]] inline auto MapRange(const T value, const Pair<T, T>& inputRange, const Pair<T, T>& outputRange) noexcept -> T
         requires std::is_integral_v<T> || std::is_floating_point_v<T>
     {
         return outputRange.first + ((value - inputRange.first) * (outputRange.second - outputRange.first) / (inputRange.second - inputRange.first));
     }
 
-    [[nodiscard]] extern f32 SmoothDamp(const f32 currentValue, const f32 targetValue, f32& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime);
-    [[nodiscard]] extern Vec2 SmoothDamp(const Vec2 currentValue, const Vec2 targetValue, Vec2& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime);
-    [[nodiscard]] extern Vec3 SmoothDamp(const Vec3 currentValue, const Vec3 targetValue, Vec3& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime);
-    [[nodiscard]] extern Vec4 SmoothDamp(const Vec4 currentValue, const Vec4 targetValue, Vec4& velocitySmoothing, const f32 smoothingTime, const f32 deltaTime);
+    [[nodiscard]] extern auto SmoothDamp(const f32 currentValue, const f32 targetValue, f32& smoothing, const f32 smoothingTime, const f32 deltaTime) -> f32;
+    [[nodiscard]] extern auto SmoothDamp(const Vector2 currentValue, const Vector2 targetValue, Vector2& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Vector2;
+    [[nodiscard]] extern auto SmoothDamp(const Vector3 currentValue, const Vector3 targetValue, Vector3& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Vector3;
+    [[nodiscard]] extern auto SmoothDamp(const Vector4 currentValue, const Vector4 targetValue, Vector4& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Vector4;
+    [[nodiscard]] extern auto SmoothDamp(const Quaternion& currentValue, const Quaternion& targetValue, Quaternion& smoothing, const f32 smoothingTime, const f32 deltaTime) -> Quaternion;
 
-    [[nodiscard]] extern Vec2 SetMagnitude(const Vec2& vector, const f32 magnitude);
-    [[nodiscard]] extern Vec3 SetMagnitude(const Vec3& vector, const f32 magnitude);
-    [[nodiscard]] extern Vec4 SetMagnitude(const Vec4& vector, const f32 magnitude);
+    [[nodiscard]] extern auto SetMagnitude(const Vector2 vector, const f32 magnitude) -> Vector2;
+    [[nodiscard]] extern auto SetMagnitude(const Vector3 vector, const f32 magnitude) -> Vector3;
+    [[nodiscard]] extern auto SetMagnitude(const Vector4 vector, const f32 magnitude) -> Vector4;
 
-    [[nodiscard]] extern Vec2 LimitMagnitude(const Vec2& vector, const f32 maxMagnitude);
-    [[nodiscard]] extern Vec3 LimitMagnitude(const Vec3& vector, const f32 maxMagnitude);
-    [[nodiscard]] extern Vec4 LimitMagnitude(const Vec4& vector, const f32 maxMagnitude);
+    [[nodiscard]] extern auto LimitMagnitude(const Vector2 vector, const f32 maxMagnitude) -> Vector2;
+    [[nodiscard]] extern auto LimitMagnitude(const Vector3 vector, const f32 maxMagnitude) -> Vector3;
+    [[nodiscard]] extern auto LimitMagnitude(const Vector4 vector, const f32 maxMagnitude) -> Vector4;
 
-    [[nodiscard]] extern Vec2 RandomVec2(const f32 min, const f32 max);
-    [[nodiscard]] extern Vec3 RandomVec3(const f32 min, const f32 max);
-    [[nodiscard]] extern Vec4 RandomVec4(const f32 min, const f32 max);
-
-    [[nodiscard]] extern Vec2 RandomUnitVec2();
-    [[nodiscard]] extern Vec3 RandomUnitVec3();
-    [[nodiscard]] extern Vec4 RandomUnitVec4();
+    [[nodiscard]] extern auto InterpolateAngles(const f32 startAngle, const f32 endAngle, const f32 amount) -> f32;
+    [[nodiscard]] extern auto InterpolateAngles(const f32 startAngle, const f32 endAngle, const f32 amount, const i32 additionalSpinCount) -> f32;
 }
 
 #endif

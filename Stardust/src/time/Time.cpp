@@ -1,32 +1,35 @@
-#include "stardust/time/Time.h"
+#include "stardust/types/Primitives.h"
 
 #include <chrono>
 #include <thread>
 
 namespace stardust
 {
-    void WaitForNanoseconds(const u64 nanoseconds)
+    namespace time
     {
-        std::this_thread::sleep_for(std::chrono::nanoseconds(nanoseconds));
-    }
+        auto WaitForNanoseconds(const u64 nanoseconds) -> void
+        {
+            std::this_thread::sleep_for(std::chrono::nanoseconds(nanoseconds));
+        }
 
-    void WaitForMicroseconds(const u32 microseconds)
-    {
-        std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
-    }
+        auto WaitForMicroseconds(const u64 microseconds) -> void
+        {
+            std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
+        }
 
-    void WaitForMilliseconds(const u32 milliseconds)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
-    }
+        auto WaitForMilliseconds(const u32 milliseconds) -> void
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+        }
 
-    void WaitForSeconds(const u32 seconds)
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(seconds));
-    }
+        auto WaitForSeconds(const u32 seconds) -> void
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(seconds));
+        }
 
-    void WaitForSeconds(const f32 seconds)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<u32>(seconds * 1'000.0f)));
+        auto WaitForSeconds(const f32 seconds) -> void
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<u32>(seconds * 1'000.0f)));
+        }
     }
 }

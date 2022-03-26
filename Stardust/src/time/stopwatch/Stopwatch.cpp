@@ -10,7 +10,7 @@ namespace stardust
         }
     }
 
-    void Stopwatch::Start()
+    auto Stopwatch::Start() -> void
     {
         m_startTicks = GetTimeSinceEpoch();
         m_pausedTickCount = 0u;
@@ -19,7 +19,7 @@ namespace stardust
         m_isPaused = false;
     }
 
-    void Stopwatch::Stop()
+    auto Stopwatch::Stop() -> void
     {
         m_isRunning = false;
         m_isPaused = false;
@@ -28,13 +28,13 @@ namespace stardust
         m_pausedTickCount = 0u;
     }
 
-    void Stopwatch::Restart()
+    auto Stopwatch::Restart() -> void
     {
         Stop();
         Start();
     }
 
-    void Stopwatch::Pause()
+    auto Stopwatch::Pause() -> void
     {
         if (m_isRunning && !m_isPaused)
         {
@@ -45,7 +45,7 @@ namespace stardust
         }
     }
 
-    void Stopwatch::Resume()
+    auto Stopwatch::Resume() -> void
     {
         if (m_isRunning && m_isPaused)
         {
@@ -56,17 +56,17 @@ namespace stardust
         }
     }
 
-    [[nodiscard]] u32 Stopwatch::GetElapsedSeconds() const
+    [[nodiscard]] auto Stopwatch::GetElapsedSeconds() const -> u32
     {
         return static_cast<u32>(GetElapsedTime(1u));
     }
 
-    [[nodiscard]] u64 Stopwatch::GetElapsedMilliseconds() const
+    [[nodiscard]] auto Stopwatch::GetElapsedMilliseconds() const -> u64
     {
         return GetElapsedTime(static_cast<u64>(std::milli::den));
     }
 
-    [[nodiscard]] u64 Stopwatch::GetElapsedMicroseconds() const
+    [[nodiscard]] auto Stopwatch::GetElapsedMicroseconds() const -> u64
     {
         if constexpr (s_CanCountMicroseconds)
         {
@@ -78,7 +78,7 @@ namespace stardust
         }
     }
 
-    [[nodiscard]] u64 Stopwatch::GetElapsedNanoseconds() const
+    [[nodiscard]] auto Stopwatch::GetElapsedNanoseconds() const -> u64
     {
         if constexpr (s_CanCountNanoseconds)
         {
@@ -89,13 +89,13 @@ namespace stardust
             return GetElapsedMicroseconds() * 1'000u;
         }
     }
-    
-    [[nodiscard]] u64 Stopwatch::GetTimeSinceEpoch() const
+
+    [[nodiscard]] auto Stopwatch::GetTimeSinceEpoch() const -> u64
     {
         return static_cast<u64>(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now().time_since_epoch()).count());
     }
 
-    [[nodiscard]] u64 Stopwatch::GetElapsedTime(const u64 magnitude) const
+    [[nodiscard]] auto Stopwatch::GetElapsedTime(const u64 magnitude) const -> u64
     {
         if (m_isRunning)
         {

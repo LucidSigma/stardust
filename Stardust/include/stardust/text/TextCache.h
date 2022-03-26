@@ -2,59 +2,47 @@
 #ifndef STARDUST_TEXT_CACHE_H
 #define STARDUST_TEXT_CACHE_H
 
-#include "stardust/utility/interfaces/INoncopyable.h"
-
-#include "stardust/data/Containers.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/graphics/texture/Texture.h"
-#include "stardust/graphics/texture/Sampler.h"
+#include "stardust/math/Math.h"
+#include "stardust/text/Markup.h"
 #include "stardust/text/font/Font.h"
-#include "stardust/text/Text.h"
+#include "stardust/text/TextWriter.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/MathTypes.h"
 
 namespace stardust
 {
-    class TextCache
-        : private INoncopyable
+    class TextCache final
     {
     private:
-        ObserverPtr<const Font> m_font = nullptr;
-        Sampler m_sampler{ };
+        ObserverPointer<TextWriter> m_textWriter = nullptr;
+        ObserverPointer<const Font> m_font = nullptr;
+        UVector2 m_currentFontTextureAtlasSize = UVector2Zero;
 
-        HashMap<text::GlyphInfo, Texture> m_glyphs{ };
-        HashMap<text::UTF16GlyphInfo, Texture> m_utf16glyphs{ };
-
-        HashMap<text::TextInfo, Texture> m_textures{ };
-        HashMap<text::UTF16TextInfo, Texture> m_utf16Textures{ };
-
-        HashMap<String, ObserverPtr<const Texture>> m_quickTextLookup{ };
-        HashMap<UTF16String, ObserverPtr<const Texture>> m_quickUTF16TextLookup{ };
+        HashMap<String, HashMap<Markup, List<GlyphRenderInfo>>> m_glyphs{ };
 
     public:
         TextCache() = default;
-        explicit TextCache(const Font& font, const Sampler& sampler = Sampler{ });
+        explicit TextCache(TextWriter& textWriter);
         ~TextCache() noexcept = default;
 
-        void Initialise(const Font& font, const Sampler& sampler = Sampler{ });
+        auto Initialise(TextWriter& textWriter) -> void;
 
-        [[nodiscard]] ObserverPtr<const Texture> Get(const char glyph);
-        [[nodiscard]] ObserverPtr<const Texture> Get(const text::GlyphInfo& glyphInfo);
-        [[nodiscard]] ObserverPtr<const Texture> Get(const char16_t glyph);
-        [[nodiscard]] ObserverPtr<const Texture> Get(const text::UTF16GlyphInfo& glyphInfo);
+        [[nodiscard]] auto Get(const String& text, const Markup& markup = Markup{ }, const bool resetTextWriterCaret = true) -> const List<GlyphRenderInfo>&;
+        [[nodiscard]] auto Get(const UTF8String& text, const Markup& markup = Markup{ }, const bool resetTextWriterCaret = true) -> const List<GlyphRenderInfo>&;
+        [[nodiscard]] inline auto operator ()(const String& text, const Markup& markup = Markup{ }, const bool resetTextWriterCaret = true) -> const List<GlyphRenderInfo>& { return Get(text, markup, resetTextWriterCaret); }
+        [[nodiscard]] inline auto operator ()(const UTF8String& text, const Markup& markup = Markup{ }, const bool resetTextWriterCaret = true) -> const List<GlyphRenderInfo>& { return Get(text, markup, resetTextWriterCaret); }
 
-        [[nodiscard]] ObserverPtr<const Texture> Get(const String& text);
-        [[nodiscard]] ObserverPtr<const Texture> Get(const text::TextInfo& textInfo);
-        [[nodiscard]] ObserverPtr<const Texture> Get(const UTF16String& text);
-        [[nodiscard]] ObserverPtr<const Texture> Get(const text::UTF16TextInfo& textInfo);
+        auto Clear() -> void;
 
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const String& text) { return Get(text); }
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const text::TextInfo& textInfo) { return Get(textInfo); }
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const UTF16String& text) { return Get(text); }
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const text::UTF16TextInfo& textInfo) { return Get(textInfo); }
+        inline auto ResetTextWriterCaretLocation() const noexcept -> void { m_textWriter->ResetCaretLocation(); }
 
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const char glyph) { return Get(glyph); }
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const text::GlyphInfo& glyphInfo) { return Get(glyphInfo); }
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const char16_t glyph) { return Get(glyph); }
-        [[nodiscard]] inline ObserverPtr<const Texture> operator [](const text::UTF16GlyphInfo& glyphInfo) { return Get(glyphInfo); }
+        [[nodiscard]] auto GetFont() const noexcept -> const Font& { return *m_font; }
+        [[nodiscard]] auto GetTextWriter() noexcept -> TextWriter& { return *m_textWriter; }
+        [[nodiscard]] auto GetTextWriter() const noexcept -> const TextWriter& { return *m_textWriter; }
+
+    private:
+        auto CheckIfFontChanged() -> void;
     };
 }
 

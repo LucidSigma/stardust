@@ -4,65 +4,84 @@
 
 #include "stardust/utility/interfaces/INoncopyable.h"
 
-#include <glad/glad.h>
+#include <ANGLE/GLES3/gl3.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/Types.h"
 #include "stardust/graphics/renderer/objects/BufferUsage.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
-    class VertexBuffer
-        : private INoncopyable
+    namespace graphics
     {
-    private:
-        GLuint m_id = 0u;
-
-    public:
-        VertexBuffer() = default;
-
-        template <typename T = f32>
-        explicit VertexBuffer(const Vector<T>& vertices, const BufferUsage usage = BufferUsage::Static)
+        class VertexBuffer final
+            : private INoncopyable
         {
-            Initialise(vertices, usage);
-        }
+        public:
+            using ID = GLuint;
 
-        explicit VertexBuffer(const usize size, const BufferUsage usage = BufferUsage::Static);
+        private:
+            static constexpr ID s_InvalidID = 0u;
 
-        VertexBuffer(VertexBuffer&& other) noexcept;
-        VertexBuffer& operator =(VertexBuffer&& other) noexcept;
+            ID m_id = s_InvalidID;
 
-        ~VertexBuffer() noexcept;
+        public:
+            [[nodiscard]] static constexpr auto InvalidID() noexcept -> ID { return s_InvalidID; }
 
-        template <typename T = f32>
-        void Initialise(const Vector<T>& vertices, const BufferUsage usage = BufferUsage::Static)
-        {
-            glGenBuffers(1, &m_id);
-            Bind();
+            VertexBuffer() = default;
+            explicit VertexBuffer(const usize size, const BufferUsage usage = BufferUsage::Static);
 
-            glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(T) * vertices.size()), vertices.data(), static_cast<GLenum>(usage));
+            template <typename T = f32>
+            explicit VertexBuffer(const List<T>& vertices, const BufferUsage usage = BufferUsage::Static)
+            {
+                Initialise(vertices, usage);
+            }
+
+            VertexBuffer(VertexBuffer&& other) noexcept;
+            auto operator =(VertexBuffer&& other) noexcept -> VertexBuffer&;
+
+            ~VertexBuffer() noexcept;
+
+            auto Initialise(const usize size, const BufferUsage usage = BufferUsage::Static) -> void;
             
-            Unbind();
-        }
+            template <typename T = f32>
+            auto Initialise(const List<T>& vertices, const BufferUsage usage = BufferUsage::Static) -> void
+            {
+                glGenBuffers(1, &m_id);
 
-        void Initialise(const usize size, const BufferUsage usage = BufferUsage::Static);
-        void Destroy() noexcept;
+                Bind();
+                glBufferData(
+                    GL_ARRAY_BUFFER,
+                    static_cast<GLsizeiptr>(sizeof(T) * vertices.size()),
+                    vertices.data(),
+                    static_cast<GLenum>(usage)
+                );
+                Unbind();
+            }
 
-        [[nodiscard]] inline bool IsValid() const noexcept { return m_id != 0u; }
+            auto Destroy() noexcept -> void;
 
-        void Bind() const;
-        void Unbind() const;
+            [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_id != s_InvalidID; }
 
-        template <typename T = f32>
-        void SetSubData(const Vector<T>& data, const usize count, const uptr offset = 0u) const
-        {
-            Bind();
-            glBufferSubData(GL_ARRAY_BUFFER, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(count * sizeof(T)), data.data());
-            Unbind();
-        }
+            auto Bind() const noexcept -> void;
+            auto Unbind() const noexcept -> void;
 
-        [[nodiscard]] inline u32 GetID() const noexcept { return static_cast<u32>(m_id); }
-    };
+            template <typename T = f32>
+            auto SetSubData(const List<T>& data, const usize count, const uptr offset = 0u) const -> void
+            {
+                Bind();
+                glBufferSubData(
+                    GL_ARRAY_BUFFER,
+                    static_cast<GLintptr>(offset * sizeof(T)),
+                    static_cast<GLsizeiptr>(count * sizeof(T)),
+                    data.data()
+                );
+                Unbind();
+            }
+
+            [[nodiscard]] inline auto GetID() const noexcept -> ID { return m_id; }
+        };
+    }
 }
 
 #endif

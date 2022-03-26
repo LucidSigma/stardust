@@ -2,40 +2,41 @@
 #ifndef STARDUST_VOLUME_MANAGER_H
 #define STARDUST_VOLUME_MANAGER_H
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/Types.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace audio
     {
-        class VolumeManager
+        class VolumeManager final
         {
         private:
-            static constexpr StringView s_MasterVolumeName = "master";
+            static constexpr const char* s_MasterVolumeName = "master";
 
             HashMap<String, f32> m_volumes{ };
 
         public:
-            [[nodiscard]] inline static String GetMasterVolumeName() noexcept { return String(s_MasterVolumeName); }
+            [[nodiscard]] inline static auto GetMasterVolumeName() noexcept -> String { return String(s_MasterVolumeName); }
 
-            VolumeManager() = default;
-            ~VolumeManager() noexcept = default;
+            VolumeManager();
 
-            void AddVolume(const String& volumeName, const f32 value = 1.0f);
-            void SetVolume(const String& volumeName, const f32 value);
-            [[nodiscard]] f32 GetVolume(const String& volumeName) const;
-            void ResetVolume(const String& volumeName);
+            [[nodiscard]] inline auto GetMasterVolume() const -> f32 { return m_volumes.at(s_MasterVolumeName); }
 
-            [[nodiscard]] bool DoesVolumeExist(const String& volumeName) const;
+            auto AddVolume(const String& volumeName, const f32 value = 1.0f) -> void;
+            auto SetVolume(const String& volumeName, const f32 value) -> void;
+            [[nodiscard]] auto GetVolume(const String& volumeName) const -> f32;
+            auto ResetVolume(const String& volumeName) -> void;
 
-            void RemoveVolume(const String& volumeName);
-            void ClearAllVolumes();
+            [[nodiscard]] auto DoesVolumeExist(const String& volumeName) const -> bool;
 
-            [[nodiscard]] inline f32 operator [](const String& volumeName) const { return GetVolume(volumeName); }
+            auto RemoveVolume(const String& volumeName) -> void;
+            auto ClearAllVolumes() -> void;
 
-            [[nodiscard]] inline HashMap<String, f32>& GetVolumes() noexcept { return m_volumes; }
-            [[nodiscard]] inline const HashMap<String, f32>& GetVolumes() const noexcept { return m_volumes; }
+            [[nodiscard]] inline auto operator [](const String& volumeName) const -> f32 { return GetVolume(volumeName); }
+
+            [[nodiscard]] inline auto GetVolumes() noexcept -> HashMap<String, f32>& { return m_volumes; }
+            [[nodiscard]] inline auto GetVolumes() const noexcept -> const HashMap<String, f32>& { return m_volumes; }
         };
     }
 }

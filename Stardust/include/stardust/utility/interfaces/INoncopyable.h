@@ -10,7 +10,10 @@ namespace stardust
         INoncopyable() = default;
 
         INoncopyable(const INoncopyable&) = delete;
-        INoncopyable& operator =(const INoncopyable&) = delete;
+        auto operator =(const INoncopyable&) -> INoncopyable& = delete;
+
+        INoncopyable(INoncopyable&&) noexcept = default;
+        auto operator =(INoncopyable&&) noexcept -> INoncopyable& = default;
 
         ~INoncopyable() noexcept = default;
     };

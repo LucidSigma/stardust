@@ -8,102 +8,53 @@ class TestScene final
     : public sd::Scene
 {
 private:
-    sd::SortingLayer m_defaultSortingLayer{ "default" };
+    sd::gfx::SortingLayer m_defaultSortingLayer;
 
-    sd::ObserverPtr<sd::Texture> m_crateTexture = nullptr;
-    sd::ObserverPtr<sd::Texture> m_crumbleTexture = nullptr;
+    sd::ObserverPointer<sd::gfx::Texture> m_crateTexture = nullptr;
+    sd::ObserverPointer<sd::gfx::Texture> m_crumbleTexture = nullptr;
 
-    sd::FontCache m_font;
+    sd::FontCache m_fontCache;
     sd::TextCache m_textCache;
-    sd::ObserverPtr<const sd::Texture> m_glyphTexture = nullptr;
-    sd::ObserverPtr<const sd::Texture> m_textTexture = nullptr;
+    sd::ObserverPointer<const sd::gfx::Texture> m_glyphTexture = nullptr;
+    sd::ObserverPointer<const sd::gfx::Texture> m_textTexture = nullptr;
 
-    sd::AssetManager<sd::Texture> m_textures;
+    sd::AssetManager<sd::gfx::Texture> m_textures;
 
-    sd::TextureAtlas m_conveyorTextures;
-    sd::TextureAtlas m_colourTextures;
-    sd::TextureAtlas m_groundTiles;
+    sd::gfx::TextureAtlas m_conveyorTextures;
+    sd::gfx::TextureAtlas m_colourTextures;
+    sd::gfx::TextureAtlas m_groundTiles;
 
     sd::GameController* m_controller = nullptr;
 
-    sd::AssetManager<sd::audio::Sound> m_sounds;
+    sd::AssetManager<sd::audio::Sound> m_sounds{ };
     
     sd::ParticleSystem m_particles;
     sd::f32 m_clickParticleDelay = 0.01f;
 
-    sd::Animator m_colourAnimator;
-    sd::Animation m_colourAnimation;
-    sd::Animation m_flashAnimation;
+    sd::anim::Animator m_colourAnimator;
+    sd::anim::Animation m_colourAnimation;
+    sd::anim::Animation m_flashAnimation;
 
-    sd::Vector<sd::Tilemap> m_tilemaps{ };
-
-    bool m_startRecording = false;
-    sd::audio::RecordingDevice m_device;
-    sd::audio::Sound m_chunkSound;
-    sd::audio::SoundSource m_source;
-
-    sd::ai::BoidFlock m_flock;
-
-    sd::ui::Context m_uiContext;
+    sd::List<sd::Tilemap> m_tilemaps{ };
 
 public:
     TestScene(sd::Application& application, const sd::String& name)
         : Scene(application, name)
-    {
-        
-    }
+    { }
 
     virtual ~TestScene() noexcept override = default;
 
     [[nodiscard]] virtual sd::Status OnLoad() override
     {
-        if (sd::ui::LoadFontFace("assets/fonts/TheanoModern.ttf") != sd::Status::Success)
-        {
-            return sd::Status::Fail;
-        }
-
-        m_uiContext.Initialise("main", GetWindow().GetSize());
-
-        if (!m_uiContext.IsValid())
-        {
-            return sd::Status::Fail;
-        }
-
-        const auto document = m_uiContext.LoadRMLDocument("assets/ui/test.rml");
-
-        if (document == nullptr)
-        {
-            return sd::Status::Fail;
-        }
-
-        sd::SetCursor(sd::CursorType::No);
-
-        const sd::sys::CPUInfo& cpuInfo = sd::sys::GetCPUInfo();
-
-        sd::Log::Trace("CPU name: {} [Vendor: {}]", cpuInfo.name, cpuInfo.vendor);
-        sd::Log::Trace("Cores: {}; Family: {}; Model: {}; Stepping level: {}", cpuInfo.coreCount, cpuInfo.family, cpuInfo.model, cpuInfo.steppingLevel);
-        
-        for (const auto& [level, size, lineCount, lineSize] : cpuInfo.caches)
-        {
-            sd::Log::Trace("\tCache level {} - Size: {} bytes; Lines: {}; Line size: {} bytes", level, size, lineCount, lineSize);
-        }
-
-        const sd::sys::GPUInfo& gpuInfo = sd::sys::GetGPUInfo();
-        sd::Log::Trace("GPU: {} [Vendor: {}]", gpuInfo.name, gpuInfo.vendor);
-        sd::Log::Trace("Supports OpenGL {} and GLSL {} [Running OpenGL {}]", gpuInfo.openGLVersion.ToString(), gpuInfo.glslVersion.ToString(false), sd::opengl::GetVersion().ToString(false));
-        sd::Log::Trace("Max texture size: {} bytes", gpuInfo.maxTextureSize);
-
-        sd::Log::Trace("Memory: {} megabytes", sd::sys::GetSystemRAMCount());
-
-        sd::Log::Trace("Key count: {}; mouse button count: {}; controller button count: {}.", sd::KeyCount, sd::MouseButtonCount, sd::GameControllerButtonCount);
+        sd::cursor::SetType(sd::cursor::Type::No);
 
         GetRenderer().SetClearColour(sd::Colour(0.3f, 0.05f, 0.5f, 1.0f));
 
-        const auto textures = sd::vfs::GetAllFilesInDirectory("assets/textures");
+        const auto textures = sd::vfs::GetAllFilepaths("assets/textures");
 
         for (const auto& texture : textures)
         {
-            const sd::String textureName = sd::fs::GetFileStem(texture);
+            const sd::String textureName = sd::fs::GetStem(texture);
             m_textures.Add(textureName, texture);
 
             if (!m_textures[textureName].IsValid())
@@ -115,14 +66,18 @@ public:
         m_crateTexture = &m_textures["crate"];
         m_crumbleTexture = &m_textures["crumble"];
 
-        m_font.SetFont("assets/fonts/TheanoModern.ttf");
+        m_fontCache.SetFontData(
+            sd::Font::CreateInfo{
+                .filepath = "assets/fonts/TheanoModern.ttf",
+            }
+        );
         
-        if (m_font.Add(128u) != sd::Status::Success)
+        if (m_fontCache.Add(128u) != sd::Status::Success)
         {
             return sd::Status::Fail;
         }
 
-        m_textCache.Initialise(m_font[128u]);
+        m_textCache.Initialise(m_fontCache[128u]);
 
         m_glyphTexture = m_textCache['A'];
 

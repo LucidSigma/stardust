@@ -1,0 +1,59 @@
+{
+    "controls": {
+        "axes": {
+            "test": {
+                "keyboard": {
+                    "positive-keys": [],
+                    "negative-keys": []
+                },
+                "mouse": {
+                    "positive-buttons": [],
+                    "negative-buttons": [],
+                    "axes": []
+                },
+                "controller": {
+                    "positive-buttons": [],
+                    "negative-buttons": [],
+                    "positive-triggers": [],
+                    "negative-triggers": [],
+                    "axes": []
+                },
+                "joystick": {
+                    "positive-buttons": [],
+                    "negative-buttons": [],
+                    "positive-triggers": [],
+                    "negative-triggers": [],
+                    "axes": [],
+                    "hat-switches": {
+                        "x": [],
+                        "y": []
+                    },
+                    "trackballs": {
+                        "x": [],
+                        "y": []
+                    }
+                }
+            }
+        },
+        "buttons": {
+            "test": {
+                "keys": [],
+                "mouse-buttons": [],
+                "controller": {
+                    "buttons": [],
+                    "triggers": []
+                },
+                "joystick": {
+                    "buttons": [],
+                    "triggers": [],
+                    "hat-switches": [
+                        {
+                            "id": 0,
+                            "directions": []
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

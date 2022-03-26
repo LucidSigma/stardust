@@ -8,23 +8,24 @@
 
 #include <box2d/box2d.h>
 
-#include "stardust/data/Containers.h"
-#include "stardust/data/MathTypes.h"
-#include "stardust/data/Pointers.h"
-#include "stardust/data/Types.h"
+#include "stardust/ecs/entity/EntityHandle.h"
 #include "stardust/math/Math.h"
 #include "stardust/physics/collider/Collider.h"
 #include "stardust/physics/Physics.h"
+#include "stardust/types/Containers.h"
+#include "stardust/types/MathTypes.h"
+#include "stardust/types/Pointers.h"
+#include "stardust/types/Primitives.h"
 
 namespace stardust
 {
     namespace physics
     {
-        class Body
+        class Body final
             : private INoncopyable
         {
         public:
-            enum Type
+            enum class Type
                 : std::underlying_type_t<b2BodyType>
             {
                 Static = b2_staticBody,
@@ -32,14 +33,14 @@ namespace stardust
                 Dynamic = b2_dynamicBody,
             };
 
-            struct CreateInfo
+            struct CreateInfo final
             {
                 Type type = Type::Static;
 
-                Vec2 position = Vec2Zero;
+                Vector2 position = Vector2Zero;
                 f32 angle = 0.0f;
 
-                Vec2 linearVelocity = Vec2Zero;
+                Vector2 linearVelocity = Vector2Zero;
                 f32 angularVelocity = 0.0f;
 
                 f32 linearDamping = 0.0f;
@@ -55,95 +56,100 @@ namespace stardust
 
                 f32 gravityScale = 1.0f;
 
-                Vector<Collider::CreateInfo> colliderInfos{ };
+                List<Collider::CreateInfo> colliderInfos{ };
             };
 
         private:
-            ObserverPtr<b2Body> m_handle = nullptr;
-            ObserverPtr<const class World> m_owningWorld = nullptr;
+            ObserverPointer<b2Body> m_handle = nullptr;
+            ObserverPointer<const class World> m_owningWorld = nullptr;
 
             HashSet<Collider> m_colliders{ };
 
+            EntityHandle m_associatedEntityHandle = NullEntityHandle;
+
         public:
             Body() = default;
-            Body(const class World& world, const CreateInfo& createInfo);
+            Body(const class World& world, const CreateInfo& createInfo, const EntityHandle associatedEntityHandle);
             Body(Body&& other) noexcept;
-            Body& operator =(Body&& other) noexcept;
+            auto operator =(Body&& other) noexcept -> Body&;
             ~Body() noexcept = default;
 
-            void Initialise(const class World& world, const CreateInfo& createInfo);
+            [[nodiscard]] inline auto IsValid() const noexcept -> bool { return m_handle != nullptr; }
 
-            [[nodiscard]] inline bool IsValid() const noexcept { return m_handle != nullptr; }
+            auto ApplyForce(const Vector2 force, const Vector2 point, const bool wakeUp) const -> void;
+            auto ApplyForceToCentre(const Vector2 force, const bool wakeUp) const -> void;
+            auto ApplyTorque(const f32 torque, const bool wakeUp) const -> void;
 
-            void ApplyForce(const Vec2& force, const Vec2& point, const bool wakeUp) const;
-            void ApplyForceToCentre(const Vec2& force, const bool wakeUp) const;
-            void ApplyTorque(const f32 torque, const bool wakeUp) const;
+            auto ApplyLinearImpulse(const Vector2 impulse, const Vector2 point, const bool wakeUp) const -> void;
+            auto ApplyLinearImpulseToCentre(const Vector2 impulse, const bool wakeUp) const -> void;
+            auto ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const -> void;
 
-            void ApplyLinearImpulse(const Vec2& impulse, const Vec2& point, const bool wakeUp) const;
-            void ApplyLinearImpulseToCentre(const Vec2& impulse, const bool wakeUp) const;
-            void ApplyAngularImpulse(const f32 impulse, const bool wakeUp) const;
+            auto Move(const Vector2 positionOffset) const -> void;
+            auto Rotate(const f32 angleOffset) const -> void;
 
-            void Move(const Vec2& positionOffset) const;
-            void Rotate(const f32 angleOffset) const;
+            auto AddCollider(const Collider::CreateInfo& colliderInfo) -> Collider;
+            auto RemoveCollider(const Collider& collider) -> void;
+            [[nodiscard]] inline auto GetColliders() const -> const HashSet<Collider>& { return m_colliders; }
+            [[nodiscard]] inline auto GetFirstCollider() const -> const Collider& { return *std::cbegin(m_colliders); }
+            [[nodiscard]] inline auto HasColliders() const noexcept -> bool { return !m_colliders.empty(); }
+            [[nodiscard]] inline auto HasCollider(const Collider& collider) const -> bool { return m_colliders.contains(collider); }
 
-            Collider AddCollider(const Collider::CreateInfo& colliderInfo);
-            void RemoveCollider(const Collider& collider);
-            [[nodiscard]] inline const HashSet<Collider>& GetColliders() const { return m_colliders; }
-            [[nodiscard]] inline const Collider& GetFirstCollider() const { return *std::cbegin(m_colliders); }
-            [[nodiscard]] inline bool HasColliders() const noexcept { return !m_colliders.empty(); }
-            [[nodiscard]] inline bool HasCollider(const Collider& collider) const { return m_colliders.contains(collider); }
+            [[nodiscard]] auto GetWorldCentre() const -> Vector2;
+            [[nodiscard]] auto GetLocalCenter() const -> Vector2;
 
-            [[nodiscard]] Vec2 GetWorldCentre() const;
-            [[nodiscard]] Vec2 GetLocalCenter() const;
+            [[nodiscard]] auto GetWorldPoint(const Vector2 localPoint) const -> Vector2;
+            [[nodiscard]] auto GetWorldVector(const Vector2 localVector) const -> Vector2;
+            [[nodiscard]] auto GetLocalPoint(const Vector2 worldPoint) const -> Vector2;
+            [[nodiscard]] auto GetLocalVector(const Vector2 worldVector) const -> Vector2;
+            [[nodiscard]] auto GetLinearVelocityFromWorldPoint(const Vector2 worldPoint) const -> Vector2;
+            [[nodiscard]] auto GetLinearVelocityFromLocalPoint(const Vector2 localPoint) const -> Vector2;
 
-            [[nodiscard]] Vec2 GetWorldPoint(const Vec2& localPoint) const;
-            [[nodiscard]] Vec2 GetWorldVector(const Vec2& localVector) const;
-            [[nodiscard]] Vec2 GetLocalPoint(const Vec2& worldPoint) const;
-            [[nodiscard]] Vec2 GetLocalVector(const Vec2& worldVector) const;
-            [[nodiscard]] Vec2 GetLinearVelocityFromWorldPoint(const Vec2& worldPoint) const;
-            [[nodiscard]] Vec2 GetLinearVelocityFromLocalPoint(const Vec2& localPoint) const;
+            [[nodiscard]] auto IsEnabled() const -> bool;
+            auto SetEnabled(const bool isEnabled) const -> void;
+            [[nodiscard]] auto IsAwake() const -> bool;
+            [[nodiscard]] auto CanSleep() const -> bool;
+            auto SetAllowSleeping(const bool canSleep) const -> void;
 
-            [[nodiscard]] bool IsEnabled() const;
-            void SetEnabled(const bool isEnabled) const;
-            [[nodiscard]] bool IsAwake() const;
-            [[nodiscard]] bool CanSleep() const;
-            void SetAllowSleeping(const bool canSleep) const;
+            [[nodiscard]] auto GetType() const -> Type;
+            auto SetType(const Type type) const -> void;
 
-            [[nodiscard]] Type GetType() const;
-            void SetType(const Type type) const;
+            [[nodiscard]] auto IsBullet() const -> bool;
+            auto SetBullet(const bool isBullet) const -> void;
 
-            [[nodiscard]] bool IsBullet() const;
-            void SetBullet(const bool isBullet) const;
+            [[nodiscard]] auto GetPosition() const -> Vector2;
+            auto SetPosition(const Vector2 position) const -> void;
+            [[nodiscard]] auto GetRotation() const -> f32;
+            auto SetRotation(const f32 rotation) const -> void;
 
-            [[nodiscard]] Vec2 GetPosition() const;
-            void SetPosition(const Vec2& position) const;
-            [[nodiscard]] f32 GetRotation() const;
-            void SetRotation(const f32 rotation) const;
+            [[nodiscard]] auto HasFixedRotation() const -> bool;
+            auto SetFixedRotation(const bool hasFixedRotation) const -> void;
 
-            [[nodiscard]] bool HasFixedRotation() const;
-            void SetFixedRotation(const bool hasFixedRotation) const;
+            [[nodiscard]] auto GetLinearVelocity() const -> Vector2;
+            auto SetLinearVelocity(const Vector2 linearVelocity) const -> void;
+            [[nodiscard]] auto GetAngularVelocity() const -> f32;
+            auto SetAngularVelocity(const f32 angularVelocity) const -> void;
 
-            [[nodiscard]] Vec2 GetLinearVelocity() const;
-            void SetLinearVelocity(const Vec2& linearVelocity) const;
-            [[nodiscard]] f32 GetAngularVelocity() const;
-            void SetAngularVelocity(const f32 angularVelocity) const;
+            [[nodiscard]] auto GetLinearDamping() const -> f32;
+            auto SetLinearDamping(const f32 linearDamping) const -> void;
+            [[nodiscard]] auto GetAngularDamping() const -> f32;
+            auto SetAngularDamping(const f32 angularDamping) const -> void;
 
-            [[nodiscard]] f32 GetLinearDamping() const;
-            void SetLinearDamping(const f32 linearDamping) const;
-            [[nodiscard]] f32 GetAngularDamping() const;
-            void SetAngularDamping(const f32 angularDamping) const;
+            [[nodiscard]] auto GetGravityScale() const -> f32;
+            auto SetGravityScale(const f32 gravityScale) const -> void;
 
-            [[nodiscard]] f32 GetGravityScale() const;
-            void SetGravityScale(const f32 gravityScale) const;
+            [[nodiscard]] auto GetMass() const -> f32;
+            [[nodiscard]] auto GetInertia() const -> f32;
+            [[nodiscard]] auto GetMassData() const -> MassData;
+            auto SetMassData(const MassData& massData) const -> void;
+            auto ResetMassData() const -> void;
 
-            [[nodiscard]] f32 GetMass() const;
-            [[nodiscard]] f32 GetInertia() const;
-            [[nodiscard]] MassData GetMassData() const;
-            void SetMassData(const MassData& massData) const;
-            void ResetMassData() const;
+            [[nodiscard]] inline auto GetAssociatedEntityHandle() const noexcept -> EntityHandle { return m_associatedEntityHandle; }
 
-            [[nodiscard]] inline ObserverPtr<b2Body> GetRawHandle() const noexcept { return m_handle; }
-            [[nodiscard]] inline ObserverPtr<const class World> GetOwningWorld() const noexcept { return m_owningWorld; }
+            [[nodiscard]] inline auto GetRawHandle() const noexcept -> ObserverPointer<b2Body> { return m_handle; }
+            [[nodiscard]] inline auto GetOwningWorld() const noexcept -> ObserverPointer<const class World> { return m_owningWorld; }
+
+        private:
+            auto Initialise(const class World& world, const CreateInfo& createInfo, const EntityHandle associatedEntityHandle) -> void;
         };
     }
 }
