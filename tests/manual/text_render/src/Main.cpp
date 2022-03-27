@@ -73,9 +73,11 @@ auto main(const sd::i32 argc, char** const argv) -> sd::i32
 
     sd::gfx::SetPresentationMode(sd::gfx::PresentationMode::Immediate);
 
-    sd::FontCache fontCache(sd::Font::CreateInfo{
-        .filepath = "fonts/ZenKurenaido-Regular.ttf",
-    });
+    sd::FontCache fontCache(
+        sd::FontCache::FontData{
+            .filepath = "fonts/ZenKurenaido-Regular.ttf",
+        }
+    );
     STARDUST_ASSERT_RELEASE(fontCache.Add(28u) == sd::Status::Success);
 
     sd::TextWriter textWriter(fontCache.Get(28u), sd::IVector2Zero);
@@ -123,9 +125,11 @@ auto main(const sd::i32 argc, char** const argv) -> sd::i32
     }, false);
     textWriter.FeedNewLine();
 
-    sd::FontCache arabicFontCache(sd::Font::CreateInfo{
-        .filepath = "fonts/Cairo-Regular.ttf",
-    });
+    sd::FontCache arabicFontCache(
+        sd::FontCache::FontData{
+            .filepath = "fonts/Cairo-Regular.ttf",
+        }
+    );
     STARDUST_ASSERT_RELEASE(arabicFontCache.Add(28u) == sd::Status::Success);
 
     sd::TextWriter arabicTextWriter(arabicFontCache.Get(28u), textWriter.GetCaretLocation());

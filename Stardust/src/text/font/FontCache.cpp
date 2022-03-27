@@ -4,22 +4,31 @@
 
 namespace stardust
 {
-    FontCache::FontCache(const Font::CreateInfo& createInfo)
+    FontCache::FontCache(const FontData& fontData)
     {
-        SetFontData(createInfo);
+        Initialise(fontData);
     }
     
-    auto FontCache::SetFontData(const Font::CreateInfo& createInfo) -> void
+    auto FontCache::Initialise(const FontData& fontData) -> void
     {
-        m_createInfo = createInfo;
+        m_fontData = fontData;
     }
 
     [[nodiscard]] auto FontCache::Add(const Font::Size pointSize) -> Status
     {
         if (!m_pointSizes.contains(pointSize))
         {
-            m_createInfo.pointSize = pointSize;
-            m_pointSizes[pointSize] = std::make_unique<Font>(m_createInfo);
+            m_pointSizes[pointSize] = std::make_unique<Font>(
+                Font::CreateInfo{
+                    .filepath = m_fontData.filepath,
+                    .pointSize = pointSize,
+                    .renderMode = m_fontData.renderMode,
+                    .outlineThickness = m_fontData.outlineThickness,
+                    .textureAtlasSize = m_fontData.textureAtlasSize,
+                    .textureAtlasDepth = m_fontData.textureAtlasDepth,
+                    .sampler = m_fontData.sampler,
+                }
+            );
         }
 
         return m_pointSizes[pointSize]->IsValid() ? Status::Success : Status::Fail;
