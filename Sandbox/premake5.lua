@@ -5,9 +5,6 @@ project "Sandbox"
     targetdir "%{BUILD_DIRECTORY}/bin/%{cfg.buildcfg}"
     objdir "%{BUILD_DIRECTORY}/bin/obj/%{cfg.buildcfg}"
 
-    pchheader "StardustPCH.h"
-    pchsource "src/StardustPCH.cpp"
-
     files {
         "include/**.h",
         "src/**.cpp",

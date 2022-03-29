@@ -1,10 +1,9 @@
 {
-	"texture_file": "tiles.png",
-	"subtextures": [
+	"sub-textures": [
 		{
 			"id": 0,
 			"name": "dirt",
-			"rect": {
+			"area": {
 				"x": 0,
 				"y": 0,
 				"width": 32,
@@ -14,7 +13,7 @@
 		{
 			"id": 1,
 			"name": "grass",
-			"rect": {
+			"area": {
 				"x": 32,
 				"y": 0,
 				"width": 32,
@@ -24,7 +23,7 @@
 		{
 			"id": 2,
 			"name": "stone",
-			"rect": {
+			"area": {
 				"x": 64,
 				"y": 0,
 				"width": 32,
@@ -34,7 +33,7 @@
 		{
 			"id": 3,
 			"name": "bedrock",
-			"rect": {
+			"area": {
 				"x": 0,
 				"y": 32,
 				"width": 32,
@@ -44,7 +43,7 @@
 		{
 			"id": 4,
 			"name": "stone-dirt",
-			"rect": {
+			"area": {
 				"x": 32,
 				"y": 32,
 				"width": 32,
@@ -54,7 +53,7 @@
 		{
 			"id": 5,
 			"name": "gravel",
-			"rect": {
+			"area": {
 				"x": 64,
 				"y": 32,
 				"width": 32,
