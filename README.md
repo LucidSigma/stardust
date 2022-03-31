@@ -56,13 +56,14 @@ Coming soon.
     * [SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB)
 
 ### Graphics.
-* [Glad](https://glad.dav1d.de/)
-* [OpenGL](https://www.opengl.org/)
+* [ANGLE](https://github.com/google/angle)
+* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
+* [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
+
+### Text rendering.
 * [FreeType](https://www.freetype.org/)
 * [FreeType GL](https://github.com/rougier/freetype-gl)
 * [HarfBuzz](https://harfbuzz.github.io/)
-* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
-* [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
 
 ### Audio.
 * [SoLoud](https://sol.gfxile.net/soloud/)
