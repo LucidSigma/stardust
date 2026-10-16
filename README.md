@@ -1,4 +1,5 @@
 # 2025Q3 update: this project is currently being remade within a private repository. I will make a new public release and continue development in this repository when that is finished.
+# 2026Q4 update: I ended up overhauling several systems, and plan to do so to several more (such as the renderer and text engine). So, it will be a while until this repository is updated.
 
 # Stardust.
 
